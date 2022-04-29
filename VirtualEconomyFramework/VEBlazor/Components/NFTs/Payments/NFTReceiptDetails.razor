@@ -1,0 +1,39 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@inject AppData AppData
+@inherits NFTDetailsBase;
+
+@if ( NFT != null && NFT.Type == NFTTypes.Receipt )
+{
+    var nft = NFT as ReceiptNFT;
+    if (nft != null)
+    {
+        <NFTDetails @ref="NFTDetailsComponent"
+                Address="@Address" 
+                IsSubAccount="@IsSubAccount" 
+                IsOwnNFT="IsOwnNFT" 
+                NFT="@NFT" 
+                NFTSent="@NFTSentHandler" 
+                OpenNFTsInWorkTab="@OpenNFTInWorkTabHandler"
+                HideOpenInWorkTabButton="@HideOpenInWorkTabButton"
+                SpecificInfoHeading="Receipt Details">
+        <Field>
+            <FieldLabel>Buyer</FieldLabel>
+            <Button Color="Color.Primary" Type="ButtonType.Link" To="@(string.Concat("https://explorer.nebl.io/address/",nft.Buyer))" Target="Target.Blank">Show Buyer In Explorer</Button>
+        </Field>
+        <Field>
+            <FieldLabel>NFT Utxo</FieldLabel>
+             <Button Color="Color.Primary" Type="ButtonType.Link" To="@(string.Concat("https://explorer.nebl.io/tx/", nft.ReceiptFromPaymentUtxo))" Target="Target.Blank">Show Tx In Explorer</Button>
+        </Field>
+        <Field>
+            <FieldLabel>Sold Price</FieldLabel>
+            <Text>@nft.SoldPrice NEBL</Text>
+        </Field>
+    </NFTDetails>
+    }
+}
+
+@code {
+
+
+}

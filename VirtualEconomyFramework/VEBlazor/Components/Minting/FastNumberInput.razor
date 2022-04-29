@@ -1,0 +1,319 @@
+﻿
+<Row Margin="Margin.Is2.FromTop">
+    <Column Flex="Flex.JustifyContent.Center" Style="min-width:250px;padding:0px;marigin:0px;">                   
+        <Field Horizontal>
+            <FieldBody>
+                <RadioGroup Name="unitofinput" 
+                            TValue="Units"
+                            Orientation="Orientation.Horizontal" 
+                            Buttons 
+                            CheckedValue="@SelectedUnit"
+                            CheckedValueChanged="@UnitOfInputChanged"
+                            Size="Size.Small"
+                            Color="Color.Light">
+                            @if (DisplayMega)
+                            {
+                                <Radio TValue="Units" @key="@Units.mega" Value="@Units.mega">Mega</Radio>
+                            }
+                            @if (DisplayKilo)
+                            {
+                                <Radio TValue="Units" @key="@Units.kilo" Value="@Units.kilo">Kilo</Radio>
+                            }
+                            @if (DisplayMain)
+                            {
+                                <Radio TValue="Units" @key="@Units.main" Value="@Units.main">Main</Radio>
+                            }
+                            @if (DisplayMili)
+                            {
+                                <Radio TValue="Units" @key="@Units.mili" Value="@Units.mili">Mili</Radio>
+                            }
+                            @if (DisplayMicro)
+                            {
+                                <Radio TValue="Units" @key="@Units.micro" Value="@Units.micro">Micro</Radio>
+                            }
+                </RadioGroup>
+            </FieldBody>
+        </Field> 
+    </Column> 
+</Row> 
+<Row>
+    <Column Flex="Flex.JustifyContent.Center">
+        <Div>
+            <Row>
+                <Column>
+                    <Addons>
+                        <Addon AddonType="AddonType.Start">
+                            <Button Color="Color.Primary" Clicked="() => Add(300)" Style="width:65px;">+300</Button>
+                        </Addon>
+                        <Addon AddonType="AddonType.Start">
+                            <Button Color="Color.Primary" Clicked="() => Add(100)" Style="width:65px;">+100</Button>
+                        </Addon>
+                        <Addon AddonType="AddonType.End">
+                            <Button Color="Color.Primary" Clicked="() => Add(30)" Style="width:65px;">+30</Button>
+                        </Addon>
+                        <Addon AddonType="AddonType.End">
+                            <Button Color="Color.Primary" Clicked="() => Add(10)" Style="width:65px;">+10</Button>
+                        </Addon>                                    
+                    </Addons>
+                </Column>
+            </Row>
+            <Row>                            
+                <Column>
+                    <Addons>
+                        <Addon AddonType="AddonType.Start">
+                            <Button Color="Color.Secondary" Clicked="() => Add(-300)" Style="width:65px;">-300</Button>
+                        </Addon>
+                        <Addon AddonType="AddonType.Start">
+                            <Button Color="Color.Secondary" Clicked="() => Add(-100)" Style="width:65px;">-100</Button>
+                        </Addon>
+                        <Addon AddonType="AddonType.End">
+                            <Button Color="Color.Secondary" Clicked="() => Add(-30)" Style="width:65px;">-30</Button>
+                        </Addon>
+                        <Addon AddonType="AddonType.End">
+                            <Button Color="Color.Secondary" Clicked="() => Add(-10)" Style="width:65px;">-10</Button>
+                        </Addon>
+                    </Addons>
+                </Column>                            
+            </Row>                  
+            <Row>
+                <Column>
+                    <Addons>
+                        <Addon AddonType="AddonType.Start">
+                            <Button Color="Color.Primary" Clicked="() => Add(5)" Style="width:65px;">+5</Button>
+                        </Addon>
+                        <Addon AddonType="AddonType.Start">
+                            <Button Color="Color.Primary" Clicked="() => Add(3)" Style="width:65px;">+3</Button>
+                        </Addon>                                    
+                        <Addon AddonType="AddonType.End">
+                            <Button Color="Color.Primary" Clicked="() => Add(2)" Style="width:65px;">+2</Button>
+                        </Addon>
+                        <Addon AddonType="AddonType.End">
+                            <Button Color="Color.Primary" Clicked="() => Add(1)" Style="width:65px;">+1</Button>
+                        </Addon>
+                    </Addons>
+                </Column>
+            </Row>
+            <Row>                            
+                <Column>
+                    <Addons>
+                        <Addon AddonType="AddonType.Start">
+                            <Button Color="Color.Secondary" Clicked="() => Add(-5)" Style="width:65px;">-5</Button>
+                        </Addon>
+                        <Addon AddonType="AddonType.Start">
+                            <Button Color="Color.Secondary" Clicked="() => Add(-3)" Style="width:65px;">-3</Button>
+                        </Addon>
+                        <Addon AddonType="AddonType.End">
+                            <Button Color="Color.Secondary" Clicked="() => Add(-2)" Style="width:65px;">-2</Button>
+                        </Addon>
+                        <Addon AddonType="AddonType.End">
+                            <Button Color="Color.Secondary" Clicked="() => Add(-1)" Style="width:65px;">-1</Button>
+                        </Addon>
+                    </Addons>
+                </Column>                            
+            </Row> 
+        </Div>
+    </Column>
+</Row>
+                        
+<Row Flex="Flex.JustifyContent.Center" Margin="Margin.Is3.FromTop">
+    <Column Style="max-width:270px;width:270px;">
+        <Addons>
+            <Addon AddonType="AddonType.Start">
+                <Button Color="Color.Primary" Clicked="ClearUnit" Size="Size.Small" ><Icon Name="IconName.Delete" Margin="Margin.Is1.FromEnd" />Unit</Button>
+            </Addon>
+            <Addon AddonType="AddonType.Body">
+                <NumericPicker TValue="double" Min="0" Max="1000000" Value="@Value" Decimals="6" Size="Size.Small" />
+            </Addon>
+            <Addon AddonType="AddonType.End">
+                <Button Color="Color.Primary" Clicked="ClearAll" Size="Size.Small"><Icon Name="IconName.Delete" Margin="Margin.Is1.FromEnd" />All</Button>
+            </Addon>
+        </Addons>
+        
+    </Column>
+</Row>       
+
+<Row Margin="Margin.Is1.FromTop">
+    <Column Flex="Flex.JustifyContent.Center">
+        <Span>Final Value</Span>
+    </Column>
+</Row>
+<Row Margin="Margin.Is1.FromTop.Is3.FromBottom">
+    <Column Flex="Flex.JustifyContent.Center">
+        @if ( _value < 0.001 )
+        {
+            <Span TextWeight="TextWeight.Bold">Value: @(Math.Round(InMicroValue,3)) micro @Unit</Span>
+        }
+        else if ( _value >= 0.001 && _value < 1 )
+        {
+            <Span TextWeight="TextWeight.Bold">Value: @(Math.Round(InMiliValue,6)) mili @Unit</Span>
+        }
+        else if ( _value >= 1 && _value < 1000 )
+        {
+            <Span TextWeight="TextWeight.Bold">Value: @(Math.Round(InMainValue,9)) @Unit</Span>
+        }
+        else if ( _value >= 1000 && _value < 1000000 )
+        {
+            <Span TextWeight="TextWeight.Bold">Value: @(Math.Round(InKiloValue,12)) kilo @Unit</Span>
+        }
+        else if ( _value >= 1000000 )
+        {
+            <Span TextWeight="TextWeight.Bold">Value: @(Math.Round(InMegaValue,15)) mega @Unit</Span>
+        }
+    </Column>
+</Row>
+
+@code {
+
+    public enum Units
+    {
+        micro,
+        mili,
+        main,
+        kilo,
+        mega
+    }
+
+    double _value = 0.0;
+    [Parameter]
+    public double Value 
+    { 
+        get => Calc(); 
+        set
+        {
+            _value = value;
+        }            
+    }
+    [Parameter] public EventCallback<double> ValueChanged { get; set; }
+    [Parameter] public string Name { get; set; } = string.Empty;
+    [Parameter] public string Unit { get; set; } = string.Empty;
+
+    [Parameter] public Units InitSelectedUnit { get; set; } = Units.main;
+    private Units SelectedUnit { get; set; } = Units.main;
+
+    public double InMicroValue { get => _value * 1000000; }
+    public double InMiliValue { get => _value * 1000; }
+    public double InMainValue { get => _value * 1; }
+    public double InKiloValue { get => _value / 1000; }
+    public double InMegaValue { get => _value / 1000000; }
+
+    double microValue = 0;
+    double miliValue = 0;
+    double mainValue = 0;
+    double kiloValue = 0;
+    double megaValue = 0;
+    double maxValuePerUnit = 999;
+
+    [Parameter]
+    public bool DisplayMicro { get; set; } = false;
+    [Parameter]
+    public bool DisplayMili { get; set; } = false;
+    [Parameter]
+    public bool DisplayMain { get; set; } = false;
+    [Parameter]
+    public bool DisplayKilo { get; set; } = false;
+    [Parameter]
+    public bool DisplayMega { get; set; } = false;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender) SelectedUnit = InitSelectedUnit;
+        base.OnAfterRender(firstRender);
+    }
+
+    public void ParseValue()
+    {
+        microValue = Math.Round(_value * 1000000);
+        miliValue = Math.Round(_value * 1000);
+        mainValue = Math.Round(_value * 1); 
+        kiloValue = Math.Round(_value / 1000); 
+        megaValue = Math.Round(_value / 1000000);    
+        StateHasChanged();
+    }
+
+    double Calc()
+    {
+        return 1000000 * (double)megaValue + 1000 * (double)kiloValue + (double)mainValue + 0.001 * (double)miliValue + 0.000001 * (double)microValue;
+    }
+
+    async Task Add(double number)
+    {
+        switch (SelectedUnit)
+        {
+            case Units.micro:
+                microValue += number;
+                if (microValue >= maxValuePerUnit) microValue = maxValuePerUnit;
+                else if (microValue < 0) microValue = 0;
+                break;
+            case Units.mili:
+                miliValue += number;
+                if (miliValue >= maxValuePerUnit) miliValue = maxValuePerUnit;
+                else if (microValue < 0) microValue = 0;                
+                break;
+            case Units.main:
+                mainValue += number;
+                if (mainValue >= maxValuePerUnit) mainValue = maxValuePerUnit;
+                else if (mainValue < 0) mainValue = 0;
+                break;
+            case Units.kilo:
+                kiloValue += number;
+                if (kiloValue >= maxValuePerUnit) kiloValue = maxValuePerUnit;
+                else if (kiloValue < 0) kiloValue = 0;
+                break;
+            case Units.mega:
+                megaValue += number;
+                if (megaValue >= maxValuePerUnit) megaValue = maxValuePerUnit;
+                else if (megaValue < 0) megaValue = 0;
+                break;
+        }
+
+        await valuesChanged();
+    }
+
+    async Task ClearUnit()
+    {
+        switch (SelectedUnit)
+        {
+            case Units.micro:
+                microValue = 0;
+                break;
+            case Units.mili:
+                miliValue = 0;
+                break;
+            case Units.main:
+                mainValue = 0;
+                break;
+            case Units.kilo:
+                kiloValue = 0;
+                break;
+            case Units.mega:
+                megaValue = 0;
+                break;
+        }
+
+        await valuesChanged();
+    }
+    
+    async Task ClearAll()
+    {
+        microValue = 0;
+        miliValue = 0;
+        mainValue = 0;
+        kiloValue = 0;
+        megaValue = 0;
+
+        await valuesChanged();
+    }
+
+    async Task valuesChanged()
+    {
+        var v = Calc();
+        await ValueChanged.InvokeAsync( v );
+    }
+
+    void UnitOfInputChanged(Units unit)
+    {
+        SelectedUnit = unit;
+        StateHasChanged();
+    }
+
+}

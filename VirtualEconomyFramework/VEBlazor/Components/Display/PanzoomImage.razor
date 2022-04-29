@@ -1,0 +1,32 @@
+﻿
+<Container Fluid Height="Height.Is100">
+    <Panzoom @ref="_panzoom" WheelMode="@(WheelMode.Custom)" OnWheel="@OnWheel">
+        <div @ref="@context.ElementReference" class="panzoom" style="width: @(InitWidth)px; height: @(InitHeight)px; margin: 0 auto;">
+            <Image Source="@Source" Text="No image found" Fluid />
+        </div>
+    </Panzoom>
+</Container>
+
+@code {
+    [Parameter] public string Source { get; set; } = string.Empty;
+    [Parameter] public int InitWidth { get; set; } = 400;
+    [Parameter] public int InitHeight { get; set; } = 400;
+
+    Panzoom? _panzoom;
+
+    async Task OnResetClick( MouseEventArgs args )
+    {
+        if ( _panzoom != null )
+            await _panzoom.ResetAsync();
+    }
+
+    async Task OnWheel( CustomWheelEventArgs args )
+    {
+        if ( !args.ShiftKey )
+        {
+            return;
+        }
+        if ( _panzoom != null )
+            await _panzoom.ZoomWithWheelAsync( args );
+    }
+}

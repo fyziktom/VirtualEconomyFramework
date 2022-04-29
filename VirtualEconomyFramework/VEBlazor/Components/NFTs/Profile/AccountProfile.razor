@@ -1,0 +1,72 @@
+﻿@using VEDriversLite.NFT
+
+@if ( profile != null )
+{
+    <Card Height="Height.Is100">
+        <CardHeader TextAlignment="TextAlignment.Center">Profile</CardHeader>
+        <CardBody Height="Height.Is100">
+            <Row>
+                <Column Flex="Flex.AlignItems.Center.JustifyContent.Center" Height="Height.Is100">
+                    <Figure Size="FigureSize.Is128x128">
+                        <FigureImage Source ="@profile.ImageLink" Rounded/>
+                        @if (!string.IsNullOrEmpty(profile.Nickname))
+                        {
+                            <FigureCaption TextAlignment="TextAlignment.Center">@profile.Nickname</FigureCaption>
+                        }
+                    </Figure>
+                </Column>
+                <Column Height="Height.Is100">
+                    <Row>
+                        <Column>
+                            <Heading TextAlignment="TextAlignment.Center" Size="HeadingSize.Is4">@((profile.Name == "" && profile.Surname == "") ? "No Name" : $"{profile.Name} {profile.Surname}")</Heading>
+                        </Column>
+                    </Row>
+                    <Divider DividerType="DividerType.TextContent" Text="Bio" />
+                    <Row>
+                        <Column Flex="Flex.JustifyContent.Center">
+                            <Text TextAlignment="TextAlignment.Center">@(profile.Description == "" ? "No Bio" : profile.Description)</Text>
+                        </Column>
+                    </Row>                    
+                </Column>
+            </Row>
+        </CardBody>
+        <CardFooter>
+            <Row Flex="Flex.AlignItems.End" Margin="Margin.Is3.FromTop">
+                <Button Margin="Margin.Is3.FromTop.Is1.FromBottom" Color="Color.Light" Clicked="@OnEditProfile" Block><Icon Name="IconName.Edit" />&nbsp;Edit</Button>
+            </Row>
+        </CardFooter>
+    </Card>
+}
+
+@if (profile != null)
+{
+<EditProfile @ref="@EditProfileRef"
+             NFT="@profile"
+             Name="@profile.Name"
+             Surname="@profile.Surname"
+             Nickname="@profile.Nickname"
+             Description="@profile.Description"
+             NFTChanged="@NFTChangedHandler" />
+}
+
+@code {
+    private EditProfile? EditProfileRef;
+
+    [Parameter]
+    public INFT Profile { get; set; } = new ProfileNFT( "" );
+    public ProfileNFT? profile
+    {
+        get => ( Profile.Type == NFTTypes.Profile ) ? ( Profile as ProfileNFT ) : new ProfileNFT( "" );
+    }
+
+    async Task OnEditProfile()
+    {
+        if (EditProfileRef != null)
+            await EditProfileRef.Show();
+    }
+
+    void NFTChangedHandler( INFT e )
+    {
+        Profile = e;
+    }
+}

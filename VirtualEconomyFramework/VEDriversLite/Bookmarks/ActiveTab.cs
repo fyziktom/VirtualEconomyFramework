@@ -130,17 +130,25 @@ namespace VEDriversLite.Bookmarks
                 foreach (var utxo in utxos_segment)
                 {
                     txinfotasks.Enqueue(NeblioTransactionHelpers.GetTransactionInfo(utxo.Txid));
-                    var tokid = utxo.Tokens?.FirstOrDefault()?.TokenId;
-                    if (!string.IsNullOrEmpty(tokid))
+                    var tok = utxo.Tokens?.FirstOrDefault();
+                    var tokid = tok?.TokenId;
+                    var tokamount = tok?.Amount;
+
+                    if (!string.IsNullOrEmpty(tokid) &&
+                        tokamount != null &&
+                        tokamount == 1 &&
+                        NFTHelpers.AllowedTokens.Contains(tokid))
                     {
                         if (!VEDLDataContext.NFTCache.ContainsKey(utxo.Txid))
+                        {
                             txinfotasks.Enqueue(NeblioTransactionHelpers.GetTokenMetadataOfUtxoCache(tokid, utxo.Txid));
+                        }
                     }
                 }
 
                 var tasks = new ConcurrentQueue<Task>();
                 var added = 0;
-                var paralelism = 10;
+                var paralelism = 5;
                 while (txinfotasks.Count > 0)
                 {
                     if (txinfotasks.TryDequeue(out var tsk))

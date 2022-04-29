@@ -1,0 +1,111 @@
+﻿@inherits NFTComponentBase;
+@inject AppData AppData
+
+<Card Margin="Margin.Is4.FromBottom">
+    <CardBody>
+        <CardTitle Size="5">Actions</CardTitle>
+        @if (AppData.AllowWorkTabs && !HideOpenInWorkTabButton)
+        {                                
+        <Row Margin="Margin.Is2.FromBottom">
+            <Column>
+                <Button Color="Color.Primary" Clicked=@OpenNFTInWorkTab Block>
+                    <Icon Name="IconName.FolderOpen" />
+                    Open In Work Tab
+                </Button>
+            </Column>
+        </Row>
+        }
+        
+        <OwnershipQRCode DisplayButton="true" Address="@Address" IsSubAccount="@IsSubAccount" NFT="@NFT" />
+        
+        @if ( IsOwnNFT && AppData.IsAccountLoaded) 
+        { 
+            <Row Margin="Margin.Is3.FromTop"> 
+                @if (AppData.AllowSend )
+                {                
+                <Column> 
+                    <Button Color="Color.Primary" Clicked=@SendNFT Block> 
+                        <Icon Name="IconName.Mail" /> 
+                        Send 
+                    </Button> 
+                </Column> 
+                }
+                @if (AppData.AllowDestroy )
+                {
+                <Column> 
+                    <Button Color="Color.Danger" Clicked=@DestroyNFT Block> 
+                        <Icon Name="IconName.Delete" /> 
+                        Recycle 
+                    </Button> 
+                </Column> 
+                }
+            </Row> 
+            @if (AppData.AllowSend )
+            {
+                <Row Margin="Margin.Is2.FromTop">
+                    <Column> 
+                        <Button Color="Color.Primary" Clicked=@SetNFTPriceAction Block> 
+                            <Icon Name="IconName.DollarSign" /> 
+                            Set Price 
+                        </Button> 
+                    </Column> 
+                </Row>
+            }            
+        } 
+    </CardBody>
+</Card>
+
+<DestroyNFT @ref=DestroyNFTModalComponent
+            NFT="@NFT"
+            Address="@Address"
+            IsSubAccount="@IsSubAccount"
+            NFTSent="NFTDestroyedHandler" />
+            
+<SendNFT @ref=SendNFTModalComponent
+         NFT="@NFT"
+         Address="@Address"
+         IsSubAccount="@IsSubAccount"
+         NFTSent="NFTSendHandler" />
+         
+<SetNFTPrice @ref=SetPriceNFTModalComponent
+         NFT="@NFT"
+         Address="@Address"
+         IsSubAccount="@IsSubAccount"
+         NFTSent="NFTSendHandler" />
+         
+@code {
+
+    DestroyNFT? DestroyNFTModalComponent;
+    SendNFT? SendNFTModalComponent;
+    SetNFTPrice? SetPriceNFTModalComponent;
+    
+    void SendNFT()
+    {
+        if ( NFT == null )
+            return;
+        SendNFTModalComponent?.ShowSendNFTModal();
+    }
+    void SetNFTPriceAction()
+    {
+        if ( NFT == null )
+            return;
+        SetPriceNFTModalComponent?.Show();
+    }
+
+    void DestroyNFT()
+    {
+        if ( NFT == null )
+            return;
+        DestroyNFTModalComponent?.ShowDestroyNFTModal();
+    }
+    public async Task NFTSendHandler( NFTSentResultDto e )
+    {
+        SendNFTModalComponent?.HideSendNFTModal();
+        await NFTSent.InvokeAsync( e );
+    }
+    public async Task NFTDestroyedHandler( NFTSentResultDto e )
+    {
+        DestroyNFTModalComponent?.HideDestroyNFTModal();
+        await NFTSent.InvokeAsync( e );
+    }
+}

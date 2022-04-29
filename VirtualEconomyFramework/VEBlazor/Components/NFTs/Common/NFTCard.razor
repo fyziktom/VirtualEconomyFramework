@@ -1,0 +1,72 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@using VEDriversLite.NFT.Dto
+@inject AppData AppData
+@inherits NFTComponentBase
+
+@if ( NFT != null )
+{
+    <Card Margin="Margin.Is4.FromBottom" Style="min-width:200px; max-width:300px;">
+        @if (actualFileType == DataItemType.Image)
+        {
+            <CardImage Source="@actualImageLink" Alt="No image" Style="max-height:200px;" @onclick="@(async () => await OpenImageDetailModal.InvokeAsync(NFT))" />
+        }
+        else if (actualFileType == DataItemType.AVMedia)
+        {
+            <CardImage Source="_content/VEBlazor/images/blankvideo.png" Alt="No image" Style="max-height:200px;" @onclick="@(async () => await OpenImageDetailModal.InvokeAsync(NFT))" />
+        }
+        else if (actualFileType == DataItemType.PDF)
+        {
+            <CardImage Source="_content/VEBlazor/images/pdf-image.png" Alt="No image" Style="max-height:200px;" @onclick="@(async () => await OpenImageDetailModal.InvokeAsync(NFT))" />
+        }
+        else if (actualFileType == DataItemType.JSON)
+        {
+            <CardImage Source="_content/VEBlazor/images/json-image.png" Alt="No image" Style="max-height:200px;" @onclick="@(async () => await OpenImageDetailModal.InvokeAsync(NFT))" />
+        }
+        else if (actualFileType == DataItemType.HTML)
+        {
+            <CardImage Source="_content/VEBlazor/images/html-image.png" Alt="No image" Style="max-height:200px;" @onclick="@(async () => await OpenImageDetailModal.InvokeAsync(NFT))" />
+        }
+        else if (actualFileType == DataItemType.Mermaid)
+        {
+            <CardImage Source="_content/VEBlazor/images/mermaid-image.png" Alt="No image" Style="max-height:200px;" @onclick="@(async () => await OpenImageDetailModal.InvokeAsync(NFT))" />
+        }
+        <CardBody>
+            @*<Figure Size="FigureSize.Is16x16" Position="Position.Absolute.Top.Is0.Start.Is0">
+                <FigureImage Source="@(GetTokenImage())" />
+            </Figure>*@
+            <CardTitle Size="5" TextOverflow="TextOverflow.Truncate">
+                @NFT.Name
+            </CardTitle>
+            <CardText>
+                <Small>@NFT.Description</Small>
+            </CardText>
+            <CardText>
+                <Tags NFTType="@NFT.Type" 
+                      TagsList="@NFT.TagsList" 
+                      TokenId="@NFT.TokenId" 
+                      IsGallery="@(NFT.DataItems.Count > 1 ? true : false)" 
+                      IsOfferedToSell="@NFT.PriceActive" />
+            </CardText>
+            @ChildContent
+        </CardBody>
+        <CardFooter>
+            <Button Color="Color.Primary" Clicked="@(async () => await OpenNFTDetailsRequest.InvokeAsync(NFT))" Block>
+                <Icon Name="IconName.Info" />
+            </Button>
+        </CardFooter>
+    </Card>
+}
+      
+@code {
+
+    [Parameter] public EventCallback<INFT> OpenImageDetailModal { get; set; }
+
+    string GetTokenImage()
+    {
+        if (AppData.Account.TokensSupplies.TryGetValue(NFT.TokenId, out var tokenSupply))
+            return tokenSupply.ImageUrl;
+        else
+            return string.Empty;
+    }
+}

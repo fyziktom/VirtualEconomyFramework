@@ -1,0 +1,236 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@using VEDriversLite.NFT.Dto
+@inject AppData AppData
+@inherits NFTComponentBase
+
+@if ( ReceiptsNFTs.Count() == 0 )
+{
+    <Heading Size="HeadingSize.Is5" Margin="Margin.Is3.FromTop"> No NFT Receipts found. </Heading>
+}
+else
+{
+    <Heading Size="HeadingSize.Is5" Margin="Margin.Is3.FromTop">Number Of NFT Receipts: @ReceiptsNFTs.Count()</Heading>
+
+    @foreach ( var nft in NFTs )
+    {
+        var n = nft as ReceiptNFT;
+        @if (n != null)
+        {
+        <Row>
+            <Column Flex="Flex.JustifyContent.Center.AlignContent.Center" ColumnSize="ColumnSize.Is1">
+                    <Icon Name="IconName.ArrowUp" TextColor="TextColor.Success" />
+            </Column>
+            <Column>
+                <Field>
+                    <FieldLabel>Buyer</FieldLabel>
+                    <Span Display="Display.InlineBlock.OnMobile.None.OnTablet">
+                        @(n.Buyer.Length > 8 ? n.Buyer.Substring(0,8) + "..." : n.Buyer)
+                    </Span>
+                    <Span Display="Display.None.OnMobile.InlineBlock.OnTablet.InlineBlock.OnDesktop.None.OnFullHD">
+                        @(n.Buyer.Length > 15 ? n.Buyer.Substring(0,15) + "..." : n.Buyer)
+                    </Span>
+                    <Span Display="Display.None.OnMobile.InlineBlock.OnFullHD">
+                        @(n.Buyer.Length > 30 ? n.Buyer.Substring(0,30) + "..." : n.Buyer)
+                    </Span>
+                    <FieldHelp>@n.Time</FieldHelp>
+                </Field>
+            </Column>
+            @if (n.DataItems.Count > 0 || !string.IsNullOrEmpty(n.ImageLink))
+            {
+                var t = ActualFileTypeFromNFT(n);
+                <Column>
+                    @if (t == DataItemType.Image)
+                    {
+                        var img = ActualImageLinkFromNFT(n);
+                        <Figure Size="@FigureSize.Is64x64">
+                            <FigureImage Source="@((string.IsNullOrEmpty(img) || img == NFTBase.EmptyImage) ? n.ImageLink : img)" AlternateText="empty-64x64" />
+                            <FigureCaption TextAlignment="TextAlignment.Center">@n.Name</FigureCaption>
+                        </Figure>
+                    }
+                    else if (t == DataItemType.AVMedia)
+                    {
+                        <Figure Size="@FigureSize.Is64x64">
+                            <FigureImage Source="_content/VEBlazor/images/blankvideo.png" AlternateText="empty-64x64" />
+                            <FigureCaption TextAlignment="TextAlignment.Center">@n.Name</FigureCaption>
+                        </Figure>
+                    }
+                    else if (t == DataItemType.PDF)
+                    {
+                        <Figure Size="@FigureSize.Is64x64">
+                            <FigureImage Source="_content/VEBlazor/images/pdf-image.png" AlternateText="empty-64x64" />
+                            <FigureCaption TextAlignment="TextAlignment.Center">@n.Name</FigureCaption>
+                        </Figure>                    
+                    }
+                </Column>
+            }
+            <Column ColumnSize="ColumnSize.Is12.OnTablet.Is2.OnDesktop">
+                <Button Color="Color.Light" Size="Size.Small" Clicked="() => ShowNFTDetails(n)" Float="Float.End">
+                    <Icon Name="IconName.Info" Margin="Margin.Is1.FromEnd" /><Span Display="Display.None.OnMobile.InlineBlock.OnTablet">Details</Span>
+                </Button>
+                <Button Color="Color.Danger" Size="Size.Small" Clicked=@(() => DestroyNFT(n)) Margin="Margin.Is2.FromStart" Float="Float.End"> 
+                    <Icon Name="IconName.Delete" /> 
+                    <Span Display="Display.None.OnMobile.InlineBlock.OnTablet">Recycle</Span>
+                </Button> 
+            </Column> 
+        </Row>
+         <Row Display="Display.Block.OnTablet.None.OnDesktop" Margin="Margin.Is2.FromBottom"><Column><Divider /></Column></Row>
+        }
+    }
+    <Row>
+        <Column Flex="Flex.JustifyContent.Center">
+            <Pagination>
+                <PaginationItem Disabled="@IsPageNavigationDisabled(PREVIOUS)" @onclick="Previous">
+                    <PaginationLink>
+                        <span aria-hidden="true">«</span>
+                    </PaginationLink>
+                </PaginationItem>
+                @{
+                    for ( var i = 1; i <= pageItems; i++ )
+                    {
+                        var pageNumberAsString = i.ToString();
+                        <PaginationItem @key="pageNumberAsString" Active="@IsActive(pageNumberAsString)">
+                            <PaginationLink Page="@pageNumberAsString" Clicked="SetActive">
+                                @pageNumberAsString
+                            </PaginationLink>
+                        </PaginationItem>
+                    }
+                }
+                <PaginationItem Disabled="@IsPageNavigationDisabled(NEXT)" @onclick="Next">
+                    <PaginationLink>
+                        <span aria-hidden="true">»</span>
+                    </PaginationLink>
+                </PaginationItem>
+            </Pagination>
+        </Column>
+    </Row>
+}
+
+<OpenNFTDetailsFactory @ref="openNFTDetailsFactory"
+                       Address="@Address"
+                       NFT="@nftInDetails"  
+                       HideOpenInWorkTabButton="false"/>
+
+<DestroyNFT @ref=DestroyNFTModalComponent
+            NFT="@nftInDetails"
+            Address="@Address"
+            IsSubAccount="@IsSubAccount"
+            NFTSent="NFTDestroyedHandler" />
+          
+@code {
+
+    private int PerPage { get; set; } = 10;
+    private int Offset { get; set; } = 0;
+
+    
+    public IEnumerable<INFT> ReceiptsNFTs
+    {
+        get
+        {
+            //Load();
+            return AppData.Account.NFTs.Where(n => n.Type == NFTTypes.Receipt) ?? new List<INFT>();   
+        }
+    }
+    public IEnumerable<INFT> NFTs
+    {
+        get
+        {
+            //Load();
+            return AppData.Account.NFTs.Where(n => n.Type == NFTTypes.Receipt).Skip( Offset * PerPage ).Take( PerPage ) ?? new List<INFT>();   
+        }
+    }
+    private const string PREVIOUS = "previous";
+    private const string NEXT = "next";
+    private string currentPage = "1";
+    private int pageItems = 5;
+    INFT nftInDetails = new ImageNFT("");
+    OpenNFTDetailsFactory? openNFTDetailsFactory;    
+    DestroyNFT? DestroyNFTModalComponent;
+    
+    private bool IsActive( string page )
+        => currentPage == page;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        Load();
+    }
+
+    public void Load()
+    {
+        var pit = (double)ReceiptsNFTs.Count() / PerPage + ( ReceiptsNFTs.Count() % PerPage > 0 ? 1 : 0 );
+        var cnt = AppData.Account.ReceivedReceipts.Count;
+        if (pit > 5) pit = 5;
+        pageItems = Convert.ToInt32( pit > 1 ? pit : 1 );
+        StateHasChanged();
+    }
+
+    private async Task ShowNFTDetails( INFT nft )
+    {
+        if (nft != null && openNFTDetailsFactory != null)
+        {        
+            nftInDetails = nft;
+            await openNFTDetailsFactory?.OpenNFTDetails(nftInDetails);
+        }
+    }
+
+    // Pagination section
+    private async Task HandlePaginationChanged( int offset )
+    {
+        Offset = offset;
+        StateHasChanged();
+    }
+
+    private bool IsPageNavigationDisabled( string navigation )
+    {
+        if ( navigation.Equals( PREVIOUS ) )
+        {
+            return currentPage.Equals( "1" );
+        }
+        else if ( navigation.Equals( NEXT ) )
+        {
+            return currentPage.Equals( pageItems.ToString() );
+        }
+        return false;
+    }
+
+    private async Task Previous()
+    {
+        var currentPageAsInt = int.Parse( currentPage );
+        if ( currentPageAsInt > 1 )
+        {
+            currentPage = ( currentPageAsInt - 1 ).ToString();
+            await HandlePaginationChanged( Offset - 1 );
+        }
+    }
+
+    private async Task Next()
+    {
+        var currentPageAsInt = int.Parse( currentPage );
+        if ( currentPageAsInt < pageItems )
+        {
+            currentPage = ( currentPageAsInt + 1 ).ToString();
+            await HandlePaginationChanged( Offset + 1 );
+        }
+    }
+
+    private async void SetActive( string page )
+    {
+        currentPage = page;
+        await HandlePaginationChanged( int.Parse( page ) - 1 );
+    }
+
+    void DestroyNFT(INFT nft)
+    {
+        if ( nft == null )
+            return;
+        nftInDetails = nft;   
+        DestroyNFTModalComponent?.ShowDestroyNFTModal(nftInDetails);
+    }
+    public async Task NFTDestroyedHandler( NFTSentResultDto e )
+    {
+        DestroyNFTModalComponent?.HideDestroyNFTModal();
+        await NFTSent.InvokeAsync( e );
+    }
+}

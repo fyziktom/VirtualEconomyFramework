@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using NBitcoin;
 using NBitcoin.DataEncoders;
-using VEDriversLite.Builder;
 using VEDriversLite.NFT;
 
 namespace VEDriversLite.Security
@@ -295,11 +294,11 @@ namespace VEDriversLite.Security
         /// <returns></returns>
         public static async Task<(bool, string)> GetSharedSecret(string bobAddress, string key, PubKey bobPublicKey = null)
         {
-            if (string.IsNullOrEmpty(key) || (!string.IsNullOrEmpty(bobAddress) && bobPublicKey == null))
+            if (string.IsNullOrEmpty(key) || (string.IsNullOrEmpty(bobAddress) && bobPublicKey == null))
                 return (false, "Input parameters cannot be empty or null.");
             try
             {
-               var secret =  new BitcoinSecret(key, NeblioTransactionBuilder.NeblioNetwork);
+               var secret =  new BitcoinSecret(key, NeblioTransactionHelpers.Network);
                 return await GetSharedSecret(bobAddress, secret, bobPublicKey);
             }
             catch(Exception ex)
@@ -317,7 +316,7 @@ namespace VEDriversLite.Security
         /// <returns></returns>
         public static async Task<(bool, string)> GetSharedSecret(string bobAddress, BitcoinSecret secret, PubKey bobPublicKey = null)
         {
-            if (secret == null || (!string.IsNullOrEmpty(bobAddress) && bobPublicKey == null))
+            if (secret == null || (string.IsNullOrEmpty(bobAddress) && bobPublicKey == null))
                 return (false, "Input parameters cannot be empty or null.");
             
             var aliceadd = secret.PubKey.GetAddress(ScriptPubKeyType.Legacy, NeblioTransactionHelpers.Network);
@@ -357,7 +356,7 @@ namespace VEDriversLite.Security
         {
             try
             {
-                var secret = new BitcoinSecret(key, NeblioTransactionBuilder.NeblioNetwork);
+                var secret = new BitcoinSecret(key, NeblioTransactionHelpers.Network);
                 return await EncryptStringWithSharedSecret(message, bobAddress, secret, sharedkey);
             }
             catch (Exception ex)
@@ -482,7 +481,7 @@ namespace VEDriversLite.Security
         {
             try
             {
-                var secret = new BitcoinSecret(key, NeblioTransactionBuilder.NeblioNetwork);
+                var secret = new BitcoinSecret(key, NeblioTransactionHelpers.Network);
                 return await DecryptStringWithSharedSecret(emessage, bobAddress, secret);
             }
             catch (Exception ex)

@@ -166,8 +166,8 @@
             try
             {
                 var am = DogeTransactionHelpers.ParseTotalSentValue(txinfo);
-                if (am.Item1)
-                    txvalue = am.Item2;
+                if (am.Success)
+                    txvalue = (double)am.Value;
             }
             catch (Exception ex)
             {
@@ -175,10 +175,10 @@
             }
 
             var msg = DogeTransactionHelpers.ParseDogeMessage(txinfo);
-            if (msg.Item1)
+            if (msg.Success)
             {
                 NFTTransaction = true;
-                NFTMessage = msg.Item2;
+                NFTMessage = msg.Value as string;
                 if (NFTMessage.Contains("ipfs"))
                 {
                     ImageLinkInTransaction = true;

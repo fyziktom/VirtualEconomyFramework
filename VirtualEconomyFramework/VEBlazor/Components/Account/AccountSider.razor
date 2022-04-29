@@ -1,0 +1,239 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@using VEDriversLite.Neblio
+@using VEDriversLite.Dto
+@using Newtonsoft.Json
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject AppData AppData
+@inject IJSRuntime JSRuntime
+@inherits AccountRelatedComponentBase
+
+<Row Margin="Margin.Is3.FromBottom.Is3.FromTop" Flex="Flex.JustifyContent.Between">
+    <Column>
+        <ErrorBoundary>
+            <AccountProfile Profile="@AppData.Account.Profile" />
+        </ErrorBoundary>
+    </Column>
+    <Column>
+        <AccountBalances NeblioBalance="@AppData.Account.TotalSpendableBalance"
+                         NeblioBalanceUnconfirmed="@AppData.Account.TotalUnconfirmedBalance"
+                         TokensBalance="@TokenSupply"
+                         BDPBalance="@BDPSupply"
+                         WDOGEBalance="@WDOGESupply"
+                         NFTsCount="@AppData.Account.NFTs.Count" />
+    </Column>
+    <Column>
+        <Card>
+            <CardHeader TextAlignment="TextAlignment.Center">Backup!</CardHeader>
+            <CardBody>
+                <CardText TextAlignment="TextAlignment.Center">@AppData.AppName is distributed app (dApp) for storing and creating NFTs using <Link To="https://nebl.io/" Target="Target.Blank">Neblio Blockchain</Link> and <Link To="https://veframework.com/" Target="Target.Blank">VEFramework</Link>.</CardText>              
+                <CardText TextAlignment="TextAlignment.Center">Blockchain address and key cannot be restored by 3rd party. Important to do backup.</CardText>              
+                <CardText TextAlignment="TextAlignment.Center">Please backup your private key by storing the backup file securely. This can be used to restore your account at any time.</CardText>              
+            </CardBody>
+            <CardFooter>
+                <Button Color="Color.Light" Clicked="@Backup" Block>Backup</Button>
+            </CardFooter>
+        </Card>
+        
+    </Column>
+</Row>
+
+<Row>
+    <Column>
+        <Accordion>
+            <Collapse Visible="@collapse1Visible">
+                <CollapseHeader Padding="Padding.Is0.FromBottom">
+                    <Row>
+                        <Column>
+                            <Button Clicked="@(()=>collapse1Visible = !collapse1Visible)">
+                                <Icon Name="@(collapse1Visible ? IconName.AngleUp : IconName.AngleDown)" />
+                                Bookmarks
+                            </Button>
+                        </Column>
+                        <Column>
+                            <Button Color="Color.Light" Clicked="@addNewBookmark" Float="Float.End">
+                                <Icon Name="IconName.Add" /> Add
+                            </Button>
+
+                            <BookmarkIcon @ref="bookmarkIcon"
+                                          HideIcon="true"
+                                          IsEditing="false"
+                                          FieldForAddress="true"
+                                          BookmarkChanged="StateHasChanged" />
+                        </Column>
+                    </Row>
+                    <Heading Size="HeadingSize.Is5">
+
+                    </Heading>
+                </CollapseHeader>
+                <CollapseBody>
+                    <BookmarksManagerList />
+                </CollapseBody>
+            </Collapse>
+            <Collapse Visible="@collapseNFTSalesVisible">
+                <CollapseHeader Padding="Padding.Is0.FromBottom">
+                    <Row>
+                        <Column>
+                            <Button Clicked="@(()=>collapseNFTSalesVisible = !collapseNFTSalesVisible)">
+                                <Icon Name="@(collapseNFTSalesVisible ? IconName.AngleUp : IconName.AngleDown)" />
+                                NFT Sales
+                            </Button>
+                        </Column>
+                    </Row>
+                </CollapseHeader>
+                <CollapseBody>
+                    <Tabs SelectedTab="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged">
+                        <Items>
+                            <Tab Name="payments">Payments</Tab>
+                            <Tab Name="receipts">Receipts</Tab>
+                        </Items>
+                        <Content>
+                            <TabPanel Name="payments">
+                                <NFTPaymentsList @ref="nftPaymentsList" Address="@Address" />
+                            </TabPanel>
+                            <TabPanel Name="receipts">
+                                <NFTReceiptsList @ref="nftReceiptsList" Address="@Address" />
+                            </TabPanel>
+                        </Content>
+                    </Tabs>
+                                        
+                </CollapseBody>
+            </Collapse>
+            <Collapse Visible="@collapse2Visible">
+                <CollapseHeader>
+                    <Row>
+                        <Column>
+                            <Button Clicked="@(()=>collapse2Visible = !collapse2Visible)">
+                                <Icon Name="@(collapse2Visible ? IconName.AngleUp : IconName.AngleDown)" />
+                                Transactions History
+                            </Button>
+                        </Column>
+                        <Column>
+                            <Button Color="Color.Light" Clicked="@addNewTransaction" Float="Float.End">
+                                <Icon Name="IconName.Add" /> Add
+                            </Button>
+                        </Column>
+                    </Row>
+                </CollapseHeader>
+                <CollapseBody>
+                    <TransactionsList Address="@AppData.Account.Address" IsSubAccount="false" />
+                </CollapseBody>
+            </Collapse>
+        </Accordion>
+    </Column>
+</Row>
+
+<SendNeblioTransaction @ref="sendNeblioTxRef" Address="@Address" IsSubAccount="@IsSubAccount" />
+
+@code {
+
+    public int TokenSupply
+    {
+        get
+        {
+            if ( AppData.Account.TokensSupplies.TryGetValue( NFTHelpers.TokenId, out var tokens ) )
+                return Convert.ToInt32( tokens.Amount );
+            else
+                return 0;
+        }
+    }
+    public int BDPSupply
+    {
+        get
+        {
+            if ( AppData.Account.TokensSupplies.TryGetValue( NFTHelpers.BDPTokenId, out var tokens ) )
+                return Convert.ToInt32( tokens.Amount );
+            else
+                return 0;
+        }
+    }
+    public int WDOGESupply
+    {
+        get
+        {
+            if ( AppData.Account.TokensSupplies.TryGetValue( NFTHelpers.WDOGETokenId, out var tokens ) )
+                return Convert.ToInt32( tokens.Amount );
+            else
+                return 0;
+        }
+    }
+
+    bool collapse1Visible = false;
+    bool collapse2Visible = true;
+    bool collapseNFTSalesVisible = true;
+    string selectedTab = "payments";
+
+    BookmarkIcon? bookmarkIcon;
+    SendNeblioTransaction? sendNeblioTxRef;
+    NFTReceiptsList? nftReceiptsList;
+    NFTPaymentsList? nftPaymentsList;
+
+    protected override async Task OnInitializedAsync()
+    {
+        AppData.Account.Refreshed -= RefreshedHandler;
+        AppData.Account.Refreshed += RefreshedHandler;   
+        nftPaymentsList?.Load();
+        await base.OnInitializedAsync();
+    }
+
+    void RefreshedHandler(object? sender, EventArgs e)
+    {
+        OnSelectedTabChanged(selectedTab);
+        StateHasChanged();
+    }
+
+    void OnSelectedTabChanged( string name )
+    {
+        selectedTab = name;
+        if (name == "payments")
+            nftPaymentsList?.Load();
+        else if (name == "receipts")
+            nftReceiptsList?.Load();
+    }    
+    
+    void addNewTransaction()
+    {
+        sendNeblioTxRef?.Show();
+    }  
+    async Task addNewBookmark()
+    {
+        if (bookmarkIcon != null)
+            await bookmarkIcon.ShowAddBookmarkModal();
+    }    
+
+    string filename = "";
+    private string backupData = "";
+
+    async Task Backup()
+    {
+        var bookmarks = await localStorage.GetItemAsync<string>( "bookmarks" );
+        var subAccounts = await localStorage.GetItemAsync<string>( "subAccounts" );
+        var browserTabs = await localStorage.GetItemAsync<string>( "browserTabs" );
+        var messageTabs = await localStorage.GetItemAsync<string>( "messageTabs" );
+        var address = await localStorage.GetItemAsync<string>( "address" );
+        var key = await localStorage.GetItemAsync<string>( "key" );
+
+        var dto = new BackupDataDto();
+        if ( !string.IsNullOrEmpty( bookmarks ) )
+            dto.Bookmarks = bookmarks;
+        if ( !string.IsNullOrEmpty( browserTabs ) )
+            dto.BrowserTabs = browserTabs;
+        if ( !string.IsNullOrEmpty( messageTabs ) )
+            dto.MessageTabs = messageTabs;
+        if ( !string.IsNullOrEmpty( subAccounts ) )
+            dto.SubAccounts = subAccounts;
+        if ( !string.IsNullOrEmpty( address ) )
+            dto.Address = address;
+        if ( !string.IsNullOrEmpty( key ) )
+            dto.Key = key;
+
+        filename = "Backup-Export-" + AppData.Account.Address + "-" + DateTime.UtcNow.ToString( "dd-MM-yyyyThh_mm_ss" ) + ".txt";
+        backupData = JsonConvert.SerializeObject( dto );
+
+        if ( string.IsNullOrEmpty( backupData ) )
+            return;
+
+        await JSRuntime.InvokeVoidAsync( "veblazor.downloadText", backupData, filename );
+
+    }
+}

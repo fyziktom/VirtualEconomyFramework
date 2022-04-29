@@ -1,0 +1,72 @@
+﻿@inject AppData AppData
+
+<Card Height="Height.Is100">
+    <CardHeader TextAlignment="TextAlignment.Center">Balances</CardHeader>
+    <CardBody>
+        <Field>
+            <FieldLabel>Your Address</FieldLabel>
+            <Tooltip Text="Click to copy to clipboard" Placement="TooltipPlacement.Bottom">                   
+                <Heading Size="HeadingSize.Is6" CopyToClipboard="true" TextOverflow="TextOverflow.Wrap">@AppData.Account.Address</Heading>
+            </Tooltip> 
+        </Field>
+        <CardText>
+           <Row>
+               <Column>
+                   Neblio: @(Math.Round(NeblioBalance, 8)) NEBL <Figure Size="FigureSize.Is16x16"><FigureImage Source="@AppData.NeblioImageLink" /></Figure>
+               </Column>
+           </Row>
+           <Row>
+               <Column>
+                   Unconfirmed: @(Math.Round(NeblioBalanceUnconfirmed, 8)) NEBL <Figure Size="FigureSize.Is16x16"><FigureImage Source="@AppData.NeblioImageLink" /></Figure>
+               </Column>
+           </Row>
+           <Row>
+               <Column>
+                   Tokens: @TokensBalance VENFT <Figure Size="FigureSize.Is16x16"><FigureImage Source="@AppData.VENFTImageLink" /></Figure>
+               </Column>
+           </Row>
+            @if (AppData.AppTokenId == VEDriversLite.NFT.NFTHelpers.BDPTokenId)
+            {
+                <Row>
+                    <Column>
+                       Tokens: @BDPBalance BDP <Figure Size="FigureSize.Is16x16"><FigureImage Source="@AppData.BDPImageLink" /></Figure>
+                   </Column>
+                </Row>
+            }
+            else if (AppData.AppTokenId == VEDriversLite.NFT.NFTHelpers.WDOGETokenId)
+            {
+                <Row>
+                    <Column>
+                       Tokens: @WDOGEBalance WDOGE <Figure Size="FigureSize.Is16x16"><FigureImage Source="@AppData.WDOGEImageLink" /></Figure>
+                   </Column>
+                </Row>
+            }
+            <Row>
+               <Column>
+                   NFTs: @NFTsCount
+               </Column>
+           </Row>           
+        </CardText>
+    </CardBody>
+</Card>
+
+@code {
+    [Parameter] public double NeblioBalance { get; set; } = 0.0;
+    [Parameter] public double NeblioBalanceUnconfirmed { get; set; } = 0.0;
+    [Parameter] public int TokensBalance { get; set; } = 0;
+    [Parameter] public int BDPBalance { get; set; } = 0;
+    [Parameter] public int WDOGEBalance { get; set; } = 0;
+    [Parameter] public int NFTsCount { get; set; } = 0;
+    
+    protected override void OnAfterRender(bool firstRender)
+    {
+        AppData.Account.Refreshed -= RefreshedHandler;
+        AppData.Account.Refreshed += RefreshedHandler;      
+        base.OnAfterRender(firstRender);
+    }
+
+    private void RefreshedHandler(object? sender, EventArgs e)
+    {
+        this.StateHasChanged();
+    }
+}

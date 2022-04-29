@@ -159,6 +159,9 @@
 
     private async Task ShowRequestPaymentDialog()
     {
+        if (!AppData.ExchangePriceService.IsActive)
+            await AppData.ExchangePriceService.InitPriceService(ExchangeRatesAPITypes.Coingecko, Address, CurrencyTypes.NEBL);
+        AppData.RegisterPriceServiceEventHandler();
         showLinkDialogVisible = true;
         StateHasChanged();
     }

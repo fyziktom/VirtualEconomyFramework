@@ -35,69 +35,6 @@ namespace VEDriversLite
         private static readonly ConcurrentDictionary<string, GetTransactionInfoResponse> transactionDetails = new ConcurrentDictionary<string, GetTransactionInfoResponse>();
 
         /// <summary>
-        /// Function converts EncryptionKey (optionaly with password if it is not already loaded in ekey)
-        /// and returns BitcoinAddress and BitcoinSecret classes from NBitcoin
-        /// </summary>
-        /// <param name="ekey"></param>
-        /// <param name="password"></param>
-        /// <returns></returns>
-        public static (BitcoinAddress, BitcoinSecret) GetAddressAndKey(EncryptionKey ekey, string password)
-        {
-            var key = string.Empty;
-
-            if (ekey != null)
-            {
-                if (ekey.IsLoaded)
-                {
-                    if (ekey.IsEncrypted && string.IsNullOrEmpty(password) && !ekey.IsPassLoaded)
-                    {
-                        throw new Exception("Cannot send token transaction. Password is not filled and key is encrypted or unlock account!");
-                    }
-                    else if (!ekey.IsEncrypted)
-                    {
-                        key = ekey.GetEncryptedKey();
-                    }
-                    else if (ekey.IsEncrypted && (!string.IsNullOrEmpty(password) || ekey.IsPassLoaded))
-                    {
-                        if (ekey.IsPassLoaded)
-                        {
-                            key = ekey.GetEncryptedKey(string.Empty);
-                        }
-                        else
-                        {
-                            key = ekey.GetEncryptedKey(password);
-                        }
-                    }
-
-                    if (string.IsNullOrEmpty(key))
-                    {
-                        throw new Exception("Cannot send token transaction. Password is not filled and key is encrypted or unlock account!");
-                    }
-                }
-            }
-
-            if (!string.IsNullOrEmpty(key))
-            {
-                try
-                {
-                    BitcoinSecret loadedkey = Network.CreateBitcoinSecret(key);
-                    BitcoinAddress addressForTx = loadedkey.GetAddress(ScriptPubKeyType.Legacy);
-
-                    return (addressForTx, loadedkey);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("Cannot send token transaction!", ex);
-                    throw new Exception("Cannot send token transaction. cannot create keys!");
-                }
-            }
-            else
-            {
-                throw new Exception("Cannot send token transaction. Password is not filled and key is encrypted or unlock account!");
-            }
-        }
-
-        /// <summary>
         /// Function will sign transaction with provided key and broadcast with Neblio API
         /// </summary>
         /// <param name="transaction">NBitcoin Transaction object</param>
@@ -105,8 +42,18 @@ namespace VEDriversLite
         /// <param name="address">NBitcoin address - must match with the provided key</param>
         /// <param name="utxos">List of the input utxos</param>
         /// <returns>New Transaction Hash - TxId</returns>
-        private static async Task<string> SignAndBroadcast(Transaction transaction, BitcoinSecret key, BitcoinAddress address, ICollection<Utxo> utxos)
-        {
+        public static async Task<string> SignAndBroadcastTransaction(Transaction transaction, BitcoinSecret key, ICollection<Utxo> utxos)
+        {            
+            BitcoinAddress addressForTx = null;
+            if (key != null)
+            {
+                addressForTx = key.PubKey.GetAddress(ScriptPubKeyType.Legacy, Network);
+            }
+            else
+            {
+                throw new Exception("BitcoinSecret is null");
+            }
+
             // add coins
             List<ICoin> coins = new List<ICoin>();
             try
@@ -116,14 +63,14 @@ namespace VEDriversLite
                     if (transaction.Inputs.FirstOrDefault(i => (i.PrevOut.Hash == uint256.Parse(inp.TxId)) && i.PrevOut.N == (uint)inp.N) != null)
                     {
                         var val = (ulong)(Convert.ToDouble(inp.Value, CultureInfo.InvariantCulture) * FromSatToMainRatio);
-                        coins.Add(new Coin(uint256.Parse(inp.TxId), (uint)inp.N, new Money(val), address.ScriptPubKey));
+                        coins.Add(new Coin(uint256.Parse(inp.TxId), (uint)inp.N, new Money(val), addressForTx.ScriptPubKey));
                     }
                 }
 
                 // add signature to inputs before signing
                 foreach (var inp in transaction.Inputs)
                 {
-                    inp.ScriptSig = address.ScriptPubKey;
+                    inp.ScriptSig = addressForTx.ScriptPubKey;
                 }
             }
             catch (Exception ex)
@@ -175,6 +122,11 @@ namespace VEDriversLite
         /// <returns></returns>
         public static double CalcFee(int numOfInputs, int numOfOutputs, string customMessageInOPReturn, bool isTokenTransaction)
         {
+            if (numOfInputs <= 0)
+                numOfInputs = 1;
+            if (numOfOutputs <= 0)
+                numOfOutputs = 1;
+
             var basicFee = 1000; //0.00001 per 1 byte 
 
             // inputs
@@ -253,16 +205,16 @@ namespace VEDriversLite
             return (null, 0);
         }        
 
-        private static async Task<string> SendTransactions(SendTxData data, EncryptionKey ekey, ICollection<Utxo> utxos, bool withMessage = false)
+        private static Transaction GetTransactionObject(SendTxData data, BitcoinAddress addressForTx, ICollection<Utxo> utxos, bool withMessage = false)
         {
             if (data == null)
             {
                 throw new Exception("Data cannot be null!");
             }
 
-            if (ekey == null)
+            if (addressForTx == null)
             {
-                throw new Exception("Account cannot be null!");
+                throw new Exception("BitcoinAddress object cannot be null!");
             }
 
             // create receiver address
@@ -274,21 +226,6 @@ namespace VEDriversLite
             catch (Exception)
             {
                 throw new Exception("Cannot send transaction. cannot create receiver address!");
-            }
-
-            // load key and address
-            BitcoinSecret key;
-
-            BitcoinAddress addressForTx;
-            try
-            {
-                var k = GetAddressAndKey(ekey, data.Password);
-                key = k.Item2;
-                addressForTx = k.Item1;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
             }
 
             // create template for new tx from last one
@@ -326,22 +263,14 @@ namespace VEDriversLite
                 }                               
 
                 if (diffinSat > 0)
-                {
                     transaction.Outputs.Add(new Money(Convert.ToUInt64(diffinSat)), addressForTx.ScriptPubKey); // get diff back to sender address
-                }
             }
             catch (Exception ex)
             {
                 throw new Exception("Exception during creating outputs. " + ex.Message);
             }
-            try
-            {
-                return await SignAndBroadcast(transaction, key, addressForTx, utxos);
-            }
-            catch (Exception)
-            {
-                throw new Exception("Cannot Broadcast the dogecoin transaction. Trouble with Dogecoin API. ");
-            }
+
+            return transaction;
         }
 
         /// <summary>
@@ -351,9 +280,9 @@ namespace VEDriversLite
         /// <param name="ekey">Input EncryptionKey of the account</param>
         /// <param name="utxos">Optional input neblio utxo</param>
         /// <returns>New Transaction Hash - TxId</returns>
-        public static async Task<string> SendDogeTransactionAsync(SendTxData data, EncryptionKey ekey, ICollection<Utxo> utxos)
+        public static Transaction GetDogeTransactionAsync(SendTxData data, BitcoinAddress addressForTx, ICollection<Utxo> utxos)
         {
-            return await SendTransactions(data, ekey, utxos);            
+            return GetTransactionObject(data, addressForTx, utxos);            
         }
 
         /// <summary>
@@ -363,9 +292,9 @@ namespace VEDriversLite
         /// <param name="ekey">Input EncryptionKey of the account</param>
         /// <param name="utxos">Optional input neblio utxo</param>
         /// <returns>New Transaction Hash - TxId</returns>
-        public static async Task<string> SendDogeTransactionWithMessageAsync(SendTxData data, EncryptionKey ekey, ICollection<Utxo> utxos)
+        public static Transaction GetDogeTransactionWithMessageAsync(SendTxData data, BitcoinAddress addressForTx, ICollection<Utxo> utxos)
         {
-            return await SendTransactions(data, ekey, utxos, withMessage: true);
+            return GetTransactionObject(data, addressForTx, utxos, withMessage: true);
         }
 
         /// <summary>
@@ -377,17 +306,13 @@ namespace VEDriversLite
         /// <param name="password">Password for encrypted key if it is encrypted and locked</param>
         /// <param name="message">Custom message</param>
         /// <returns>New Transaction Hash - TxId</returns>
-        public static async Task<string> SendDogeTransactionWithMessageMultipleOutputAsync(Dictionary<string, double> receiverAmount, EncryptionKey ekey, ICollection<Utxo> utxos, string password = "", string message = "")
+        public static Transaction SendDogeTransactionWithMessageMultipleOutputAsync(Dictionary<string, double> receiverAmount, BitcoinAddress addressForTx, ICollection<Utxo> utxos, string password = "", string message = "")
         {
             if (receiverAmount == null)
-            {
                 throw new Exception("Receivers Dictionary cannot be null!");
-            }
 
-            if (ekey == null)
-            {
-                throw new Exception("Account cannot be null!");
-            }
+            if (addressForTx == null)
+                throw new Exception("BitcoinAddress object cannot be null!");
 
             // create receiver address
             Dictionary<string, BitcoinAddress> recsaddr = new Dictionary<string, BitcoinAddress>();
@@ -402,22 +327,6 @@ namespace VEDriversLite
             catch (Exception)
             {
                 throw new Exception("Cannot send transaction. cannot create receiver address!");
-            }
-
-
-            // load key and address
-            BitcoinSecret key;
-
-            BitcoinAddress addressForTx;
-            try
-            {
-                var k = GetAddressAndKey(ekey, password);
-                key = k.Item2;
-                addressForTx = k.Item1;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
             }
 
             // create template for new tx from last one
@@ -463,14 +372,7 @@ namespace VEDriversLite
             {
                 throw new Exception("Exception during creating outputs. " + ex.Message);
             }
-            try
-            {
-                return await SignAndBroadcast(transaction, key, addressForTx, utxos);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+           return transaction;
         }
 
         /// <summary>
@@ -478,22 +380,16 @@ namespace VEDriversLite
         /// </summary>
         /// <param name="txinfo"></param>
         /// <returns></returns>
-        public static (bool, double) ParseTotalSentValue(GetTransactionInfoResponse txinfo)
+        public static CommonReturnTypeDto ParseTotalSentValue(GetTransactionInfoResponse txinfo)
         {
             if (txinfo == null)
-            {
-                return (false, 0.0);
-            }
+                return CommonReturnTypeDto.GetNew<double>();
 
             if (txinfo.Success != "success")
-            {
-                return (false, 0.0);
-            }
+                return CommonReturnTypeDto.GetNew<double>();
 
             if (txinfo.Transaction.Vout == null || txinfo.Transaction.Vout.Count == 0)
-            {
-                return (false, 0.0);
-            }
+                return CommonReturnTypeDto.GetNew<double>();
 
             var value = 0.0;
             var vouts = txinfo.Transaction.Vout.ToList();
@@ -506,7 +402,8 @@ namespace VEDriversLite
                     value += v;
                 }
             }
-            return (true, value);
+
+            return CommonReturnTypeDto.GetNew(true, value);             
         }
 
         /// <summary>
@@ -514,22 +411,16 @@ namespace VEDriversLite
         /// </summary>
         /// <param name="txinfo"></param>
         /// <returns></returns>
-        public static (bool, string) ParseDogeMessage(GetTransactionInfoResponse txinfo)
+        public static CommonReturnTypeDto ParseDogeMessage(GetTransactionInfoResponse txinfo)
         {
             if (txinfo == null)
-            {
-                return (false, "No input data provided.");
-            }
-
+                return CommonReturnTypeDto.GetNew(false, "No input data provided.");
+            
             if (txinfo.Success != "success")
-            {
-                return (false, "No input data provided.");
-            }
+                return CommonReturnTypeDto.GetNew(false, "No input data provided.");
 
-            if (txinfo.Transaction.Vout == null || txinfo.Transaction.Vout.Count == 0)
-            {
-                return (false, "No outputs in transaction.");
-            }
+            if (txinfo.Transaction.Vout == null || txinfo.Transaction.Vout.Count == 0)        
+                return CommonReturnTypeDto.GetNew(false, "No outputs in transaction.");
 
             foreach (var o in txinfo.Transaction.Vout)
             {
@@ -538,11 +429,11 @@ namespace VEDriversLite
                     var message = o.Script.Replace("OP_RETURN ", string.Empty);
                     var bytes = HexStringToBytes(message);
                     var msg = Encoding.UTF8.GetString(bytes);
-                    return (true, msg);
+                    return CommonReturnTypeDto.GetNew(true, msg);
                 }
             }
 
-            return (false, string.Empty);
+            return CommonReturnTypeDto.GetNew<string>();
         }
 
         private static byte[] HexStringToBytes(string hexString)
@@ -574,26 +465,26 @@ namespace VEDriversLite
         /// </summary>
         /// <param name="dogeAddress">Excpected Dogecoin address</param>
         /// <returns>true and Address if it is correct Dogecoin Address</returns>
-        public static (bool, string) ValidateDogeAddress(string dogeAddress)
+        public static CommonReturnTypeDto ValidateDogeAddress(string dogeAddress)
         {
             try
             {
                 if (string.IsNullOrEmpty(dogeAddress) || dogeAddress.Length < 34 || dogeAddress[0] != 'D')
                 {
-                    return (false, string.Empty);
+                    return CommonReturnTypeDto.GetNew<string>(); ;
                 }
 
                 var add = BitcoinAddress.Create(dogeAddress, Network);
                 if (!string.IsNullOrEmpty(add.ToString()))
                 {
-                    return (true, add.ToString());
+                    return CommonReturnTypeDto.GetNew(true, add.ToString());
                 }
             }
             catch (Exception)
             {
-                return (false, string.Empty);
+                return CommonReturnTypeDto.GetNew<string>();
             }
-            return (false, string.Empty);
+            return CommonReturnTypeDto.GetNew<string>();
         }
 
         /// <summary>
@@ -601,27 +492,23 @@ namespace VEDriversLite
         /// </summary>
         /// <param name="privatekey">Excpected Dogecoin private key</param>
         /// <returns>true and NBitcoin.BitcoinSecret if it is correct Dogecoin private key</returns>
-        public static (bool, BitcoinSecret) IsPrivateKeyValid(string privatekey)
+        public static CommonReturnTypeDto IsPrivateKeyValid(string privatekey)
         {
             try
             {
                 if (string.IsNullOrEmpty(privatekey) || privatekey.Length < 52 || privatekey[0] != 'Q')
-                {
-                    return (false, null);
-                }
+                    return CommonReturnTypeDto.GetNew<BitcoinSecret>();
 
                 var sec = new BitcoinSecret(privatekey, Network);
 
                 if (sec != null)
-                {
-                    return (true, sec);
-                }
+                    return CommonReturnTypeDto.GetNew(true, sec); 
             }
             catch (Exception)
             {
-                return (false, null);
+                return CommonReturnTypeDto.GetNew<BitcoinSecret>();
             }
-            return (false, null);
+            return CommonReturnTypeDto.GetNew<BitcoinSecret>();
         }
 
         /// <summary>
@@ -629,25 +516,24 @@ namespace VEDriversLite
         /// </summary>
         /// <param name="privatekey">Excpected Dogecoin private key</param>
         /// <returns>true and Address if it is correct Dogecoin private key</returns>
-        public static (bool, string) GetAddressFromPrivateKey(string privatekey)
+        public static CommonReturnTypeDto GetAddressFromPrivateKey(string privatekey)
         {
             try
             {
                 var p = IsPrivateKeyValid(privatekey);
-                if (p.Item1)
+                if (p.Success)
                 {
-                    var address = p.Item2.PubKey.GetAddress(ScriptPubKeyType.Legacy, Network);
+                    BitcoinSecret secret = (BitcoinSecret)p.Value;
+                    var address = secret.PubKey.GetAddress(ScriptPubKeyType.Legacy, Network);
                     if (address != null)
-                    {
-                        return (true, address.ToString());
-                    }
+                        return CommonReturnTypeDto.GetNew<string>(true, address.ToString());
                 }
             }
             catch (Exception)
             {
-                return (false, string.Empty);
+                return CommonReturnTypeDto.GetNew<string>();
             }
-            return (false, string.Empty);
+            return CommonReturnTypeDto.GetNew<string>();
         }
 
         ///////////////////////////////////////////

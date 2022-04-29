@@ -1,0 +1,215 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@using VEDriversLite.Bookmarks
+@inject AppData AppData
+@inherits NFTComponentBase
+
+<Row>
+    <Column>
+        <Row Flex="Flex.AlignContent.Center">
+            <Column>
+                <Field>
+                    <FieldBody>
+                        <Addons>
+                            <Addon AddonType="AddonType.Body">
+                                <SpaceTags Tags="@searchNFTsString" TagsChanged="RefreshSearchString" Validator="ValidationRule.None" Placeholder="Search..." />
+                                @*<TextEdit Placeholder="Search by Name, Author or Tags" @bind-Text="searchNFTsString" KeyUp="@RefreshRequested" />*@
+                            </Addon>
+                            @*<Addon AddonType="AddonType.End">
+                                <Button Color="Color.Light" Clicked="@Refresh"><Icon Name="IconName.Search" /></Button>
+                            </Addon>*@
+                        </Addons>
+                    </FieldBody>
+                    <FieldHelp>Search by Tags. Search is not case sensitive.</FieldHelp>
+                </Field>
+            </Column>
+        </Row>
+        <Row Padding="Padding.Is0">
+            <Column Padding="Padding.Is0">
+                <CardDeck>
+                    @foreach ( var NFT in NFTs )
+                    {
+                        @if ( IsInFilter( NFT ) )
+                        {
+                            @if ( AppData.AllowedNFTTypes.Contains(NFT.Type) && !AppData.RestrictedInGalleryNFTTypes.Contains(NFT.Type) )
+                            {
+                                
+                            <NFTCard @key="@NFT"
+                                     NFT=@NFT
+                                     Address="@Address"
+                                     IsSubAccount="@IsSubAccount"
+                                     IsOwnNFT="@IsOwnNFT"
+                                     Utxo="@NFT.Utxo"
+                                     UtxoIndex="@NFT.UtxoIndex"
+                                     OpenNFTDetailsRequest="OpenNFTDetailsRequestHandler"
+                                     OpenImageDetailModal="OpenImageDetailModalHandler"
+                                     NFTSent="@NFTSentHandler"
+                                     OpenNFTsInWorkTab="async (e) => await OpenNFTsInWorkTab.InvokeAsync(e)" >
+
+                                    @*@if (NFT.Type == NFTTypes.XrayImage)
+                                    {
+                                        <XrayParamsValues XrayParams="@((NFT as XrayImageNFT).XrayParams)" />
+                                    }*@
+                            </NFTCard>
+                            }
+                            
+                        }
+                    }
+                </CardDeck>
+            </Column>
+        </Row>
+    </Column>
+</Row>
+
+<OpenNFTDetailsFactory @ref="openNFTDetailsFactory"
+                       Address="@Address"
+                       NFT="@nftInDetails"                       
+                       IsSubAccount="@IsSubAccount"
+                       IsOwnNFT="@IsOwnNFT"
+                       NFTSent="@NFTSentHandler"
+                       OpenNFTsInWorkTab="async (e) => await OpenNFTsInWorkTab.InvokeAsync(e)"/>
+
+                       
+<Modal @ref="NFTImageDetailModal">
+    <ModalContent Centered Size="ModalSize.Large">
+        <ModalHeader>
+            <ModalTitle>NFT Image Detail</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <NFTDataItem NFT="@nftInImageDetails" DisplayPDF="true" />
+        </ModalBody>
+    </ModalContent>
+</Modal>
+          
+                       
+@code {
+    [Inject] INotificationService? NotificationService { get; set; }
+
+    public IEnumerable<INFT> NFTs
+    {
+        get
+        {
+            if ( IsOwnNFT )
+                return AppData.Account.NFTs.Where( n => AppData.AllowedNFTTypes.Contains(n.Type) );
+            else
+            {
+                var tab = AppData.Account.Tabs.FirstOrDefault( t => t.Address == Address );
+                if ( tab != null )
+                    return tab.NFTs.Where( n => AppData.AllowedNFTTypes.Contains(n.Type) );
+                else
+                    return new List<INFT>();
+            }
+        }
+    }
+
+    Modal? NFTImageDetailModal;
+    OpenNFTDetailsFactory? openNFTDetailsFactory;
+    string searchNFTsString = string.Empty;
+    string imageInModalUrl = "_content/VEBlazor/images/empty.jpg";
+    INFT nftInImageDetails = new ImageNFT("");
+    INFT nftInDetails = new ImageNFT("");
+
+    protected override async Task OnAfterRenderAsync( bool firstRender )
+    {
+        if ( firstRender )
+        {
+            AppData.Account.Refreshed -= RefreshedHandler;
+            AppData.Account.Refreshed += RefreshedHandler;
+        }
+        await base.OnAfterRenderAsync( firstRender );
+    }
+    private void RefreshedHandler( object sender, EventArgs e )
+    {
+        StateHasChanged();
+    }    
+
+    async Task OpenImageDetailModalHandler(INFT nft)
+    {
+        if (nft == null) return;
+        nftInImageDetails = nft;
+        
+        await InvokeAsync( StateHasChanged );
+        if (NFTImageDetailModal is not null)
+            await NFTImageDetailModal.Show();
+    }
+
+    async Task OpenNFTDetailsRequestHandler(INFT nft)
+    {    
+        if (nft != null && openNFTDetailsFactory != null)
+        {        
+            nftInDetails = nft;
+            StateHasChanged();
+            await openNFTDetailsFactory?.OpenNFTDetails(nft);
+        }
+    }
+
+    private void NFTSentHandler(NFTSentResultDto e)
+    {
+        if (e.sucess)
+        {
+            openNFTDetailsFactory?.HideNFTDetails();
+            NotificationService?.Success("NFT sent successfully.", "NFT Sent");
+        }
+        else
+            NotificationService?.Error(e.message, "NFT Not Sent");
+    }
+
+    void RefreshRequested( KeyboardEventArgs e )
+    {
+        if ( e.Code == "Enter" || e.Code == "NumpadEnter" )
+            Refresh();
+    }
+    void Refresh()
+    {
+        StateHasChanged();
+    }
+    void RefreshSearchString(string search)
+    {
+        searchNFTsString = search;
+        StateHasChanged();
+    }
+
+    public bool IsInFilter( INFT nft )
+    {
+        if ( !string.IsNullOrEmpty( searchNFTsString ) )
+        {
+            var ls = searchNFTsString.ToLower();
+            /*
+            if ( nft.Author.ToLower().Contains( ls ) || nft.Name.ToLower().Contains( ls ) )
+            {
+                return true;
+            }
+            */
+            if ( !string.IsNullOrEmpty( nft.Tags ) )
+            {
+                if ( nft.Tags.ToLower().Contains( ls ) )
+                    return true;
+                    
+                var split = ls.Split( ' ' );
+                if ( split.Length >= 1 )
+                {
+                    var score = 0;
+                    nft.TagsList.ForEach( t =>
+                    {
+                        Array.ForEach( split, s =>
+                        {
+                            if ( t.ToLower().Contains( s.ToLower() ) )
+                                score++;
+                            else if ( s.ToLower().Contains( t.ToLower() ) )
+                                score++;
+                        } );
+                    } );
+                    if ( score > 0 )
+                        return true;
+                }
+            }
+
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+}

@@ -1,0 +1,252 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@using VEDriversLite.Bookmarks
+@inject AppData AppData
+
+@*<PageTitle>BDP - Gallery</PageTitle>
+
+<PageHeader Title="Data Gallery" BreadcrumbItems="@(new string[] { "BDP", "Gallery" })" />
+*@
+<Container Fluid Margin="Margin.Is4.FromBottom">
+    <Tabs RenderMode="TabsRenderMode.LazyReload" @bind-SelectedTab="@SelectedTabName" Pills Height="Height.Is100">
+        <Items>
+            <Tab Name="gallery">
+                <Tooltip Text="Here you can find all yours images." Placement="TooltipPlacement.Bottom">
+                    <Icon Name="IconName.Images" />
+                    <Span>My Gallery</Span>
+                </Tooltip>
+            </Tab>
+            @foreach ( var tab in AppData.OpenedTabs )
+            {
+                var bookmark = AppData.Account.IsInTheBookmarks(tab.Address);
+                <Tab @key="@tab" Name="@tab.Name">
+                    <Tooltip Text="@(bookmark.Item1 ? (MarkupString)"Bookmark Name:<br />" + bookmark.Item2.Name + (MarkupString)"<br /><br /> Note:<br />" + bookmark.Item2.Note : "This tab is not in bookmark. You can add it by click to the star icon.")" Placement="TooltipPlacement.Bottom">                
+                        <Span>
+                            @(tab.Type == TabType.ActiveTab ? "AT - " : "WT - ") @(bookmark.Item1 ? bookmark.Item2.Name : tab.Name)
+                            <Icon Name="IconName.MinusCircle" Clicked="() => CloseTab(tab.Name)" />
+                        </Span>
+                    </Tooltip>
+                </Tab>
+            }
+            <Tab Name="newWorkTab"><Icon Name="IconName.SearchPlus" /> New Tab</Tab>
+        </Items>
+        <Content>
+            <TabPanel Name="gallery">
+                <GalleryTabContent Address="@AppData.Account.Address"
+                                                            IsSubAccount="false"
+                                                            IsOwnNFT="true"
+                                                            OpenNFTsInWorkTab="@OpenNFTsInWorkTabHandler" />
+            </TabPanel>
+            @foreach ( var tab in AppData.OpenedTabs )
+            {
+                @if ( tab.Type == TabType.ActiveTab )
+                {
+                    <TabPanel Name="@tab.Name">
+                        <GalleryTabContent Address="@tab.Address"
+                                                            IsSubAccount="false"
+                                                            IsOwnNFT="false"
+                                                            OpenNFTsInWorkTab="@OpenNFTsInWorkTabHandler" />
+                    </TabPanel>
+                }
+                @if (AppData.AllowWorkTabs && tab.Type == TabType.WorkTab )
+                {
+                    <TabPanel Name="@tab.Name" Height="Height.Is100">
+                        <WorkTabContent NFTs="@GetWTNFTs(tab)"
+                                                            Address="@Address"
+                                                            IsSubAccount="@IsSubAccount"
+                                                            IsOwnNFT="true"
+                                                            WorkTabName="@tab.Name"
+                                                            OpenNFTsInWorkTab="@OpenNFTsInWorkTabHandler" />
+                    </TabPanel>
+                }
+            }
+            <TabPanel Name="newWorkTab">
+                <Container Fluid>          
+                    <Row Margin="Margin.Is5.FromTop">
+                        <Column Flex="Flex.JustifyContent.Center">
+                            <Span>You can Open Tab with some another Address.</Span>
+                        </Column>
+                    </Row>
+                    <Row Margin="Margin.Is2.FromTop" Width="Width.Is100">
+                        <Column>
+                            <NeblioAddressInput @bind-Receiver="@NewTabAddress" />
+                        </Column>
+                    </Row>
+                    <Row Margin="Margin.Is2.FromTop" Flex="Flex.JustifyContent.Center">
+                        <Column>
+                            <Button Color="Color.Primary" Clicked="@OpenSearchTabAction" Block><Icon Name="IconName.Add" Block/> Open Search Tab</Button>
+                        </Column>
+                    </Row>
+                </Container>
+            </TabPanel>
+        </Content>
+    </Tabs>
+</Container>
+@code {
+    [Inject] IPageProgressService? PageProgressService { get; set; }
+
+    [Parameter]
+    public string Address { get; set; } = string.Empty;
+    [Parameter]
+    public EventCallback<string> AddressChanged { get; set; }
+    [Parameter]
+    public bool IsSubAccount { get; set; } = false;
+    [Parameter]
+    public EventCallback<bool> IsSubAccountChanged { get; set; }
+    [Parameter]
+    public bool IsOwnNFT { get; set; } = false;
+    [Parameter]
+    public EventCallback<bool> IsOwnNFTChanged { get; set; }
+
+    private string _selectedTabName = "gallery";
+    [Parameter]
+    public string SelectedTabName { get => _selectedTabName; set => _selectedTabName = value; }
+
+    public string NewTabAddress { get; set; } = string.Empty;
+
+    public int NewTabNameIterator = 1;
+
+    public async Task OpenInUtxoInTab(string[] inUtxo)
+    {
+        if (inUtxo is null || inUtxo.Length == 0)
+            return;
+        if (PageProgressService != null)
+            await PageProgressService.Go( null, options => { options.Color = Color.Primary; } );
+        await Task.Delay(1);
+
+        var nfts = new List<INFT>();
+        foreach (var utxo in inUtxo)
+        {
+            var index = 0;
+            var utx = utxo;
+            if (utxo.Contains(":"))
+            {
+                var us = utxo.Split(":");
+                if (us.Length == 2)
+                {
+                    index = int.Parse(us[1]);
+                    utx = us[0];
+                }
+            }
+            var nft = await NFTFactory.GetNFT("", utx, index, loadJustType: true, justType: NFTTypes.XrayImage);
+            if (nft != null)
+                nfts.Add(nft);
+        }
+
+        OpenNFTsInWorkTabHandler(nfts);
+        if (PageProgressService != null)
+            await PageProgressService.Go( -1 );        
+    }
+
+    public async Task OpenInAddressesInTab(string[] addresses)
+    {
+        if (addresses is null || addresses.Length == 0)
+            return;
+        if (PageProgressService != null)    
+            await PageProgressService.Go( null, options => { options.Color = Color.Primary; } );
+
+        foreach (var addr in addresses)
+            if (!string.IsNullOrEmpty(NeblioTransactionHelpers.ValidateNeblioAddress(addr)))
+                await OpenSearchTab(addr);
+
+        if (PageProgressService != null)        
+            await PageProgressService.Go( -1 );
+    }
+
+    List<INFT> GetWTNFTs(GalleryTab tab)
+    {
+        if (tab.Tab != null && tab.Type == TabType.WorkTab)
+        {
+            var n = (tab.Tab as WorkTab)?.NFTs;
+            if (n != null) return n;
+        }
+        return new List<INFT>();
+    }
+
+    async Task OpenSearchTabAction()
+    {
+        await OpenSearchTab();
+    }
+    async Task OpenSearchTab(string address = "")
+    {
+        if (string.IsNullOrEmpty(address))
+            address = NewTabAddress;
+        if ( string.IsNullOrEmpty( address ) )
+            return;
+
+        var tab = AppData.Account.Tabs.FirstOrDefault( t => t.Address == address );
+        if ( tab != null )
+        {
+            SelectedTabName = tab.ShortAddress;
+            return;
+        }
+
+        if (PageProgressService != null)        
+            await PageProgressService.Go( null, options => { options.Color = Color.Primary; } );
+        var res = await AppData.Account.AddTab( address, 10 );
+        if ( res.Item1 )
+        {
+            tab = AppData.Account.Tabs.FirstOrDefault( t => t.Address == address );
+            if ( tab != null )
+            {
+                AppData.OpenedTabs.Add( new GalleryTab()
+                    {
+                        Type = TabType.ActiveTab,
+                        Name = tab.ShortAddress,
+                        Address = address
+                    } );
+                SelectedTabName = tab.ShortAddress;
+            }
+            StateHasChanged();
+        }
+        if (PageProgressService != null)            
+            await PageProgressService.Go( -1 );
+
+        await AppData.SaveTags();
+    }
+
+    void OpenWorkTab()
+    {
+        var wt = new WorkTab();
+        AppData.OpenedTabs.Add( new GalleryTab()
+            {
+                Type = TabType.WorkTab,
+                Tab = wt,
+                Name = wt.Name
+            } );
+        SelectedTabName = wt.Name;
+        StateHasChanged();
+    }
+
+    void OpenNFTsInWorkTabHandler( List<INFT> e )
+    {
+        if (e == null || e.Count == 0)
+            return;
+        var wt = new WorkTab();
+        wt.NFTs = e;
+        wt.Name = "IMG- " + wt.NFTs.FirstOrDefault()?.ShortHash.Substring(0, 6) ?? NewTabNameIterator.ToString();
+        NewTabNameIterator++;
+        AppData.OpenedTabs.Add( new GalleryTab()
+            {
+                Type = TabType.WorkTab,
+                Tab = wt,
+                Name = wt.Name
+            } );
+        SelectedTabName = wt.Name;
+        StateHasChanged();
+    }
+
+    async Task CloseTab( string tabName )
+    {
+        var tab = AppData.OpenedTabs.FirstOrDefault( t => t.Name == tabName );
+        if (tab is null) return;
+        
+        AppData.OpenedTabs.Remove( tab );
+        if ( tab.Type == TabType.ActiveTab )
+            await AppData.Account.RemoveTab( tab.Address );
+        if ( AppData.OpenedTabs.Count == 0 )
+            SelectedTabName = "gallery";
+        else
+            SelectedTabName = AppData.OpenedTabs.Last().Name;      
+    }
+}

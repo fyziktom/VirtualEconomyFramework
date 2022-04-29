@@ -17,7 +17,7 @@ using VEDriversLite.Dto;
 using VEDriversLite.NFT;
 using VEDriversLite.NFT.Dto;
 using VEDriversLite.Security;
-using VEDriversLite.WooCommerce;
+using VEDriversLite.Extensions.WooCommerce;
 
 namespace VENFTApp_Server
 {
@@ -166,7 +166,7 @@ namespace VENFTApp_Server
                             else
                             {
                                 var dadd = DogeTransactionHelpers.ValidateDogeAddress(k.Address);
-                                if (dadd.Item1)
+                                if (dadd.Success)
                                 {
                                     Console.WriteLine("");
                                     Console.WriteLine("========Dogecoin Main Account=======");

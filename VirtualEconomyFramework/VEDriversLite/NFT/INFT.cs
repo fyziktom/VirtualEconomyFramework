@@ -122,6 +122,16 @@ namespace VEDriversLite.NFT
         /// IoT specific message. usually carry JSON object in Description or Text properties
         /// </summary>
         IoTMessage = 1008,
+        /// <summary>
+        /// Xray device
+        /// </summary>
+        Xray = 1895,
+        /// <summary>
+        /// Xray Image
+        /// </summary>
+        XrayImage = 1896,
+
+
     }
     /// <summary>
     /// Main NFT interface
@@ -166,6 +176,20 @@ namespace VEDriversLite.NFT
         /// </summary>
         string ImageLink { get; set; }
         /// <summary>
+        /// Loaded Image data as byte array
+        /// </summary>
+        [JsonIgnore]
+        byte[] ImageData { get; set; }
+        /// <summary>
+        /// Preview data of image or music
+        /// </summary>
+        string Preview { get; set; }
+        /// <summary>
+        /// Data of the preview file
+        /// </summary>
+        [JsonIgnore]
+        byte[] PreviewData { get; set; }
+        /// <summary>
         /// List of the tags separated by space
         /// </summary>
         string Tags { get; set; }
@@ -173,6 +197,11 @@ namespace VEDriversLite.NFT
         /// Parsed tag list. It is parsed in Common NFT class
         /// </summary>
         List<string> TagsList { get; set; }
+        /// <summary>
+        /// More items in the NFT, for example Image gallery with more images than one
+        /// Probably future replacement of the "ImageLink" property
+        /// </summary>
+        List<NFTDataItem> DataItems { get; set; }
         /// <summary>
         /// NFT Utxo hash
         /// </summary>
@@ -359,6 +388,16 @@ namespace VEDriversLite.NFT
         /// </summary>
         /// <returns></returns>
         Task<IDictionary<string, string>> GetCommonMetadata();
+        /// <summary>
+        /// Download preview data if there are some
+        /// </summary>
+        /// <returns>true if success</returns>
+        Task<bool> DownloadPreviewData();
+        /// <summary>
+        /// Download Image data if there are some
+        /// </summary>
+        /// <returns>true if success</returns>
+        Task<bool> DownloadImageData();
         /// <summary>
         /// This function will download the data from the IPFS then decrypt the encrypted file container with use of shared secret.
         /// Then the image is saved in ImageData as bytes.

@@ -1,0 +1,387 @@
+﻿@using System.IO
+@using VEDriversLite.NFT
+@using VEDriversLite.NFT.Dto
+@inherits NFTComponentBase
+@inject AppData AppData
+@inject HttpClient HttpClient
+@inject IJSRuntime JSRuntime
+
+<Card Margin="Margin.Is4.FromBottom" Shadow="Shadow.Small">
+    <CardBody>
+       <CardTitle>
+           Upload the Image
+        </CardTitle>
+        <Alert Color="Color.Info" Visible>
+            <AlertDescription>
+                You can upload any image file such as <Strong>PNG, BMP, JPEG, MP3, MP4, JSON, PDF, HTML</Strong> For images we recommend you to use the PNG format.
+            </AlertDescription>
+        </Alert>
+        <Row Flex="Flex.AlignItems.Center">
+            <Column>
+                <Row>
+                    <Column>
+                        <Validations @ref="@validationsRef" Mode="ValidationMode.Manual">
+                            <Validation Validator="ImageValidator">
+                                <Field>
+                                    <FieldLabel>Please select the image.</FieldLabel>
+                                    <FieldBody>
+                                        <FileUpload Started="@OnImageUploadStarted" Uploaded="@OnImageUploadEnded" ValidationsRef="@validationsRef" Multiple="@Multiple" Filter="@Filter" />
+                                    </FieldBody>
+                                </Field>
+                            </Validation>
+                        </Validations>
+                    </Column>
+                </Row>
+                @if (uploadingImage)
+                {
+                    <Row>
+                        <Column>
+                            <Span>Uploading the image...</Span>
+                        </Column>
+                    </Row>
+                }
+                    <Row Margin="Margin.Is2.FromTop">
+                        <Column>
+                            @if (itemType == DataItemType.Image)
+                            {
+                                <Figure Size="@(SmallThumbnails ? FigureSize.Is64x64 : FigureSize.Is256x256)">
+                                    <FigureImage Source="@ImageDataString" AlternateText="empty-256x256" />
+                                    <FigureCaption TextAlignment="TextAlignment.Center">Last Uploaded Image</FigureCaption>
+                                 </Figure>
+                            }
+                            else if (itemType == DataItemType.PDF)
+                            {
+                                <Figure Size="@(SmallThumbnails ? FigureSize.Is64x64 : FigureSize.Is256x256)">
+                                    <FigureImage Source="_content/VEBlazor/images/pdf-image.png" AlternateText="empty-256x256" />
+                                    <FigureCaption TextAlignment="TextAlignment.Center">Uploaded New PDF Document: @fileName</FigureCaption>
+                                 </Figure>
+                            }
+                            else if (itemType == DataItemType.AVMedia)
+                            {
+                                @*<Row>
+                                    <Column>
+                                        <Video Source="@ImageDataString" Style="max-width:400px; min-width:250px;max-height:400px;min-height:200px;" />                                        
+                                    </Column>                                    
+                                </Row>
+                                <Row>
+                                    <Column>
+                                        <Span TextAlignment="TextAlignment.Center">Uploaded New Video: @fileName. Wait for the upload of video to see preview.
+                                    </Column>
+                                </Row> *@                               
+                                <Figure Size="@(SmallThumbnails ? FigureSize.Is64x64 : FigureSize.Is256x256)">
+                                    <FigureImage Source="_content/VEBlazor/images/blankvideo.png" AlternateText="empty-256x256" />
+                                    <FigureCaption TextAlignment="TextAlignment.Center">Uploaded New Video: @fileName. Wait for the upload of video to see preview.</FigureCaption>
+                                 </Figure>                                
+                            }
+                            else if (itemType == DataItemType.JSON)
+                            {
+                                <JsonViewer @ref="JsonViewerRef"></JsonViewer>
+                            }
+                            else if (itemType == DataItemType.HTML)
+                            {
+                                <iframe src="@ImageDataString" frameborder="1" style="min-width:300px; min-height:500px; width:100%; height:100%;"></iframe>
+                            }
+                            else if (itemType == DataItemType.Mermaid)
+                            {                            
+                                <NFTText @ref="mermaidTextRef" Text="@ImageDataString" />
+                            }
+                        </Column>
+                    </Row>
+
+                    <Row>
+                        <Column>
+                            <Alert Color="Color.Success">File loaded!</Alert>
+                        </Column>
+                    </Row>
+                    <Row>
+                        <Column>
+                            <IPFSUpload @ref="@ipfsUploadRef" Started="@OnIPFSUploadStarted" Uploaded="@OnIPFSUploadEnded" ValidationsRef="@validationsRef" />
+                        </Column>
+                    </Row>
+                    <Row Margin="Margin.Is2.FromTop">
+                        <Column>
+                            <Span>Loaded Images</Span>
+                        </Column>
+                    </Row>
+                    <Row Margin="Margin.Is2.FromTop">
+                        <Column>
+                            <CardGroup>
+                                @if (NFT.DataItems != null && NFT.DataItems.Count > 0)
+                                {
+                                    @foreach (var item in NFT.DataItems)
+                                    {
+                                        <Card Style="@(SmallThumbnails ? "max-width:100px; min-width:100px; width:auto;" : "max-width:300px; min-width:200px;")" Margin="Margin.Is1.FromEnd">
+                                            @if (!SmallThumbnails)
+                                            {
+                                                <CardHeader>@(item.Hash.Length > 20 ? string.Concat(item.Hash.Substring(0,20), "...") : item.Hash)</CardHeader>
+                                            }
+                                            @if (item.Type == DataItemType.Image)
+                                            {
+                                                <CardImage Source="@(NFTHelpers.GetIPFSLinkFromHash(item.Hash))"></CardImage>
+                                            }
+                                            else if (item.Type == DataItemType.PDF)
+                                            {
+                                                <CardImage Source="_content/VEBlazor/images/pdf-image.png"></CardImage>
+                                            }
+                                            else if (item.Type == DataItemType.JSON)
+                                            {
+                                                <CardImage Source="_content/VEBlazor/images/json-image.png"></CardImage>
+                                            }
+                                            else if (item.Type == DataItemType.HTML)
+                                            {
+                                                <CardImage Source="_content/VEBlazor/images/html-image.png"></CardImage>
+                                            }
+                                            else if (item.Type == DataItemType.Mermaid)
+                                            {
+                                                <CardImage Source="_content/VEBlazor/images/mermaid-image.png"></CardImage>
+                                            }                                            
+                                            <CardBody>
+                                                @if (item.Type == DataItemType.AVMedia)
+                                                {
+                                                    <Row>
+                                                        <Column>
+                                                            <Video Source="@(NFTHelpers.GetIPFSLinkFromHash(item.Hash))" Style="min-height:160px;" />
+                                                        </Column>
+                                                    </Row>
+                                                }
+                                            
+                                                @if (item.Type == DataItemType.PDF)
+                                                {
+                                                    <Row>
+                                                        <Column>
+                                                            <Button Color="Color.Primary" Type="ButtonType.Link" To="@(NFTHelpers.GetIPFSLinkFromHash(item.Hash))" Target="Target.Blank" Block>Open PDF in new Tab</Button>
+                                                        </Column>
+                                                    </Row>
+                                                }                                                
+                                                else 
+                                                {
+                                                    @if (item.Type == DataItemType.JSON)
+                                                    {
+                                                        <Row Margin="Margin.Is2.FromTop">
+                                                            <Column>
+                                                                <Button Color="Color.Primary" Type="ButtonType.Link" To="@(NFTHelpers.GetIPFSLinkFromHash(item.Hash))" Target="Target.Blank" Block>Open JSON in new Tab</Button>
+                                                            </Column>
+                                                        </Row>
+                                                    } 
+                                                    if (item.Type == DataItemType.HTML)
+                                                    {
+                                                        <Row Margin="Margin.Is2.FromTop">
+                                                            <Column>
+                                                                <Button Color="Color.Primary" Type="ButtonType.Link" To="@(NFTHelpers.GetIPFSLinkFromHash(item.Hash))" Target="Target.Blank" Block>Open HTML in new Tab</Button>
+                                                            </Column>
+                                                        </Row>
+                                                    }  
+                                                    <Row Flex="Flex.AlignItems.Baseline" Margin="Margin.Is2.FromBottom.Is2.FromTop">
+                                                        <Column>
+                                                            <Row>
+                                                                <Column Flex="Flex.JustifyContent.Center">
+                                                                    <Check Checked="@item.IsMain" TValue="bool" CheckedChanged="@((e) => onCheckedChangedHandler(e, item))" >@(SmallThumbnails ? "" : "Set as Main")</Check>
+                                                                </Column>
+                                                            </Row>
+                                                            @if (SmallThumbnails)
+                                                            {
+                                                                <Row>
+                                                                    <Column Flex="Flex.JustifyContent.Center">
+                                                                        <Span>Main</Span>
+                                                                    </Column>
+                                                                </Row>
+                                                            }
+                                                        </Column>
+                                                    </Row>
+                                                }
+                                            </CardBody>
+                                            <CardFooter>
+                                                <Button Color="Color.Danger" Clicked="@(async () => await OnDeleteImageClicked(item))" Block>
+                                                    <Icon Name="IconName.Delete" Margin="Margin.Is1.FromEnd" />@(SmallThumbnails ? "" : "Delete Image")
+                                                </Button>
+                                            </CardFooter>
+                                        </Card>
+                                    }
+                                }
+                            </CardGroup>
+                        </Column>
+                    </Row>
+                
+            </Column>
+        </Row>
+    </CardBody>
+</Card>
+
+@code {
+
+    [Parameter] public bool Multiple { get; set; } = false;
+    [Parameter] public bool SmallThumbnails { get; set; } = false;
+    [Parameter] public string Filter { get; set; } = "|images .jpeg, .jpg, .png, .gif, .bmp, .jfif|avmedia .mp3, .wav, .ogg, .mp4, .avi, .mov|documents .pdf, .json, .html, .mmd";
+    [Parameter] public EventCallback<string> OnPropsChanged { get; set; }
+
+    public string ImageDataString
+    {
+        get
+        {
+            if (imageNeedsReload)
+            {
+                var i = string.Empty;
+                if (itemType == DataItemType.Image)
+                {
+                    i = NFTComponentBase.GetImageStringFromBytes(imageData);
+                }
+                else if (itemType == DataItemType.PDF)
+                {
+                    i = "_content/VEBlazor/images/pdf-image.png";
+                }
+                else if (itemType == DataItemType.AVMedia)
+                {
+                    i = NFTComponentBase.GetVideoStringFromBytes(imageData);
+                }
+                else if (itemType == DataItemType.JSON)
+                {
+                    i = "_content/VEBlazor/images/json-image.png";
+                }
+                else if (itemType == DataItemType.HTML)
+                {
+                    i = "data:text/html;base64," + Convert.ToBase64String(imageData);
+                }
+                else if (itemType == DataItemType.Mermaid)
+                {
+                    i = System.Text.Encoding.UTF8.GetString(imageData);
+                    mermaidTextRef?.Load(string.Concat("```mermaid\n\n", i, "\n```"));
+                }
+
+                imageString = i;
+                imageNeedsReload = false;
+            }
+            return imageString;
+        }
+    }
+    bool uploadingImage = false;
+    bool uploadingToIPFS = false;
+    bool imageNeedsReload = true;
+
+    byte[] imageData = new byte[0];
+
+    string fileName = string.Empty;
+    string imageString = string.Empty;
+
+    DataItemType itemType = DataItemType.Image;
+
+    Validations? validationsRef;
+    IPFSUpload? ipfsUploadRef;
+    JsonViewer? JsonViewerRef;
+    NFTText? mermaidTextRef;
+
+    Task OnImageUploadStarted()
+    {
+        uploadingImage = true;
+
+        return InvokeAsync( StateHasChanged );
+    }
+
+    public async Task LoadImage(string link, string previewlink = "", byte[] _imageData = null)
+    {
+        if (!string.IsNullOrEmpty(link) || _imageData?.Length > 0)
+        {
+            byte[] imd = null;          
+            if (_imageData == null || _imageData.Length == 0)
+                imd = await NFTHelpers.IPFSDownloadFromInfuraAsync(NFTHelpers.GetHashFromIPFSLink(link));
+            else if (_imageData.Length > 0)
+                imd = _imageData;
+
+            if (imd != null)
+            {
+                this.imageData = imd;
+                imageNeedsReload = true;
+                await InvokeAsync( StateHasChanged );
+
+                if (ipfsUploadRef != null)
+                    await ipfsUploadRef.LoadIPFSLink(link);
+                await InvokeAsync( StateHasChanged );
+            }
+        }
+    }
+
+    async Task OnImageUploadEnded( string fileName, byte[] data )
+    {
+        uploadingImage = false;
+        this.imageData = data;
+        imageNeedsReload = true;
+        this.fileName = fileName;
+        itemType = VEDriversLite.NFT.Dto.NFTDataItem.GetItemType(fileName);
+
+        await InvokeAsync( StateHasChanged );
+
+        if (itemType == DataItemType.JSON)
+        {
+            if (JsonViewerRef != null)
+                await JsonViewerRef.Render(System.Text.Encoding.UTF8.GetString(data));
+        }
+        else if (itemType == DataItemType.Mermaid)
+        {
+            mermaidTextRef?.Load(string.Concat("```mermaid\n\n", System.Text.Encoding.UTF8.GetString(data), "\n```"));
+        }
+
+        if ( ipfsUploadRef != null )
+            await ipfsUploadRef.UploadToIPFS( fileName, data );
+    }
+
+    Task OnIPFSUploadStarted()
+    {
+        uploadingToIPFS = true;
+
+        return InvokeAsync( StateHasChanged );
+    }
+
+    async Task OnIPFSUploadEnded( string mainIPFSLink )
+    {
+        uploadingToIPFS = false;
+        NFT.ImageLink = mainIPFSLink;
+
+        NFT.DataItems.ForEach(d => d.IsMain = false);
+        var item = new VEDriversLite.NFT.Dto.NFTDataItem()
+            {
+                Type = itemType,
+                Hash = NFTHelpers.GetHashFromIPFSLink(mainIPFSLink),
+                IsMain = true
+            };
+        NFT.DataItems.Add(item);
+        await InvokeAsync( StateHasChanged );
+    }
+
+    void ImageValidator( ValidatorEventArgs e )
+    {
+        if ( !string.IsNullOrEmpty( ImageDataString ) )
+            e.Status = ValidationStatus.Success;
+        else
+            e.Status = ValidationStatus.Error;
+    }
+
+    public Task<bool> IsValidated()
+    {
+        if (validationsRef != null)
+            return validationsRef.ValidateAll();
+        else
+            return Task.FromResult(false);
+    }
+
+    public async Task OnDeleteImageClicked(VEDriversLite.NFT.Dto.NFTDataItem item)
+    {
+        if (NFT.DataItems is not null && NFT.DataItems.Count > 0)
+        {
+            NFT.DataItems.Remove(item);
+            await InvokeAsync( StateHasChanged );
+        }
+    }
+    public void onCheckedChangedHandler(bool e, VEDriversLite.NFT.Dto.NFTDataItem item)
+    {
+        if (NFT.DataItems is not null && NFT.DataItems.Count > 0)
+        {
+            foreach (var i in NFT.DataItems)
+                i.IsMain = false;
+
+            item.IsMain = e;
+            if (e) NFT.ImageLink = NFTHelpers.GetIPFSLinkFromHash(item.Hash);
+
+            StateHasChanged();
+        }
+    }
+
+}

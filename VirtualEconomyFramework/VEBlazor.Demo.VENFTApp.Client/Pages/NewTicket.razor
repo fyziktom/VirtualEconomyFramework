@@ -1,0 +1,60 @@
+﻿@using VEDriversLite.NFT
+@using VEBlazor.Components.NFTs.EventsAndTickets
+@using VEBlazor.Components.Minting
+@inject AppData AppData
+
+@page "/addnew"
+
+<PageTitle>@AppData.AppName - @headerLabel</PageTitle>
+
+<VEBlazor.Components.PageHeader Title="@headerLabel" BreadcrumbItems="@(new string[] { AppData.AppNick, headerLabel })" />
+
+<VEBlazor.Pages.AddNew @bind-NFT="@AppData.GetMintingNFTTab(formName).NFT" 
+                       @bind-Addresses="@AppData.GetMintingNFTTab(formName).Addresses" 
+                       NFTType="@NFTTypes.Ticket" 
+                       Address="@AppData.Account.Address" 
+                       @bind-ConsoleOutFromMinting="@AppData.GetMintingNFTTab(formName).ConsoleOutFromMinting" >
+    <SpecificParamsStepHeader>
+        Ticket
+    </SpecificParamsStepHeader>
+    <SpecificParamsStepContent>
+    @if (AppData.GetMintingNFTTabNFT(formName).Type == NFTTypes.Ticket)
+    {
+        <Row>
+            <Column>    
+                <TicketSpecificMintForm @bind-Location="@((AppData.GetMintingNFTTab(formName).NFT as TicketNFT).Location)"
+                                        @bind-LocationCords="@((AppData.GetMintingNFTTab(formName).NFT as TicketNFT).LocationCoordinates)"
+                                        @bind-AuthorLink="@((AppData.GetMintingNFTTab(formName).NFT as TicketNFT).AuthorLink)"
+                                        @bind-TicketClass="@((AppData.GetMintingNFTTab(formName).NFT as TicketNFT).TicketClass)"
+                                        @bind-TicketDuration="@((AppData.GetMintingNFTTab(formName).NFT as TicketNFT).TicketDuration)"
+                                        @bind-EventId="@((AppData.GetMintingNFTTab(formName).NFT as TicketNFT).EventId)"
+                                        @bind-EventDate="@((AppData.GetMintingNFTTab(formName).NFT as TicketNFT).EventDate)"
+                                        OnLoadNFTTemplate="@onLoadNFTTemplateHandler"/>
+            </Column>
+        </Row>
+    }
+    </SpecificParamsStepContent>
+</VEBlazor.Pages.AddNew>
+
+@code {
+    string formName = "default";
+    string headerLabel = "Add New";
+
+    protected override void OnInitialized()
+    {
+        headerLabel = AppData.GetMintingNFTTab(formName).HeaderLabel;
+        base.OnInitialized();
+    }
+
+    async Task onLoadNFTTemplateHandler(INFT nft)
+    {
+        if (AppData.GetMintingNFTTab(formName).NFT.Type == NFTTypes.Ticket && nft.Type == NFTTypes.Event)
+        {
+            var n = (AppData.GetMintingNFTTab(formName).NFT as TicketNFT);
+            if (n is not null)
+                await n.FillFromEvent(nft);
+        }
+        StateHasChanged();
+    }
+
+}

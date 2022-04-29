@@ -1,0 +1,77 @@
+﻿@inject AppData AppData
+
+<ThemeProvider Theme="@theme">
+    <Router AppAssembly="@typeof(App).Assembly">
+        <Found Context="routeData">
+            <RouteView RouteData="@routeData" DefaultLayout="@typeof(VEBlazor.Layouts.MainLayout)" />
+            <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+        </Found>
+        <NotFound>
+            <PageTitle>Not found</PageTitle>
+            <LayoutView Layout="@typeof(VEBlazor.Layouts.MainLayout)">
+                <p role="alert">Sorry, there's nothing at this address.</p>
+            </LayoutView>
+        </NotFound>
+    </Router>
+    
+<VEBlazor.Components.VEBlazorServicesComponents />
+</ThemeProvider>
+@code {
+    Theme theme = VEBlazor.Models.Themes.DefaultTheme.GetDefaultTheme();
+
+    protected override async Task OnInitializedAsync()
+    {
+        AppData.AppName = "BaseDataPlace";
+        AppData.AppNick = "BDP";
+        AppData.AppHomeWebsiteUrl = "https://basedataplace.com/";
+        AppData.AppShareNFTUrl = "https://test.basedataplace.com/";
+        AppData.DisplayGettingStartedMenuItem = false;
+        AppData.AppTokenId = VEDriversLite.NFT.NFTHelpers.BDPTokenId;
+
+        if (AppData.MintingTabsData.TryGetValue("default", out var tab))
+        {
+            tab.MintingNFTType = VEDriversLite.NFT.NFTTypes.XrayImage;
+            tab.NFT = new VEDriversLite.NFT.Imaging.Xray.XrayImageNFT();
+        }
+        AppData.AllowedNFTTypes = new List<VEDriversLite.NFT.NFTTypes>()
+        { 
+            VEDriversLite.NFT.NFTTypes.Profile, 
+            VEDriversLite.NFT.NFTTypes.Xray, 
+            VEDriversLite.NFT.NFTTypes.XrayImage 
+        };
+
+        AppData.DefaultTags.Add("ASAP", new VEDriversLite.NFT.Tags.Tag()
+        {
+            Name = "ASAP",
+            Color = "warning",
+            UseAsFastButton = true
+        });
+        AppData.DefaultTags.Add("HELP", new VEDriversLite.NFT.Tags.Tag()
+        {
+            Name = "HELP",
+            Color = "info",
+            UseAsFastButton = true
+        });
+        AppData.DefaultTags.Add("NG", new VEDriversLite.NFT.Tags.Tag()
+        {
+            Name = "NG",
+            Color = "warning",
+            UseAsFastButton = true
+        });
+        AppData.DefaultTags.Add("OK", new VEDriversLite.NFT.Tags.Tag()
+        {
+            Name = "OK",
+            Color = "success",
+            UseAsFastButton = true
+        });
+        AppData.DefaultTags.Add("SOLVED", new VEDriversLite.NFT.Tags.Tag()
+        {
+            Name = "SOLVED",
+            Color = "primary",
+            UseAsFastButton = true
+        });
+
+                
+        await base.OnInitializedAsync();
+    }
+}

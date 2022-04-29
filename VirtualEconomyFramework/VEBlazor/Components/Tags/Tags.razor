@@ -1,0 +1,85 @@
+﻿@using VEDriversLite.NFT
+@inject AppData AppData
+
+@if (TagsList != null)
+{   
+    @GetTokenBadge()
+    <Badge Color="Color.Success" Margin="Margin.Is1.FromEnd">NFT</Badge>
+    <NFTCardBadge Margin="Margin.Is1.FromEnd" NFTType="@NFTType" />
+    @if (IsGallery)
+    {
+        <Badge Color="Color.Success" Margin="Margin.Is1.FromEnd">Gallery</Badge>
+    }
+    @if (IsOfferedToSell)
+    {
+        <Badge Color="Color.Warning" Margin="Margin.Is1.FromEnd">Buy Me :)</Badge>
+    }
+    @foreach(var tag in TagsList)
+    {
+        @MatchTag(tag)
+    }
+}
+
+@code {
+    private enum TagsTypes
+    {
+        Neblio,
+        Doge,
+        Dogepalooza
+    }
+
+    [Parameter] public NFTTypes NFTType { get; set; } = NFTTypes.Image;
+    [Parameter] public bool IsGallery { get; set; } = false;
+    [Parameter] public bool IsOfferedToSell { get; set; } = false;
+
+    [Parameter] public IEnumerable<string> TagsList { get; set; }
+    [Parameter] public string TokenId { get; set; } = NFTHelpers.TokenId;
+
+    private RenderFragment GetTokenBadge()
+    {
+        var imageurl = AppData.VENFTImageLink;
+        if (!string.IsNullOrEmpty(TokenId))
+        {
+            if (AppData.Account.TokensSupplies.TryGetValue(TokenId, out var dto))
+                return
+                @<Badge Color="Color.Light">
+                    <Image Source="@dto.ImageUrl" Style="width:11px; max-width:11px; height:11px; max-height:11px; margin-bottom:1px;" />
+                    &nbsp;@dto.TokenSymbol
+                 </Badge>
+                ;
+        }
+        return
+        @<Badge Color="Color.Light">
+            <Image Source="@AppData.VENFTImageLink" Style="width:11px; max-width:11px; height:11px; max-height:11px; margin-bottom:1px;" />
+            &nbsp;VENFT
+        </Badge>
+        ;
+    }
+
+    public void LoadList(NFTTypes nfttype, IEnumerable<string> tags)
+    {
+        if (tags != null)
+        {
+            NFTType = nfttype;
+            TagsList = tags;
+            StateHasChanged();
+        }
+    }
+
+    RenderFragment MatchTag(string tag)
+    {
+        var text = tag.ToLower();
+        if (NeblioTags.Match(text))
+            return @<NeblioTags Text="@tag" Margin="Margin.Is1.FromEnd" />;        
+        else if (DogepaloozaTags.Match(text))
+            return @<DogepaloozaTags Text="@tag" Margin="Margin.Is1.FromEnd" />;
+        else if (DogecoinTags.Match(text))
+            return @<DogecoinTags Text="@tag" Margin="Margin.Is1.FromEnd" />;
+        else if (NFTType == NFTTypes.Ticket && text == "Used")
+            return @<Badge Color="Color.Danger" Margin="Margin.Is1.FromEnd" >#@tag Ticket</Badge>;
+        else if (NFTType == NFTTypes.Ticket && text == "FreeToUse")
+            return @<Badge Color="Color.Success" Margin="Margin.Is1.FromEnd" >#@tag Ticket</Badge>;
+        else 
+            return @<Badge Color="Color.Primary" Margin="Margin.Is1.FromEnd" >#@tag</Badge>;
+    }
+}

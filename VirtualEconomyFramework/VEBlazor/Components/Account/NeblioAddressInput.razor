@@ -1,0 +1,160 @@
+﻿@using VEDriversLite
+@using VEDriversLite.UnstoppableDomains
+@inject AppData AppData
+
+<Heading Size="HeadingSize.Is6">
+    Please enter the Neblio Address
+</Heading>
+<Row>
+    <Column>
+        <Field>
+            <FieldBody>
+                <Addons>
+                    @if (WithBookmarksList)
+                    {
+                        <Addon AddonType="AddonType.Start">
+                            <Dropdown Display="Display.Block">
+                                <DropdownToggle Color="Color.Light">
+                                    <Icon Name="IconName.Star" IconStyle="IconStyle.Solid" IconSize="IconSize.Small" Margin="Margin.Is1.FromEnd" />
+                                </DropdownToggle>
+                                <DropdownMenu MaxMenuHeight="250px" >
+                                    @foreach (var bkm in AppData.Account.Bookmarks)
+                                    {
+                                        <DropdownItem Value="@bkm.Address" Clicked="@((e) => selectReceiverFromBookmarkHandler(bkm.Address))">
+                                            <Field>
+                                                <FieldLabel>@bkm.Name</FieldLabel>                                       
+                                                <FieldHelp>@bkm.Address</FieldHelp>
+                                            </Field>
+                                        </DropdownItem>
+                                    }
+                                </DropdownMenu>
+                        </Dropdown>                  
+                    </Addon>
+                    }
+                    <Addon AddonType="AddonType.Body">
+                        <TextEdit Placeholder="Enter the Neblio Address" @bind-Text="receiver" @onchange="receiverAddressChangedHandler" />
+                    </Addon>
+                    
+                    <Addon AddonType="AddonType.End">
+                        <AddonLabel>
+                            @if ( unstoppableDomainAddressUsed )
+                            {
+                                <Figure Size="FigureSize.Is16x16">
+                                    <FigureImage Source="https://ipfs.infura.io/ipfs/QmaFtT8WkXaaEZaBWePzCBXMYGHd4nZapBrTx9Y7QFQvEi" />
+                                </Figure>  
+                            }
+                            @if ( validAddress )
+                            {
+                                <Icon Name="IconName.Check" IconSize="IconSize.Small" TextColor="TextColor.Success"></Icon>
+                            }
+                            else
+                            {
+                                <Icon Name="IconName.Ban" IconSize="IconSize.Small" TextColor="TextColor.Danger"></Icon>
+                            }
+                        </AddonLabel>
+                    </Addon>                    
+                </Addons>
+            </FieldBody>
+            <FieldHelp>Please enter the Neblio Blockchain Address. You can use Unstoppable Domains name if Address has some.</FieldHelp>
+        </Field>
+    </Column>
+</Row>
+
+@code {
+
+    public string SelectedReceiverFromBookmarks { get; set; } = string.Empty;
+    private string receiver = string.Empty;
+    [Parameter]
+    public string Receiver
+    {
+        get => receiver;
+        set
+        {
+            if ( !string.IsNullOrEmpty( value ) )
+            {
+                if ( receiver != value )
+                {
+                    receiver = value;
+                    checkAddress( receiver );
+                }
+            }
+        }
+    }
+    [Parameter]
+    public EventCallback<string> ReceiverChanged { get; set; }
+    [Parameter]
+    public bool WithBookmarksList { get; set; } = true;
+
+    [Parameter]
+    public EventCallback<string> AddressCheckedInputed { get; set; }
+
+    private bool validAddress = false;
+    private bool unstoppableDomainAddressUsed = false;
+    private string unstoppableDomainAddress = string.Empty;
+
+    private void receiverAddressChangedHandler( EventArgs e )
+    {
+        if ( string.IsNullOrEmpty( receiver ) )
+            return;
+        if ( receiver.Length < 8 )
+            return;
+
+        ReceiverChanged.InvokeAsync( receiver );
+        checkAddress( receiver );
+        StateHasChanged();
+    }
+
+    private void selectReceiverFromBookmarkHandler(string address)
+    {
+        var a = NeblioTransactionHelpers.ValidateNeblioAddress(address);
+        if (!string.IsNullOrEmpty(a))
+            SelectedReceiverFromBookmarks = address;
+        else
+            SelectedReceiverFromBookmarks = string.Empty;
+                    
+        Receiver = address;
+        ReceiverChanged.InvokeAsync(receiver);
+        StateHasChanged();
+    }
+
+    private async Task checkAddress( string address )
+    {
+        if ( string.IsNullOrEmpty( address ) )
+            return;
+
+        var add = string.Empty;
+        if ( address.Contains( ".crypto" ) || address.Contains( ".coin" ) || address.Contains( ".wallet" ) || address.Contains( ".nft" ) || address.Contains( ".bitcoin" ) )
+        {
+            add = await UnstoppableDomainsHelpers.GetNeblioAddress( address );
+            if ( !string.IsNullOrEmpty( add ) )
+            {
+                unstoppableDomainAddressUsed = true;
+                unstoppableDomainAddress = add;
+            }
+            else
+            {
+                unstoppableDomainAddressUsed = false;
+                unstoppableDomainAddress = string.Empty;
+            }
+        }
+        else
+        {
+            add = address;
+            unstoppableDomainAddress = string.Empty;
+            unstoppableDomainAddressUsed = false;
+        }
+        var res = NeblioTransactionHelpers.ValidateNeblioAddress( add );
+        if ( !string.IsNullOrEmpty( res ) )
+        {
+            validAddress = true;
+            Receiver = res;
+            await AddressCheckedInputed.InvokeAsync( receiver );
+        }
+        else
+        {
+            validAddress = false;
+            await AddressCheckedInputed.InvokeAsync( string.Empty );
+        }
+        StateHasChanged();
+    }
+}

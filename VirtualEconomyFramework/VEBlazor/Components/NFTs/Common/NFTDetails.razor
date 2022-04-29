@@ -1,0 +1,72 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@inject AppData AppData
+@inherits NFTComponentBase
+
+@if ( NFT != null )
+{
+    <Modal @ref="NFTDetailsModal">
+        <ModalContent Centered Size="ModalSize.ExtraLarge">
+            <ModalHeader>
+                <ModalTitle>@NFT.Name - Details</ModalTitle>
+                <CloseButton />
+            </ModalHeader>
+            <ModalBody>
+                <Row>
+                    <Column>
+                        <NFTBasicInfo NFT="@NFT" />
+
+                        <NFTText Text="@NFT.Text" />
+                    </Column>
+                    
+                    <Column>
+                        <Card Margin="Margin.Is4.FromBottom">
+                            <CardBody>
+                                <CardTitle Size="5">@SpecificInfoHeading</CardTitle>
+                                @ChildContent
+                            </CardBody>
+                        </Card>
+
+                        <NFTActionControl Address="@Address" 
+                                          IsSubAccount="@IsSubAccount" 
+                                          HideOpenInWorkTabButton="@HideOpenInWorkTabButton"
+                                          IsOwnNFT="@IsOwnNFT" 
+                                          OpenNFTsInWorkTab="@OpenNFTInWorkTabHandler"
+                                          NFT="@NFT" 
+                                          NFTSent="@NFTSentHandler" />
+                        
+                        <StorageInfoActions IPFSLink="@NFT.ImageLink" Utxo="@NFT.Utxo" UtxoIndex="@NFT.UtxoIndex" />
+                        
+                    </Column>
+                </Row>
+                 <NotificationAlert />
+            </ModalBody>
+        </ModalContent>
+    </Modal>
+}
+
+@code {
+    private Modal? NFTDetailsModal;
+
+    [Parameter]
+    public string SpecificInfoHeading { get; set; } = "Specific Info";
+
+    public bool ShowNFTDetails(INFT nft = null)
+    {
+        if (NFT == null && nft == null)
+            return false;
+        else if (NFT == null && nft != null)
+        {
+            NFT = nft;
+            StateHasChanged();
+        }   
+        NFTDetailsModal?.Show();
+        return true;
+    }
+    public bool HideNFTDetails()
+    {
+        NFTDetailsModal?.Hide();
+        return true;
+    }
+
+}

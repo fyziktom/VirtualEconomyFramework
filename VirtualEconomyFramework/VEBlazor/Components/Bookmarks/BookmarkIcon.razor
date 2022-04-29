@@ -1,0 +1,154 @@
+﻿@using VEDriversLite.Bookmarks
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject AppData AppData
+
+@if (!HideIcon)
+{
+    @if (IsInBookmarks)
+    {
+        <Icon Name="IconName.Star" IconStyle="IconStyle.Solid" TextColor="TextColor.Warning" Clicked="@showAddOrRemoveBookmark"></Icon>
+    }
+    else
+    {
+        <Icon Name="IconName.Star" IconStyle="IconStyle.Regular" Clicked="@showAddOrRemoveBookmark"></Icon>
+    }
+}
+
+<Modal @ref="AddBookmarkModal">
+    <ModalContent Centered>
+        <ModalHeader>
+            <ModalTitle>@(IsEditing ? "Edit Bookmark" : "Add Bookmark")</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+        @if (!FieldForAddress)
+        {
+            <Field>
+                <FieldLabel>Neblio Address</FieldLabel>
+                <Span>@Address</Span>
+            </Field>   
+        }
+        else {
+            <Field>
+                <FieldLabel>Please enter the Neblio Address.</FieldLabel>
+                <NeblioAddressInput @bind-Receiver="Address" WithBookmarksList="false" />
+            </Field>  
+        }
+        <Validations @ref="@validationsRef" Mode="ValidationMode.Manual">
+            <Validation Validator="ValidationRule.IsNotEmpty">
+                <Field>
+                    <FieldLabel>Please enter the name.</FieldLabel>
+                    <TextEdit Placeholder="Enter name" @bind-Text="NewBookmark.Name">
+                        <Feedback>
+                            <ValidationError>Missing name.</ValidationError>
+                        </Feedback>
+                    </TextEdit>
+                </Field>
+            </Validation>
+        </Validations>
+        <Field>
+            <FieldLabel>Please enter the Note.</FieldLabel>
+            <TextEdit Placeholder="Enter note - optional" @bind-Text="NewBookmark.Note" />
+        </Field>
+            
+        </ModalBody>
+        <ModalFooter>
+            <Button Color="Color.Primary" Clicked=@AddBookmarkConfirm>@(IsEditing ? "Save" : "Add To Bookmarks")</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+
+@code {
+    [Inject] INotificationService? NotificationService { get; set; }
+
+    [Inject] public IMessageService? MessageService { get; set; }
+
+    [Parameter] public bool IsInBookmarks { get; set; }
+    [Parameter] public bool HideIcon { get; set; } = false;
+    [Parameter] public bool IsEditing { get; set; } = false;
+    [Parameter] public bool FieldForAddress { get; set; } = false;
+    [Parameter] public Bookmark NewBookmark { get; set; } = new Bookmark();
+
+    [Parameter] public EventCallback<Bookmark> BookmarkChanged { get; set; }
+
+    private string _address = string.Empty;
+    [Parameter]
+    public string Address
+    {
+        get => _address;
+        set
+        {
+            if (!string.IsNullOrEmpty(value))
+                _address = value;
+        }
+    }
+
+    private Modal? AddBookmarkModal;
+    private Validations? validationsRef;
+    
+    private async Task showAddOrRemoveBookmark()
+    {
+        if (!IsInBookmarks && AddBookmarkModal != null)
+            await AddBookmarkModal.Show();
+        else
+            await RemoveBookmark();
+    }
+
+    private async Task AddBookmarkConfirm()
+    {
+        NewBookmark.Address = _address;
+        await AddBookmark(NewBookmark.Name, NewBookmark.Address, NewBookmark.Note);
+        if (AddBookmarkModal != null )
+            await AddBookmarkModal.Hide();
+    }
+
+    public async Task AddBookmark(string name, string address, string note)
+    {
+        if (!string.IsNullOrEmpty(name) && !string.IsNullOrEmpty(address))
+        {
+            var b = new VEDriversLite.Bookmarks.Bookmark()
+                {
+                    Name = name,
+                    Address = address,
+                    Note = note
+                };
+            if (IsEditing)
+                await AppData.RemoveBookmark(b.Address);
+                
+            var bks = await AppData.AddBookmark(b);
+            if (bks.Item1)
+                await BookmarkChanged.InvokeAsync(b);
+            
+            if ( NotificationService != null )                
+                await NotificationService.Success( "Bookmark Added", "Added" );
+        }
+    }
+
+    public async Task RemoveBookmark()
+    {
+        if (string.IsNullOrEmpty(_address))
+            return;
+        if ( MessageService != null )            
+            if (await MessageService.Confirm("Are you sure you want remove this bookmark?", "Remove Bookmark") == true)
+            {
+                await AppData.RemoveBookmark(_address);
+                NewBookmark = new VEDriversLite.Bookmarks.Bookmark() { Address = _address };
+                await BookmarkChanged.InvokeAsync(NewBookmark);
+                if ( NotificationService != null )
+                    await NotificationService.Success( "Bookmark Removed", "Removed" );
+            }     
+    }
+
+    public Task<bool> IsValidated()
+    {
+        if (validationsRef == null)
+            return Task.FromResult(false);
+        return validationsRef.ValidateAll();
+    }
+
+    public async Task ShowAddBookmarkModal() 
+    {
+        if ( AddBookmarkModal != null )
+            await AddBookmarkModal.Show();
+    }
+}

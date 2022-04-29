@@ -1,0 +1,241 @@
+﻿@using VEDriversLite.NFT
+@inject AppData AppData
+@inherits NFTComponentBase
+
+<Modal @ref="modalRef">
+    <ModalContent Centered Size="ModalSize.Large">
+        <ModalHeader>
+            <ModalTitle>Edit Profile</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <Row>
+                <Column>
+                    <Field>
+                        <FieldLabel>First Name</FieldLabel>
+                        <FieldBody>
+                            <TextEdit Placeholder="Enter your First Name" @bind-Text="Name" @onchange="nameChanged" />
+                        </FieldBody>
+                    </Field>
+                    <Field>
+                        <FieldLabel>Surname</FieldLabel>
+                        <FieldBody>
+                            <TextEdit Placeholder="Enter your Surame" @bind-Text="Surname" @onchange="surnameChanged" />
+                        </FieldBody>
+                    </Field>
+                    <Field>
+                        <FieldLabel>Nickname</FieldLabel>
+                        <FieldBody>
+                            <TextEdit Placeholder="Enter your Nickname" @bind-Text="Nickname" @onchange="nicknameChanged" />
+                        </FieldBody>
+                    </Field>
+                    <Field>
+                        <FieldLabel>Bio</FieldLabel>
+                        <FieldBody>
+                            <MemoEdit Placeholder="Enter your Bio" Rows="7" @bind-Text="Description" @onchange="descriptionChanged" />
+                        </FieldBody>
+                    </Field>
+                </Column>
+                <Column>
+                    @if ( !string.IsNullOrEmpty( @NFT.ImageLink ) )
+                    {
+                        <Row>
+                            <Column>
+                                <Figure Size="FigureSize.Is128x128">
+                                    <FigureImage Source="@NFT.ImageLink" AlternateText="empty-128x128" />
+                                    <FigureCaption>Original Image</FigureCaption>
+                                </Figure>
+                            </Column>
+                        </Row>
+                    }
+                    <Row Margin="Margin.Is3.FromTop">
+                        <Column>
+                            <UploadData NFT="@NFT" NFTChanged="@NFTChangedHandler" Multiple="true" SmallThumbnails="true"/>
+                        </Column>
+                    </Row>
+                </Column>
+            </Row>
+            <Row Margin="Margin.Is3.FromTop">
+                <Column>
+                    @if (!mintingChanges)
+                    {
+                        @if ( minted )
+                        {
+                            <Alert Color="Color.Success">
+                                <Icon Name="IconName.Check" />
+                                <Span>Profile successfully saved! TxId: @result</Span>
+                            </Alert>
+                        }
+                        if ( mintError )
+                        {
+                            <Alert Color="Color.Danger">
+                                <Icon Name="IconName.Ban" />
+                                <Span>Cannot save! Error: @result</Span>
+                            </Alert>
+                        }
+                    }
+                </Column>
+            </Row>         
+            
+            <NotificationAlert />
+        </ModalBody>
+        <ModalFooter>
+            <Button Loading="@mintingChanges" Color="Color.Light" Clicked="@MintProfile">
+                <Icon Name="IconName.Edit" Margin="Margin.Is1.FromStart.Is2.FromEnd" />
+                Save
+            </Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+
+
+@code {
+    Modal? modalRef;
+
+    [Inject] INotificationService? NotificationService { get; set; }
+
+    [Inject] IPageProgressService? PageProgressService { get; set; }
+
+    string _name = string.Empty;
+    [Parameter]
+    public string Name { get => _name; set => _name = value; }
+    [Parameter]
+    public EventCallback<string> NameChanged { get; set; }
+
+    string _surname = string.Empty;
+    [Parameter]
+    public string Surname { get => _surname; set => _surname = value; }
+    [Parameter]
+    public EventCallback<string> SurnameChanged { get; set; }
+
+    string _nickname = string.Empty;
+    [Parameter]
+    public string Nickname { get => _nickname; set => _nickname = value; }
+    [Parameter]
+    public EventCallback<string> NicknameChanged { get; set; }
+
+
+    string _description = string.Empty;
+    [Parameter]
+    public string Description { get => _description; set => _description = value; }
+    [Parameter]
+    public EventCallback<string> DescriptionChanged { get; set; }
+
+    bool mintingChanges = false;
+    bool minted = false;
+    string result = string.Empty;
+    bool mintError = false;
+
+    public async Task Show()
+    {
+        mintError = false;
+        minted = false;
+        if (modalRef != null)
+            await modalRef.Show();
+    }
+
+    async Task nameChanged( ChangeEventArgs e )
+    {
+        if (e == null || e.Value == null) return;
+
+        AppData.Account.Profile.Name = (string)e.Value;
+        NFT.Name = (string)e.Value;
+        await NameChanged.InvokeAsync( (string)e.Value );
+    }
+    async Task surnameChanged( ChangeEventArgs e )
+    {
+        if (e == null || e.Value == null) return;        
+
+        AppData.Account.Profile.Surname = (string)e.Value;
+        ( NFT as ProfileNFT ).Surname = (string)e.Value;
+        await SurnameChanged.InvokeAsync( (string)e.Value );
+    }
+    async Task nicknameChanged( ChangeEventArgs e )
+    {
+        if (e == null || e.Value == null) return;
+
+        AppData.Account.Profile.Nickname = (string)e.Value;
+        ( NFT as ProfileNFT ).Nickname = (string)e.Value;
+        await NicknameChanged.InvokeAsync( (string)e.Value );
+    }
+    async Task descriptionChanged( ChangeEventArgs e )
+    {
+        if (e == null || e.Value == null) return;        
+
+        AppData.Account.Profile.Description = (string)e.Value;
+        NFT.Description = (string)e.Value;
+        await DescriptionChanged.InvokeAsync( (string)e.Value );
+    }
+    void NFTChangedHandler( INFT e )
+    {
+        if ( e is null )
+            return;
+
+        NFT = e;
+        if (e.Type == NFTTypes.Profile)
+            AppData.Account.Profile = (e as ProfileNFT);
+    }
+    async Task MintProfile()
+    {
+        mintError = false;
+        mintingChanges = true;
+        if (PageProgressService != null)
+            await PageProgressService.Go( null, options => { options.Color = Color.Primary; } );
+            
+        if (NotificationService != null)
+            await NotificationService.Info( "Sending data...", "Sending" );
+              
+        await InvokeAsync( StateHasChanged );
+        
+        if ( AppData.Account.TokensSupplies.TryGetValue( AppData.AppTokenId, out var supply ) )
+        {
+            if ( supply.Amount > 3 )
+                NFT.TokenId = AppData.AppTokenId;
+            else
+                NFT.TokenId = NFTHelpers.TokenId;
+        }
+        else
+        {
+            NFT.TokenId = NFTHelpers.TokenId;
+        }
+            
+        var res = (false, string.Empty);
+        if ( string.IsNullOrEmpty( NFT.Utxo ) )
+            res = await AppData.Account.MintNFT( NFT );
+        else
+            res = await AppData.Account.ChangeNFT( NFT );
+
+        minted = res.Item1;
+        result = res.Item2;
+        
+        if (NotificationService != null)
+        {
+            if (res.Item1)
+                await NotificationService.Success( "Sent Successfull.", "Send success" );
+            else
+                await NotificationService.Warning( res.Item2, "Cannot sent" );
+        }
+        if ( res.Item1 )
+        {
+            Console.WriteLine( "Profile saved. Txid: " + result );
+            NFT.Utxo = result;
+            StateHasChanged();
+            await Task.Delay(2000); //to let read success message in modal before hide
+            
+            await NFTChanged.InvokeAsync( NFT );
+            AppData.Account.Profile.Utxo = result;
+            if (modalRef != null)
+                await modalRef.Hide();
+        }
+        else
+        {
+            mintError = true;
+            Console.WriteLine( "Cannot mint the profile: " + result );
+        }
+
+        if (PageProgressService != null)
+            await PageProgressService.Go( -1 );
+        mintingChanges = false;
+        StateHasChanged();
+    }
+}

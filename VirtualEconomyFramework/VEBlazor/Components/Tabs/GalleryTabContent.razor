@@ -1,0 +1,55 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@inject AppData AppData
+@inherits AccountRelatedComponentBase 
+
+<Container Fluid>
+    <Row Margin="Margin.Is4.FromTop" Width="Width.Is100" Padding="Padding.Is0">
+        <Column Flex="Flex.AlignContent.Center">
+            <Heading Size="HeadingSize.Is5">
+                <Tooltip Inline Text="@(bookmark.Item1 ? (MarkupString)"Bookmark Name:<br />" + bookmark.Item2.Name + (MarkupString)"<br /><br /> Note:<br />" + bookmark.Item2.Note : "This tab is not in bookmark. You can add it by click to the star icon.")" Placement="TooltipPlacement.Bottom">
+                    <Text Margin="Margin.Is3.FromEnd">
+                       Address: <Text CopyToClipboard="true" TextOverflow="TextOverflow.Wrap" Style="word-break: break-all;">@(bookmark.Item1 ? (bookmark.Item2.Name + " - " + NeblioTransactionHelpers.ShortenAddress(bookmark.Item2.Address)) : this.Address)</Text>
+                    </Text>
+                </Tooltip>
+                @if (!string.IsNullOrEmpty(Address))
+                {                
+                <Tooltip Inline Text="@(bookmark.Item1 ? "Remove from bookmarks." : "Add to bookmarks")" Placement="TooltipPlacement.Bottom">
+                    <Span Margin="Margin.Is1.FromBottom">
+                        <BookmarkIcon Address="@Address"
+                                      IsInBookmarks="AppData.Account.IsInTheBookmarks(Address).Item1"
+                                      BookmarkChanged="@StateHasChanged" />
+                    </Span>
+                </Tooltip>
+                <Tooltip Inline Text="You can share your gallery with this link." Placement="TooltipPlacement.Bottom">
+                    <Span Margin="Margin.Is1.FromBottom">
+                            <CopyIcon TextToCopy="@($"{AppData.AppShareNFTUrl}/gallery?addr={Address}")"/>  
+                    </Span>
+                </Tooltip>
+                }                
+            </Heading>
+        </Column>
+    </Row>
+
+    <Row Margin="Margin.Is2.FromTop" Flex="Flex.AlignContent.Center" Padding="Padding.Is0">
+        <Column Padding="Padding.Is0">
+            <NFTCardList Address="@Address"
+                         IsSubAccount="@IsSubAccount"
+                         IsOwnNFT="@IsOwnNFT"
+                         OpenNFTsInWorkTab="async (e) => await OpenNFTsInWorkTab.InvokeAsync(e)" />
+        </Column>
+    </Row>
+</Container>
+@code {
+
+    [Parameter]
+    public EventCallback<List<INFT>> OpenNFTsInWorkTab { get; set; }
+
+    private (bool, VEDriversLite.Bookmarks.Bookmark) bookmark = (false, new VEDriversLite.Bookmarks.Bookmark());
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        bookmark = AppData.Account.IsInTheBookmarks( Address );
+    }
+}

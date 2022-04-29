@@ -1,0 +1,181 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@using VEDriversLite.NFT.Dto
+@inherits NFTBase
+@inject HttpClient Http
+
+
+<Container Fluid>
+    <Row>
+        <Column>
+            @if (NFT.DataItems != null && NFT.DataItems.Count > 0)
+            {
+                <Row Margin="Margin.Is2.FromBottom" Border="Border.Is1.Primary" Flex="Flex.JustifyContent.Center">                               
+                    @foreach (var item in NFT.DataItems)
+                    {
+                        <Column Flex="Flex.JustifyContent.Center">
+                            <Card Style="max-width:50px; min-width:50px; width:50px;" Margin="Margin.Is1.FromEnd" >
+                                @if (item.Type == DataItemType.Image)
+                                {                            
+                                <CardImage Border="@(item.IsMain ? Border.Is2.Success : Border.Is0)" 
+                                            Source="@(NFTHelpers.GetIPFSLinkFromHash(item.Hash))" 
+                                            @onclick="() => DisplayItem(item)" 
+                                            Style="max-width:40px; min-width:25px; min-height:25px; max-height:80px;"/> 
+                                }
+                                else if (item.Type == DataItemType.PDF)
+                                {
+                                    <CardImage Border="@(item.IsMain ? Border.Is2.Success : Border.Is0)" 
+                                            Source="_content/VEBlazor/images/pdf-image.png" 
+                                            @onclick="() => DisplayItem(item)" 
+                                            Style="max-width:40px; min-width:25px; min-height:25px; max-height:80px;"/> 
+                                }
+                                else if (item.Type == DataItemType.AVMedia)
+                                {
+                                    <CardImage Border="@(item.IsMain ? Border.Is2.Success : Border.Is0)" 
+                                            Source="_content/VEBlazor/images/blankvideo.png" 
+                                            @onclick="() => DisplayItem(item)" 
+                                            Style="max-width:40px; min-width:25px; min-height:25px; max-height:80px;"/> 
+                                }
+                                else if (item.Type == DataItemType.JSON)
+                                {
+                                    <CardImage Border="@(item.IsMain ? Border.Is2.Success : Border.Is0)" 
+                                            Source="_content/VEBlazor/images/json-image.png" 
+                                            @onclick="() => DisplayItem(item)" 
+                                            Style="max-width:40px; min-width:25px; min-height:25px; max-height:80px;"/> 
+                                }
+                                else if (item.Type == DataItemType.HTML)
+                                {
+                                    <CardImage Border="@(item.IsMain ? Border.Is2.Success : Border.Is0)" 
+                                            Source="_content/VEBlazor/images/html-image.png" 
+                                            @onclick="() => DisplayItem(item)" 
+                                            Style="max-width:40px; min-width:25px; min-height:25px; max-height:80px;"/> 
+                                }
+                                else if (item.Type == DataItemType.Mermaid)
+                                {
+                                    <CardImage Border="@(item.IsMain ? Border.Is2.Success : Border.Is0)" 
+                                            Source="_content/VEBlazor/images/mermaid-image.png" 
+                                            @onclick="() => DisplayItem(item)" 
+                                            Style="max-width:40px; min-width:25px; min-height:25px; max-height:80px;"/> 
+                                }
+                            </Card> 
+                        </Column>
+                    }
+                </Row>
+            }
+            <Row Border="Border.Is1.Primary">
+                <Column> 
+                    @if (actualFileType == DataItemType.Image)
+                    {
+                        <PanzoomImage Source="@actualImageLink" />
+                    }
+                    else if (actualFileType == DataItemType.AVMedia)
+                    {
+                        <Div>
+                            <Video Source="@actualImageLink" />
+                        </Div>
+                    }
+                    else if (actualFileType == DataItemType.PDF)
+                    {
+                        @if (!DisplayPDF)
+                        {                        
+                        <Row>
+                            <Column>
+                                <Row>
+                                    <Column Flex="Flex.JustifyContent.Center">
+                                        <Figure Size="FigureSize.Is256x256">
+                                            <FigureImage Source="_content/VEBlazor/images/pdf-image.png" />
+                                            <FigureCaption>This is the PDF file. Please display it in new browser tab</FigureCaption>
+                                        </Figure>
+                                    </Column>
+                                </Row>
+                                <Row Margin="Margin.Is2.FromTop">
+                                    <Column>
+                                            <Button Color="Color.Primary" 
+                                                    Type="ButtonType.Link" 
+                                                    To="@actualImageLink" 
+                                                    Target="Target.Blank" 
+                                                    Block>
+                                                Open PDF in new Tab
+                                            </Button>                      
+                                    </Column>
+                                </Row>   
+                                </Column>
+                        </Row>
+                        }
+                        else
+                        {                      
+                            <embed src="@actualImageLink" style="width:100%; height:100%; min-height:600px;" />
+                        }
+                    }
+                    else if (actualFileType == DataItemType.JSON)
+                    {
+                        <JsonViewer @ref="JsonViewerRef"></JsonViewer>
+                    }
+                    else if (actualFileType == DataItemType.HTML)
+                    {
+                        <iframe src="@NFT.ImageLink" frameborder="0" style="min-width:300px; min-height:500px; width:100%; height:100%;"></iframe>
+                    }
+                    else if (actualFileType == DataItemType.Mermaid)
+                    {   
+                        <MermaidEditor @ref="mermaidTextRef" OnDataSaved="OnDataSavedHandler"  />
+                    }
+                </Column> 
+            </Row> 
+        </Column>
+    </Row>
+</Container>
+
+
+@code {
+    [Parameter] public bool DisplayPDF { get; set; } = false;
+
+    JsonViewer? JsonViewerRef;
+    MermaidEditor? mermaidTextRef;
+
+    VEDriversLite.NFT.Dto.NFTDataItem displayedItem = null;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            if (NFT != null && NFT.DataItems != null && NFT.DataItems.Count > 0)
+            {
+                var item = NFT.DataItems.FirstOrDefault();
+                if (item != null)
+                    await DisplayItem(item);
+            }
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    async Task DisplayItem(VEDriversLite.NFT.Dto.NFTDataItem item)
+    {
+        foreach (var i in NFT.DataItems)
+            i.IsMain = false;
+
+        item.IsMain = true;
+        displayedItem = item;
+        await InvokeAsync( StateHasChanged );
+        
+        NFT.ImageLink = NFTHelpers.GetIPFSLinkFromHash(item.Hash); 
+        if (actualFileType == DataItemType.JSON)
+        {
+            var data = await Http.GetStringAsync(NFT.ImageLink);
+            if (JsonViewerRef != null)
+                await JsonViewerRef.Render(data);
+        }
+        if (item.Type == DataItemType.Mermaid)
+        {
+            if (mermaidTextRef != null)
+                await mermaidTextRef.LoadFromIPFS(item.Hash);
+        }
+        await InvokeAsync( StateHasChanged );
+    }  
+
+    void OnDataSavedHandler(string hash)
+    {
+        if (displayedItem != null)
+            displayedItem.Hash = hash;
+        StateHasChanged();
+    }
+}

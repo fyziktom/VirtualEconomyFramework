@@ -1,0 +1,71 @@
+﻿@using VEDriversLite.NFT
+@using VEDriversLite.NFT.Dto
+@inject AppData AppData
+@inherits NFTComponentBase
+
+<Card Margin="Margin.Is4.FromBottom">
+    <CardBody>
+        <CardTitle Size="5">Basic Info</CardTitle>
+         
+        <NFTDataItem NFT="@NFT" />
+        
+        <CardText Margin="Margin.Is2.FromTop">
+            @NFT.Description
+        </CardText>
+        <Row Margin="Margin.Is2.FromTop" Flex="Flex.AlignContent.Center">
+            <Column>
+                <Tags NFTType="@NFT.Type" 
+                      TagsList="@NFT.TagsList" 
+                      TokenId="@NFT.TokenId" 
+                      IsGallery="@(NFT.DataItems.Count > 1 ? true : false)" 
+                      IsOfferedToSell="@NFT.PriceActive" />
+            </Column>
+        </Row>
+        @if (NFT.PriceActive)
+        {
+            <Row Margin="Margin.Is2.FromTop" >
+                <Column Flex="Flex.JustifyContent.Center">
+                    <Span>Setted Price: @(NFT.Price) NEBL</Span><Image Source="@AppData.NeblioImageLink" Margin="Margin.Is3.FromStart" Style="max-width:16px;max-height:16px;" />
+                </Column>
+            </Row>
+            @if (NFT.SellJustCopy)
+            {          
+                <Row Margin="Margin.Is2.FromTop" >
+                    <Column Flex="Flex.JustifyContent.Center">
+                        <Span>Selling just the copies of NFT</Span>
+                    </Column>
+                </Row>
+            }
+            else
+            {       
+                <Row Margin="Margin.Is2.FromTop" >
+                    <Column Flex="Flex.JustifyContent.Center">
+                        <Span>Selling the original of NFT</Span>
+                    </Column>
+                </Row>
+            }
+        }
+        
+        @if (!string.IsNullOrEmpty(NFT.Utxo))
+        {
+            <Row Margin="Margin.Is2.FromTop"> 
+                <Column> 
+                    <CopyButton TextToCopy="@($"{AppData.AppShareNFTUrl}/gallery?utxo={NFT.Utxo}:{NFT.UtxoIndex}")" ButtonText="Copy Share Link" /> 
+                </Column> 
+            </Row>
+            @if (NFT.PriceActive)
+            {
+            <Row Margin="Margin.Is2.FromTop"> 
+                <Column> 
+                    <CopyButton TextToCopy="@($"{AppData.AppShareNFTUrl}/buynft?utxo={NFT.Utxo}&index={NFT.UtxoIndex}")" ButtonText="Copy Buy Link" /> 
+                </Column> 
+            </Row>
+            <Row Margin="Margin.Is2.FromTop"> 
+                <Column> 
+                    <Button Color="Color.Secondary" Type="ButtonType.Link" To="@($"{AppData.AppShareNFTUrl}/buynft?utxo={NFT.Utxo}&index={NFT.UtxoIndex}")" Target="Target.Blank" Block >Open Buy Link</Button> 
+                </Column> 
+            </Row>
+            }            
+        }
+    </CardBody>
+</Card>

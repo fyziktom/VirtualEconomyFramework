@@ -1,0 +1,100 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@using VEDriversLite.NFT.Imaging.Xray
+@inject AppData AppData
+@inherits NFTComponentBase
+
+@if (NFT != null && !string.IsNullOrEmpty(NFT.Utxo))
+{
+<Modal @ref="NFTDestroyModal">
+    <ModalContent Centered>
+        <ModalHeader>
+            <ModalTitle>Recycle the NFT</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <Row Flex="Flex.AlignItems.Center">
+                <Column>
+                    <Span>Do you really want to recycle this NFT? You cannot take this action back. It will add the free 1 token back to your minting tokens.</Span>
+                </Column>
+            </Row>
+            <Row Flex="Flex.AlignItems.Center"> 
+                <Column>
+                    <Button Color="Color.Danger" Clicked="@DestroyNFTAction" Loading="@Destroying" Block>Yes, I understand. Recycle the NFT now.</Button>
+                </Column>
+            </Row>
+            @if (DestroyFinished)
+                {
+                    <Row Flex="Flex.AlignItems.Center">
+                        <Column>
+                            @if (DestroyResult.Item1)
+                            {
+                                <Alert Color="Color.Success">@DestroyResult.Item2</Alert>
+                            }
+                            else
+                            {
+                                <Alert Color="Color.Danger">@DestroyResult.Item2</Alert>
+                            }
+                        </Column>
+                    </Row>
+            }
+        </ModalBody>
+    </ModalContent>
+</Modal>
+}
+@code {
+    [Inject] INotificationService? NotificationService { get; set; }
+
+    private Modal? NFTDestroyModal;
+
+    bool Destroying = false;
+    bool DestroyFinished = false;
+    (bool,string) DestroyResult = (false,string.Empty);
+
+    public void ShowDestroyNFTModal(INFT nft = null)
+    {
+        if (nft != null) 
+            NFT = nft;
+        if (NFT == null) return;
+        NFTDestroyModal?.Show();
+    }
+    public void HideDestroyNFTModal()
+    {
+        if (NFT == null) return;
+        NFTDestroyModal?.Hide();
+    }
+
+    async Task DestroyNFTAction()
+    {
+        if (NFT == null) return;
+        Destroying = true;
+        StateHasChanged();
+        
+        if (NotificationService != null)
+            await NotificationService.Info( "Destroying data...", "Destroying" );
+             
+        if (!IsSubAccount)
+            DestroyResult = await AppData.Account.DestroyNFTs(new List<INFT>() { NFT });
+        else
+            DestroyResult = await AppData.Account.DestroyNFTOnSubAccount(Address, new List<INFT>() { NFT });
+
+        Console.WriteLine($"Destroy of the NFT result: {DestroyResult.Item1}, with message: {DestroyResult.Item2}");
+
+        DestroyFinished = false;
+        Destroying = false;
+        
+        if (NotificationService != null)
+        {
+            if (DestroyResult.Item1)
+                await NotificationService.Success( "Destroy Successfull.", "Destroy success" );
+            else
+                await NotificationService.Warning( DestroyResult.Item2, "Cannot destroy" );
+        }
+        StateHasChanged();
+
+        //close automatically after 2 seconds
+        await Task.Delay(2000);
+        HideDestroyNFTModal();
+        await NFTSent.InvokeAsync(new NFTSentResultDto() { sucess = DestroyResult.Item1, message = DestroyResult.Item2, NFT = NFT });       
+    }
+}

@@ -1,0 +1,98 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@using VEDriversLite.NFT.Imaging.Xray
+@inject AppData AppData
+@inherits NFTComponentBase
+
+@if (NFT != null && !string.IsNullOrEmpty(NFT.Utxo))
+{
+<Modal @ref="NFTSaveModal">
+    <ModalContent Centered>
+        <ModalHeader>
+            <ModalTitle>Use the NFT Ticket</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <Container Fluid>
+            <Row>
+                <Column Flex="Flex.AlignItems.Center">
+                    <Span>Do you really want to Use this NFT Ticket? You cannot take this action back.</Span>
+                </Column>
+            </Row>
+            <Row Flex="Flex.JustifyContent.Center"> 
+                <Column>
+                    <Button Color="Color.Primary" Clicked="@NFTAction" Loading="@Saving">Yes, I understand. Use the NFT Ticket now.</Button>
+                </Column>
+            </Row>
+            @if (SaveFinished)
+                {
+                    <Row Flex="Flex.JustifyContent.Center">
+                        <Column>
+                            @if (SaveResult.Item1)
+                            {
+                                <Alert Color="Color.Success">@SaveResult.Item2</Alert>
+                            }
+                            else
+                            {
+                                <Alert Color="Color.Danger">@SaveResult.Item2</Alert>
+                            }
+                        </Column>
+                    </Row>
+            }
+            </Container>
+        </ModalBody>
+    </ModalContent>
+</Modal>
+}
+@code {
+
+    private Modal? NFTSaveModal;
+
+    [Parameter]
+    public string Receiver { get; set; } = string.Empty;
+
+    bool Saving = false;
+    bool SaveFinished = false;
+    (bool,string) SaveResult = (false,string.Empty);
+
+    public void ShowSaveNFTModal()
+    {
+        if (NFT == null) return;
+        NFTSaveModal?.Show();
+    }
+    public void HideSaveNFTModal()
+    {
+        if (NFT == null) return;
+        NFTSaveModal?.Hide();
+    }
+
+    async Task NFTAction()
+    {
+        if (NFT == null) return;
+        if (NFT.Type != NFTTypes.Ticket) return;
+        if (string.IsNullOrEmpty(NFT.Utxo)) return;
+        if ((NFT as TicketNFT).Used) return;
+
+        (NFT as TicketNFT).Used = true;
+
+        Saving = true;
+        StateHasChanged();
+
+        if (!IsSubAccount)
+            SaveResult = await AppData.Account.UseNFTTicket(NFT);
+        else
+            SaveResult = await AppData.Account.UseTicketNFTOnSubAccount(Address, NFT);
+
+        Console.WriteLine($"Use Ticket of the NFT result: {SaveResult.Item1}, with message: {SaveResult.Item2}");
+        (NFT as TicketNFT).AddUsedTags();
+        
+        SaveFinished = false;
+
+        Saving = false;
+        StateHasChanged();
+
+        //close automatically after 2 seconds
+        await Task.Delay(2000);
+        await NFTSent.InvokeAsync(new NFTSentResultDto() { sucess = SaveResult.Item1, message = SaveResult.Item2, NFT = NFT });       
+    }
+}

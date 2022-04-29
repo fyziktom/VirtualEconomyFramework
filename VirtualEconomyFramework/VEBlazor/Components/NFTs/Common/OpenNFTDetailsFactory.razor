@@ -1,0 +1,148 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@using VEDriversLite.Bookmarks
+@inject AppData AppData
+@inherits NFTComponentBase
+
+@if(NFT.Type == NFTTypes.XrayImage)
+{
+    <XrayImagesDetails @ref=XrayImagesDetailsModalComponent
+                       NFT="@NFT"
+                       Address="@Address"
+                       IsOwnNFT="@IsOwnNFT"
+                       IsSubAccount="@IsSubAccount"
+                       HideOpenInWorkTabButton="@HideOpenInWorkTabButton"
+                       NFTSent="@NFTSentHandler"
+                       OpenNFTsInWorkTab="async (e) => await OpenNFTsInWorkTab.InvokeAsync(e)" />
+}
+else if(NFT.Type == NFTTypes.Event)
+{
+    <EventDetails @ref=EventDetailsModalComponent
+                       NFT="@NFT"
+                       Address="@Address"
+                       IsOwnNFT="@IsOwnNFT"
+                       IsSubAccount="@IsSubAccount"
+                       HideOpenInWorkTabButton="@HideOpenInWorkTabButton"
+                       NFTSent="@NFTSentHandler"
+                       OpenNFTsInWorkTab="async (e) => await OpenNFTsInWorkTab.InvokeAsync(e)" />                             
+}
+else if(NFT.Type == NFTTypes.Ticket)
+{
+    <TicketDetails @ref=TicketDetailsModalComponent
+                   NFT="@NFT"
+                   Address="@Address"
+                   IsOwnNFT="@IsOwnNFT"
+                   IsSubAccount="@IsSubAccount"
+                   HideOpenInWorkTabButton="@HideOpenInWorkTabButton"
+                   NFTSent="@NFTSentHandler"
+                   OpenNFTsInWorkTab="async (e) => await OpenNFTsInWorkTab.InvokeAsync(e)" />                              
+}
+else if(NFT.Type == NFTTypes.Payment)
+{
+    <NFTPaymentDetails @ref=NFTPaymentDetailsModalComponent
+                   NFT="@NFT"
+                   Address="@Address"
+                   IsOwnNFT="@IsOwnNFT"
+                   IsSubAccount="@IsSubAccount"
+                   HideOpenInWorkTabButton="@HideOpenInWorkTabButton"
+                   NFTSent="@NFTSentHandler"
+                   OpenNFTsInWorkTab="async (e) => await OpenNFTsInWorkTab.InvokeAsync(e)" />                              
+}
+else if(NFT.Type == NFTTypes.Receipt)
+{
+    <NFTReceiptDetails @ref=NFTReceiptDetailsModalComponent
+                   NFT="@NFT"
+                   Address="@Address"
+                   IsOwnNFT="@IsOwnNFT"
+                   IsSubAccount="@IsSubAccount"
+                   HideOpenInWorkTabButton="@HideOpenInWorkTabButton"
+                   NFTSent="@NFTSentHandler"
+                   OpenNFTsInWorkTab="async (e) => await OpenNFTsInWorkTab.InvokeAsync(e)" />                              
+}
+else if (NFT.Type == NFTTypes.Image || 
+         NFT.Type == NFTTypes.Post || 
+         NFT.Type == NFTTypes.Music)
+{
+            <NFTDetails @ref="NFTDetailsModalComponent"
+                Address="@Address" 
+                IsSubAccount="@IsSubAccount" 
+                IsOwnNFT="IsOwnNFT" 
+                NFT="@NFT" 
+                NFTSent="@NFTSentHandler" 
+                OpenNFTsInWorkTab="@OpenNFTInWorkTabHandler"
+                HideOpenInWorkTabButton="@HideOpenInWorkTabButton"
+                SpecificInfoHeading="NFT Details" />
+}
+
+@code {
+
+    private XrayImagesDetails? XrayImagesDetailsModalComponent;    
+    private TicketDetails? TicketDetailsModalComponent;
+    private EventDetails? EventDetailsModalComponent;
+    private NFTDetails? NFTDetailsModalComponent;
+    private NFTPaymentDetails? NFTPaymentDetailsModalComponent;
+    private NFTReceiptDetails? NFTReceiptDetailsModalComponent;
+
+    public async Task OpenNFTDetails(INFT nft)
+    {
+        if (nft == null) return;
+        NFT = nft;
+        StateHasChanged();
+        await Task.Delay(50);
+        
+        switch(nft.Type)
+        {
+            case NFTTypes.XrayImage:
+                XrayImagesDetailsModalComponent?.ShowNFTDetails(nft);
+                break;
+            case NFTTypes.Event:
+                EventDetailsModalComponent?.ShowNFTDetails(nft);
+                break;
+            case NFTTypes.Ticket:
+                TicketDetailsModalComponent?.ShowNFTDetails(nft);
+                break;
+            case NFTTypes.Image:
+                NFTDetailsModalComponent?.ShowNFTDetails(nft);
+                break;  
+            case NFTTypes.Post:
+                NFTDetailsModalComponent?.ShowNFTDetails(nft);
+                break;  
+            case NFTTypes.Payment:
+                NFTPaymentDetailsModalComponent?.ShowNFTDetails(nft);
+                break;  
+            case NFTTypes.Receipt:
+                NFTReceiptDetailsModalComponent?.ShowNFTDetails(nft);
+                break;  
+        }
+        return;
+    }
+
+    public void HideNFTDetails()
+    {
+        switch(NFT.Type)
+        {
+            case NFTTypes.XrayImage:
+                XrayImagesDetailsModalComponent?.HideNFTDetails();
+                break;
+            case NFTTypes.Event:
+                EventDetailsModalComponent?.HideNFTDetails();
+                break;
+            case NFTTypes.Ticket:
+                TicketDetailsModalComponent?.HideNFTDetails();
+                break;
+            case NFTTypes.Image:
+                NFTDetailsModalComponent?.HideNFTDetails();
+                break;
+            case NFTTypes.Post:
+                NFTDetailsModalComponent?.HideNFTDetails();
+                break;
+            case NFTTypes.Payment:
+                NFTPaymentDetailsModalComponent?.HideNFTDetails();
+                break;
+            case NFTTypes.Receipt:
+                NFTReceiptDetailsModalComponent?.HideNFTDetails();
+                break;
+        }
+        return;
+    }
+}

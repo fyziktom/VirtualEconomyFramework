@@ -1,0 +1,336 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@using VEDriversLite.NFT.Dto
+@using VEDriversLite.NFT.Imaging.Xray
+@inherits NFTComponentBase
+@inject AppData AppData
+
+@if (NFT != null)
+{
+    <Container Fluid Margin="Margin.Is4.FromBottom">
+        <Steps SelectedStep="@selectedStep" SelectedStepChanged="@OnSelectedStepChanged">
+            <Items>
+                <Step Name="stepUpload">Upload</Step>
+                <Step Name="stepData">Data Info</Step>
+                @if (SpecificParamsStepHeader != null)
+                {
+                    <Step Name="specificParams">@SpecificParamsStepHeader</Step>
+                }
+                <Step Name="stepFinish">
+                    <Marker>
+                        <Icon Name="IconName.Flag" />
+                    </Marker>
+                    <Caption>
+                        Finish
+                    </Caption>
+                </Step>
+            </Items>
+            <Content>
+                <StepPanel Name="stepUpload">
+                    <MintingToolbar ShowNextButton="true" ShowLoadFromTemplateButton="true" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
+                    <Row>
+                        <Column>
+                            <UploadData @ref="@uploadDataRef" NFT="@NFT" NFTChanged="@onPropsChangedHandler" Multiple="true"/>
+                        </Column>
+                    </Row>
+                    <MintingToolbar ShowNextButton="true" ShowLoadFromTemplateButton="true" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
+                </StepPanel>
+                <StepPanel Name="stepData">
+                    <MintingToolbar ShowNextButton="true" ShowPrevButton="true" ShowLoadFromTemplateButton="true" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
+                    <Row>
+                        <Column>
+                            <DataInfoForm @ref="@dataInfoFormRef" NFT="@NFT" NFTChanged="@onPropsChangedHandler" />
+                        </Column>
+                    </Row>
+                    <MintingToolbar ShowNextButton="true" ShowPrevButton="true" ShowLoadFromTemplateButton="true" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
+                </StepPanel>
+                <StepPanel Name="specificParams"> 
+                    <MintingToolbar ShowNextButton="true" ShowPrevButton="true" ShowLoadFromTemplateButton="true" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />                      
+                    @if (SpecificParamsStepContent != null)
+                    {
+                        <ErrorBoundary>
+                            @SpecificParamsStepContent
+                        </ErrorBoundary>
+                    }
+                    <MintingToolbar ShowNextButton="true" ShowPrevButton="true" ShowLoadFromTemplateButton="true" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
+                </StepPanel>
+
+                <StepPanel Name="stepFinish">
+                    <MintingToolbar ShowPrevButton="true" ShowFinishButton="@(!minting)" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
+                    <Row>
+                        <Column Flex="Flex.JustifyContent.Center">
+                            <Span>Now you can confirm the storage of the data.</Span>
+                        </Column>
+                    </Row>
+                    <Row>
+                        <Column Flex="Flex.JustifyContent.Center">
+                            <Span>Here you can check the expected result:</Span>
+                        </Column>
+                    </Row>
+                    <Row Margin="Margin.Is3.FromTop">
+                        <Column Flex="Flex.JustifyContent.Center">
+                            <NFTCard NFT="@NFT" OpenNFTDetailsRequest="OpenNFTDetailsRequestHandler" />
+                        </Column>
+                    </Row>
+                    <Row>
+                        <Column>
+                            <MultimintForm @ref=multimintFormRef 
+                                           MintingPageName="@MintingPageName" 
+                                           NFT="@NFT" 
+                                           Addresses="@(Addresses)" 
+                                           ConsoleOutFromMinting="@ConsoleOutFromMinting" />
+                        </Column>
+                    </Row>
+                    <Row Margin="Margin.Is3.FromTop">
+                        <Column Flex="Flex.JustifyContent.Center">
+                            @if ( IsMinted )
+                            {
+                                if ( mintingResult.Item1 )
+                                {
+                                    <Alert Color="Color.Success" Visible>
+                                        <AlertMessage>Data Stored</AlertMessage>
+                                        <AlertDescription >Your image was placed in your gallery.</AlertDescription>
+                                    </Alert>
+                                }
+                                else
+                                {
+                                    <Alert Color="Color.Danger" Visible>
+                                        <AlertMessage>Cannot save</AlertMessage>
+                                        <AlertDescription>@mintingResult.Item2</AlertDescription>
+                                    </Alert>
+                                }
+                            }
+                        </Column>
+                    </Row>
+                    <MintingToolbar ShowPrevButton="true" ShowFinishButton="@(!minting)" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
+                </StepPanel>
+            </Content>
+        </Steps>
+    </Container>
+
+    <OpenNFTDetailsFactory @ref="openNFTDetailsFactory"
+                           NFT="@NFT"
+                           Address="@Address"
+                           IsSubAccount="@false"
+                           HideOpenInWorkTabButton="true"
+                           IsOwnNFT="@false" />
+                           
+    <LoadNFTFromTemplate @ref="loadNFTFromTemplate" OnLoadNFTTemplate="@onLoadNFTTemplateHandler" />
+} 
+
+@code {
+    [Inject] INotificationService? NotificationService { get; set; }
+
+    [Parameter]
+    public RenderFragment SpecificParamsStepHeader { get; set; }
+    [Parameter]
+    public RenderFragment SpecificParamsStepContent { get; set; }
+    [Parameter]
+    public NFTTypes NFTType { get; set; } = NFTTypes.Image;
+    [Parameter]
+    public string MintingPageName { get; set; } = "default";    
+    [Parameter]
+    public EventCallback<INFT> OnLoadNFTTemplate { get; set; }
+
+    [Parameter] public IDictionary<string, ReceiversListItem> Addresses { get; set; } = new Dictionary<string, ReceiversListItem>();
+    [Parameter] public EventCallback<Dictionary<string, ReceiversListItem>> AddressesChanged { get; set; }
+    [Parameter] public string ConsoleOutFromMinting { get; set; } = string.Empty;
+    [Parameter] public EventCallback<string> ConsoleOutFromMintingChanged { get; set; }
+    
+    LoadNFTFromTemplate? loadNFTFromTemplate;
+    OpenNFTDetailsFactory? openNFTDetailsFactory;
+    MultimintForm? multimintFormRef;
+
+    string selectedStep = "stepUpload";
+
+    bool IsMinted = false;
+    bool minting = false;
+    (bool, string) mintingResult = (false, string.Empty);
+
+    public async Task RefreshImageInUploadComponent()
+    {    
+        if (uploadDataRef != null)
+            await uploadDataRef.LoadImage(NFT.ImageLink, NFT.Preview, NFT.ImageData);
+    }
+
+    private Task OnSelectedStepChanged( string name )
+    {
+        selectedStep = name;
+
+        return Task.CompletedTask;
+    }
+
+    async Task OpenNFTDetailsRequestHandler(INFT nft)
+    {    
+        if (nft != null && openNFTDetailsFactory != null)
+            await openNFTDetailsFactory.OpenNFTDetails(nft);
+    }
+
+    async Task onPropsChangedHandler()
+    {
+        await NFTChanged.InvokeAsync(NFT);
+    }
+
+    private async Task mintNFT( string[] args )
+    {
+        Console.WriteLine( $"Name: {NFT.Name}" );
+        Console.WriteLine( $"Description: {NFT.Description}" );
+        Console.WriteLine( $"Text: {NFT.Text}" );
+        Console.WriteLine( $"Tags: {NFT.Tags}" );
+        Console.WriteLine( $"ImageLink: {NFT.ImageLink}" );
+        Console.WriteLine( $"Preview: {NFT.Preview}" );
+
+        // todo make generic
+        if (NFT.Type == NFTTypes.Event)
+            (NFT as EventNFT).MintAuthorAddress = Address;
+        else if ( NFT.Type == NFTTypes.Ticket )           
+            (NFT as TicketNFT).MintAuthorAddress = Address;
+
+        if (string.IsNullOrEmpty(NFT.Author))
+        {
+            var profile = AppData.Account.Profile as ProfileNFT;
+            if (!string.IsNullOrEmpty(profile.Name))
+                NFT.Author = $"{profile.Name} {profile.Surname}";           
+        }
+
+        if ( string.IsNullOrEmpty( NFT.ImageLink ) )
+        {
+            mintingResult.Item1 = false;
+            mintingResult.Item2 = "Cannot save the data without the Image.";
+            return;
+        }
+        if ( selectedStep == "stepFinish" )
+        {
+            if ( AppData.Account.TokensSupplies.TryGetValue( AppData.AppTokenId, out var supply ) )
+            {
+                if ( supply.Amount > 3 )
+                    NFT.TokenId = AppData.AppTokenId;
+                else
+                    NFT.TokenId = NFTHelpers.TokenId;
+            }
+            else
+            {
+                NFT.TokenId = NFTHelpers.TokenId;
+            }
+
+             if (NotificationService != null)
+                    await NotificationService.Info( "Saving image...", "Saving" );
+                    
+            var res = await AppData.Account.MintNFT( NFT );
+            mintingResult = res;
+            if ( res.Item1 )
+            {            
+                IsMinted = true;
+                if (NotificationService != null)
+                    await NotificationService.Success( "Image saved :)", "Saved" );
+            }                
+            else
+            {
+                if (NotificationService != null)
+                    await NotificationService.Warning( "Cannot save the data. " + res.Item2, "Cannot Save" );     
+                Console.WriteLine("Cannot mint the NFT: " + res.Item2);
+                IsMinted = false;
+            }
+        }
+    }
+
+    async Task OnToolActionHandler( MintingToolbarActionDto e )
+    {
+        if ( e == null )
+            return;
+        switch ( e.Type )
+        {
+            case MintingToolbarActionType.NextStep:
+                NextStep( e.Args );
+                break;
+            case MintingToolbarActionType.PreviousStep:
+                PreviousStep( e.Args );
+                break;
+            case MintingToolbarActionType.Finish:
+                await mintNFT( e.Args );
+                break;
+            case MintingToolbarActionType.LoadFromTemplate:
+                openLoadFromTemplate( e.Args );
+                break;
+        }
+    }
+
+    void openLoadFromTemplate( string[] args )
+    {
+        loadNFTFromTemplate?.Show();
+    }
+
+    void NextStep( string[] args )
+    {
+        if ( selectedStep == "stepUpload" )
+            selectedStep = "stepData";
+        else if ( selectedStep == "stepData" )
+        {
+            if (SpecificParamsStepHeader != null && SpecificParamsStepContent != null)
+                selectedStep = "specificParams";
+            else
+                selectedStep = "stepFinish";
+        }
+        else if ( selectedStep == "specificParams" )
+            selectedStep = "stepFinish";
+    }
+
+    void PreviousStep( string[] args )
+    {
+        if ( selectedStep == "stepFinish" )
+        {
+            if (SpecificParamsStepHeader != null && SpecificParamsStepContent != null)
+                selectedStep = "specificParams";
+            else
+                selectedStep = "stepData";
+        }
+        else if ( selectedStep == "specificParams" )
+            selectedStep = "stepData";
+        else if ( selectedStep == "stepData" )
+            selectedStep = "stepUpload";
+    }
+
+    UploadData? uploadDataRef;
+    DataInfoForm? dataInfoFormRef;
+
+    async Task<bool> OnCanProceed()
+    {
+        if ( uploadDataRef != null && selectedStep == "stepUpload" )
+        {
+            return await uploadDataRef.IsValidated();
+        }
+
+        if ( dataInfoFormRef != null && selectedStep == "stepData" )
+        {
+            return await dataInfoFormRef.IsValidated();
+        }
+
+        return true;
+    }
+
+    async Task onLoadNFTTemplateHandler(INFT nft)
+    {
+        if (nft.Type == NFT.Type)
+            await NFT.Fill(nft);
+
+        if (nft.Type == NFTTypes.Image || nft.Type == NFTTypes.Post)
+        {
+            await NFTChanged.InvokeAsync(nft);
+        }
+        else if (NFT.Type == NFTTypes.Ticket && nft.Type == NFTTypes.Event)
+        {
+            await (NFT as TicketNFT).FillFromEvent(nft);
+            await NFTChanged.InvokeAsync(NFT);
+        }
+        else if (nft.Type == NFTTypes.Event)
+        {
+            await NFTChanged.InvokeAsync(nft);
+        }        
+        else
+        {
+            await OnLoadNFTTemplate.InvokeAsync(nft);
+        }
+        dataInfoFormRef?.Refresh();
+        StateHasChanged();
+    }
+}

@@ -1,0 +1,44 @@
+﻿@using VEDriversLite.NFT
+
+<Card Margin="Margin.Is4.FromBottom"> 
+    <CardBody> 
+        <CardTitle Size="5">IPFS Storage Info</CardTitle> 
+        <CardText Margin="Margin.Is2.FromTop"> 
+            Image IPFS Storage info: 
+        </CardText> 
+        <Row Margin="Margin.Is2.FromTop"> 
+            <Column> 
+                <CopyButton TextToCopy="@IPFSLink" ButtonText="Copy Link" /> 
+            </Column> 
+            <Column> 
+                <CopyButton TextToCopy="@(NFTHelpers.GetHashFromIPFSLink(IPFSLink))" ButtonText="Copy Hash" /> 
+            </Column> 
+        </Row> 
+        <Row Margin="Margin.Is2.FromTop"> 
+            <Column> 
+                <Button Color="Color.Light" Type="ButtonType.Link" To="@IPFSLink" Target="Target.Blank" Block>Open Image Link</Button> 
+            </Column> 
+        </Row> 
+                         
+        <CardText Margin="Margin.Is2.FromTop"> 
+            Blockchain Storage transaction info: 
+        </CardText> 
+        <Row Margin="Margin.Is2.FromTop"> 
+            <Column>
+                <CopyButton TextToCopy="@($"{Utxo}:{UtxoIndex}")" ButtonText="Copy Tx Hash" /> 
+            </Column> 
+            <Column> 
+                <Button Color="Color.Light" Type="ButtonType.Link" To="@($"https://explorer.nebl.io/tx/{Utxo}")" Target="Target.Blank" Block>To Explorer</Button> 
+            </Column> 
+        </Row>                          
+    </CardBody> 
+</Card> 
+                
+@code {
+    [Parameter]
+    public string IPFSLink { get; set; } = string.Empty;
+    [Parameter]
+    public string Utxo { get; set; } = string.Empty;
+    [Parameter]
+    public int UtxoIndex { get; set; } = 0;
+}

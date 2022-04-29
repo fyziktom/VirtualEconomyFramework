@@ -1,4 +1,5 @@
 ﻿@using VEDriversLite
+@using VEDriversLite.Dto
 @using VEDriversLite.NeblioAPI
 @using VEDriversLite.Bookmarks
 @using VEDriversLite.NFT
@@ -414,7 +415,7 @@
 
     private string PublicNameInBookmarks(string address, string shortaddress)
     {
-        var res = AppData.Account.IsInTheBookmarks(address).GetAwaiter().GetResult();
+        var res = AppData.Account.IsInTheBookmarks(address);
         if (res.Item1)
             if (!string.IsNullOrEmpty(res.Item2.Name))
                 return res.Item2.Name;

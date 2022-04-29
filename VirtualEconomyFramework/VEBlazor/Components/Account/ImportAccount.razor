@@ -1,0 +1,469 @@
+﻿@using System.IO;
+@using System.Text;
+@using VEDriversLite
+@using VEDriversLite.Dto
+@using VEDriversLite.NeblioAPI
+@using VEDriversLite.Security
+@using Newtonsoft.Json
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject AppData AppData
+@inject IJSRuntime JS
+
+<Container Fluid>
+    <Steps SelectedStep="@selectedStep" SelectedStepChanged="@OnSelectedStepChanged">
+        <Items>
+            <Step Name="import">Import</Step>
+            <Step Name="password">Password</Step>
+            <Step Name="finish">Finish</Step>
+        </Items>
+        <Content>
+            <StepPanel Name="import">
+                <Row>
+                    <Column>
+                        <Heading Size="HeadingSize.Is4">Upload Backup File</Heading>
+                    </Column>
+                </Row>
+                <Row Margin="Margin.Is2.FromTop">
+                    <Column>
+                        <Validations @ref="@validationsRef" Mode="ValidationMode.Manual">
+                            <Validation Validator="FileValidator">
+                                <Field>
+                                    <FieldLabel>Please select the file.</FieldLabel>
+                                    <FieldBody>
+                                        <FileUpload Started="@OnFileUploadStarted" Uploaded="@OnFileUploadEnded" ValidationsRef="@validationsRef"/>
+                                    </FieldBody>
+                                </Field>
+                            </Validation>
+                        </Validations>                        
+                    </Column>
+                </Row>
+                <Row Margin="Margin.Is2.FromTop">
+                    <Column>
+                        <Field>
+                            <FieldLabel>Imported Private Key</FieldLabel>
+                            <TextEdit Placeholder="Enter Neblio private key" @bind-Text="importAccountKey" />         
+                            <FieldHelp>It will be filled automatically when you upload backup file. You can put there private key if you have just that and you dont have backup file.</FieldHelp>
+                        </Field>
+                    </Column>
+                </Row>
+                @if (string.IsNullOrEmpty(importAccountKey))
+                {
+                    <Row Margin="Margin.Is2.FromTop">
+                        <Column>
+                            <Alert Visible Color="Color.Danger">
+                                <AlertMessage>Please load the key</AlertMessage>
+                                <AlertDescription>You have to load the private key or backup file to continue.</AlertDescription>
+                            </Alert>
+                        </Column>
+                    </Row>
+                }
+                else 
+                {
+                    <Row Margin="Margin.Is2.FromTop">
+                        <Column>
+                            <Alert Visible Color="Color.Success">
+                                <AlertMessage>Key loaded</AlertMessage>
+                                <AlertDescription>The account key is loaded. You can continue now.</AlertDescription>
+                            </Alert>
+                        </Column>
+                    </Row>
+                    <Row Margin="Margin.Is2.FromTop">
+                        <Column>
+                            <Button Color="Color.Primary" Clicked="@NextStep" Block>Next Step</Button>
+                        </Column>
+                    </Row>
+                }
+
+            </StepPanel>
+            <StepPanel Name="password">
+                <Row>
+                    <Column>
+                        <Heading Size="HeadingSize.Is4">Input Password</Heading>
+                    </Column>
+                </Row>                
+                 <Row>
+                    <Column>
+                        <Field>
+                            <FieldLabel>Your old password for backup</FieldLabel>
+                            <TextEdit Placeholder="Enter old password" Role="TextRole.Password" @bind-Text="importAccountPass" />         
+                            <FieldHelp>Please input password to your backup file or encrypted private key. Leave empty if the key is not encrypted.</FieldHelp>
+                        </Field>
+                    </Column>
+                </Row>      
+                <Row>
+                    <Column>
+                        <Field>
+                            <FieldLabel>Input your new password</FieldLabel>
+                            <TextEdit Placeholder="Enter your new password" Role="TextRole.Password" @bind-Text="password" />         
+                            <FieldHelp>Please input new password what you will use for login to the app. You can use same password as before. We recommend at least 8 characters.</FieldHelp>
+                        </Field>
+                    </Column>
+                </Row>  
+                <Row>
+                    <Column>
+                        <Field>
+                            <FieldLabel>Your old password for backup</FieldLabel>
+                            <TextEdit Placeholder="Enter your new password again" Role="TextRole.Password" @bind-Text="passwordConfirm" />         
+                            <FieldHelp>Please input password again to be sure it is typed properly. !!!There is no 3rd party to restore your password!!!</FieldHelp>
+                        </Field>
+                    </Column>
+                </Row> 
+                @if (password.Length > 0 && (password != passwordConfirm))
+                {
+                    <Row Margin="Margin.Is2.FromTop">
+                        <Column>
+                            <Alert Visible Color="Color.Danger">
+                                <AlertMessage>Password and Password confirm do not match.</AlertMessage>
+                                <AlertDescription>Password and its confirmation in next line must be same. it is for your protecton.</AlertDescription>
+                            </Alert>
+                        </Column>
+                    </Row>
+                }
+                else if (password.Length > 0 && (password == passwordConfirm))
+                {
+                    <Row Margin="Margin.Is2.FromTop">
+                        <Column>
+                            <Alert Visible Color="Color.Success">
+                                <AlertMessage>Password and Password confirm match.</AlertMessage>
+                                <AlertDescription>Password and its confirmation in next line match. You can continue now.</AlertDescription>
+                            </Alert>
+                        </Column>
+                    </Row>
+                    <Row Margin="Margin.Is2.FromTop">
+                        <Column>
+                            <Button Color="Color.Secondary" Clicked="@PreviousStep" Block>Previous Step</Button>
+                        </Column>
+                        <Column>
+                            <Button Color="Color.Primary" Clicked="@NextStep" Block>Next Step</Button>
+                        </Column>
+                    </Row>
+                }
+            </StepPanel>
+            <StepPanel Name="finish">
+                <Row>
+                    <Column>
+                        <Heading Size="HeadingSize.Is4">Finish</Heading>
+                    </Column>
+                </Row>
+
+                <Row Margin="Margin.Is2.FromTop">
+                    <Column>
+                        <Button Color="Color.Primary" Loading="@importingAccount" Clicked="@LoadAccount" Block>Import Account</Button>
+                    </Column>
+                </Row>
+                
+                @if (importingAccount)
+                {
+                    <Row Margin="Margin.Is2.FromTop">
+                            <Column>
+                            <Alert Visible Color="Color.Info">
+                                <AlertMessage>Importing Account Status</AlertMessage>
+                                <AlertDescription>@state</AlertDescription>
+                            </Alert>
+                        </Column>
+                    </Row>
+                }
+                
+                @if (imported)
+                {
+                <Row Margin="Margin.Is2.FromTop">
+                        <Column>
+                        <Alert Visible Color="Color.Success">
+                            <AlertMessage>Account imported</AlertMessage>
+                            <AlertDescription>Your account is imported. You can login now.</AlertDescription>
+                        </Alert>
+                    </Column>
+                </Row>
+                }
+                else if (!imported && accountImportError)
+                {
+                    <Row Margin="Margin.Is2.FromTop">
+                        <Column>
+                            <Alert Visible Color="Color.Danger">
+                                <AlertMessage>Cannot import account</AlertMessage>
+                                <AlertDescription>Cannot import this account.</AlertDescription>
+                            </Alert>
+                        </Column>
+                    </Row>
+                }
+                
+                <Row Margin="Margin.Is5.FromTop">
+                    <Column>
+                        <Button Color="Color.Secondary" Clicked="@PreviousStep" Block>Previous Step</Button>
+                    </Column>
+                </Row>
+            </StepPanel>
+        </Content>
+    </Steps>
+</Container>
+
+@code {
+    [Inject] INotificationService? NotificationService { get; set; }
+    [Parameter] public EventCallback<string> AccountImported { get; set; }
+
+    Validations? validationsRef;
+    bool uploadingFile = false;
+    bool uploadingToIPFS = false;
+    bool uploadFinished = false;
+
+    string state = "Importing Account...";    
+
+    private bool importingAccount = false;
+    private bool imported = false;
+    private bool accountImportError = false;
+
+    private string key = string.Empty;
+    private string address = string.Empty;
+    private string dogekey = string.Empty;
+    private string dogeaddress = string.Empty;
+
+    private string importDogeAccountAddress = string.Empty;
+    private string importDogeAccountKey = string.Empty;
+    private string importAccountAddress = string.Empty;
+    private string importAccountKey { get; set; } = string.Empty;
+    private string importAccountPass = string.Empty;
+    private string password = string.Empty;
+    private string passwordConfirm = string.Empty;
+
+    private string selectedStep = "import";
+
+    string fileName = string.Empty;
+    byte[] fileData = new byte[0];
+    string fileString = string.Empty;
+    private BackupDataDto backupData = new BackupDataDto();
+
+    Task OnFileUploadStarted()
+    {
+        uploadingFile = true;
+        return InvokeAsync( StateHasChanged );
+    }
+
+    async Task OnFileUploadEnded( string fileName, byte[] data )
+    {
+        uploadingFile = false;
+
+        this.fileName = fileName;
+        this.fileData = data;
+        try
+        {
+            fileString = System.Text.Encoding.UTF8.GetString(data);
+            await LoadBackupFile();
+        }
+        catch(Exception ex )
+        {
+            Console.WriteLine("Cannot parse the file data to the text. " + ex.Message);
+        }
+        await InvokeAsync( StateHasChanged );
+    }
+
+    async Task LoadBackupFile()
+    {
+        if (string.IsNullOrEmpty(fileString)) return;
+
+        try
+        {
+            var bdto = JsonConvert.DeserializeObject<BackupDataDto>(fileString);
+            if (bdto != null && !string.IsNullOrEmpty(bdto.Key))
+            {
+                importAccountKey = bdto.Key;
+                importDogeAccountKey = bdto.DogeKey;
+                backupData = bdto;
+                StateHasChanged();
+            }
+            else
+            {
+                if (NotificationService != null)
+                    await NotificationService.Error( "This is not valid VENFT Backup file.", "Cannot read" );
+            }
+        }
+        catch (Exception ex)
+        {
+            if (NotificationService != null)
+                await NotificationService.Error( "This is not valid VENFT Backup file. " + ex.Message, "Cannot read" );
+            return;
+        }
+    }
+
+    async Task LoadAccount()
+    {
+        if (passwordConfirm != password)
+            return;
+
+        try
+        {
+            importingAccount = true;
+            StateHasChanged();
+            await Task.Delay(1);
+
+            await AppData.LoadTags();
+
+            var res = await LoadNeblioAccount();
+
+            if (res)
+            {
+                await AppData.SaveTags();
+                accountImportError = false;
+                imported = true;
+                AppData.IsAccountLoaded = true;
+                await AccountImported.InvokeAsync(AppData.Account.Address);
+            }
+            else
+            {
+                accountImportError = true;
+            }
+        }
+        catch (Exception ex)
+        {
+            accountImportError = true;
+            if (NotificationService != null)
+                await NotificationService.Error( "Cannot import the account: " + ex.Message, "Cannot import" );
+        }
+        finally
+        {
+            importingAccount = false;
+            StateHasChanged();
+            await Task.Delay(1);
+        }        
+    }
+
+    public async Task<bool> LoadNeblioAccount()
+    {
+        if (string.IsNullOrEmpty(importAccountKey))
+        {
+            if (await AppData.Account.CreateNewAccount(password))
+            {
+                address = AppData.Account.Address;
+                key = AppData.Account.AccountKey.GetEncryptedKey(returnEncrypted:true);
+                if (!string.IsNullOrEmpty(key))
+                    await localStorage.SetItemAsync("key", key);
+
+                return true;
+            }
+            else
+                return false;
+        }
+        else
+        {
+            var res = NeblioTransactionHelpers.IsPrivateKeyValid(importAccountKey);
+            if (res == null)
+            {
+                try
+                {
+                    key = SymetricProvider.DecryptString(importAccountPass, importAccountKey);
+                    res = NeblioTransactionHelpers.IsPrivateKeyValid(key);
+                    if (res == null)
+                        throw new Exception();
+                }
+                catch (Exception ex)
+                {
+                    if (NotificationService != null)
+                        await NotificationService.Error( "Cannot Decrypt Imported key. Probably wrong password for this backup file.", "Cannot decrypt" );
+                    return false;
+                }
+            }
+            else
+            {
+                key = importAccountKey;
+            }
+
+            var add = NeblioTransactionHelpers.GetAddressFromPrivateKey(key);
+            if (!string.IsNullOrEmpty(add))
+            {
+                address = add;
+                var accountLoaded = false;
+                if (!string.IsNullOrEmpty(backupData.Address) && add == backupData.Address)
+                {
+                    AppData.Account.RunningAsVENFTBlazorApp = true; // block the start of the IoT NFTs, etc.
+                    VEDLDataContext.AllowCache = true; //turn on/off NFT cache
+                    
+                    await AppData.LoadChache();
+                    AppData.Account.FirsLoadingStatus -= FirstLoadingStatusHandler;
+                    AppData.Account.FirsLoadingStatus += FirstLoadingStatusHandler;
+                    accountLoaded = await AppData.Account.LoadAccountFromVENFTBackup(importAccountPass, fileString);
+                    AppData.Account.FirsLoadingStatus -= FirstLoadingStatusHandler;
+                    
+                    if (accountLoaded)
+                    {
+                        await AppData.SaveCache();
+                        await localStorage.SetItemAsStringAsync("bookmarks", backupData.Bookmarks);
+                        await localStorage.SetItemAsStringAsync("subAccounts", backupData.SubAccounts);
+                        await localStorage.SetItemAsStringAsync("browserTabs", backupData.BrowserTabs);
+                        await localStorage.SetItemAsStringAsync("messageTabs", backupData.MessageTabs);
+                        key = SymetricProvider.EncryptString(password, key);
+                    }
+                    else
+                    {
+                        if (NotificationService != null)
+                            await NotificationService.Error( "Cannot load VENFT Backup file.", "Cannot Load" );   
+                        return false;
+                    }
+                }
+                else
+                {
+                    key = SymetricProvider.EncryptString(password, key);
+                    accountLoaded = await AppData.Account.LoadAccount(password, key, address); // put here your password
+                }
+                if (accountLoaded && !string.IsNullOrEmpty(key))
+                {
+                    await localStorage.SetItemAsStringAsync("key", key);
+                    password = string.Empty;
+                    passwordConfirm = string.Empty;
+                    importAccountPass = string.Empty;
+                    
+                    return true;
+                }
+            }
+            else
+            {
+                if (NotificationService != null)
+                    await NotificationService.Error( "Cannot get Neblio address from the private key.", "Cannot load" ); 
+            }
+        }
+        return false;
+    }
+
+    void FirstLoadingStatusHandler(object sender, string e)
+    {
+        if (!string.IsNullOrEmpty(e)) state = e;
+        StateHasChanged();
+    }
+    
+    void FileValidator( ValidatorEventArgs e )
+    {
+        if ( !string.IsNullOrEmpty( fileString ) )
+            e.Status = ValidationStatus.Success;
+        else
+            e.Status = ValidationStatus.Error;
+    }
+
+    public Task<bool> IsValidated()
+    {
+        if (validationsRef != null)
+            return validationsRef.ValidateAll();
+        else
+            return Task.FromResult(false);
+    }
+
+    Task OnSelectedStepChanged( string name )
+    {
+        selectedStep = name;
+        return Task.CompletedTask;
+    }
+
+    void NextStep()
+    {
+        if ( selectedStep == "import" )
+            selectedStep = "password";
+        else if ( selectedStep == "password" )
+            selectedStep = "finish";
+    }
+
+    void PreviousStep()
+    {
+        if ( selectedStep == "finish" )
+            selectedStep = "password";
+        else if ( selectedStep == "password" )
+            selectedStep = "import";
+    }
+
+}

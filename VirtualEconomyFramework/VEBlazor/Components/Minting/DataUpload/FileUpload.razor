@@ -1,0 +1,103 @@
+﻿<Addons>
+    @if ( uploading )
+    {
+        <Addon AddonType="AddonType.Start">
+            <AddonLabel Style="color: red;">
+                @($"{progress} %")
+            </AddonLabel>
+        </Addon>
+    }
+    <Addon AddonType="AddonType.Body">
+        <FileEdit Changed="@OnChanged" Started="@OnStarted" Ended="@OnEnded" Progressed="@OnProgressed" Multiple="@Multiple" Filter="@Filter">
+            <Feedback>
+                <ValidationError>Missing image.</ValidationError>
+            </Feedback>
+        </FileEdit>
+    </Addon>
+</Addons>
+@code {
+    
+    [Parameter] public bool Multiple { get; set; } = false;
+    [Parameter] public string Filter { get; set; } = string.Empty;
+    [Parameter] public Validations ValidationsRef { get; set; }
+
+    [Parameter] public EventCallback Started { get; set; }
+
+    [Parameter] public Func<string, byte[], Task> Uploaded { get; set; }
+
+    bool uploading = false;
+    int progress = 0;
+    string fileName = string.Empty;
+    byte[] imageData = new byte[0];
+    long fileSize = 0;
+
+    async Task OnChanged( FileChangedEventArgs e )
+    {
+        try
+        {
+            await ValidationsRef.ClearAll();
+
+            foreach ( var file in e.Files )
+            {
+                fileSize = file.Size;
+                fileName = file.Name;
+
+                await InvokeAsync( StateHasChanged );
+
+                imageData = new byte[file.Size];
+                using ( Stream stream = new MemoryStream( imageData ) )
+                {
+                    await file.WriteToStreamAsync( stream );
+                    stream.Seek( 0, SeekOrigin.Begin );
+                    using ( MemoryStream ms = new MemoryStream() )
+                    {
+                        await stream.CopyToAsync( ms );
+                        imageData = ms.ToArray();
+
+                        await ValidationsRef.ValidateAll();
+                    }
+                }
+            }
+        }
+        catch ( Exception exc )
+        {
+            Console.WriteLine( exc.Message );
+        }
+        finally
+        {
+            uploading = false;
+            await InvokeAsync( StateHasChanged );
+        }
+    }
+
+    async Task OnStarted( FileStartedEventArgs e )
+    {
+        uploading = true;
+        progress = 0;
+
+        await Started.InvokeAsync();
+    }
+
+    async Task OnEnded( FileEndedEventArgs e )
+    {
+        uploading = false;
+        progress = 100;
+
+        await InvokeAsync( StateHasChanged );
+
+        if ( Uploaded != null )
+            await Uploaded.Invoke( fileName, imageData );
+    }
+
+    async Task OnProgressed( FileProgressedEventArgs e )
+    {
+        await Task.Yield();
+
+        if ( (int)e.Percentage > progress )
+        {
+            progress = (int)e.Percentage;
+
+            await InvokeAsync( StateHasChanged );
+        }
+    }
+}

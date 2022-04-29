@@ -1,0 +1,136 @@
+﻿@using VEDriversLite
+@using VEDriversLite.Neblio
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject AppData AppData
+
+<Modal @ref="UnlockAccountModal" Opened="ModalOpenedHandler">
+    <ModalContent Centered>
+        <ModalHeader>
+            <ModalTitle>Unlock Account</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            @if (!AppData.IsAccountLoaded)
+            {
+                <Row>
+                    <Column>
+                        <Field>
+                            <FieldLabel>Please input your password.</FieldLabel>
+                            <TextEdit @ref="PassEdit" Placeholder="Enter password" Role="TextRole.Password" @bind-Text="password" KeyUp="@PassowrdEntryEnterKeyUp" />
+                        </Field>
+                    </Column>
+                </Row>    
+
+                @if (!string.IsNullOrEmpty(password))
+                {
+                    <Row>
+                        <Column>
+                            <Button  Color="Color.Primary" Loading="@LoadingAccount" Clicked="@UnlockAccountHandler" Block>Unlock Account</Button>
+                        </Column>
+                    </Row>
+
+                    @if (LoadingAccount)
+                    {
+                        <Row Margin="Margin.Is2.FromTop">
+                                <Column>
+                                <Alert Visible Color="Color.Info">
+                                    <AlertMessage>Loading Account Status</AlertMessage>
+                                    <AlertDescription>@state</AlertDescription>
+                                </Alert>
+                            </Column>
+                        </Row>
+                    }
+                }
+                else
+                {
+                    <Row>
+                        <Column>
+                            <Span>Please Fill the password to continue.</Span>
+                        </Column>
+                    </Row>
+                }
+            }
+        </ModalBody>
+    </ModalContent>
+</Modal>
+
+@code {
+    [Inject] INotificationService? NotificationService { get; set; }
+    [Inject] IPageProgressService? PageProgressService { get; set; }
+
+    [Parameter] public bool WithoutNFTs { get; set; } = false;
+    [Parameter] public EventCallback<string> AccountUnlocked { get; set; }
+
+    Modal? UnlockAccountModal;
+    TextEdit? PassEdit;
+
+    bool LoadingAccount = false;
+
+    string encryptedKey= string.Empty;
+    string password = string.Empty;
+    string Address = string.Empty;
+    string state = "Unlocking Account...";    
+
+    public void ShowUnlockAccountModal()
+    {
+        UnlockAccountModal?.Show();
+    }
+
+    async Task UnlockAccountHandler()
+    {
+        if (string.IsNullOrEmpty(password))
+            return;
+
+        LoadingAccount = true;
+        if (PageProgressService != null)
+            await PageProgressService.Go( null, options => { options.Color = Color.Primary; } );
+        if (UnlockAccountModal != null)
+            await UnlockAccountModal.Show();
+        StateHasChanged();
+        await Task.Delay(500);
+
+        await AppData.LoadTags();
+        AppData.Account.FirsLoadingStatus -= FirstLoadingStatusHandler;
+        AppData.Account.FirsLoadingStatus += FirstLoadingStatusHandler;
+        var res = await AppData.UnlockAccount(password, WithoutNFTs);
+        AppData.Account.FirsLoadingStatus -= FirstLoadingStatusHandler;
+        password = string.Empty;
+        
+        if (!res.Item1)
+        {   
+            if (NotificationService != null)
+                await NotificationService.Error( "Cannot unlock the account :(", "Cannot unlock" );
+        }
+        else   
+        {
+            await AppData.SaveTags();
+            Address = res.Item2;
+            await AccountUnlocked.InvokeAsync(Address);
+        }
+        if (PageProgressService != null)
+            await PageProgressService.Go(-1);
+        LoadingAccount = false;
+        StateHasChanged();
+        if (UnlockAccountModal != null)
+            await UnlockAccountModal.Hide();
+    }  
+
+    void FirstLoadingStatusHandler(object sender, string e)
+    {
+        if (!string.IsNullOrEmpty(e)) state = e;
+        StateHasChanged();
+    }
+
+    async Task PassowrdEntryEnterKeyUp(KeyboardEventArgs e)
+    {
+        if (e.Code == "Enter" || e.Code == "NumpadEnter")
+            await UnlockAccountHandler();
+    }
+
+    async Task ModalOpenedHandler()
+    {
+        if (PassEdit != null)
+            await PassEdit.Focus();
+    }
+
+}

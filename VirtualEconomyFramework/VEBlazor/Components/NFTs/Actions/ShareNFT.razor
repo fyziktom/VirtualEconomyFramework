@@ -1,0 +1,46 @@
+﻿@inject AppData AppData
+
+<Modal @ref="ShareNFTModal">
+    <ModalContent Centered Size="ModalSize.Default">
+        <ModalHeader>
+            <ModalTitle>Share NFT</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <Row Margin="Margin.Is2.FromTop">
+                <Column>
+                    <Button Color="Color.Light" Type="ButtonType.Link" To="@($"{AppData.AppShareNFTUrl}/gallery?utxo={Utxo}:{UtxoIndex}")" Target="Target.Blank" Block>Open Share Link</Button>
+                </Column>
+            </Row>
+            <Row Margin="Margin.Is2.FromTop"> 
+                <Column Flex="Flex.JustifyContent.Center"> 
+                    <CopyButton ColorOfButton="Color.Light" TextToCopy="@($"{AppData.AppShareNFTUrl}/gallery?utxo={Utxo}:{UtxoIndex}")" ButtonText="Copy Share Link" /> 
+                </Column> 
+            </Row>
+        </ModalBody>
+    </ModalContent>
+</Modal>
+
+@code {
+    [Parameter]
+    public string Utxo { get; set; } = string.Empty;
+    [Parameter]
+    public int UtxoIndex {get;set;} = 0;
+    
+    private Modal ShareNFTModal;
+
+    public async Task ShowShareNFTModal(string utxo = "", int utxoindex = 0)
+    {
+        if (!string.IsNullOrEmpty(utxo))
+        {
+            Utxo = utxo;
+            UtxoIndex = utxoindex;
+            StateHasChanged();
+        }
+        await ShareNFTModal.Show();
+    }
+    public async Task HideShareNFTModal()
+    {
+        await ShareNFTModal.Hide();
+    }
+}

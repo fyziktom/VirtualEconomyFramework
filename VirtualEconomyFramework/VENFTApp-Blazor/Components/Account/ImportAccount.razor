@@ -344,7 +344,7 @@
         else
         {
             var res = DogeTransactionHelpers.IsPrivateKeyValid(importDogeAccountKey);
-            if (!res.Item1)
+            if (!res.Success)
             {
                 try
                 {
@@ -362,9 +362,9 @@
             }
 
             var add = DogeTransactionHelpers.GetAddressFromPrivateKey(dogekey);
-            if (add.Item1)
+            if (add.Success)
             {
-                dogeaddress = add.Item2;
+                dogeaddress = add.Value as string;
                 dogekey = SymetricProvider.EncryptString(importAccountPass, dogekey);
                 var accountLoaded = await AppData.DogeAccount.LoadAccount(importAccountPass, dogekey, dogeaddress); // put here your password
 

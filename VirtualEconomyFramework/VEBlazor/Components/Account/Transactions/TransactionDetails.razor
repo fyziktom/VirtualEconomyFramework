@@ -1,0 +1,323 @@
+﻿@using VEDriversLite
+@using VEDriversLite.Dto
+@using VEDriversLite.NFT
+@using VEDriversLite.NFT.Imaging.Xray
+@using VEDriversLite.Neblio
+@inject AppData AppData
+
+@if ( TxDetails != null )
+{
+    <Modal @ref="TransactionDetailsModal">
+        <ModalContent Size="ModalSize.Fullscreen">
+            <ModalHeader>
+                <ModalTitle>Transaction Details</ModalTitle>
+                <CloseButton />
+            </ModalHeader>
+            <ModalBody>
+                <Card>
+                    <CardBody>
+                        <CardTitle>
+                            <Span>Transaction ID: <a href="@(string.Concat("https://explorer.nebl.io/tx/",TxDetails.Info.Txid))" target="_blank" ><Text CopyToClipboard="true">@TxDetails.Info.Txid</Text></a></Span>
+                        </CardTitle>
+                        <Row>
+                            <Column>
+                                <Field>
+                                    <FieldLabel>Sender</FieldLabel>
+                                    <Tooltip Text="@(senderBookmark.Item1 ? "Remove from bookmarks." : "Add to bookmarks")" Placement="TooltipPlacement.Bottom">
+                                        <Text CopyToClipboard="true">@TxDetails.Sender </Text>
+                                        <Span Margin="Margin.Is1.FromBottom">
+
+                                            <BookmarkIcon Address="@TxDetails.Sender"
+                                                      NewBookmark="@senderBookmark.Item2"
+                                                      IsInBookmarks="senderBookmark.Item1"
+                                                      IsEditing="senderBookmark.Item1"
+                                                      BookmarkChanged="@StateHasChanged" />
+                                        </Span>
+                                    </Tooltip>
+                                </Field>
+                            </Column>
+                            <Column>
+                                <Field>
+                                    <FieldLabel>Receiver</FieldLabel>
+                                    <Tooltip Text="@(receiverBookmark.Item1 ? "Remove from bookmarks." : "Add to bookmarks")" Placement="TooltipPlacement.Bottom">
+                                        <Text CopyToClipboard="true">@TxDetails.Receiver </Text>
+                                        <Span Margin="Margin.Is1.FromBottom">
+
+                                            <BookmarkIcon Address="@TxDetails.Receiver"
+                                                      NewBookmark="@receiverBookmark.Item2"
+                                                      IsInBookmarks="receiverBookmark.Item1"
+                                                      IsEditing="receiverBookmark.Item1"
+                                                      BookmarkChanged="@StateHasChanged" />
+                                        </Span>
+                                    </Tooltip>
+                                </Field>
+                            </Column>
+                        </Row>
+                        <Row>
+                            <Column>
+                                <Field>
+                                    <FieldLabel>Time</FieldLabel>
+                                    <Badge Color="Color.Info" Padding="Padding.Is2">@TxDetails.Time</Badge>
+                                </Field>
+                            </Column>
+                            <Column>
+                                <Field>
+                                    <FieldLabel>Confirmations:</FieldLabel>
+                                    <Badge Color="Color.Info" Padding="Padding.Is2">@TxDetails.Info.Confirmations</Badge>
+                                </Field>
+                            </Column>
+                        </Row>
+                        @if ( IsNFTTransaction( TxDetails ) )
+                        {
+                            <Field>
+                                <FieldLabel>This Transaction cointains the data</FieldLabel>
+                                <Button Color="Color.Light" Clicked="@ShowNFTDetails" Block> Show Data</Button>
+                            </Field>
+                        }
+
+                        <Row>
+                            <Column>
+                                <Card>
+                                    <CardBody>
+                                        <CardTitle>
+                                            <Icon Name="IconName.ArrowDown" TextColor="TextColor.Danger" />
+                                            Inputs
+                                        </CardTitle>
+                                        @if ( TxDetails != null && TxDetails.Info != null && TxDetails.Info.Vin != null )
+                                        {
+                                            <DataGrid TItem="VEDriversLite.NeblioAPI.Vin"
+                                                  Data="TxDetails.Info.Vin"
+                                                  Virtualize
+                                                  ShowCaptions="false">
+                                                    <DataGridColumn>
+                                                        <DisplayTemplate Context="inp">
+                                                            <Row>
+                                                                <Column>
+                                                                    <Div>
+                                                                        From: <Badge Color="Color.Light" Padding="Padding.Is2">@getInputAddress(inp)</Badge>
+                                                                    </Div>                                                                
+                                                                </Column>
+                                                                <Column Flex="Flex.JustifyContent.End">
+                                                                    <Div>
+                                                                        @if ( inp?.ValueSat != 10000 )
+                                                                        {
+                                                                            <FieldLabel>Neblio Input</FieldLabel>
+                                                                            <Row>
+                                                                                <Column>
+                                                                                    <small>@((double)inp.ValueSat / NeblioTransactionHelpers.FromSatToMainRatio) NEBL</small>
+                                                                                    <Figure Size="FigureSize.Is16x16"><FigureImage Source="@AppData.NeblioImageLink" /></Figure>
+                                                                                </Column>
+                                                                            </Row>
+                                                                        }
+                                                                        @if ( inp?.Tokens.Count > 0 )
+                                                                        {
+                                                                            @foreach ( var tok in inp.Tokens )
+                                                                            {
+                                                                                var tokinfo = GetTokenInfo( tok.TokenId );
+
+                                                                                <FieldLabel>Token Input</FieldLabel>
+                                                                                <Row Margin="Margin.Is2.FromTop">
+                                                                                    <Column>
+                                                                                        <small>@tok.Amount @tokinfo.TokenSymbol </small>
+                                                                                        <Figure Size="FigureSize.Is16x16"><FigureImage Source="@tokinfo.ImageUrl" /></Figure>
+                                                                                    </Column>
+                                                                                </Row>
+                                                                            }
+                                                                        }
+                                                                    </Div>
+                                                                </Column>
+                                                            </Row>
+                                                    </DisplayTemplate>
+                                                </DataGridColumn>
+                                            </DataGrid>
+                                        }
+                                    </CardBody>
+                                </Card>
+                            </Column>
+                            <Column>
+                                <Card>
+                                    <CardBody>
+                                        <CardTitle>
+                                            <Icon Name="IconName.ArrowUp" TextColor="TextColor.Success" />
+                                            Outputs
+                                        </CardTitle>
+                                        @if ( TxDetails != null && TxDetails.Info != null && TxDetails.Info.Vout != null )
+                                        {
+                                            <DataGrid TItem="VEDriversLite.NeblioAPI.Vout"
+                                                  Data="TxDetails.Info.Vout.Where(x=>x.Value != 10000 || ( x.Value == 10000 && x.Tokens.Count > 0))"
+                                                  Virtualize
+                                                  ShowCaptions="false">
+                                                    <DataGridColumn>
+                                                        <DisplayTemplate Context="output">
+                                                            <Row>
+                                                                <Column>
+                                                                    <Div>
+                                                                        From: <Badge Color="Color.Light" Padding="Padding.Is2">@getOutputAddress(output)</Badge>
+                                                                    </Div>                                                                
+                                                                </Column>
+                                                                <Column Flex="Flex.JustifyContent.End">
+                                                                    <Div>
+                                                                        @if (output?.Value != 10000 )
+                                                                        {
+                                                                            <FieldLabel>Neblio Input</FieldLabel>
+                                                                            <Row>
+                                                                                <Column>
+                                                                                    <small>@((double)output.Value / NeblioTransactionHelpers.FromSatToMainRatio) NEBL</small>
+                                                                                    <Figure Size="FigureSize.Is16x16"><FigureImage Source="@AppData.NeblioImageLink" /></Figure>
+                                                                                </Column>
+                                                                            </Row>
+                                                                        }
+                                                                        @if (output?.Tokens?.Count > 0 )
+                                                                        {
+                                                                            @foreach ( var tok in output.Tokens )
+                                                                            {
+                                                                                var tokinfo = GetTokenInfo( tok.TokenId );
+                                                                                <FieldLabel>Token Input</FieldLabel>
+                                                                                <Row Margin="Margin.Is2.FromTop">
+                                                                                    <Column>
+                                                                                        <small>@tok.Amount @tokinfo.TokenSymbol </small>
+                                                                                        <Figure Size="FigureSize.Is16x16"><FigureImage Source="@tokinfo.ImageUrl" /></Figure>
+                                                                                    </Column>
+                                                                                </Row>
+                                                                            }
+                                                                        }
+                                                                    </Div>
+                                                                </Column>
+                                                            </Row>
+                                                    </DisplayTemplate>
+                                                </DataGridColumn>
+                                            </DataGrid>
+                                        }
+                                    </CardBody>
+                                </Card>
+                            </Column>
+                        </Row>
+                    </CardBody>
+                </Card>
+            </ModalBody>
+            <ModalFooter>
+                <Button Color="Color.Secondary" Clicked="@HideDetails" Block>Hide</Button>
+            </ModalFooter>
+        </ModalContent>
+    </Modal>
+}
+
+<OpenNFTDetailsFactory @ref="openNFTDetailsFactory"
+                       Address="@AppData.Account.Address"
+                       HideOpenInWorkTabButton="true"
+                       NFT="@NFT"
+                       IsOwnNFT="false"/>
+
+@code {
+    private Modal? TransactionDetailsModal;
+
+    OpenNFTDetailsFactory? openNFTDetailsFactory;   
+
+    private (bool, VEDriversLite.Bookmarks.Bookmark) senderBookmark = (false, new VEDriversLite.Bookmarks.Bookmark());
+    private (bool, VEDriversLite.Bookmarks.Bookmark) receiverBookmark = (false, new VEDriversLite.Bookmarks.Bookmark());
+    private INFT NFT = new XrayImageNFT();
+    private TxDetails TxDetails = new TxDetails()
+        {
+            Info = new VEDriversLite.NeblioAPI.GetTransactionInfoResponse()
+            {
+                Vin = new List<VEDriversLite.NeblioAPI.Vin>(),
+                Vout = new List<VEDriversLite.NeblioAPI.Vout>()
+            }
+        };
+
+    private Dictionary<string, TokenSupplyDto> tokenInfo = new Dictionary<string, TokenSupplyDto>();
+
+    public async Task ShowDetails( TxDetails txdetails )
+    {
+        if ( txdetails == null )
+            return;
+        TxDetails = txdetails;
+        senderBookmark = AppData.Account.IsInTheBookmarks( TxDetails.Sender );
+        receiverBookmark = AppData.Account.IsInTheBookmarks( TxDetails.Receiver );
+        if (TransactionDetailsModal != null)
+            await TransactionDetailsModal.Show();
+    }
+
+    public bool IsNFTTransaction( TxDetails txdetails )
+    {
+        if ( txdetails == null )
+            return false;
+        if ( txdetails.Info == null )
+            return false;
+        if ( txdetails.Info.Vout == null )
+            return false;
+
+        foreach ( var vout in txdetails.Info.Vout )
+            if ( vout.Tokens?.FirstOrDefault( t => t.Amount == 1 ) != null )
+                return true;
+
+        return false;
+    }
+
+    public void HideDetails()
+    {
+        TransactionDetailsModal?.Hide();
+        openNFTDetailsFactory?.HideNFTDetails();
+    }
+
+    public async Task ShowNFTDetails()
+    {
+        var nft = await NFTFactory.GetNFT( "", TxDetails.Info.Txid,
+                                              txinfo: TxDetails.Info,
+                                              wait:true,
+                                              loadJustType: true,
+                                              justType: NFTTypes.XrayImage );
+        if ( nft != null  && openNFTDetailsFactory != null)
+        {
+            NFT = nft;
+            await InvokeAsync( StateHasChanged );
+            await openNFTDetailsFactory?.OpenNFTDetails(nft);
+        }
+    }
+
+    private TokenSupplyDto GetTokenInfo( string tokenId )
+    {
+        if ( string.IsNullOrEmpty( tokenId ) )
+            return new TokenSupplyDto();
+        if ( tokenInfo.TryGetValue( tokenId, out var ti ) )
+            return ti;
+        else
+        {
+            var toi = NeblioTransactionHelpers.GetTokenInfo( tokenId ).GetAwaiter().GetResult();
+            tokenInfo.Add( tokenId, toi );
+            return toi;
+        }
+    }
+
+
+    private string getInputAddress( VEDriversLite.NeblioAPI.Vin i )
+    {
+        if (i == null) return string.Empty;
+        try
+        {
+            var add = i.PreviousOutput.Addresses?.ToArray()?[0];
+            if (add != null)
+                return AppData.GetAddressKnownAsName( add );
+        }
+        catch ( Exception ex )
+        {
+            Console.WriteLine( "Cannot load the Input Address from Vin. " + ex.Message );
+        }
+        return string.Empty;
+    }
+
+    private string getOutputAddress( VEDriversLite.NeblioAPI.Vout i )
+    {
+        try
+        {
+            var add = i.ScriptPubKey.Addresses?.ToArray()?[0];
+            if (add != null)
+                return AppData.GetAddressKnownAsName( add );
+        }
+        catch ( Exception ex )
+        {
+            Console.WriteLine( "Cannot load the Output Address from Vout. " + ex.Message );
+        }
+        return string.Empty;
+    }
+}

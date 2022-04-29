@@ -1,0 +1,121 @@
+﻿@using VEDriversLite
+@using VEDriversLite.Neblio
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject AppData AppData
+@inherits AccountRelatedComponentBase
+
+<Container Fluid Flex="Flex.AlignItems.Center.JustifyContent.Center" Height="Height.Is100">
+<Row Width="Width.Is100">
+    <Column>
+        @if ( AppData.IsAccountLoaded )
+        {
+            <Row Margin="Margin.Is3.FromTop">
+                <Column Height="Height.Is100">
+                    <AccountSider Address="@Address" IsSubAccount="@IsSubAccount" />
+                </Column>
+            </Row>
+        }
+        else 
+        {
+            <Row Margin="Margin.Is3.FromBottom">
+                <Column Flex="Flex.JustifyContent.Center">
+                    <Figure Size="FigureSize.Is128x128">
+                        <FigureImage Source="images/main-bw-big.png" />
+                    </Figure>
+                </Column>
+            </Row>
+            
+            <Row Margin="Margin.Is3.FromBottom">
+                <Column Flex="Flex.JustifyContent.Center">
+                    <Heading Size="HeadingSize.Is2">Welcome to the @AppData.AppName App</Heading>
+                </Column>
+            </Row>
+            @if ( !IsAccountStored )
+            {
+                <Row Margin="Margin.Is3.FromBottom">
+                    <Column>
+                        <CreateAccount AccountCreated="@AccountCreatedHandler" />
+                    </Column>
+                </Row>
+                <Row Margin="Margin.Is5.FromTop.Is3.FromBottom">
+                    <Column Flex="Flex.JustifyContent.Center">
+                        <Heading Size="HeadingSize.Is5">Or import the existing account</Heading>
+                    </Column>
+                </Row>
+                <Row Margin="Margin.Is3.FromBottom">
+                    <Column>
+                            <ImportAccount AccountImported="@AccountImportedHandler" />
+                    </Column>
+                </Row>
+            }
+            else 
+            {
+                <Row Margin="Margin.Is5.FromBottom">
+                    <Column Flex="Flex.JustifyContent.Center">
+                        <Text>You already have account in this web browser. Please use login in menu to continue.</Text>
+                    </Column>
+                </Row>
+            }
+        }  
+        
+    </Column>
+</Row>        
+</Container>
+
+@code {
+    [Inject] INotificationService? NotificationService { get; set; }
+
+    private bool IsAccountStored { get; set; } = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        AppData.LockUnlockAccount -= LockUnlockAccountHandler;
+        AppData.LockUnlockAccount += LockUnlockAccountHandler;
+        await CheckAccount();
+    }
+    
+    protected override async Task OnAfterRenderAsync( bool firstRender )
+    {
+        if ( firstRender )
+        {
+            AppData.Account.Refreshed -= RefreshedHandler;
+            AppData.Account.Refreshed += RefreshedHandler;
+        }
+        await base.OnAfterRenderAsync( firstRender );
+    }
+    private void RefreshedHandler( object sender, EventArgs e )
+    {
+        StateHasChanged();
+    }  
+
+    private void LockUnlockAccountHandler(object sender, bool e)
+    {
+        StateHasChanged();
+    }
+
+    private async Task CheckAccount()
+    {
+        var key = await localStorage.GetItemAsync<string>( "key" );
+        if ( string.IsNullOrEmpty( key ) )
+            IsAccountStored = false;
+        else
+            IsAccountStored = true;
+    }
+
+    void AccountCreatedHandler( string e )
+    {
+        Address = e;
+        IsAccountStored = true;
+        NotificationService?.Success( "Account Created :)", "Created" );
+        StateHasChanged();
+    }
+    
+    void AccountImportedHandler( string e )
+    {
+        Address = e;
+        IsAccountStored = true;
+        NotificationService?.Success( "Account Imported :)", "Imported" );
+        StateHasChanged();
+    }    
+}

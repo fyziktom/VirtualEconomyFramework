@@ -1,0 +1,81 @@
+﻿<Card Margin="Margin.Is4.FromBottom" Shadow="Shadow.Small">
+    <CardBody>
+        <CardTitle>
+            Information about the exposure / capture of the data
+        </CardTitle>
+        <Row>
+            <Column>
+                <Field>
+                    <FieldLabel>Please enter the Anode Voltage</FieldLabel>
+                    <FastNumberInput DisplayMain="true" 
+                                     DisplayKilo="true" 
+                                     Name="Anode Voltage" 
+                                     InitSelectedUnit="FastNumberInput.Units.kilo" 
+                                     Unit="V" 
+                                     Value="@_voltage" 
+                                     ValueChanged="@voltageChanged" />           
+                    <FieldHelp>This is the Voltage in the Xray tube.</FieldHelp>
+                </Field>
+            </Column>   
+            <Column>
+                <Field>
+                    <FieldLabel>Please enter the Anode Current</FieldLabel>
+                    <FastNumberInput DisplayMicro="true" 
+                                     Name="Anode Current" 
+                                     DisplayMili="true" 
+                                     Unit="A" 
+                                     InitSelectedUnit="FastNumberInput.Units.micro" 
+                                     Value="@_current" 
+                                     ValueChanged="@currentChanged" />
+                    <FieldHelp>This is the Current in the Xray tube.</FieldHelp>
+                </Field>
+            </Column>
+        </Row>
+        <Field>
+            <FieldLabel>Please enter the Exposure time in miliseconds.</FieldLabel>
+            <Slider TValue="double" Min="1" Max="1000" Step="10" Value="@_time" ValueChanged="@timeChanged" /> @_time ms
+            <FieldHelp>Time of the exposure of one image</FieldHelp>
+        </Field>
+    </CardBody>
+</Card>
+
+@code {
+    double _voltage = 0.0;
+    [Parameter]
+    public double Voltage { get => _voltage; set => _voltage = value * 1000; }
+    [Parameter]
+    public EventCallback<double> VoltageChanged { get; set; }
+
+    double _current = 0.0;
+    [Parameter]
+    public double Current { get => _current; set => _current = value / 1000; }
+    [Parameter]
+    public EventCallback<double> CurrentChanged { get; set; }
+
+    double _time = 0.0;
+    [Parameter]
+    public double Time { get => _time; set => _time = value; }
+    [Parameter]
+    public EventCallback<double> TimeChanged { get; set; }
+
+    async Task voltageChanged( double e )
+    {
+        await VoltageChanged.InvokeAsync( e / 1000 ); //we are storing it in kV
+    }
+    async Task currentChanged( double e )
+    {
+        await CurrentChanged.InvokeAsync( e * 1000 ); // we are storing it in mA
+    }
+    async Task timeChanged( double e )
+    {
+        await TimeChanged.InvokeAsync( e );
+    }
+    public void SetValues(double voltage, double current, double time)
+    {
+        Voltage = voltage;
+        Current = current;
+        Time = time;
+        StateHasChanged();
+    }
+
+}

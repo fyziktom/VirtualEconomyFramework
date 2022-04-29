@@ -1,0 +1,179 @@
+﻿@using VEDriversLite.NFT
+
+@inject AppData AppData
+
+<Card Margin="Margin.Is4.FromBottom">
+    <CardHeader>
+        <CardTitle>Information about the Event</CardTitle>
+    </CardHeader>
+    <CardBody>
+        <Row Margin="Margin.Is2.FromTop">
+            <Column>
+                <Row>
+                    <Column>
+                        <Row>
+                            <Column Margin="Margin.Is3.FromBottom">
+                                Please select the Event class
+                            </Column>
+                        </Row>
+                        <Row Margin="Margin.Is3.FromBottom.OnMobile.Is1.OnTablet">
+                            <Column Flex="Flex.JustifyContent.Center">
+                                    <RadioGroup CheckedValue="@EventClass"
+                                                CheckedValueChanged="@eventClassChanged"
+                                                TValue="ClassOfNFTEvent" 
+                                                Name="eventclass"
+                                                Orientation="Orientation.Vertical"
+                                                Buttons
+                                                Color="Color.Light">                               
+                                                    @foreach( var ctype in Enum.GetValues<ClassOfNFTEvent>() )
+                                                    {
+                                                        <Radio TValue="ClassOfNFTEvent" @key="@ctype" Value="@ctype">@( Enum.GetName(typeof(ClassOfNFTEvent), ctype) )</Radio>
+                                                    }
+                                    </RadioGroup>
+                            </Column>
+                        </Row>
+                    </Column>
+                </Row>
+            </Column>
+            <Column>
+                <Field>
+                    <Addons>
+                        <Addon AddonType="AddonType.Start">
+                            <Button Color="Color.Light" Clicked="@(()=>datePicker.ToggleAsync())">
+                                <Icon Name="IconName.CalendarDay" />
+                            </Button>
+                        </Addon>
+                        <Addon AddonType="AddonType.Body">
+                            <DatePicker @ref="@datePicker" 
+                                        InputMode="DateInputMode.DateTime" 
+                                        Date="@EventDate" 
+                                        DateChanged="@eventDateChanged" 
+                                        TValue="DateTime?" />
+                        </Addon>
+                    </Addons>
+                </Field>
+                <Validations @ref="@validationsRef" Mode="ValidationMode.Manual">
+                    <Validation Validator="ValidationRule.IsNotEmpty">
+                        <Field>
+                            <FieldLabel>Please enter the location name.</FieldLabel>
+                            <TextEdit Placeholder="Enter location name" @bind-Text="Location" @onchange="locationChanged">
+                                <Feedback>
+                                    <ValidationError>Missing location.</ValidationError>
+                                </Feedback>
+                            </TextEdit>
+                        </Field>
+                    </Validation>
+                    <Validation Validator="ValidationRule.IsNotEmpty">
+                        <Field>
+                            <FieldLabel>Please enter location Coordinates</FieldLabel>
+                            <TextEdit Placeholder="Enter the location coordinates" @bind-Text="LocationCords" @onchange="locationCordsChanged" >
+                                <Feedback>
+                                    <ValidationError>Missing location coordinates.</ValidationError>
+                                </Feedback>                        
+                            </TextEdit>
+                            <FieldHelp>Please add it in the shape XX.XXXXXX,YY.YYYYYY</FieldHelp>
+                            @if (!string.IsNullOrEmpty(LocationCords))
+                            {
+                                <FieldHelp>
+                                    <a href="http://www.google.com/maps/place/@LocationCords" taret="_blank">Test the location link</a>
+                                </FieldHelp>
+                            }
+                        </Field>
+                    </Validation>
+                </Validations>
+        
+                <Field>
+                    <FieldLabel>Please enter the author website link</FieldLabel>
+                    <TextEdit Placeholder="Enter author website" @bind-Text="AuthorLink" @onchange="authorLinkChanged" />
+                    @if (!string.IsNullOrEmpty(AuthorLink))
+                    {
+                        <FieldHelp>
+                            <a href="@(AuthorLink.Contains("http://") || AuthorLink.Contains("https://") ? AuthorLink : "http://" + AuthorLink)" target="_blank">Test the link</a>
+                        </FieldHelp>
+                    }
+                </Field>
+            </Column>
+        </Row>
+
+    </CardBody>
+</Card>
+
+@code {
+    LoadNFTFromTemplate loadNFTFromTemplate;
+
+    Validations validationsRef;
+
+    string _location = string.Empty;
+    [Parameter]
+    public string Location { get => _location; set => _location = value; }
+    [Parameter]
+    public EventCallback<string> LocationChanged { get; set; }
+
+    string _locationCords = string.Empty;
+    [Parameter]
+    public string LocationCords { get => _locationCords; set => _locationCords = value; }
+    [Parameter]
+    public EventCallback<string> LocationCordsChanged { get; set; }
+
+    string _authorLink = string.Empty;
+    [Parameter]
+    public string AuthorLink { get => _authorLink; set => _authorLink = value; }
+    [Parameter]
+    public EventCallback<string> AuthorLinkChanged { get; set; }
+
+    DateTime? _eventDate = DateTime.UtcNow;
+    [Parameter]
+    public DateTime? EventDate { get => _eventDate; set => _eventDate = value; }
+    [Parameter]
+    public EventCallback<DateTime> EventDateChanged { get; set; }
+
+    ClassOfNFTEvent _eventClass = ClassOfNFTEvent.Birthday;
+    [Parameter]
+    public ClassOfNFTEvent EventClass { get => _eventClass; set => _eventClass = value; }
+    [Parameter]
+    public EventCallback<ClassOfNFTEvent> EventClassChanged { get; set; }
+
+    [Parameter]
+    public EventCallback<INFT> OnLoadNFTTemplate { get; set; }
+
+    DatePicker<DateTime?> datePicker;
+
+    async Task locationChanged( ChangeEventArgs e )
+    {
+        if (e != null && e.Value != null )        
+            await LocationChanged.InvokeAsync( (string)e.Value );
+    }
+    async Task locationCordsChanged( ChangeEventArgs e )
+    {
+        if (e != null && e.Value != null )        
+            await LocationCordsChanged.InvokeAsync( (string)e.Value );
+    }
+    async Task authorLinkChanged( ChangeEventArgs e )
+    {
+        if (e != null && e.Value != null )        
+            await AuthorLinkChanged.InvokeAsync( (string)e.Value );
+    }
+    async Task eventClassChanged( ClassOfNFTEvent e )
+    {
+        EventClass = e;
+        await EventClassChanged.InvokeAsync( e );
+    }
+    async Task eventDateChanged( DateTime? e)
+    {
+        if (e == null) return;
+
+        EventDate = (DateTime)e;
+        await EventDateChanged.InvokeAsync((DateTime)e);
+    }
+
+    public Task<bool> IsValidated()
+    {
+        return validationsRef.ValidateAll();
+    }
+
+    async Task onLoadNFTTemplateHandler(INFT nft)
+    {
+        StateHasChanged();
+        await OnLoadNFTTemplate.InvokeAsync(nft);
+    }
+}

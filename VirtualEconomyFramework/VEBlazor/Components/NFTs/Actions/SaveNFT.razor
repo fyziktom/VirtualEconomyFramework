@@ -1,0 +1,114 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@using VEDriversLite.NFT.Imaging.Xray
+@inject AppData AppData
+@inherits NFTComponentBase
+
+@if (NFT != null && !string.IsNullOrEmpty(NFT.Utxo))
+{
+<Modal @ref="NFTSaveModal">
+    <ModalContent Centered>
+        <ModalHeader>
+            <ModalTitle>Save the NFT</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <Container Fluid>
+            <Row>
+                <Column Flex="Flex.AlignItems.Center">
+                    <Span>Do you really want to Save this NFT? You cannot take this action back.</Span>
+                </Column>
+            </Row>
+            <Row>
+                <Column>
+                    <Field>
+                        <FieldLabel>Edit Tags before Send</FieldLabel>
+                        <SpaceTags @bind-Tags="@NFT.Tags" />                        
+                    </Field>
+                </Column>
+            </Row>
+            <Row Flex="Flex.JustifyContent.Center"> 
+                <Column>
+                    <Button Color="Color.Primary" Clicked="@NFTAction" Loading="@Saving" Block>Yes, I understand. Save the NFT now.</Button>
+                </Column>
+            </Row>
+            @if (SaveFinished)
+                {
+                    <Row Flex="Flex.JustifyContent.Center">
+                        <Column>
+                            @if (SaveResult.Item1)
+                            {
+                                <Alert Color="Color.Success">@SaveResult.Item2</Alert>
+                            }
+                            else
+                            {
+                                <Alert Color="Color.Danger">@SaveResult.Item2</Alert>
+                            }
+                        </Column>
+                    </Row>
+            }
+            </Container>
+        </ModalBody>
+    </ModalContent>
+</Modal>
+}
+@code {
+    [Inject] INotificationService? NotificationService { get; set; }
+
+    private Modal? NFTSaveModal;
+
+    [Parameter] public string Receiver { get; set; } = string.Empty;
+
+    bool Saving = false;
+    bool SaveFinished = false;
+    (bool,string) SaveResult = (false,string.Empty);
+
+    public void ShowSaveNFTModal(string receiver = "")
+    {
+        if (NFT == null) return;
+        if (!string.IsNullOrEmpty(receiver))
+            Receiver = receiver;
+        NFTSaveModal?.Show();
+    }
+    public void HideSaveNFTModal()
+    {
+        if (NFT == null) return;
+        NFTSaveModal?.Hide();
+    }
+
+    async Task NFTAction()
+    {
+        if (NFT == null) return;
+        Saving = true;
+        StateHasChanged();
+        //save means send to yourself
+        if (NotificationService != null)
+            await NotificationService.Info( "Saving data...", "Saving" );
+             
+        Receiver = Address;
+        if (!IsSubAccount)
+            SaveResult = await AppData.Account.SendNFT(Receiver, NFT);
+        else
+            SaveResult = await AppData.Account.SendNFTFromSubAccount(Address, Receiver, NFT);
+
+        Console.WriteLine($"Save of the NFT result: {SaveResult.Item1}, with message: {SaveResult.Item2}");
+
+        SaveFinished = false;
+        Saving = false;
+        
+        if (NotificationService != null)
+        {
+            if (SaveResult.Item1)
+                await NotificationService.Success( "Sent Successfull.", "Save success" );
+            else
+                await NotificationService.Warning( SaveResult.Item2, "Cannot save" );
+        }
+        
+        StateHasChanged();
+
+        //close automatically after 2 seconds
+        await Task.Delay(2000);
+        HideSaveNFTModal();
+        await NFTSent.InvokeAsync(new NFTSentResultDto() { sucess = SaveResult.Item1, message = SaveResult.Item2, NFT = NFT });       
+    }
+}

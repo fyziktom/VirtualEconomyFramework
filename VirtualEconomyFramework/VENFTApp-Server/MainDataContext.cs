@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using VEDriversLite;
+using VEDriversLite.Dto;
 using VEDriversLite.Bookmarks;
 using VEDriversLite.NFT;
 

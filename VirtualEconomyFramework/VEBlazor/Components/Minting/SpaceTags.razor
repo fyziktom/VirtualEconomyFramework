@@ -1,0 +1,94 @@
+﻿@*<Addons>
+    <Addon AddonType="AddonType.Body">
+        <Autocomplete TItem="string"
+                    TValue="string"
+                    Data="@DummyTags"
+                    TextField="@(( item ) => item)"
+                    ValueField="@(( item ) => item)"
+                    Placeholder="@Placeholder"
+                    Multiple
+                    FreeTyping
+                    SelectedValues="@TagNames"
+                    SelectedTexts="@TagNames"
+                    SelectedTextsChanged="@OnTagNamesChanged"
+                    Validator="@Validator">
+        </Autocomplete>      
+    </Addon>
+    <Addon AddonType="AddonType.End">
+        <Button Color="Color.Info" Clicked="@Clear">
+            <Icon Name="IconName.Clear" IconSize="IconSize.Small" TextColor="TextColor.Danger" Margin="Margin.Is1.FromEnd" />
+            Clear
+        </Button>
+    </Addon>
+</Addons>*@
+
+@inject AppData AppData 
+<Row Width="Width.Is100">
+    <Column>
+        <Row>
+            <Column>
+                 <Autocomplete TItem="string"
+                            TValue="string"
+                            Data="@DummyTags"
+                            TextField="@(( item ) => item)"
+                            ValueField="@(( item ) => item)"
+                            Placeholder="@Placeholder"
+                            Multiple
+                            FreeTyping
+                            SelectedValues="@TagNames"
+                            SelectedTexts="@TagNames"
+                            SelectedTextsChanged="@OnTagNamesChanged"
+                            Validator="@Validator">
+                </Autocomplete>         
+            </Column>
+        </Row>
+    
+        @if (AppData.DefaultTags != null)
+        {
+            <Row>
+                <Column>
+                    @foreach (var t in AppData.DefaultTags)
+                    {
+                        <Badge Color="new Blazorise.Color(t.Value.Color)" @onclick="() => AddTag(t.Key)" Margin="Margin.Is1.FromEnd">#@t.Key</Badge>
+                    }
+                </Column>
+            </Row>
+        }
+    </Column>
+</Row>
+
+@code {
+    [Parameter] public string? Tags { get; set; }
+    [Parameter] public EventCallback<string> TagsChanged { get; set; }
+    [Parameter] public string Placeholder { get; set; } = "Tags...";
+    [Parameter] public Action<ValidatorEventArgs> Validator { get; set; } = ValidationRule.IsSelected;
+
+    IEnumerable<string> DummyTags = VEDriversLite.NFT.NFTDataContext.Tags.Values.OrderByDescending(t => t.Count)
+                                                                         .Select(t => t.Name);
+    List<string> TagNames => Tags?.Split( " " )?.Where( x => !string.IsNullOrEmpty( x ) )?.ToList() ?? new List<string>();
+
+    async Task OnTagNamesChanged( List<string> values )
+    {
+        Tags = string.Join( " ", values ?? Enumerable.Empty<string>() ).Trim();
+        await TagsChanged.InvokeAsync( Tags );
+    }
+    
+    async Task AddTag(string tag)
+    {
+        if (TagNames.Contains(tag)) return;
+        
+        if (Tags == "")
+            Tags += $"{tag}";
+        else
+            Tags += $" {tag}";
+        await TagsChanged.InvokeAsync( Tags );
+        StateHasChanged();
+    }
+
+    async Task Clear()
+    {
+        Tags = string.Empty;
+        await TagsChanged.InvokeAsync( Tags );
+        StateHasChanged();
+    }
+}

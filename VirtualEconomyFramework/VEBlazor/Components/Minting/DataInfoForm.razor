@@ -1,0 +1,52 @@
+﻿@inherits NFTComponentBase
+
+<Card Margin="Margin.Is4.FromBottom" Shadow="Shadow.Small">
+    <CardBody>
+        <CardTitle>
+            Information about the data
+        </CardTitle>
+        <Validations @ref="@validationsRef" Mode="ValidationMode.Manual">
+            <Validation Validator="ValidationRule.IsNotEmpty">
+                <Field>
+                    <FieldLabel>Please enter the name.</FieldLabel>
+                    <TextEdit Placeholder="Enter name" @bind-Text="@NFT.Name">
+                        <Feedback>
+                            <ValidationError>Missing name.</ValidationError>
+                        </Feedback>
+                    </TextEdit>
+                </Field>
+            </Validation>
+            <Field>
+                <FieldLabel>Please enter the tags.</FieldLabel>
+                <SpaceTags @bind-Tags="@NFT.Tags"/>
+                <FieldHelp>Please separate the tags with the space. You do not need to add # character as prefix.</FieldHelp>
+            </Field>
+
+            <Field>
+                <FieldLabel>Please enter the short description.</FieldLabel>
+                <TextEdit Placeholder="Enter short description" @bind-Text="@NFT.Description"/>
+                <FieldHelp>If you need to write longer description please use the text field.</FieldHelp>
+            </Field>
+            <Field>
+                <FieldLabel>Here you can enter the longer description.</FieldLabel>
+                <Markdown @ref="markdownRef" @bind-Value="@NFT.Text" AutoRefresh="@(new MarkdownAutoRefresh() {Delay = 300 })"/>
+                <FieldHelp>You can use Markdown formating in this editor.</FieldHelp>
+            </Field>
+        </Validations>
+    </CardBody>
+</Card>
+
+@code {
+    Validations validationsRef;
+    Markdown markdownRef;
+
+    public Task<bool> IsValidated()
+    {
+        return validationsRef.ValidateAll();
+    }
+
+    public void Refresh()
+    {
+        markdownRef.SetValueAsync( NFT.Text );
+    }
+}

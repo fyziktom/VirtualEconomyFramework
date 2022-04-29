@@ -1,0 +1,224 @@
+﻿@using VEDriversLite.NFT
+
+@inject AppData AppData
+
+<Card Margin="Margin.Is4.FromBottom">
+    <CardHeader>
+        <CardTitle>Information about the Ticket</CardTitle>
+    </CardHeader>
+    <CardBody>
+        <Row Margin="Margin.Is2.FromTop">
+            <Column>
+                <Field Horizontal>
+                    <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">Date:</FieldLabel>
+                    <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                        <Addons>
+                            <Addon AddonType="AddonType.Start">
+                                <Button Color="Color.Light" Clicked="@(()=>datePicker.ToggleAsync())">
+                                    <Icon Name="IconName.CalendarDay" />
+                                </Button>
+                            </Addon>
+                            <Addon AddonType="AddonType.Body">
+                                <DatePicker @ref="@datePicker"
+                                            Date="@EventDate"
+                                            InputMode="DateInputMode.DateTime"
+                                            DateChanged="@eventDateChanged"
+                                            TValue="DateTime?" />
+                            </Addon>
+                        </Addons>
+                    </FieldBody>
+                </Field>
+                <Validations @ref="@validationsRef" Mode="ValidationMode.Manual">
+                    <Validation Validator="ValidationRule.IsNotEmpty">
+                        <Field Horizontal>
+                            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">Location name:</FieldLabel>
+                            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                                <TextEdit Placeholder="Enter location name" @bind-Text="Location" @onchange="locationChanged">
+                                    <Feedback>
+                                        <ValidationError>Missing location.</ValidationError>
+                                    </Feedback>
+                                </TextEdit>
+                            </FieldBody>
+                        </Field>
+                    </Validation>
+                    <Validation Validator="ValidationRule.IsNotEmpty">
+                        <Field Horizontal>
+                            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">Location Coordinates:</FieldLabel>
+                            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                                <TextEdit Placeholder="Enter the location coordinates" @bind-Text="LocationCords" @onchange="locationCordsChanged">
+                                    <Feedback>
+                                        <ValidationError>Missing location coordinates.</ValidationError>
+                                    </Feedback>
+                                </TextEdit>
+                                <FieldHelp>Please add it in the shape XX.XXXXXX,YY.YYYYYY</FieldHelp>
+                            </FieldBody>
+                            @if ( !string.IsNullOrEmpty( LocationCords ) )
+                            {
+                                <FieldHelp>
+                                    <a href="http://www.google.com/maps/place/@LocationCords" taret="_blank">Test the location link</a>
+                                </FieldHelp>
+                            }
+                        </Field>
+                    </Validation>
+                </Validations>
+
+                <Field Horizontal>
+                    <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">Author website link:</FieldLabel>
+                    <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                        <TextEdit Placeholder="Enter author website" @bind-Text="AuthorLink" @onchange="authorLinkChanged" />
+                        @if ( !string.IsNullOrEmpty( AuthorLink ) )
+                        {
+                            <FieldHelp>
+                                <a href="@(AuthorLink.Contains("http://") || AuthorLink.Contains("https://") ? AuthorLink : "http://" + AuthorLink)" target="_blank">Test the link</a>
+                            </FieldHelp>
+                        }
+                    </FieldBody>
+                </Field>
+                <Field Horizontal>
+                    <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">Ticket class:</FieldLabel>
+                    <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                        <Select Display="Display.None.OnDesktop.InlineBlock.OnTablet" SelectedValue="@TicketClass" SelectedValueChanged="@ticketClassChanged" TValue="ClassOfNFTTicket">
+                            @foreach ( var ctype in Enum.GetValues<ClassOfNFTTicket>() )
+                            {
+                                <SelectItem TValue="ClassOfNFTTicket" @key="@ctype" Value="@ctype">@( Enum.GetName(typeof(ClassOfNFTTicket), ctype) )</SelectItem>
+                            }
+                        </Select>
+                        <RadioGroup Display="Display.None.OnMobile.None.OnTablet.InlineBlock.OnDesktop" CheckedValue="@TicketClass" CheckedValueChanged="@ticketClassChanged" TValue="ClassOfNFTTicket" Name="ticketclass" Orientation="Orientation.Horizontal" Buttons Color="Color.Light">
+                            @foreach ( var ctype in Enum.GetValues<ClassOfNFTTicket>() )
+                            {
+                                <Radio TValue="ClassOfNFTTicket" @key="@ctype" Value="@ctype">@( Enum.GetName(typeof(ClassOfNFTTicket), ctype) )</Radio>
+                            }
+                        </RadioGroup>
+                    </FieldBody>
+                </Field>
+                <Field Horizontal>
+                    <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">Ticket duration:</FieldLabel>
+                    <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                        <Select Display="Display.None.OnDesktop.InlineBlock.OnTablet" SelectedValue="@TicketDuration" SelectedValueChanged="@ticketDurationChanged" TValue="DurationOfNFTTicket">
+                            @foreach ( var ctype in Enum.GetValues<DurationOfNFTTicket>() )
+                            {
+                                <SelectItem TValue="DurationOfNFTTicket" @key="@ctype" Value="@ctype">@( Enum.GetName(typeof(DurationOfNFTTicket), ctype) )</SelectItem>
+                            }
+                        </Select>
+                        <RadioGroup Display="Display.None.OnMobile.None.OnTablet.InlineBlock.OnDesktop" CheckedValue="@TicketDuration" CheckedValueChanged="@ticketDurationChanged" TValue="DurationOfNFTTicket" Name="ticketduration" Orientation="Orientation.Horizontal" Buttons Color="Color.Light">
+                            @foreach ( var ctype in Enum.GetValues<DurationOfNFTTicket>() )
+                            {
+                                <Radio TValue="DurationOfNFTTicket" @key="@ctype" Value="@ctype">@( Enum.GetName(typeof(DurationOfNFTTicket), ctype) )</Radio>
+                            }
+                        </RadioGroup>
+                    </FieldBody>
+                </Field>
+                <Field Horizontal>
+                    <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">Event NFT Utxo:</FieldLabel>
+                    <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                        <LoadAndDisplayNFTModal Utxo="@EventId" UtxoChanged="@eventIdChanged" OnLoadNFTTemplate="@onLoadNFTTemplateHandler" />
+                    </FieldBody>
+                </Field>
+            </Column>
+        </Row>
+
+    </CardBody>
+</Card>
+
+@code {
+    LoadNFTFromTemplate loadNFTFromTemplate;
+
+    Validations validationsRef;
+
+    string _location = string.Empty;
+    [Parameter]
+    public string Location { get => _location; set => _location = value; }
+    [Parameter]
+    public EventCallback<string> LocationChanged { get; set; }
+
+    string _locationCords = string.Empty;
+    [Parameter]
+    public string LocationCords { get => _locationCords; set => _locationCords = value; }
+    [Parameter]
+    public EventCallback<string> LocationCordsChanged { get; set; }
+
+    string _authorLink = string.Empty;
+    [Parameter]
+    public string AuthorLink { get => _authorLink; set => _authorLink = value; }
+    [Parameter]
+    public EventCallback<string> AuthorLinkChanged { get; set; }
+
+    string _eventId = string.Empty;
+    [Parameter]
+    public string EventId { get => _eventId; set => _eventId = value; }
+    [Parameter]
+    public EventCallback<string> EventIdChanged { get; set; }
+
+    DateTime? _eventDate = DateTime.UtcNow;
+    [Parameter]
+    public DateTime? EventDate { get => _eventDate; set => _eventDate = value; }
+    [Parameter]
+    public EventCallback<DateTime> EventDateChanged { get; set; }
+
+    ClassOfNFTTicket _ticketClass = ClassOfNFTTicket.General;
+    [Parameter]
+    public ClassOfNFTTicket TicketClass { get => _ticketClass; set => _ticketClass = value; }
+    [Parameter]
+    public EventCallback<ClassOfNFTTicket> TicketClassChanged { get; set; }
+
+    DurationOfNFTTicket _ticketDuration = DurationOfNFTTicket.Day;
+    [Parameter]
+    public DurationOfNFTTicket TicketDuration { get => _ticketDuration; set => _ticketDuration = value; }
+    [Parameter]
+    public EventCallback<DurationOfNFTTicket> TicketDurationChanged { get; set; }
+
+    [Parameter]
+    public EventCallback<INFT> OnLoadNFTTemplate { get; set; }
+
+    DatePicker<DateTime?> datePicker;
+
+    async Task locationChanged( ChangeEventArgs e )
+    {
+        if ( e != null && e.Value != null )
+            await LocationChanged.InvokeAsync( (string)e.Value );
+    }
+    async Task locationCordsChanged( ChangeEventArgs e )
+    {
+        if ( e != null && e.Value != null )
+            await LocationCordsChanged.InvokeAsync( (string)e.Value );
+    }
+    async Task authorLinkChanged( ChangeEventArgs e )
+    {
+        if ( e != null && e.Value != null )
+            await AuthorLinkChanged.InvokeAsync( (string)e.Value );
+    }
+    async Task eventIdChanged( string e )
+    {
+        if ( e != null )
+            await EventIdChanged.InvokeAsync( e );
+    }
+    async Task ticketClassChanged( ClassOfNFTTicket e )
+    {
+        TicketClass = e;
+        await TicketClassChanged.InvokeAsync( e );
+    }
+    async Task ticketDurationChanged( DurationOfNFTTicket e )
+    {
+        TicketDuration = e;
+        await TicketDurationChanged.InvokeAsync( e );
+    }
+    async Task eventDateChanged( DateTime? e )
+    {
+        if ( e == null )
+            return;
+
+        EventDate = (DateTime)e;
+        await EventDateChanged.InvokeAsync( (DateTime)e );
+    }
+
+    public Task<bool> IsValidated()
+    {
+        return validationsRef.ValidateAll();
+    }
+
+    async Task onLoadNFTTemplateHandler( INFT nft )
+    {
+        StateHasChanged();
+        await OnLoadNFTTemplate.InvokeAsync( nft );
+    }
+}
