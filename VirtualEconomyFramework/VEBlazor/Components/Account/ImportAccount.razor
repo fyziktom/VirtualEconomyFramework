@@ -198,6 +198,7 @@
 </Container>
 
 @code {
+    [Inject] INotificationService? NotificationService { get; set; }
     [Parameter] public EventCallback<string> AccountImported { get; set; }
 
     Validations? validationsRef;
@@ -271,12 +272,14 @@
             }
             else
             {
-                await JS.InvokeVoidAsync("alertMessage", "This is not valid VENFT Backup file.");
+                if (NotificationService != null)
+                    await NotificationService.Error( "This is not valid VENFT Backup file.", "Cannot read" );
             }
         }
         catch (Exception ex)
         {
-            await JS.InvokeVoidAsync("alertMessage", "This is not valid VENFT Backup file. " + ex.Message);
+            if (NotificationService != null)
+                await NotificationService.Error( "This is not valid VENFT Backup file. " + ex.Message, "Cannot read" );
             return;
         }
     }
@@ -312,8 +315,8 @@
         catch (Exception ex)
         {
             accountImportError = true;
-            Console.WriteLine("Cannot import the account: " + ex.Message);
-            // todo
+            if (NotificationService != null)
+                await NotificationService.Error( "Cannot import the account: " + ex.Message, "Cannot import" );
         }
         finally
         {
@@ -353,7 +356,8 @@
                 }
                 catch (Exception ex)
                 {
-                    await JS.InvokeVoidAsync("alertMessage", "Cannot Decrypt Imported key. Probably wrong password for this backup file.");
+                    if (NotificationService != null)
+                        await NotificationService.Error( "Cannot Decrypt Imported key. Probably wrong password for this backup file.", "Cannot decrypt" );
                     return false;
                 }
             }
@@ -371,7 +375,7 @@
                 {
                     AppData.Account.RunningAsVENFTBlazorApp = true; // block the start of the IoT NFTs, etc.
                     VEDLDataContext.AllowCache = true; //turn on/off NFT cache
-
+                    
                     await AppData.LoadChache();
                     AppData.Account.FirsLoadingStatus -= FirstLoadingStatusHandler;
                     AppData.Account.FirsLoadingStatus += FirstLoadingStatusHandler;
@@ -389,7 +393,8 @@
                     }
                     else
                     {
-                        await JS.InvokeVoidAsync("alertMessage", "Cannot load VENFT Backup file.");
+                        if (NotificationService != null)
+                            await NotificationService.Error( "Cannot load VENFT Backup file.", "Cannot Load" );   
                         return false;
                     }
                 }
@@ -410,7 +415,8 @@
             }
             else
             {
-                await JS.InvokeVoidAsync("alertMessage", "Cannot get Neblio address from the private key.");
+                if (NotificationService != null)
+                    await NotificationService.Error( "Cannot get Neblio address from the private key.", "Cannot load" ); 
             }
         }
         return false;

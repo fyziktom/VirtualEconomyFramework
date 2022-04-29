@@ -8,22 +8,19 @@
 </Container>
 
 @code {
-    [Parameter]
-    public string Source { get; set; } = string.Empty;
-    [Parameter]
-    public int InitWidth { get; set; } = 400;
-    [Parameter]
-    public int InitHeight { get; set; } = 400;
+    [Parameter] public string Source { get; set; } = string.Empty;
+    [Parameter] public int InitWidth { get; set; } = 400;
+    [Parameter] public int InitHeight { get; set; } = 400;
 
-    private Panzoom? _panzoom;
+    Panzoom? _panzoom;
 
-    private async Task OnResetClick( MouseEventArgs args )
+    async Task OnResetClick( MouseEventArgs args )
     {
         if ( _panzoom != null )
             await _panzoom.ResetAsync();
     }
 
-    private async Task OnWheel( CustomWheelEventArgs args )
+    async Task OnWheel( CustomWheelEventArgs args )
     {
         if ( !args.ShiftKey )
         {

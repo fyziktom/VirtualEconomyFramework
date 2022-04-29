@@ -50,33 +50,34 @@
                     }
                     <Row Margin="Margin.Is3.FromTop">
                         <Column>
-                            <UploadData MainIPFSLink="@NFT.ImageLink" MainIPFSLinkChanged="ImageChangedHandler" />
-                        </Column>
-                    </Row>
-
-                    <Row Margin="Margin.Is3.FromTop">
-                        <Column>
-                            @if (!mintingChanges)
-                            {
-                                @if ( minted )
-                                {
-                                    <Alert Color="Color.Success">
-                                        <Icon Name="IconName.Check" />
-                                        <Span>Profile successfully saved! TxId: @result</Span>
-                                    </Alert>
-                                }
-                                if ( mintError )
-                                {
-                                    <Alert Color="Color.Danger">
-                                        <Icon Name="IconName.Ban" />
-                                        <Span>Cannot save! Error: @result</Span>
-                                    </Alert>
-                                }
-                            }
+                            <UploadData NFT="@NFT" NFTChanged="@NFTChangedHandler" Multiple="true" SmallThumbnails="true"/>
                         </Column>
                     </Row>
                 </Column>
             </Row>
+            <Row Margin="Margin.Is3.FromTop">
+                <Column>
+                    @if (!mintingChanges)
+                    {
+                        @if ( minted )
+                        {
+                            <Alert Color="Color.Success">
+                                <Icon Name="IconName.Check" />
+                                <Span>Profile successfully saved! TxId: @result</Span>
+                            </Alert>
+                        }
+                        if ( mintError )
+                        {
+                            <Alert Color="Color.Danger">
+                                <Icon Name="IconName.Ban" />
+                                <Span>Cannot save! Error: @result</Span>
+                            </Alert>
+                        }
+                    }
+                </Column>
+            </Row>         
+            
+            <NotificationAlert />
         </ModalBody>
         <ModalFooter>
             <Button Loading="@mintingChanges" Color="Color.Light" Clicked="@MintProfile">
@@ -90,6 +91,8 @@
 
 @code {
     Modal? modalRef;
+
+    [Inject] INotificationService? NotificationService { get; set; }
 
     [Inject] IPageProgressService? PageProgressService { get; set; }
 
@@ -163,13 +166,14 @@
         NFT.Description = (string)e.Value;
         await DescriptionChanged.InvokeAsync( (string)e.Value );
     }
-    void ImageChangedHandler( string e )
+    void NFTChangedHandler( INFT e )
     {
-        if ( string.IsNullOrEmpty( e ) )
+        if ( e is null )
             return;
 
-        NFT.ImageLink = e;
-        AppData.Account.Profile.ImageLink = e;
+        NFT = e;
+        if (e.Type == NFTTypes.Profile)
+            AppData.Account.Profile = (e as ProfileNFT);
     }
     async Task MintProfile()
     {
@@ -177,8 +181,11 @@
         mintingChanges = true;
         if (PageProgressService != null)
             await PageProgressService.Go( null, options => { options.Color = Color.Primary; } );
-        StateHasChanged();
-        await Task.Delay(1);
+            
+        if (NotificationService != null)
+            await NotificationService.Info( "Sending data...", "Sending" );
+              
+        await InvokeAsync( StateHasChanged );
         
         if ( AppData.Account.TokensSupplies.TryGetValue( AppData.AppTokenId, out var supply ) )
         {
@@ -200,6 +207,14 @@
 
         minted = res.Item1;
         result = res.Item2;
+        
+        if (NotificationService != null)
+        {
+            if (res.Item1)
+                await NotificationService.Success( "Sent Successfull.", "Send success" );
+            else
+                await NotificationService.Warning( res.Item2, "Cannot sent" );
+        }
         if ( res.Item1 )
         {
             Console.WriteLine( "Profile saved. Txid: " + result );

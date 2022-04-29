@@ -1443,7 +1443,7 @@ namespace VEDriversLite
                 transaction.Outputs.RemoveAt(2);
 
                 var fee = CalcFee(transaction.Inputs.Count, 2, JsonConvert.SerializeObject(data.Metadata), true);
-
+                
                 var amountinSat = Convert.ToUInt64(neblAmount * FromSatToMainRatio);
                 var balanceinSat = Convert.ToUInt64(allNeblInputCoins * FromSatToMainRatio);
 
@@ -1452,7 +1452,7 @@ namespace VEDriversLite
                     throw new Exception("Not enought spendable Neblio on the address.");
                 }
 
-                var diffinSat = balanceinSat - amountinSat - Convert.ToUInt64(fee) - Convert.ToUInt64(MinimumAmount); // fee is already included in previous output, last is token carrier
+                var diffinSat = balanceinSat - amountinSat - Convert.ToUInt64(fee) - Convert.ToUInt64(MinimumAmount) - Convert.ToUInt64(MinimumAmount); // fee is already included in previous output, last is token carriers
 
                 // create outputs
                 transaction.Outputs.Add(new Money(amountinSat), recaddr.ScriptPubKey); // send to receiver required amount

@@ -37,7 +37,31 @@ else if(NFT.Type == NFTTypes.Ticket)
                    NFTSent="@NFTSentHandler"
                    OpenNFTsInWorkTab="async (e) => await OpenNFTsInWorkTab.InvokeAsync(e)" />                              
 }
-else if (NFT.Type == NFTTypes.Image || NFT.Type == NFTTypes.Post)
+else if(NFT.Type == NFTTypes.Payment)
+{
+    <NFTPaymentDetails @ref=NFTPaymentDetailsModalComponent
+                   NFT="@NFT"
+                   Address="@Address"
+                   IsOwnNFT="@IsOwnNFT"
+                   IsSubAccount="@IsSubAccount"
+                   HideOpenInWorkTabButton="@HideOpenInWorkTabButton"
+                   NFTSent="@NFTSentHandler"
+                   OpenNFTsInWorkTab="async (e) => await OpenNFTsInWorkTab.InvokeAsync(e)" />                              
+}
+else if(NFT.Type == NFTTypes.Receipt)
+{
+    <NFTReceiptDetails @ref=NFTReceiptDetailsModalComponent
+                   NFT="@NFT"
+                   Address="@Address"
+                   IsOwnNFT="@IsOwnNFT"
+                   IsSubAccount="@IsSubAccount"
+                   HideOpenInWorkTabButton="@HideOpenInWorkTabButton"
+                   NFTSent="@NFTSentHandler"
+                   OpenNFTsInWorkTab="async (e) => await OpenNFTsInWorkTab.InvokeAsync(e)" />                              
+}
+else if (NFT.Type == NFTTypes.Image || 
+         NFT.Type == NFTTypes.Post || 
+         NFT.Type == NFTTypes.Music)
 {
             <NFTDetails @ref="NFTDetailsModalComponent"
                 Address="@Address" 
@@ -56,6 +80,8 @@ else if (NFT.Type == NFTTypes.Image || NFT.Type == NFTTypes.Post)
     private TicketDetails? TicketDetailsModalComponent;
     private EventDetails? EventDetailsModalComponent;
     private NFTDetails? NFTDetailsModalComponent;
+    private NFTPaymentDetails? NFTPaymentDetailsModalComponent;
+    private NFTReceiptDetails? NFTReceiptDetailsModalComponent;
 
     public async Task OpenNFTDetails(INFT nft)
     {
@@ -81,6 +107,12 @@ else if (NFT.Type == NFTTypes.Image || NFT.Type == NFTTypes.Post)
             case NFTTypes.Post:
                 NFTDetailsModalComponent?.ShowNFTDetails(nft);
                 break;  
+            case NFTTypes.Payment:
+                NFTPaymentDetailsModalComponent?.ShowNFTDetails(nft);
+                break;  
+            case NFTTypes.Receipt:
+                NFTReceiptDetailsModalComponent?.ShowNFTDetails(nft);
+                break;  
         }
         return;
     }
@@ -97,6 +129,18 @@ else if (NFT.Type == NFTTypes.Image || NFT.Type == NFTTypes.Post)
                 break;
             case NFTTypes.Ticket:
                 TicketDetailsModalComponent?.HideNFTDetails();
+                break;
+            case NFTTypes.Image:
+                NFTDetailsModalComponent?.HideNFTDetails();
+                break;
+            case NFTTypes.Post:
+                NFTDetailsModalComponent?.HideNFTDetails();
+                break;
+            case NFTTypes.Payment:
+                NFTPaymentDetailsModalComponent?.HideNFTDetails();
+                break;
+            case NFTTypes.Receipt:
+                NFTReceiptDetailsModalComponent?.HideNFTDetails();
                 break;
         }
         return;

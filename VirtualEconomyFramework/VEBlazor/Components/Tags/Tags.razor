@@ -6,6 +6,14 @@
     @GetTokenBadge()
     <Badge Color="Color.Success" Margin="Margin.Is1.FromEnd">NFT</Badge>
     <NFTCardBadge Margin="Margin.Is1.FromEnd" NFTType="@NFTType" />
+    @if (IsGallery)
+    {
+        <Badge Color="Color.Success" Margin="Margin.Is1.FromEnd">Gallery</Badge>
+    }
+    @if (IsOfferedToSell)
+    {
+        <Badge Color="Color.Warning" Margin="Margin.Is1.FromEnd">Buy Me :)</Badge>
+    }
     @foreach(var tag in TagsList)
     {
         @MatchTag(tag)
@@ -20,13 +28,12 @@
         Dogepalooza
     }
 
-    [Parameter]
-    public NFTTypes NFTType { get; set; } = NFTTypes.Image;
+    [Parameter] public NFTTypes NFTType { get; set; } = NFTTypes.Image;
+    [Parameter] public bool IsGallery { get; set; } = false;
+    [Parameter] public bool IsOfferedToSell { get; set; } = false;
 
-    [Parameter]
-    public IEnumerable<string> TagsList { get; set; }
-    [Parameter]
-    public string TokenId { get; set; } = NFTHelpers.TokenId;
+    [Parameter] public IEnumerable<string> TagsList { get; set; }
+    [Parameter] public string TokenId { get; set; } = NFTHelpers.TokenId;
 
     private RenderFragment GetTokenBadge()
     {

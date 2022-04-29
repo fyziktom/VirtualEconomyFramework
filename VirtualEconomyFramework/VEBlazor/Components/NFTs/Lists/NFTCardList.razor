@@ -24,8 +24,8 @@
                 </Field>
             </Column>
         </Row>
-        <Row>
-            <Column>
+        <Row Padding="Padding.Is0">
+            <Column Padding="Padding.Is0">
                 <CardDeck>
                     @foreach ( var NFT in NFTs )
                     {
@@ -77,7 +77,7 @@
             <CloseButton />
         </ModalHeader>
         <ModalBody>
-            <PanzoomImage Source="@imageInModalUrl" />
+            <NFTDataItem NFT="@nftInImageDetails" DisplayPDF="true" />
         </ModalBody>
     </ModalContent>
 </Modal>
@@ -107,6 +107,7 @@
     OpenNFTDetailsFactory? openNFTDetailsFactory;
     string searchNFTsString = string.Empty;
     string imageInModalUrl = "_content/VEBlazor/images/empty.jpg";
+    INFT nftInImageDetails = new ImageNFT("");
     INFT nftInDetails = new ImageNFT("");
 
     protected override async Task OnAfterRenderAsync( bool firstRender )
@@ -123,11 +124,12 @@
         StateHasChanged();
     }    
 
-    async Task OpenImageDetailModalHandler(string url)
+    async Task OpenImageDetailModalHandler(INFT nft)
     {
-        imageInModalUrl = url ?? string.Empty;
-        StateHasChanged();
-        await Task.Delay(1);
+        if (nft == null) return;
+        nftInImageDetails = nft;
+        
+        await InvokeAsync( StateHasChanged );
         if (NFTImageDetailModal is not null)
             await NFTImageDetailModal.Show();
     }

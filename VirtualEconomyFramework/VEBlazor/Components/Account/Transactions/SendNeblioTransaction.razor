@@ -1,0 +1,489 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@using VEDriversLite.NFT.Imaging.Xray
+@inject AppData AppData
+@inherits NFTComponentBase
+
+<Modal @ref="SendModal">
+    <ModalContent Centered>
+        <ModalHeader>
+            <ModalTitle>Send Transaction</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <Container Fluid>
+
+            <Tabs SelectedTab="@selectedTab" SelectedTabChanged="@TabChanged">
+                <Items>
+                    <Tab Name="basic">Basic</Tab>                  
+                    <Tab Name="split">Split</Tab>                  
+                    <Tab Name="airdrop">Airdrop</Tab>                  
+                </Items>
+                <Content>
+                    <TabPanel Name="basic">
+
+                        <Row Flex="Flex.JustifyContent.Center" Margin="Margin.Is3.FromTop">
+                            <Column>
+                                <Addons>
+                                    <Addon AddonType="AddonType.Body">
+                                        <NumericPicker TValue="double" Min="0" Max="@selectedAssetAmount" @bind-Value="@Value" Decimals="@(Type == TxType.Neblio ? 6 : 0)" />
+                                    </Addon>
+                                    <Addon AddonType="AddonType.End">
+                                        <Dropdown Display="Display.Block">
+                                            <DropdownToggle Color="Color.Light">
+                                                <Image Source="@selectedAssetImage" Style="max-width:18px;max-height:18px;margin-bottom:1px;" />
+                                            </DropdownToggle>
+                                            <DropdownMenu MaxMenuHeight="250px" >
+                                                @foreach (var ts in AppData.Account.TokensSupplies)
+                                                {
+                                                    <DropdownItem Value="@(ts.Key)" Clicked="@((e) => SetTxType(TxType.Token, ts.Value.TokenId, ts.Value.ImageUrl, ts.Value.Amount, ts.Value.TokenSymbol))">
+                                                        <Span>@ts.Value.TokenSymbol</Span><Figure Size="FigureSize.Is16x16" Margin="Margin.Is2.FromStart"><FigureImage Source="@(ts.Value.ImageUrl)" /></Figure>
+                                                    </DropdownItem>
+                                                }
+                                                <DropdownItem Value="@("NEBL")" Clicked="@((e) => SetTxType(TxType.Neblio, "", AppData.NeblioImageLink, AppData.Account.TotalSpendableBalance, "NEBL"))">
+                                                    <Span>NEBL</Span><Figure Size="FigureSize.Is16x16" Margin="Margin.Is2.FromStart"><FigureImage Source="@AppData.NeblioImageLink" /></Figure>
+                                                </DropdownItem>
+                                            </DropdownMenu>
+                                        </Dropdown>
+                                    </Addon>
+                                </Addons>
+                            </Column>
+                        </Row>
+
+                        @if (Type == TxType.Token)
+                        {
+                            <Row Margin="Margin.Is2.FromTop">
+                                <Column>
+                                    <b>Actual Balance:</b> @selectedAssetAmount @selectedAssetTokenSymbol<Figure Size="FigureSize.Is16x16"><FigureImage Source="@selectedAssetImage" /></Figure>
+                                </Column>
+                            </Row>
+                            <Row Margin="Margin.Is2.FromTop">
+                                <Column>
+                                    <b>Remain After Tx:</b> @(selectedAssetAmount-Value) @selectedAssetTokenSymbol<Figure Size="FigureSize.Is16x16"><FigureImage Source="@selectedAssetImage" /></Figure>
+                                </Column>
+                            </Row>
+                        }
+                        else
+                        {            
+                            <Row Margin="Margin.Is2.FromTop">
+                                <Column>
+                                    <b>Actual Balance:</b> @(Math.Round(selectedAssetAmount, 8)) @selectedAssetTokenSymbol <Figure Size="FigureSize.Is16x16"><FigureImage Source="@AppData.NeblioImageLink" /></Figure>
+                                </Column>
+                            </Row>
+                            <Row Margin="Margin.Is2.FromTop">
+                                <Column>
+                                    <b>Remain After Tx:</b> @(Math.Round(selectedAssetAmount - Value, 8)) @selectedAssetTokenSymbol <Figure Size="FigureSize.Is16x16"><FigureImage Source="@AppData.NeblioImageLink" /></Figure>
+                                </Column>
+                            </Row>
+                        }                        
+                        <Field Margin="Margin.Is2.FromTop">
+                            <FieldLabel>Please enter the message</FieldLabel>
+                            <TextEdit Placeholder="Enter the message" @bind-Text="@Message"/>
+                            <FieldHelp>You can add some message for the receiver.</FieldHelp>
+                        </Field>
+
+                    </TabPanel>
+                    
+                    <TabPanel Name="split">
+                        <Row Flex="Flex.JustifyContent.Center" Margin="Margin.Is3.FromTop">
+                            <Column>
+                                <Addons>
+                                    <Addon AddonType="AddonType.Body">
+                                        <NumericPicker TValue="double" Min="0" Max="@selectedAssetAmount" @bind-Value="@Value" Decimals="@(Type == TxType.Neblio ? 6 : 0)" />
+                                    </Addon>
+                                    <Addon AddonType="AddonType.End">
+                                        <Dropdown Display="Display.Block">
+                                            <DropdownToggle Color="Color.Light">
+                                                <Image Source="@selectedAssetImage" Style="max-width:18px;max-height:18px;margin-bottom:1px;" />
+                                            </DropdownToggle>
+                                            <DropdownMenu MaxMenuHeight="250px" >
+                                                @foreach (var ts in AppData.Account.TokensSupplies)
+                                                {
+                                                    <DropdownItem Value="@(ts.Key)" Clicked="@((e) => SetTxType(TxType.Token, ts.Value.TokenId, ts.Value.ImageUrl, ts.Value.Amount, ts.Value.TokenSymbol))">
+                                                        <Span>@ts.Value.TokenSymbol</Span><Figure Size="FigureSize.Is16x16" Margin="Margin.Is2.FromStart"><FigureImage Source="@(ts.Value.ImageUrl)" /></Figure>
+                                                    </DropdownItem>
+                                                }
+                                                <DropdownItem Value="@("NEBL")" Clicked="@((e) => SetTxType(TxType.Neblio, "", AppData.NeblioImageLink, AppData.Account.TotalSpendableBalance, "NEBL"))">
+                                                    <Span>NEBL</Span><Figure Size="FigureSize.Is16x16" Margin="Margin.Is2.FromStart"><FigureImage Source="@AppData.NeblioImageLink" /></Figure>
+                                                </DropdownItem>
+                                            </DropdownMenu>
+                                        </Dropdown>
+                                    </Addon>
+                                </Addons>
+                            </Column>
+                        </Row>
+                        <Row>
+                            <Column>
+                                <Field>
+                                    <FieldLabel>Number Of Lots</FieldLabel>
+                                    <NumericPicker TValue="double" Min="0" Max="10" @bind-Value="@numberOfLots" Decimals="0" />
+                                    <FieldHelp>Please select nuber of the lots which should be sent. Each of them will have selected value.</FieldHelp>                                    
+                                </Field>
+                            </Column>
+                        </Row>
+                        <Row>
+                            <Column>
+                                <Span>You will send in total: @(Math.Round(numberOfLots * Value, 8)) @selectedAssetTokenSymbol</Span><Figure Size="FigureSize.Is16x16" Margin="Margin.Is2.FromStart"><FigureImage Source="@(selectedAssetImage)" /></Figure>
+                            </Column>
+                        </Row>
+
+                        @if (Type == TxType.Token)
+                        {
+                            <Row Margin="Margin.Is2.FromTop">
+                                <Column>
+                                    <b>Actual Balance:</b> @selectedAssetAmount @selectedAssetTokenSymbol<Figure Size="FigureSize.Is16x16"><FigureImage Source="@selectedAssetImage" /></Figure>
+                                </Column>
+                            </Row>
+                            <Row Margin="Margin.Is2.FromTop">
+                                <Column>
+                                    <b>Remain After Tx:</b> @(selectedAssetAmount-Value) @selectedAssetTokenSymbol<Figure Size="FigureSize.Is16x16"><FigureImage Source="@selectedAssetImage" /></Figure>
+                                </Column>
+                            </Row>
+                        }
+                        else
+                        {            
+                            <Row Margin="Margin.Is2.FromTop">
+                                <Column>
+                                    <b>Actual Balance:</b> @(Math.Round(AppData.Account.TotalSpendableBalance, 8)) NEBL <Figure Size="FigureSize.Is16x16"><FigureImage Source="@AppData.NeblioImageLink" /></Figure>
+                                </Column>
+                            </Row>
+                            <Row Margin="Margin.Is2.FromTop">
+                                <Column>
+                                    <b>Remain After Tx:</b> @(Math.Round(AppData.Account.TotalSpendableBalance - Value, 8)) NEBL <Figure Size="FigureSize.Is16x16"><FigureImage Source="@AppData.NeblioImageLink" /></Figure>
+                                </Column>
+                            </Row>
+                        }
+
+                    </TabPanel>             
+                    <TabPanel Name="airdrop">
+                        
+                        <Row>
+                            <Column>
+                                <Span>Set Amount of Neblio</Span>
+                            </Column>                            
+                        </Row>
+                        <Row Flex="Flex.JustifyContent.Center" Margin="Margin.Is3.FromTop">
+                            <Column>
+                                <Addons>
+                                    <Addon AddonType="AddonType.Body">
+                                        <NumericPicker TValue="double" Min="0" Max="@(AppData.Account.TotalSpendableBalance)" @bind-Value="@NeblioAirdropValue" Decimals="6" />
+                                    </Addon>
+                                    <Addon AddonType="AddonType.End">
+                                        <Image Source="@AppData.NeblioImageLink" Margin="Margin.Is3.FromStart" Style="max-width:25px;max-height:25px;" />
+                                    </Addon>
+                                </Addons>
+                            </Column>
+                        </Row>
+
+                        <Row Flex="Flex.JustifyContent.Center" Margin="Margin.Is3.FromTop">
+                            <Column>
+                                <Addons>
+                                    <Addon AddonType="AddonType.Body">
+                                        <NumericPicker TValue="double" Min="0" Max="@selectedAssetAmount" @bind-Value="@TokensAirdropValue" Decimals="0" />
+                                    </Addon>
+                                    <Addon AddonType="AddonType.End">
+                                        <Dropdown Display="Display.Block">
+                                            <DropdownToggle Color="Color.Light">
+                                                <Image Source="@selectedAssetImage" Style="max-width:18px;max-height:18px;margin-bottom:1px;" />
+                                            </DropdownToggle>
+                                            <DropdownMenu MaxMenuHeight="250px" >
+                                                @foreach (var ts in AppData.Account.TokensSupplies)
+                                                {
+                                                    <DropdownItem Value="@(ts.Key)" Clicked="@((e) => SetTxType(TxType.Token, ts.Value.TokenId, ts.Value.ImageUrl, ts.Value.Amount, ts.Value.TokenSymbol))">
+                                                        <Span>@ts.Value.TokenSymbol</Span><Figure Size="FigureSize.Is16x16" Margin="Margin.Is2.FromStart"><FigureImage Source="@(ts.Value.ImageUrl)" /></Figure>
+                                                    </DropdownItem>
+                                                }
+                                            </DropdownMenu>
+                                        </Dropdown>
+                                    </Addon>
+                                </Addons>
+                            </Column>
+                        </Row>
+
+                        <Row Margin="Margin.Is2.FromTop">
+                            <Column>
+                                <b>Actual Balance:</b> @selectedAssetAmount @selectedAssetTokenSymbol<Figure Size="FigureSize.Is16x16"><FigureImage Source="@selectedAssetImage" /></Figure>
+                            </Column>
+                        </Row>
+                        <Row Margin="Margin.Is2.FromTop">
+                            <Column>
+                                <b>Remain After Tx:</b> @(selectedAssetAmount-TokensAirdropValue) @selectedAssetTokenSymbol<Figure Size="FigureSize.Is16x16"><FigureImage Source="@selectedAssetImage" /></Figure>
+                            </Column>
+                        </Row>  
+                        <Row Margin="Margin.Is2.FromTop">
+                            <Column>
+                                <b>Actual Balance:</b> @(Math.Round(AppData.Account.TotalSpendableBalance, 8)) NEBL <Figure Size="FigureSize.Is16x16"><FigureImage Source="@AppData.NeblioImageLink" /></Figure>
+                            </Column>
+                        </Row>
+                        <Row Margin="Margin.Is2.FromTop">
+                            <Column>
+                                <b>Remain After Tx:</b> @(Math.Round(AppData.Account.TotalSpendableBalance - NeblioAirdropValue, 8)) NEBL <Figure Size="FigureSize.Is16x16"><FigureImage Source="@AppData.NeblioImageLink" /></Figure>
+                            </Column>
+                        </Row>
+                        
+                    </TabPanel>  
+                    
+                </Content>
+            </Tabs>
+
+            <Row Width="Width.Is100" Margin="Margin.Is2.FromTop"> 
+                <Column>
+                    <NeblioAddressInput @bind-Receiver="@Receiver" />
+                </Column>
+            </Row>
+
+            <Row>
+                <Column Flex="Flex.AlignItems.Center">
+                    <Span>Do you really want to Send this transaction? You cannot take this action back.</Span>
+                </Column>
+            </Row>
+            <Row Flex="Flex.JustifyContent.Center"> 
+                <Column>
+                    <Button Color="Color.Primary" Clicked="@Action" Loading="@Sending" Block>Yes, I understand. Send transaction now.</Button>
+                </Column>
+            </Row>
+            @if (SendFinished)
+            {
+                <Row Flex="Flex.JustifyContent.Center">
+                    <Column>
+                        @if (SendResult.Item1)
+                        {
+                            <Alert Color="Color.Success">@SendResult.Item2</Alert>
+                        }
+                        else
+                        {
+                            <Alert Color="Color.Danger">@SendResult.Item2</Alert>
+                        }
+                    </Column>
+                </Row>
+            }
+
+            <NotificationAlert />
+            
+            </Container>
+        </ModalBody>
+    </ModalContent>
+</Modal>
+
+@code {
+
+    [Inject] INotificationService? NotificationService { get; set; }
+
+    public enum TxType 
+    {
+        Neblio,
+        Token
+    }
+
+    public enum ActionType
+    {
+        SendPayment,
+        Split,
+        Airdrop
+    }
+
+    private Modal? SendModal;
+
+    [Parameter] public string Receiver { get; set; } = string.Empty;
+    [Parameter] public string Message { get; set; } = string.Empty;
+    [Parameter] public string TokenId { get; set; } = NFTHelpers.TokenId;
+    [Parameter] public double Value { get; set; } = 0.0;
+    [Parameter] public TxType Type { get; set; } = TxType.Neblio;
+
+    bool Sending = false;
+    bool SendFinished = false;
+    bool SendCopy = false;
+    (bool,string) SendResult = (false,string.Empty);
+    string selectedAssetImage = AppData.NeblioImageLink;
+    string selectedAssetTokenSymbol = "NEBL";
+    double selectedAssetAmount = 0.0;
+    string selectedTab = "basic";
+    double NeblioAirdropValue = 0.05;
+    double TokensAirdropValue = 100;
+    double numberOfLots = 1;
+    ActionType actionType = ActionType.SendPayment;
+
+    protected override Task OnInitializedAsync()
+    {
+        selectedAssetAmount = AppData.Account.TotalSpendableBalance;
+        return base.OnInitializedAsync();
+    }
+
+    public void Show(string receiver = "", bool sendCopy = false)
+    {
+        if (NFT == null) return;
+        if (!string.IsNullOrEmpty(receiver))
+            Receiver = receiver;
+
+        StateHasChanged();
+        SendModal?.Show();
+    }
+    public void Hide()
+    {
+        SendModal?.Hide();
+    }
+
+    void SetTxType(TxType type, string tokenId, string imageUrl, double assetAmount, string tokenSymbol)
+    {
+        Type = type;
+        if (type == TxType.Token)
+            TokenId = tokenId;
+        selectedAssetImage = imageUrl;
+        selectedAssetTokenSymbol = tokenSymbol;
+        selectedAssetAmount = assetAmount;
+        Value = 0.0;
+        StateHasChanged();
+    }
+
+    async Task TabChanged(string tab)
+    {    
+        if (tab == "basic")
+        {
+            selectedTab = tab;
+            actionType = ActionType.SendPayment;
+        }
+        else if (tab == "split")
+        {
+            selectedTab = tab;
+            actionType = ActionType.Split;
+        }
+        else if (tab == "airdrop")
+        {
+            selectedTab = tab;
+            actionType = ActionType.Airdrop;
+            var asset = AppData.Account.TokensSupplies.Values.FirstOrDefault(a => a.Amount > 0);
+            selectedAssetImage = asset?.ImageUrl ?? AppData.VENFTImageLink;
+            selectedAssetTokenSymbol = asset?.TokenSymbol ?? "VENFT";
+            selectedAssetAmount = asset?.Amount ?? 0.0;
+            TokenId = asset?.TokenId ?? NFTHelpers.TokenId;
+        }
+        StateHasChanged();
+    }
+
+    async Task Action()
+    {
+        if (string.IsNullOrEmpty(Receiver))
+        {
+            if (NotificationService != null)
+                await NotificationService.Warning( "Please fill the receiver...", "Cannot send" );                    
+            return;
+        }
+
+        var SendResult = (false, string.Empty);
+        if (actionType == ActionType.SendPayment)
+            SendResult = await ActionSendPayment();
+        else if (actionType == ActionType.Split)
+            SendResult = await ActionSendSplitPayment();
+        else if (actionType == ActionType.Airdrop)
+            SendResult = await ActionSendAirdrop();
+
+        Console.WriteLine($"Tx Send. of the result: {SendResult.Item1}, with message: {SendResult.Item2}");
+
+        SendFinished = false;
+
+        Sending = false;
+        await InvokeAsync( StateHasChanged );
+
+        if (NotificationService != null)
+        {
+            if (SendResult.Item1)
+                await NotificationService.Success( "Sent Successfull.", "Send success" );
+            else
+                await NotificationService.Warning( SendResult.Item2, "Cannot sent" );
+        }
+
+        //close automatically after 2 seconds
+        await Task.Delay(2000);  
+    }
+
+    async Task<(bool, string)> ActionSendSplitPayment()
+    {
+        if (numberOfLots <= 1 || Value <= 0.0)
+        {
+            if (NotificationService != null)
+                await NotificationService.Warning( "Please fill valid values...", "Cannot send" );                    
+            return (false, "Please fill valid values...");
+        }
+
+        await StartSendingInfo();
+
+        if (Type == TxType.Neblio)
+        {
+            if (!IsSubAccount)
+                SendResult = await AppData.Account.SplitNeblioCoin(new List<string>() { Receiver }, (int)numberOfLots, Value);
+            else
+                SendResult = await AppData.Account.SplitNeblioOnSubAccount(Address, new List<string>() { Receiver }, (int)numberOfLots, Value);
+        }
+        else
+        {
+            if (!IsSubAccount)
+                SendResult = await AppData.Account.SplitTokens(TokenId, new Dictionary<string,string> { { "Message", Message } }, new List<string>() { Receiver }, (int)numberOfLots, (int)Value);
+            else
+                SendResult = await AppData.Account.SplitNeblioTokensOnSubAccount(Address, TokenId, new Dictionary<string,string> { { "Message", Message } }, new List<string>() { Receiver }, (int)numberOfLots, (int)Value);
+        }
+
+        return SendResult;     
+    }
+
+    async Task<(bool, string)> ActionSendAirdrop()
+    {     
+        if (NeblioAirdropValue <= 0.0 || TokensAirdropValue <= 0.0)
+        {
+            if (NotificationService != null)
+                await NotificationService.Warning( "Please fill valid values...", "Cannot send" );                    
+            return (false, "Please fill valid values...");
+        }
+        
+        await StartSendingInfo();
+        
+        SendResult = await AppData.Account.SendAirdrop(Receiver, TokenId, TokensAirdropValue, NeblioAirdropValue);
+
+        return SendResult;          
+
+    }
+
+    async Task<(bool, string)> ActionSendPayment()
+    {
+        if (Value == 0.0)
+        {
+            if (NotificationService != null)
+                await NotificationService.Warning( "Please fill the amount. Cannot send 0...", "Cannot send" );                    
+            return (false, "Please fill the amount. Cannot send 0...");
+        }        
+        if (Value < 0.0)
+        {
+            if (NotificationService != null)
+                await NotificationService.Warning( "Cannot send negative value...", "Cannot send" );                    
+            return (false, "Cannot send negative value...");
+        }
+        
+        await StartSendingInfo();
+        
+        if (Type == TxType.Neblio)
+        {
+            if (!IsSubAccount)
+                SendResult = await AppData.Account.SendNeblioPayment(Receiver, Value, Message);
+            else
+                SendResult = await AppData.Account.SendNeblioOnSubAccount(Address, Receiver, Value, Message);
+        }
+        else
+        {
+            if (!IsSubAccount)
+                SendResult = await AppData.Account.SendNeblioTokenPayment(TokenId, new Dictionary<string,string> { { "Message", Message } }, Receiver, (int)Value);
+            else
+                SendResult = await AppData.Account.SendNeblioTokensOnSubAccount(Address, TokenId, new Dictionary<string,string> { { "Message", Message } }, Receiver, (int)Value);
+        }
+
+        return SendResult;
+    }
+
+    async Task StartSendingInfo()
+    {
+        Sending = true;
+        await InvokeAsync( StateHasChanged );
+
+        if (NotificationService != null)
+            await NotificationService.Info( "Sending transaction...", "Sending" );
+    
+    }
+}

@@ -2,29 +2,24 @@
 @using VEDriversLite.NFT
 @inherits AccountRelatedComponentBase 
 
-<Container Fluid>
-    <Div>
-        <Row>
-            <Column Flex="Flex.JustifyContent.Center">
-                <Heading Size="HeadingSize.Is4">WorkTab - @WorkTabName</Heading>
-            </Column>
-        </Row>
-        <Row>
-            <Column>
-                  <CardGroup>
-                    @foreach (var NFT in NFTs) 
-                    {
-                            <XrayImageNFTEditor NFT="@NFT"
-                                            Address="@Address" 
-                                            IsSubAccount="@IsSubAccount"
-                                            IsOwnNFT="@IsOwnNFT" 
-                                            OpenNFTsInWorkTab="async (e) => await OpenNFTsInWorkTab.InvokeAsync(e)"/>
-                    }
-                </CardGroup>              
-            </Column>
-        </Row>
-    </Div>
-</Container>
+<Row>
+    <Column Flex="Flex.JustifyContent.Center">
+        <Heading Size="HeadingSize.Is4">WorkTab - @WorkTabName</Heading>
+    </Column>
+</Row>
+<Row Height="Height.Is100">
+    <Column Height="Height.Is100">
+            @foreach (var NFT in NFTs) 
+            {   
+                <XrayImageNFTEditor NFT="@NFT"
+                                Address="@Address" 
+                                IsSubAccount="@IsSubAccount"
+                                IsOwnNFT="@IsOwnNFT" 
+                                OpenNFTsInWorkTab="async (e) => await OpenNFTsInWorkTab.InvokeAsync(e)"/>
+            }      
+    </Column>
+</Row>
+
 
 @code {
     [Parameter]

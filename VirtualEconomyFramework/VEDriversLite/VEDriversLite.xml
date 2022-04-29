@@ -3330,6 +3330,15 @@
             <param name="dogeprice"></param>
             <returns>true and string with new TxId</returns>
         </member>
+        <member name="M:VEDriversLite.NeblioAccount.ReturnNFTPaymentFromSubAccount(System.String,System.String,VEDriversLite.NFT.INFT)">
+            <summary>
+            Return NFT Payment From SubAccount
+            </summary>
+            <param name="address">Neblio Address of SubAccount</param>
+            <param name="receiver">Receiver of the NFT</param>
+            <param name="NFT">NFT Payment on the SubAccount which should be return</param>
+            <returns>true and string with new TxId</returns>
+        </member>
         <member name="M:VEDriversLite.NeblioAccount.ChangeNFTOnSubAccount(System.String,VEDriversLite.NFT.INFT)">
             <summary>
             Change NFT on SubAccount
@@ -3355,6 +3364,27 @@
             <param name="NFT">NFT on the SubAccount which should be minted</param>
             <param name="receiver">Receiver of the NFT</param>
             <param name="coppies"></param>
+            <returns>true and string with new TxId</returns>
+        </member>
+        <member name="M:VEDriversLite.NeblioAccount.SendNeblioOnSubAccount(System.String,System.String,System.Double,System.String)">
+            <summary>
+            Send Neblio Coin on SubAccount
+            </summary>
+            <param name="address">Neblio Address of SubAccount</param>
+            <param name="receiver">receiver Neblio address</param>
+            <param name="amount">amount of neblio</param>
+            <param name="message">optional message</param>
+            <returns>true and string with new TxId</returns>
+        </member>
+        <member name="M:VEDriversLite.NeblioAccount.SendNeblioTokensOnSubAccount(System.String,System.String,System.Collections.Generic.IDictionary{System.String,System.String},System.String,System.Int32)">
+            <summary>
+            Send Neblio Tokens on SubAccount
+            </summary>
+            <param name="address">Neblio Address of SubAccount</param>
+            <param name="tokenId">Neblio NTP1 token Id</param>
+            <param name="meta">Metadata for transaction</param>
+            <param name="receiver">receiver Neblio address</param>
+            <param name="amount">amount of neblio</param>
             <returns>true and string with new TxId</returns>
         </member>
         <member name="M:VEDriversLite.NeblioAccount.SplitNeblioOnSubAccount(System.String,System.Collections.Generic.List{System.String},System.Int32,System.Double)">
@@ -4808,6 +4838,12 @@
             Loaded Image Preview data as byte array
             </summary>
         </member>
+        <member name="P:VEDriversLite.NFT.CommonNFT.DataItems">
+            <summary>
+            More items in the NFT, for example Image gallery with more images than one
+            Probably future replacement of the "ImageLink" property
+            </summary>
+        </member>
         <member name="F:VEDriversLite.NFT.CommonNFT._tags">
             <summary>
             List of the tags separated by space
@@ -5945,6 +5981,111 @@
             indicate when the NFT was saved in the cash first time
             </summary>
         </member>
+        <member name="T:VEDriversLite.NFT.Dto.DataItemType">
+            <summary>
+            Type of the content
+            </summary>
+        </member>
+        <member name="F:VEDriversLite.NFT.Dto.DataItemType.Image">
+            <summary>
+            Image file, file .bmp, .jpg, .jpeg, .gif, .png, jfif
+            </summary>
+        </member>
+        <member name="F:VEDriversLite.NFT.Dto.DataItemType.AVMedia">
+            <summary>
+            Audio or Video file, file .wav, .ogg, .mp3, .mp4, .avi, .mov
+            </summary>
+        </member>
+        <member name="F:VEDriversLite.NFT.Dto.DataItemType.PDF">
+            <summary>
+            PDF file, file .pdf
+            </summary>
+        </member>
+        <member name="F:VEDriversLite.NFT.Dto.DataItemType.Text">
+            <summary>
+            Simple text, file .txt
+            </summary>
+        </member>
+        <member name="F:VEDriversLite.NFT.Dto.DataItemType.Markdown">
+            <summary>
+            Text file with Markdown formating, file .md
+            </summary>
+        </member>
+        <member name="F:VEDriversLite.NFT.Dto.DataItemType.Mermaid">
+            <summary>
+            Mermaid graph, file .mmd
+            </summary>
+        </member>
+        <member name="F:VEDriversLite.NFT.Dto.DataItemType.HTML">
+            <summary>
+            HTML file, file .html
+            </summary>
+        </member>
+        <member name="F:VEDriversLite.NFT.Dto.DataItemType.JSON">
+            <summary>
+            Json file, file .json
+            </summary>       
+        </member>
+        <member name="F:VEDriversLite.NFT.Dto.DataItemType.Model3dSTL">
+            <summary>
+            3d model in STL, file .stl
+            </summary>
+        </member>
+        <member name="T:VEDriversLite.NFT.Dto.DataItemStorageType">
+            <summary>
+            Type of the storage where the data are stored. Usually it is IPFS.
+            </summary>
+        </member>
+        <member name="F:VEDriversLite.NFT.Dto.DataItemStorageType.IPFS">
+            <summary>
+            IPFS storage
+            </summary>
+        </member>
+        <member name="F:VEDriversLite.NFT.Dto.DataItemStorageType.Url">
+            <summary>
+            Common url
+            </summary>
+        </member>
+        <member name="F:VEDriversLite.NFT.Dto.DataItemStorageType.Local">
+            <summary>
+            Local storage
+            </summary>
+        </member>
+        <member name="T:VEDriversLite.NFT.Dto.NFTDataItem">
+            <summary>
+            Item in the NFT gallery. It is usually some image with tags
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Dto.NFTDataItem.Type">
+            <summary>
+            Type of the item
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Dto.NFTDataItem.Hash">
+            <summary>
+            Hash of the transaction
+            </summary>        
+        </member>
+        <member name="P:VEDriversLite.NFT.Dto.NFTDataItem.Storage">
+            <summary>
+            Type of the storage where the data are stored. Usually it is IPFS.
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Dto.NFTDataItem.TagsList">
+            <summary>
+            Parsed tags from the TagsList
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Dto.NFTDataItem.Data">
+            <summary>
+            Loaded data as byte array
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Dto.NFTDataItem.IsMain">
+            <summary>
+            Display flag for UI
+            </summary>
+        </member>
         <member name="T:VEDriversLite.NFT.Dto.NFTHash">
             <summary>
             Dto for shorten informations for the NFT
@@ -6914,6 +7055,12 @@
             Parsed tag list. It is parsed in Common NFT class
             </summary>
         </member>
+        <member name="P:VEDriversLite.NFT.INFT.DataItems">
+            <summary>
+            More items in the NFT, for example Image gallery with more images than one
+            Probably future replacement of the "ImageLink" property
+            </summary>
+        </member>
         <member name="P:VEDriversLite.NFT.INFT.Utxo">
             <summary>
             NFT Utxo hash
@@ -7661,6 +7808,13 @@
             Remove the server address from link and return just IPFS Hash
             </summary>
             <param name="link"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.NFTHelpers.GetIPFSLinkFromHash(System.String)">
+            <summary>
+            Get full IPFS link from the hash
+            </summary>
+            <param name="hash"></param>
             <returns></returns>
         </member>
         <member name="M:VEDriversLite.NFT.NFTHelpers.UploadImage(System.IO.Stream,System.String,System.String)">

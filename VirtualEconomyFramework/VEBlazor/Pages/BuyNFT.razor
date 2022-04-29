@@ -1,0 +1,565 @@
+﻿@using VEDriversLite
+@using VEDriversLite.Bookmarks
+@using VEDriversLite.NFT
+@using System.Globalization
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject HttpClient _client
+@inject AppData AppData
+@inject NavigationManager NavManager
+
+<Container Fluid>
+    
+    <Divider />
+
+    <Row Margin="Margin.Is5.FromTop">
+        <Column>
+            <Row>
+                <Column Flex="Flex.JustifyContent.Center">
+                    @if (PaymentCurrency == Currency.NBL && !string.IsNullOrEmpty(AppData.Account.Address))
+                    {
+                        <Heading Size="HeadingSize.Is5">Buy NFT with Neblio Payment</Heading>
+                    }
+                    else if (PaymentCurrency == Currency.DGC && !string.IsNullOrEmpty(AppData.DogeAccount.Address))
+                    {
+                        <Heading Size="HeadingSize.Is5">Buy NFT with DOGE Payment</Heading>
+                    }
+                </Column>        
+            </Row>
+            <Row>
+                <Column>
+                    <Row Margin="Margin.Is2.FromTop">
+                        <Column Flex="Flex.JustifyContent.Center">
+                            <Heading Size="HeadingSize.Is5">NFT</Heading>
+                        </Column>
+                    </Row>
+                    @if (NFT.SellJustCopy)
+                    {
+                        <Row Margin="Margin.Is3.FromTop">
+                            <Column Flex="Flex.JustifyContent.Center">
+                                <Span>You are buying just copy of the NFT.</Span>
+                            </Column>
+                        </Row>
+                        <Row Margin="Margin.Is2.FromTop">
+                            <Column Flex="Flex.JustifyContent.Center">
+                                <Span>Author of the NFT offered just copies.</Span>
+                            </Column>
+                        </Row>
+                    }
+                    <Row Margin="Margin.Is4.FromTop">
+                        <Column Flex="Flex.JustifyContent.Center">
+                            <NFTCard NFT="@NFT" 
+                                     IsOwnNFT="false" 
+                                     HideOpenInWorkTabButton="true" 
+                                     OpenImageDetailModal="@OpenImageDetailModalHandler" 
+                                     OpenNFTDetailsRequest="@OpenNFTDetailsRequestHandler" />
+                        </Column>
+                    </Row>
+                    @if (isPossibleToBuy && !IsInThePayments())
+                    {
+                        <Row Margin="Margin.Is3.FromTop">
+                            <Column Flex="Flex.JustifyContent.Center">
+                                <Span Margin="Margin.Is2.FromEnd">Receivers Address</Span><CopyIcon TextToCopy="@receiver" />
+                            </Column>
+                        </Row>
+                        <Row Margin="Margin.Is1.FromTop">
+                            <Column Flex="Flex.JustifyContent.Center">
+                                @if (PaymentCurrency == Currency.NBL && !string.IsNullOrEmpty(AppData.Account.Address))
+                                {
+                                    <a href="@(string.Concat("https://nft.ve-nft.com/address?add=", receiver))" target="_blank">@receiver</a>
+                                }
+                                else if (PaymentCurrency == Currency.DGC && !string.IsNullOrEmpty(AppData.DogeAccount.Address))
+                                {
+                                    <a href="@(string.Concat("https://dogechain.info/address/", receiver))" target="_blank">@receiver</a>
+                                }
+                            </Column>
+                        </Row>
+                        @if (AmountToSend > 0)
+                        {
+                            @if (PaymentCurrency == Currency.NBL && !string.IsNullOrEmpty(AppData.Account.Address))
+                            {
+                                <Row Margin="Margin.Is5.FromTop">
+                                    <Column Flex="Flex.JustifyContent.Center">
+                                        <Span>Amount of Neblio:</Span>
+                                    </Column>
+                                </Row>
+                                 <Row Margin="Margin.Is5.FromTop">
+                                    <Column Flex="Flex.JustifyContent.Center">
+                                        <Heading Size="HeadingSize.Is3">@AmountToSend NEBL </Heading><Figure Size="FigureSize.Is16x16" Margin="Margin.Is2.FromStart"><FigureImage Source="@AppData.NeblioImageLink" /></Figure>
+                                    </Column>
+                                </Row> 
+                                <Row Margin="Margin.Is3.FromTop">
+                                    <Column Flex="Flex.JustifyContent.Center">
+                                        <Card Style="max-width:250px;">
+                                            <CardHeader>Actual Balances</CardHeader>
+                                            <CardBody>
+                                                <Row>
+                                                   <Column>
+                                                       Neblio: @(Math.Round(AppData.Account.TotalSpendableBalance, 8)) NEBL <Figure Size="FigureSize.Is16x16"><FigureImage Source="@AppData.NeblioImageLink" /></Figure>
+                                                   </Column>
+                                               </Row>
+                                               <Row>
+                                                   <Column>
+                                                       Tokens: @TokenSupply VENFT <Figure Size="FigureSize.Is16x16"><FigureImage Source="@AppData.VENFTImageLink" /></Figure>
+                                                   </Column>
+                                               </Row>
+                                               @if (AppData.AppTokenId == VEDriversLite.NFT.NFTHelpers.BDPTokenId)
+                                                {
+                                                    <Row>
+                                                        <Column>
+                                                           Tokens: @BDPSupply BDP <Figure Size="FigureSize.Is16x16"><FigureImage Source="@AppData.BDPImageLink" /></Figure>
+                                                       </Column>
+                                                    </Row>
+                                                }
+                                                else if (AppData.AppTokenId == VEDriversLite.NFT.NFTHelpers.WDOGETokenId)
+                                                {
+                                                    <Row>
+                                                        <Column>
+                                                           Tokens: @WDOGESupply WDOGE <Figure Size="FigureSize.Is16x16"><FigureImage Source="@AppData.WDOGEImageLink" /></Figure>
+                                                       </Column>
+                                                    </Row>
+                                                }
+                                            </CardBody>
+                                        </Card>
+                                    </Column>
+                                </Row>
+                                
+                            }
+                            else if (PaymentCurrency == Currency.DGC && !string.IsNullOrEmpty(AppData.DogeAccount.Address))
+                            {
+                                <Row Margin="Margin.Is5.FromTop">
+                                    <Column Flex="Flex.JustifyContent.Center">
+                                        <Span>Amount of Doge:</Span>
+                                    </Column>
+                                </Row>
+                                 <Row Margin="Margin.Is5.FromTop">
+                                    <Column Flex="Flex.JustifyContent.Center">
+                                        <Span>@AmountToSend DOGE </Span><Figure Size="FigureSize.Is16x16" Margin="Margin.Is2.FromStart"><FigureImage Source="@AppData.DogecoinImageLink" /></Figure>
+                                    </Column>
+                                </Row> 
+                            }
+
+                            @if (PaymentCurrency == Currency.DGC && AmountToSend >= AppData.DogeAccount.TotalSpendableBalance)
+                            {
+                                <Row Margin="Margin.Is5.FromTop">
+                                    <Column>
+                                        <Button Color="Color.Secondary" Disabled Block>Not enought Doge or VENFT Tokens</Button>
+                                    </Column>
+                                </Row>
+                            }
+                            else if (PaymentCurrency == Currency.NBL && AmountToSend >= AppData.Account.TotalSpendableBalance)
+                            {
+                                <Row Margin="Margin.Is5.FromTop">
+                                    <Column>
+                                        <Button Color="Color.Secondary" Disabled Block>Not enought Neblio</Button>
+                                    </Column>
+                                </Row>
+                            }
+                            else if (AppData.Account.SourceTokensBalance <= 5)
+                            {
+                                <Row Margin="Margin.Is5.FromTop">
+                                    <Column>
+                                        <Button Color="Color.Secondary" Disabled Block>Not enought VENFT Tokens</Button>
+                                    </Column>
+                                </Row>
+                            }
+                            else if (PaymentCurrency == Currency.NBL && AmountToSend < AppData.Account.TotalSpendableBalance && AppData.Account.SourceTokensBalance >= 5)
+                            {
+                                <Row Margin="Margin.Is5.FromTop">
+                                    <Column>
+                                        <Button Color="Color.Primary" Clicked="@ShowSendConfirm" Loading="@sendingTransaction" Block>Buy NFT</Button>
+                                    </Column>
+                                </Row>
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (isPossibleToBuy)
+                        {
+                            <Row Margin="Margin.Is5.FromTop">
+                                <Column>
+                                    <Alert Color="Color.Info">
+                                        Checking possibility to buy this NFT
+                                    </Alert>
+                                </Column>
+                            </Row>
+                            
+                        }
+                        else
+                        {
+                            <Row Margin="Margin.Is5.FromTop">
+                                <Column>
+                                    <Alert Color="Color.Warning">
+                                        This NFT is not for sale
+                                    </Alert>
+                                </Column>
+                            </Row>
+                        }
+                    }
+
+                    @if (sucessfullSend)
+                    {
+                        <Divider />
+                        <Row Margin="Margin.Is3.FromTop">
+                            <Column>
+                                <Alert Color="Color.Warning">
+                                    <AlertMessage>Payment Sent</AlertMessage> 
+                                    <AlertDescription>Your payment has been sent :)</AlertDescription>
+                                </Alert>
+                            </Column>
+                        </Row>
+                        <Row Margin="Margin.Is5.FromTop">
+                            <Column Flex="Flex.JustifyContent.Center">
+                                <Span>Transaction Id</Span>
+                            </Column>
+                        </Row>
+                        <Row Margin="Margin.Is1.FromTop">
+                            <Column Flex="Flex.JustifyContent.Center">
+                                @if (PaymentCurrency == Currency.NBL && !string.IsNullOrEmpty(AppData.Account.Address))
+                                {
+                                    <a href="@(string.Concat("https://explorer.nebl.io/tx/", txid))" target="_blank">@txid</a>
+                                }
+                                else if (PaymentCurrency == Currency.DGC && !string.IsNullOrEmpty(AppData.DogeAccount.Address))
+                                {
+                                    <a href="@(string.Concat("https://dogechain.info/tx/", txid))" target="_blank">@txid</a>
+                                }
+                            </Column>
+                        </Row>
+                        <Row Margin="Margin.Is2.FromTop">
+                            <Column>
+                                <CopyButton TextToCopy="@txid" ButtonText="Copy transaction Id" />
+                            </Column>
+                        </Row>
+                        <Divider />
+                        @if (!string.IsNullOrEmpty(redirect))
+                        {
+                            <Row Margin="Margin.Is5.FromTop">
+                                <Column>
+                                    <Button Color="Color.Primary" Clicked="@GoBackToShop" Block>Go Back to the Shop</Button>
+                                </Column>
+                            </Row>
+                            <Divider />
+                        }
+                    }
+                </Column>
+            </Row>
+        </Column>        
+    </Row>
+    
+</Container>
+
+<Modal @ref="redirectModalRef">
+    <ModalContent Centered>
+        <ModalHeader>
+            <ModalTitle>Redirecting back to the shop</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <Row>
+                <Column>
+                    <Span>You will be redirected back to the Shop in</Span>
+                </Column>                
+            </Row>
+            <Row>
+                <Column>
+                    <Heading Size="HeadingSize.Is6">@redirectingBackToShopCountDown @((redirectingBackToShopCountDown > 1)? "seconds" : "second")</Heading>
+                </Column>                
+            </Row>
+            <Row>
+                <Column>
+                    <Span>Redirect address:</Span>
+                </Column>                
+            </Row>
+            <Row>
+                <Column>
+                    <Span>@(redirect ?? "")</Span>
+                </Column>                
+            </Row>
+        </ModalBody>
+    </ModalContent>
+</Modal>
+
+<OpenNFTDetailsFactory @ref="openNFTDetailsFactory"
+                       NFT="@NFT"     
+                       HideOpenInWorkTabButton="true"
+                       IsOwnNFT="@false"/>
+                       
+                       
+<Modal @ref="NFTImageDetailModal">
+    <ModalContent Centered Size="ModalSize.Large">
+        <ModalHeader>
+            <ModalTitle>NFT Image Detail</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <NFTDataItem NFT="@NFT" DisplayPDF="true" />
+        </ModalBody>
+    </ModalContent>
+</Modal>
+          
+
+<UnlockAccount @ref="unlockAccountRef" WithoutNFTs="true" AccountUnlocked="@StateHasChanged" />
+
+@code {
+    [Inject] public IMessageService? MessageService { get; set; }
+    [Inject] public INotificationService? NotificationService { get; set; }
+
+    [Parameter] public string nftUtxo { get; set; } = string.Empty;
+    [Parameter] public string redirect { get; set; } = string.Empty;
+    [Parameter] public Currency PaymentCurrency { get; set; } = Currency.NBL;
+
+    public int TokenSupply
+    {
+        get
+        {
+            if ( AppData.Account.TokensSupplies.TryGetValue( NFTHelpers.TokenId, out var tokens ) )
+                return Convert.ToInt32( tokens.Amount );
+            else
+                return 0;
+        }
+    }
+    public int BDPSupply
+    {
+        get
+        {
+            if ( AppData.Account.TokensSupplies.TryGetValue( NFTHelpers.BDPTokenId, out var tokens ) )
+                return Convert.ToInt32( tokens.Amount );
+            else
+                return 0;
+        }
+    }
+    public int WDOGESupply
+    {
+        get
+        {
+            if ( AppData.Account.TokensSupplies.TryGetValue( NFTHelpers.WDOGETokenId, out var tokens ) )
+                return Convert.ToInt32( tokens.Amount );
+            else
+                return 0;
+        }
+    }
+
+    public enum Currency
+    {
+        NBL,
+        DGC,
+        BTC
+    }
+
+    bool accountUnlocked = true;
+    bool isPossibleToBuy = false;
+    bool sendingTransaction = false;
+    bool sucessfullSend = false;
+
+    int redirectingBackToShopCountDown = 5;
+    int nftUtxoIndex = 0;
+
+    double AmountToSend = 1;
+
+    string txid = string.Empty;
+    string receiver = string.Empty;
+
+    INFT NFT = new ImageNFT("");
+    ActiveTab tab = new ActiveTab();
+
+    Modal? redirectModalRef;
+    UnlockAccount? unlockAccountRef;
+    Modal? NFTImageDetailModal;
+    OpenNFTDetailsFactory? openNFTDetailsFactory;
+
+    public async Task Show(string utxo, int utxoindex = 0, Currency currency = Currency.NBL, string redirect = "")
+    {
+        try
+        {
+            this.redirect = redirect;
+            this.PaymentCurrency = currency;
+            this.nftUtxo = utxo;
+            this.nftUtxoIndex = utxoindex;
+
+            var tasks = new Task[2];
+            tasks[0] = LoadNFT();
+
+            if (string.IsNullOrEmpty(AppData.Account.Address))
+                tasks[1] = TryLogin();
+            else
+                tasks[1] = Task.CompletedTask;
+                
+            await Task.WhenAll(tasks);
+        }
+        catch (Exception ex)
+        {
+            await Redirect();
+        }
+    }
+    
+    async Task OpenImageDetailModalHandler(INFT nft)
+    {
+        if (nft == null) return;
+        
+        await InvokeAsync( StateHasChanged );
+        if (NFTImageDetailModal is not null)
+            await NFTImageDetailModal.Show();
+    }
+
+    async Task OpenNFTDetailsRequestHandler(INFT nft)
+    {    
+        if (nft != null && openNFTDetailsFactory != null)
+        {        
+            StateHasChanged();
+            await openNFTDetailsFactory?.OpenNFTDetails(NFT);
+        }
+    }
+    
+    void NFTRefreshedHandler(object sender, string e)
+    {
+        StateHasChanged();
+    }
+    void RefreshedHandler(object sender, EventArgs e)
+    {
+        StateHasChanged();
+    }
+
+    bool IsInThePayments()
+    {
+        if (tab != null && tab.ReceivedPayments.TryGetValue(nftUtxo, out var nnft))
+            if ((nnft as PaymentNFT).NFTUtxoIndex == NFT.UtxoIndex)
+                if (!NFT.SellJustCopy)
+                    return true;
+
+        return false;
+    }
+
+    async Task Redirect()
+    {
+        AppData.DogeAccount = new VEDriversLite.DogeAccount();
+        await Task.Delay(500);
+        NavManager.NavigateTo("/");
+    }
+
+    async Task LoadNFT()
+    {
+        if (!string.IsNullOrEmpty(nftUtxo))
+        {
+            NFT = await NFTFactory.GetNFT(NFTHelpers.TokenId, nftUtxo, nftUtxoIndex, 0, true);
+            AmountToSend = NFT.Price;
+
+            receiver = await NeblioTransactionHelpers.GetTransactionReceiver(NFT.Utxo, NFT.TxDetails);
+
+            var r = await NeblioTransactionHelpers.ValidateOneTokenNFTUtxo(receiver, NFT.TokenId, NFT.Utxo, NFT.UtxoIndex);
+            if (r != 0)
+                isPossibleToBuy = false;
+            else
+                isPossibleToBuy = true;
+            
+            tab = new ActiveTab(receiver);
+            tab.MaxLoadedNFTItems = 5;
+
+            tab.NFTsChanged -= NFTRefreshedHandler;
+            tab.NFTsChanged += NFTRefreshedHandler;
+            await tab.StartRefreshing();
+            
+            await InvokeAsync( StateHasChanged );
+        }
+    }
+
+    async Task TryLogin()
+    {
+        try
+        {
+            var key = await localStorage.GetItemAsync<string>("key");
+            if (!string.IsNullOrEmpty(key))
+            {
+                unlockAccountRef?.ShowUnlockAccountModal();
+            }
+            else
+            {
+                await Redirect();
+            }
+        }
+        catch (Exception ex)
+        {
+            await Redirect();
+        }
+    }
+
+    async Task ShowSendConfirm()
+    {
+        if (string.IsNullOrEmpty(NFT.Utxo)) return;
+        
+        if ( MessageService != null )        
+        {
+            if (await MessageService.Confirm("Are you sure you want buy this NFT?", "Buy") == true)
+            {
+                BuyNFTFromOwner();
+            }  
+        }
+    }
+
+    async Task BuyNFTFromOwner()
+    {
+        if (string.IsNullOrEmpty(NFT.Utxo))
+        {
+            if ( NotificationService != null )                
+                await NotificationService.Warning( "This is not correct NFT", "Wrong NFT" );
+            return;
+        }
+
+        try
+        {
+            if ( NotificationService != null )                
+                await NotificationService.Info( "Sending payment...", "Sending Payment" );
+                
+            sendingTransaction = true;
+            StateHasChanged();
+            (bool, string) res = (false, string.Empty);
+            switch (PaymentCurrency)
+            {
+                case Currency.NBL:
+                    res = await AppData.Account.SendNFTPayment(receiver, NFT);
+                    break;
+            }
+
+            Console.WriteLine("Tx send result: " + res.Item2);
+            if (!res.Item1)
+            {
+                txid = string.Empty;
+                sucessfullSend = false;
+                if ( NotificationService != null )                
+                await NotificationService.Warning( res.Item2, "Cannot send" );
+            }
+            else
+            {
+                if ( NotificationService != null )                
+                    await NotificationService.Success( "Payment was sent.", "Payment Sent" );
+                txid = res.Item2;
+                sucessfullSend = true;
+                isPossibleToBuy = false;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+        finally
+        {
+            sendingTransaction = false;
+            await InvokeAsync( StateHasChanged );
+        }
+    }
+
+    async Task GoBackToShop()
+    {
+        if (!string.IsNullOrEmpty(redirect))
+        {
+            redirectModalRef?.Show();
+            StateHasChanged();
+            while (redirectingBackToShopCountDown > 0)
+            {
+                await Task.Delay(1000);
+                redirectingBackToShopCountDown--;
+                StateHasChanged();
+            }
+            NavManager.NavigateTo(redirect);
+        }
+    }
+}

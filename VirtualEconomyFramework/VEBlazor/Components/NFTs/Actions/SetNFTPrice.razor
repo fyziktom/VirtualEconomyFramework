@@ -1,0 +1,139 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@inject AppData AppData
+@inherits NFTComponentBase
+
+@if (NFT != null && !string.IsNullOrEmpty(NFT.Utxo))
+{
+<Modal @ref="NFTSaveModal">
+    <ModalContent Centered>
+        <ModalHeader>
+            <ModalTitle>Set Price of NFT</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <Container Fluid>
+            <Row>
+                <Column>
+                    <Field>
+                        <FieldLabel>Edit Tags before Send</FieldLabel>
+                        <SpaceTags @bind-Tags="@NFT.Tags" />                        
+                    </Field>
+                </Column>
+            </Row>
+            <Row Flex="Flex.JustifyContent.Center" Margin="Margin.Is3.FromTop">
+                <Column>
+                    <Addons>
+                        <Addon AddonType="AddonType.Body">
+                            <NumericPicker TValue="double" Min="0" Max="10000" @bind-Value="@NFT.Price" Decimals="6" />
+                        </Addon>
+                        <Addon AddonType="AddonType.End">
+                            <Image Source="@AppData.NeblioImageLink" Margin="Margin.Is3.FromStart" Style="max-width:25px;max-height:25px;" />
+                        </Addon>
+                    </Addons>
+                </Column>
+            </Row>
+            <Row>
+                <Column Flex="Flex.JustifyContent.Center">
+                    <Field>
+                        <FieldLabel>Sell Just Copies</FieldLabel>
+                        <Check @bind-Checked="@NFT.SellJustCopy">Sell just copies</Check>
+                        <FieldHelp>If you will check this option you will sell just the copies of this NFT. Not the original. Original will stay on your address.</FieldHelp>
+                    </Field>
+                </Column>
+            </Row>
+            <Row>
+                <Column Flex="Flex.JustifyContent.Center">
+                    <Span>Do you really want to Set Price to this NFT?</Span>
+                </Column>
+            </Row>
+            <Row Flex="Flex.JustifyContent.Center"> 
+                <Column>
+                    <Button Color="Color.Primary" Clicked="@NFTAction" Loading="@Saving" Block>Yes, I understand. Set the price NFT now.</Button>
+                </Column>
+            </Row>
+            @if (SaveFinished)
+                {
+                    <Row Flex="Flex.JustifyContent.Center">
+                        <Column>
+                            @if (SaveResult.Item1)
+                            {
+                                <Alert Color="Color.Success">@SaveResult.Item2</Alert>
+                            }
+                            else
+                            {
+                                <Alert Color="Color.Danger">@SaveResult.Item2</Alert>
+                            }
+                        </Column>
+                    </Row>
+            }
+            </Container>
+        </ModalBody>
+    </ModalContent>
+</Modal>
+}
+@code {
+    [Inject] INotificationService? NotificationService { get; set; }
+
+    private Modal? NFTSaveModal;
+
+    [Parameter] public string Receiver { get; set; } = string.Empty;
+
+    bool Saving = false;
+    bool SaveFinished = false;
+    (bool,string) SaveResult = (false,string.Empty);
+
+    public void Show(string receiver = "")
+    {
+        if (NFT == null) return;
+        if (!string.IsNullOrEmpty(receiver))
+            Receiver = receiver;
+        NFTSaveModal?.Show();
+    }
+    public void Hide()
+    {
+        if (NFT == null) return;
+        NFTSaveModal?.Hide();
+    }
+
+    async Task NFTAction()
+    {
+        if (NFT == null) return;
+        Saving = true;
+        StateHasChanged();
+        //save means send to yourself
+        if (NotificationService != null)
+            await NotificationService.Info( "Saving price info...", "Saving" );
+
+        if (NFT.Price > 0) 
+            NFT.PriceActive = true;
+        else
+            NFT.PriceActive = false;
+            
+        Receiver = Address;
+        if (!IsSubAccount)
+            SaveResult = await AppData.Account.SendNFT(Receiver, NFT, priceWrite:true, price:NFT.Price);
+        else
+            SaveResult = await AppData.Account.SendNFTFromSubAccount(Address, Receiver, NFT, withPrice:true, price:NFT.Price);
+
+        Console.WriteLine($"Price write of the NFT result: {SaveResult.Item1}, with message: {SaveResult.Item2}");
+
+        SaveFinished = false;
+        Saving = false;
+        
+        if (NotificationService != null)
+        {
+            if (SaveResult.Item1)
+                await NotificationService.Success( "Price Written Successfull.", "Save success" );
+            else
+                await NotificationService.Warning( SaveResult.Item2, "Cannot save" );
+        }
+        
+        StateHasChanged();
+
+        //close automatically after 2 seconds
+        await Task.Delay(2000);
+        Hide();
+        await NFTSent.InvokeAsync(new NFTSentResultDto() { sucess = SaveResult.Item1, message = SaveResult.Item2, NFT = NFT });       
+    }
+}

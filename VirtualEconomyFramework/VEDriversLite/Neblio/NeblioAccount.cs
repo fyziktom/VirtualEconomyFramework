@@ -356,7 +356,10 @@ namespace VEDriversLite
                     var kdto = JsonConvert.DeserializeObject<KeyDto>(k);
 
                     Address = kdto.Address;
-
+                    
+                    if (string.IsNullOrEmpty(Address))
+                        Address = Secret.GetAddress(ScriptPubKeyType.Legacy).ToString();
+                    
                     LoadAccountKey(password, kdto.Key);
 
                     SignMessage("init");
@@ -403,7 +406,9 @@ namespace VEDriversLite
                 
                 Secret = privateKeyFromNetwork;
                 Address = address;//Secret.GetAddress(ScriptPubKeyType.Legacy).ToString();
-
+                if (string.IsNullOrEmpty(Address))
+                    Address = Secret.GetAddress(ScriptPubKeyType.Legacy).ToString();
+                
                 SignMessage("init");
 
                 WithoutNFTs = withoutNFTs;
@@ -449,7 +454,10 @@ namespace VEDriversLite
 
                     if (Address != bdto.Address)
                         Address = bdto.Address;
-
+                    
+                    if (string.IsNullOrEmpty(Address))
+                        Address = Secret.GetAddress(ScriptPubKeyType.Legacy).ToString();
+                    
                     if (!string.IsNullOrEmpty(bdto.DogeAddress))
                     {
                         var dogeacc = new DogeAccount();
@@ -515,7 +523,9 @@ namespace VEDriversLite
                         Address = address;
                     }
                 }
-
+                if (string.IsNullOrEmpty(Address) && Secret != null)
+                    Address = Secret.GetAddress(ScriptPubKeyType.Legacy).ToString();
+                
                 WithoutNFTs = withoutNFTs;
                 if (!IsRefreshingRunning)
                     await StartRefreshingData();
@@ -1319,6 +1329,32 @@ namespace VEDriversLite
             }
         }
 
+
+        /// <summary>
+        /// Return NFT Payment From SubAccount
+        /// </summary>
+        /// <param name="address">Neblio Address of SubAccount</param>
+        /// <param name="receiver">Receiver of the NFT</param>
+        /// <param name="NFT">NFT Payment on the SubAccount which should be return</param>
+        /// <returns>true and string with new TxId</returns>
+        public async Task<(bool, string)> ReturnNFTPaymentFromSubAccount(string address, string receiver, INFT NFT)
+        {
+            try
+            {
+                if (SubAccounts.TryGetValue(address, out var sacc))
+                {
+                    var res = await sacc.ReturnNFTPayment(receiver, NFT as PaymentNFT);
+                    return res;
+                }
+                else
+                    return (false, "SubAccount is not in the list.");
+            }
+            catch (Exception ex)
+            {
+                return (false, ex.Message);
+            }
+        }
+
         /// <summary>
         /// Change NFT on SubAccount
         /// </summary>
@@ -1397,6 +1433,59 @@ namespace VEDriversLite
                 return (false, null);
             }
         }
+        
+        /// <summary>
+        /// Send Neblio Coin on SubAccount
+        /// </summary>
+        /// <param name="address">Neblio Address of SubAccount</param>
+        /// <param name="receiver">receiver Neblio address</param>
+        /// <param name="amount">amount of neblio</param>
+        /// <param name="message">optional message</param>
+        /// <returns>true and string with new TxId</returns>
+        public async Task<(bool, string)> SendNeblioOnSubAccount(string address, string receiver, double amount, string message = "")
+        {
+            try
+            {
+                if (SubAccounts.TryGetValue(address, out var sacc))
+                {
+                    var res = await sacc.SendNeblioPayment(receiver, amount, message);
+                    return res;
+                }
+                else
+                    return (false, "SubAccount is not in the list.");
+            }
+            catch (Exception ex)
+            {
+                return (false, ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Send Neblio Tokens on SubAccount
+        /// </summary>
+        /// <param name="address">Neblio Address of SubAccount</param>
+        /// <param name="tokenId">Neblio NTP1 token Id</param>
+        /// <param name="meta">Metadata for transaction</param>
+        /// <param name="receiver">receiver Neblio address</param>
+        /// <param name="amount">amount of neblio</param>
+        /// <returns>true and string with new TxId</returns>
+        public async Task<(bool, string)> SendNeblioTokensOnSubAccount(string address, string tokenId, IDictionary<string,string> meta, string receiver, int amount)
+        {
+            try
+            {
+                if (SubAccounts.TryGetValue(address, out var sacc))
+                {
+                    var res = await sacc.SendNeblioTokenPayment(tokenId, meta, receiver, amount);
+                    return res;
+                }
+                else
+                    return (false, "SubAccount is not in the list.");
+            }
+            catch (Exception ex)
+            {
+                return (false, ex.Message);
+            }
+        }        
 
         /// <summary>
         /// Split Neblio Coin on SubAccount

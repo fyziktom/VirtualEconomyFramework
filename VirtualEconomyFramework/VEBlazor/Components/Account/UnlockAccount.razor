@@ -56,11 +56,10 @@
 
 @code {
     [Inject] INotificationService? NotificationService { get; set; }
-
-    [Parameter]
-    public EventCallback<string> AccountUnlocked { get; set; }
-
     [Inject] IPageProgressService? PageProgressService { get; set; }
+
+    [Parameter] public bool WithoutNFTs { get; set; } = false;
+    [Parameter] public EventCallback<string> AccountUnlocked { get; set; }
 
     Modal? UnlockAccountModal;
     TextEdit? PassEdit;
@@ -93,7 +92,7 @@
         await AppData.LoadTags();
         AppData.Account.FirsLoadingStatus -= FirstLoadingStatusHandler;
         AppData.Account.FirsLoadingStatus += FirstLoadingStatusHandler;
-        var res = await AppData.UnlockAccount(password);
+        var res = await AppData.UnlockAccount(password, WithoutNFTs);
         AppData.Account.FirsLoadingStatus -= FirstLoadingStatusHandler;
         password = string.Empty;
         

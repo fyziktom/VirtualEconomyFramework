@@ -42,7 +42,7 @@
 @code {
     double _voltage = 0.0;
     [Parameter]
-    public double Voltage { get => _voltage; set => _voltage = value; }
+    public double Voltage { get => _voltage; set => _voltage = value * 1000; }
     [Parameter]
     public EventCallback<double> VoltageChanged { get; set; }
 
@@ -60,7 +60,7 @@
 
     async Task voltageChanged( double e )
     {
-        await VoltageChanged.InvokeAsync( e );
+        await VoltageChanged.InvokeAsync( e / 1000 ); //we are storing it in kV
     }
     async Task currentChanged( double e )
     {

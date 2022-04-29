@@ -4,7 +4,7 @@
 @inherits AccountRelatedComponentBase 
 
 <Container Fluid>
-    <Row Margin="Margin.Is4.FromTop" Width="Width.Is100">
+    <Row Margin="Margin.Is4.FromTop" Width="Width.Is100" Padding="Padding.Is0">
         <Column Flex="Flex.AlignContent.Center">
             <Heading Size="HeadingSize.Is5">
                 <Tooltip Inline Text="@(bookmark.Item1 ? (MarkupString)"Bookmark Name:<br />" + bookmark.Item2.Name + (MarkupString)"<br /><br /> Note:<br />" + bookmark.Item2.Note : "This tab is not in bookmark. You can add it by click to the star icon.")" Placement="TooltipPlacement.Bottom">
@@ -31,8 +31,8 @@
         </Column>
     </Row>
 
-    <Row Margin="Margin.Is2.FromTop" Flex="Flex.AlignContent.Center">
-        <Column>
+    <Row Margin="Margin.Is2.FromTop" Flex="Flex.AlignContent.Center" Padding="Padding.Is0">
+        <Column Padding="Padding.Is0">
             <NFTCardList Address="@Address"
                          IsSubAccount="@IsSubAccount"
                          IsOwnNFT="@IsOwnNFT"
