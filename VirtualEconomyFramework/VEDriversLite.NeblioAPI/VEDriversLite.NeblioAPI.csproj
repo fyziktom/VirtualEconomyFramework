@@ -9,7 +9,6 @@
 	  <Authors>fyziktom</Authors>
 	  <Company>VEFramework</Company>
 	  <Description>.NET drivers for communication with Neblio API</Description>
-	  <PackageLicenseFile>license.txt</PackageLicenseFile>
 	  <PackageProjectUrl>https://veframework.com/</PackageProjectUrl>
 	  <RepositoryUrl>https://github.com/fyziktom/VirtualEconomyFramework</RepositoryUrl>
 	  <RepositoryType>Git</RepositoryType>
@@ -18,7 +17,17 @@
 	  <PackageReleaseNotes>
 		  - Just separated from the VEDriversLite
 	  </PackageReleaseNotes>
+	  <PackageReadmeFile>README.md</PackageReadmeFile>
+	  <PackageLicenseExpression>BSD-2-Clause</PackageLicenseExpression>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />

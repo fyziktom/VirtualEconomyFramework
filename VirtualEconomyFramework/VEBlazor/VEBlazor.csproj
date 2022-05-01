@@ -9,7 +9,6 @@
 	  <Authors>fyziktom</Authors>
 	  <Company>VEFramework</Company>
 	  <Description>.NET6 Blazor component and dApp template library. It contains lots of components related to blockchain, IPFS, NFTs and other web3 and Industry4.0 technologies.</Description>
-	  <PackageLicenseFile>license.txt</PackageLicenseFile>
 	  <PackageProjectUrl>https://veframework.com/</PackageProjectUrl>
 	  <RepositoryUrl>https://github.com/fyziktom/VirtualEconomyFramework</RepositoryUrl>
 	  <RepositoryType>Git</RepositoryType>
@@ -22,7 +21,13 @@
 		  - Tags components
 		  - Main template for MyAccount, Gallery, Minting, Readme pages.
 	  </PackageReleaseNotes>
+	  <PackageReadmeFile>Readme.md</PackageReadmeFile>
+	  <PackageLicenseExpression>BSD-2-Clause</PackageLicenseExpression>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="license.txt" />
+  </ItemGroup>
 
 
   <ItemGroup>
@@ -47,6 +52,17 @@
 
   <ItemGroup>
     <ProjectReference Include="..\VEDriversLite\VEDriversLite.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="license.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Readme.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>
