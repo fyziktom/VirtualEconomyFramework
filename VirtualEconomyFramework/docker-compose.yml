@@ -1,0 +1,31 @@
+
+
+version: '3.3'
+
+services:
+  ipfs:
+    image: ipfs/go-ipfs:latest
+    container_name: ipfs_host_latest
+    volumes:
+      - ./home/ipfs/data:/data/ipfs
+      - ./home/ipfs/staging:/export
+    ports:
+      - "4001:4001"
+      - "127.0.0.1:8080:8080"
+      - "127.0.0.1:8081:8081"
+      - "127.0.0.1:5001:5001"
+  nebliod:
+    image: neblioteam/nebliod
+    container_name: neblio_host_latest
+    volumes:
+      - $HOME/neblio-data:/root/.neblio
+    ports:
+      - "6325:6325"
+  venftappserver:
+    image: deerajdocker/veframework.docker.venftappserver
+    container_name: venftappserver_host_latest    
+    ports:      
+      - "0.0.0.0:8090:8090"
+
+
+      
