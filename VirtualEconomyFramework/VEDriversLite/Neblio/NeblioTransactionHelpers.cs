@@ -27,109 +27,8 @@ namespace VEDriversLite
         /// </summary>
         public static Network Network = NBitcoin.Altcoins.Neblio.Instance.Mainnet;
 
-        /// <summary>
-        /// Conversion ration for Neblio to convert from sat to 1 NEBL
-        /// </summary>
-        public const double FromSatToMainRatio = 100000000;
 
-        /// <summary>
-        /// Minimum number of confirmation to send the transaction
-        /// </summary>
-        public static int MinimumConfirmations = 2;
 
-        /// <summary>
-        /// Tokens Info for all already loaded tokens
-        /// </summary>
-        public static Dictionary<string, GetTokenMetadataResponse> TokensInfo = new Dictionary<string, GetTokenMetadataResponse>();
-
-        /// <summary>
-        /// Create short version of address, 3 chars on start...3 chars on end
-        /// </summary>
-        /// <param name="address"></param>
-        /// <returns></returns>
-        public static string ShortenAddress(string address)
-        {
-            if (string.IsNullOrEmpty(address))
-            {
-                return string.Empty;
-            }
-
-            var shortaddress = address.Substring(0, 3) + "..." + address.Substring(address.Length - 3);
-            return shortaddress;
-        }
-        /// <summary>
-        /// Create short version of txid hash, 3 chars on start...3 chars on end
-        /// </summary>
-        /// <param name="txid"></param>
-        /// <param name="withDots">default true. add .... between start and end of the tx hash</param>
-        /// <param name="len">Length of the result shortened tx hash</param>
-        /// <returns></returns>
-        public static string ShortenTxId(string txid, bool withDots = true, int len = 10)
-        {
-            if (string.IsNullOrEmpty(txid))
-            {
-                return string.Empty;
-            }
-
-            if (txid.Length < 10)
-            {
-                return txid;
-            }
-
-            string txids;
-            if (withDots)
-            {
-                txids = txid.Remove(len / 2, txid.Length - len / 2) + "....." + txid.Remove(0, txid.Length - len / 2);
-            }
-            else
-            {
-                txids = txid.Remove(len / 2, txid.Length - len / 2) + txid.Remove(0, txid.Length - len / 2);
-            }
-            return txids;
-        }
-
-        /// <summary>
-        /// Load informations about allowed tokens.
-        /// </summary>
-        /// <param name="tokenIds">List of allowed tokens to works with.</param>
-        /// <returns></returns>
-        public static async Task LoadAllowedTokensInfo(List<string> tokenIds)
-        {
-            foreach (var tok in tokenIds)
-            {
-                if (!TokensInfo.TryGetValue(tok, out _))
-                {
-                    var info = await GetTokenMetadata(tok);
-                    if (info != null)
-                    {
-                        TokensInfo.Add(tok, info);
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// Function converts EncryptionKey (optionaly with password if it is not already loaded in ekey)
-        /// and returns BitcoinAddress and BitcoinSecret classes from NBitcoin
-        /// </summary>
-        /// <param name="ekey"></param>
-        /// <param name="password"></param>
-        /// <returns></returns>
-        public static (BitcoinAddress, BitcoinSecret) GetAddressAndKey(EncryptionKey ekey, string password)
-        {
-            return GetAddressAndKeyInternal(ekey, password);
-        }
-
-        /// <summary>
-        /// Function converts EncryptionKey (optionaly with password if it is not already loaded in ekey)
-        /// and returns BitcoinAddress and BitcoinSecret classes from NBitcoin
-        /// </summary>
-        /// <param name="ekey"></param>
-        /// <returns></returns>
-        public static (BitcoinAddress, BitcoinSecret) GetAddressAndKey(EncryptionKey ekey)
-        {
-            return GetAddressAndKeyInternal(ekey, "");
-        }
 
         private static (BitcoinAddress, BitcoinSecret) GetAddressAndKeyInternal(EncryptionKey ekey, string password)
         {
@@ -172,7 +71,7 @@ namespace VEDriversLite
             {
                 try
                 {
-                    BitcoinSecret loadedkey = NeblioTransactionHelpers.Network.CreateBitcoinSecret(key);
+                    BitcoinSecret loadedkey = Network.CreateBitcoinSecret(key);
                     BitcoinAddress addressForTx = loadedkey.GetAddress(ScriptPubKeyType.Legacy);
 
                     return (addressForTx, loadedkey);
@@ -190,158 +89,27 @@ namespace VEDriversLite
         }
 
         /// <summary>
-        /// Function will take hex of signed transaction and broadcast it via Neblio API
+        /// Function converts EncryptionKey (optionaly with password if it is not already loaded in ekey)
+        /// and returns BitcoinAddress and BitcoinSecret classes from NBitcoin
         /// </summary>
-        /// <param name="txhex"></param>
+        /// <param name="ekey"></param>
+        /// <param name="password"></param>
         /// <returns></returns>
-        public static async Task<string> BroadcastSignedTransaction(string txhex)
+        public static (BitcoinAddress, BitcoinSecret) GetAddressAndKey(EncryptionKey ekey, string password)
         {
-            if (!string.IsNullOrEmpty(txhex))
-            {
-                var bdto = new BroadcastTxRequest()
-                {
-                    TxHex = txhex
-                };
-
-                var txid = await BroadcastNTP1TxAsync(bdto);
-
-                if (!string.IsNullOrEmpty(txid))
-                {
-                    return txid;
-                }
-                else
-                {
-                    throw new Exception("Cannot broadcast transaction.");
-                }
-            }
-            else
-            {
-                throw new Exception("Wrong input transaction for broadcast.");
-            }
+            return GetAddressAndKeyInternal(ekey, password);
         }
 
         /// <summary>
-        /// Function prepares SendTokenRequest object. It is important to initialitze correct inside properties
+        /// Function converts EncryptionKey (optionaly with password if it is not already loaded in ekey)
+        /// and returns BitcoinAddress and BitcoinSecret classes from NBitcoin
         /// </summary>
-        /// <param name="amount">Amount to send</param>
-        /// <param name="fee">Fee - min 10000, with metadata you need at least 20000</param>
-        /// <param name="receiver">Receiver of the amount</param>
-        /// <param name="tokenId">Token Id hash</param>
+        /// <param name="ekey"></param>
         /// <returns></returns>
-        public static SendTokenRequest GetSendTokenObject(double amount, double fee = 20000, string receiver = "", string tokenId = "")
+        public static (BitcoinAddress, BitcoinSecret) GetAddressAndKey(EncryptionKey ekey)
         {
-            if (amount == 0)
-            {
-                throw new Exception("Amount to send cannot be 0.");
-            }
-
-            if (string.IsNullOrEmpty(receiver))
-            {
-                throw new Exception("Receiver Address not provided.");
-            }
-
-            if (string.IsNullOrEmpty(tokenId))
-            {
-                throw new Exception("Token Id not provided.");
-            }
-
-            if (fee < MinimumAmount)
-            {
-                throw new Exception("Fee cannot be smaller than 10000 Sat.");
-            }
-
-            var dto = new SendTokenRequest
-            {
-                Metadata = new Metadata2()
-            };
-            dto.Metadata.AdditionalProperties = new Dictionary<string, object>();
-            dto.Metadata.UserData = new UserData3
-            {
-                AdditionalProperties = new Dictionary<string, object>(),
-                Meta = new List<JObject>()
-            };
-            dto.Fee = fee;
-            dto.Flags = new Flags2() { SplitChange = true };
-            dto.Sendutxo = new List<string>();
-            dto.From = null;
-
-            dto.To = new List<To>()
-                    {
-                        new To()
-                        {
-                            Address = receiver,
-                            Amount = amount,
-                            TokenId = tokenId
-                        }
-                    };
-
-            return dto;
+            return GetAddressAndKeyInternal(ekey, "");
         }
-
-        /// <summary>
-        /// This function will calculate the fee based of the known lenght of the intputs and the outputs
-        /// If there is the OP_RETURN output it is considered as the customMessage. Please fill it for token transactions.
-        /// Token transaction also will add just for sure one output to calculation of the size for the case there will be some tokens back to original address
-        /// </summary>
-        /// <param name="numOfInputs">Number of input of the transaction "in" vector</param>
-        /// <param name="numOfOutputs">Number of outpus of the transaction "out" vector</param>
-        /// <param name="customMessageInOPReturn">Custom message - "OP_RETURN" output</param>
-        /// <param name="isTokenTransaction">Token transaction will add another output for getting back the tokens</param>
-        /// <returns></returns>
-        public static double CalcFee(int numOfInputs, int numOfOutputs, string customMessageInOPReturn, bool isTokenTransaction)
-        {
-            if (numOfInputs <= 0)
-                numOfInputs = 1;
-            if (numOfOutputs <= 0)
-                numOfOutputs = 1;
-
-            const string exceptionMessage = "Cannot send transaction bigger than 4kB on Neblio network!";
-            var basicFee = MinimumAmount;
-
-            // inputs
-            var blankInput = 41;
-            var inputSignature = 56;
-            var signedInput = blankInput + inputSignature;
-
-            // outputs
-            var outputWithAddress = 34;
-            var emptyOpReturn = 11; // OP_RETURN with custom message with 10 characters had 21 bytes...etc.
-
-            //common properties in each transaction
-            var commonPropertiesSize = 214;
-
-            var expectedSize = signedInput * numOfInputs + outputWithAddress * numOfOutputs + commonPropertiesSize;
-
-            // add custom message if there is some
-            if (!string.IsNullOrEmpty(customMessageInOPReturn))
-            {
-                var zipstr = StringExt.ZipStr(customMessageInOPReturn);
-                expectedSize += emptyOpReturn + zipstr.Length;
-            }
-
-            // Expected outputs for the rest of the coins/tokens
-            expectedSize += outputWithAddress; // NEBL
-            if (isTokenTransaction)
-            {
-                expectedSize += outputWithAddress;
-            }
-
-            double size_m = ((double)expectedSize / 1024);
-            if (size_m > 4)
-            {
-                throw new Exception(exceptionMessage);
-            }
-
-            var fee = basicFee + (int)(size_m) * basicFee;
-
-            if (isTokenTransaction)
-            {
-                fee += basicFee;
-            }
-
-            return fee;
-        }
-
         /// <summary>
         /// This function will crate empty Transaction object based on Neblio network standard
         /// Then add the Neblio Inputs and sumarize their value
@@ -608,6 +376,12 @@ namespace VEDriversLite
             return transaction;
         }
 
+        /// <summary>
+        /// Wrap for SignAndBroadcast transaction function
+        /// </summary>
+        /// <param name="transaction"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
         public static async Task<string> SignAndBroadcastTransaction(Transaction transaction, BitcoinSecret key)
         {
             return await SignAndBroadcast(transaction, key);
@@ -2112,21 +1886,6 @@ namespace VEDriversLite
             return string.Empty;
         }
 
-        /// <summary>
-        /// Check if the number of the confirmation is enough for doing transactions.
-        /// It mainly usefull for UI stuff or console.
-        /// </summary>
-        /// <param name="confirmations"></param>
-        /// <returns></returns>
-        public static string IsEnoughConfirmationsForSend(int confirmations)
-        {
-            if (confirmations > MinimumConfirmations)
-            {
-                return ">" + MinimumConfirmations.ToString();
-            }
-
-            return confirmations.ToString();
-        }
 
         /// <summary>
         /// Returns sended amount of neblio in some transaction. It counts the outputs which was send to input address
@@ -2170,54 +1929,6 @@ namespace VEDriversLite
             return Math.Abs(amount);
         }
 
-
-            if (addinfo.Utxos.Count == 0)
-            {
-                try
-                {
-                    addinfo = await AddressInfoUtxosAsync(address);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("Cannot Obtain the Address info. " + ex.Message);
-                }
-            }
-
-            var utxos = addinfo?.Utxos;
-            if (utxos == null)
-            {
-                return resp;
-            }
-
-            if (latestBlockHeight == 0)
-                latestBlockHeight = await NeblioTransactionsCache.LatestBlockHeight(utxos.Where(u => u.Blockheight.Value > 0)?.FirstOrDefault()?.Txid, address);
-            
-            utxos = utxos.OrderByDescending(u => u.Value).ToList();
-
-            foreach (var ut in utxos.Where(u => u.Blockheight.Value > 0 && u.Value > MinimumAmount && u.Tokens?.Count == 0 && ((double)u.Value) > (minAmount * FromSatToMainRatio)))
-            {
-                double UtxoBlockHeight = ut.Blockheight != null ? ut.Blockheight.Value : 0;
-                if (IsValidUtxo(UtxoBlockHeight, latestBlockHeight))
-                {
-                    resp.Add(ut);
-                    founded += ((double)ut.Value / FromSatToMainRatio);
-                    if (founded > requiredAmount)
-                    {
-                        return resp;
-                    }
-                }
-            }
-
-            return new List<Utxos>();
-            
-        }
-
-        private static bool IsValidUtxo(double UtxoBlockHeight, double latestBlockCount)
-        {
-            var confirmation = latestBlockCount - UtxoBlockHeight;
-            return confirmation > MinimumConfirmations;
-        }
-
         /// <summary>
         /// Parse message from the OP_RETURN data in the tx
         /// </summary>
@@ -2240,41 +1951,13 @@ namespace VEDriversLite
                 if (!string.IsNullOrEmpty(o.ScriptPubKey.Asm) && o.ScriptPubKey.Asm.Contains("OP_RETURN"))
                 {
                     var message = o.ScriptPubKey.Asm.Replace("OP_RETURN ", string.Empty);
-                    var bytes = HexStringToBytes(message);
+                    var bytes = StringExt.HexStringToBytes(message);
                     var msg = Encoding.UTF8.GetString(bytes);
                     return (true, msg);
                 }
             }
 
             return (false, string.Empty);
-        }
-
-        /// <summary>
-        /// Convert the hex string to bytes
-        /// </summary>
-        /// <param name="hexString"></param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException"></exception>
-        /// <exception cref="ArgumentException"></exception>
-        public static byte[] HexStringToBytes(string hexString)
-        {
-            if (hexString == null)
-            {
-                throw new ArgumentNullException("hexString");
-            }
-
-            if (hexString.Length % 2 != 0)
-            {
-                throw new ArgumentException("hexString must have an even length", "hexString");
-            }
-
-            var bytes = new byte[hexString.Length / 2];
-            for (int i = 0; i < bytes.Length; i++)
-            {
-                string currentHex = hexString.Substring(i * 2, 2);
-                bytes[i] = Convert.ToByte(currentHex, 16);
-            }
-            return bytes;
         }
 
     }
