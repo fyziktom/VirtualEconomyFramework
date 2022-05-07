@@ -6,9 +6,9 @@
 
 <PageTitle>@AppData.AppName - @headerLabel</PageTitle>
 
-<VEBlazor.Components.PageHeader Title="@headerLabel" BreadcrumbItems="@(new string[] { AppData.AppNick, headerLabel })" />
+<VEFramework.VEBlazor.Components.PageHeader Title="@headerLabel" BreadcrumbItems="@(new string[] { AppData.AppNick, headerLabel })" />
 
-<VEBlazor.Pages.Readme Text="@Text" />
+<VEFramework.VEBlazor.Pages.Readme Text="@Text" />
 
 @code {
     string headerLabel = "Readme";

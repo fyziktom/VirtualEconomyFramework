@@ -10,7 +10,7 @@ The library is based on the [great component library Blazorise](https://blazoris
 
 # Live Demo
 
-Url with live demo will be provided soon. 
+You can test [live demo here](https://apptest.ve-nft.com/)
 
 If you would like to participate on development and testing please [contact us here](mailto:tomas.svoboda@technicinsider.com).
 
@@ -66,15 +66,15 @@ Here is the Example:
         </div>
     </div>
 
-    <script src="_content/VEBlazor/jquery.slim.min.js"></script>
-    <script src="_content/VEBlazor/bootstrap.min.js"></script>
-    <script src="_content/VEBlazor/popper.min.js"></script>
-    <script src="_content/VEBlazor/easymde.min.js"></script>
-    <script src="_content/VEBlazor/highlight.min.js"></script>
+    <script src="_content/VEFramework.VEBlazor/jquery.slim.min.js"></script>
+    <script src="_content/VEFramework.VEBlazor/bootstrap.min.js"></script>
+    <script src="_content/VEFramework.VEBlazor/popper.min.js"></script>
+    <script src="_content/VEFramework.VEBlazor/easymde.min.js"></script>
+    <script src="_content/VEFramework.VEBlazor/highlight.min.js"></script>
     <script src="_content/BlazorPanzoom/panzoom.min.js"></script>
     <script src="_content/BlazorPanzoom/blazorpanzoom.js"></script>
     <script src="_content/Texnomic.Blazor.JsonViewer/scripts/JsonViewer.js"></script>
-    <script src="_content/VEBlazor/veblazor.js"></script>
+    <script src="_content/VEFramework.VEBlazor/veblazor.js"></script>
 
     <div id="blazor-error-ui">
         An unhandled error has occurred.

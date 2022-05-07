@@ -2,9 +2,9 @@
 
 <PageTitle>@AppData.AppName - Buy NFT</PageTitle>
 
-<VEBlazor.Components.PageHeader Title="Buy NFT" BreadcrumbItems="@(new string[] { AppData.AppName, "Buy NFT" })" />
+<VEFramework.VEBlazor.Components.PageHeader Title="Buy NFT" BreadcrumbItems="@(new string[] { AppData.AppName, "Buy NFT" })" />
 
-<VEBlazor.Pages.BuyNFT @ref="buyNFTRef" />
+<VEFramework.VEBlazor.Pages.BuyNFT @ref="buyNFTRef" />
 
 @code {
 
@@ -24,8 +24,8 @@
     [SupplyParameterFromQuery( Name = "curr" )]
     public string? Currency { get; set; }
     
-    VEBlazor.Pages.BuyNFT.Currency currency = VEBlazor.Pages.BuyNFT.Currency.NBL;
-    VEBlazor.Pages.BuyNFT? buyNFTRef;
+    VEFramework.VEBlazor.Pages.BuyNFT.Currency currency = VEFramework.VEBlazor.Pages.BuyNFT.Currency.NBL;
+    VEFramework.VEBlazor.Pages.BuyNFT? buyNFTRef;
 
     protected override async Task OnAfterRenderAsync( bool firstRender )
     {
@@ -33,14 +33,14 @@
 
         if (Currency != null)
         {
-            if (Currency == "DGC") currency = VEBlazor.Pages.BuyNFT.Currency.DGC;
-            if (Currency == "DOGE") currency = VEBlazor.Pages.BuyNFT.Currency.DGC;
-            if (Currency == "NEBL") currency = VEBlazor.Pages.BuyNFT.Currency.NBL;
-            if (Currency == "NBL") currency = VEBlazor.Pages.BuyNFT.Currency.NBL;
+            if (Currency == "DGC") currency = VEFramework.VEBlazor.Pages.BuyNFT.Currency.DGC;
+            if (Currency == "DOGE") currency = VEFramework.VEBlazor.Pages.BuyNFT.Currency.DGC;
+            if (Currency == "NEBL") currency = VEFramework.VEBlazor.Pages.BuyNFT.Currency.NBL;
+            if (Currency == "NBL") currency = VEFramework.VEBlazor.Pages.BuyNFT.Currency.NBL;
         }
         else
         {
-            currency = VEBlazor.Pages.BuyNFT.Currency.NBL;
+            currency = VEFramework.VEBlazor.Pages.BuyNFT.Currency.NBL;
         }
         
         if (!string.IsNullOrEmpty(Utxo) && buyNFTRef != null)

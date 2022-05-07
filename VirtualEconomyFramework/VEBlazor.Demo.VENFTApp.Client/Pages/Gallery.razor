@@ -4,13 +4,13 @@
 
 <PageTitle>@AppData.AppName - Gallery</PageTitle>
 
-<VEBlazor.Components.PageHeader Title="Gallery" BreadcrumbItems="@(new string[] { AppData.AppName, "Gallery" })" />
+<VEFramework.VEBlazor.Components.PageHeader Title="Gallery" BreadcrumbItems="@(new string[] { AppData.AppName, "Gallery" })" />
 
 
-<VEBlazor.Pages.Gallery @ref="galleryComponent" />
+<VEFramework.VEBlazor.Pages.Gallery @ref="galleryComponent" />
 
 @code {
-    VEBlazor.Pages.Gallery? galleryComponent;
+    VEFramework.VEBlazor.Pages.Gallery? galleryComponent;
 
     [Parameter]
     [SupplyParameterFromQuery( Name = "utxo" )]

@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 
-namespace VEBlazor.Models.Themes
+namespace VEFramework.VEBlazor.Models.Themes
 {
     public static class DefaultTheme
     {

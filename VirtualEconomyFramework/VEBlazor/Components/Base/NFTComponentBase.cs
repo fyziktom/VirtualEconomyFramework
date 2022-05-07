@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Components;
-using VEBlazor.Components.NFTs.Common;
+using VEFramework.VEBlazor.Components.NFTs.Common;
 using VEDriversLite.NFT;
 using VEDriversLite.NFT.Dto;
 
-namespace VEBlazor.Components.Base
+namespace VEFramework.VEBlazor.Components.Base
 {
     public class NFTSentResultDto
     {
@@ -49,7 +49,7 @@ namespace VEBlazor.Components.Base
 
     public abstract class NFTBase : AccountRelatedComponentBase
     {
-        public const string EmptyImage = "_content/VEBlazor/images/empty.jpg";
+        public const string EmptyImage = "_content/VEFramework.VEBlazor/images/empty.jpg";
         [Parameter]
         public INFT NFT { get; set; } = new ImageNFT("");
         [Parameter]
@@ -273,7 +273,7 @@ namespace VEBlazor.Components.Base
             if (itemdata is not null && itemdata.Length > 0)
                 return "data:image;base64," + Convert.ToBase64String(itemdata);
             else
-                return "_content/VEBlazor/images/blankvideo.png";
+                return "_content/VEFramework.VEBlazor/images/blankvideo.png";
         }
 
         public string GetImageGalleryUrl(VEDriversLite.NFT.Dto.NFTDataItem item)

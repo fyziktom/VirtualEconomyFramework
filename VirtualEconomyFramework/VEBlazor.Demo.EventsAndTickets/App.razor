@@ -16,11 +16,11 @@
         </NotFound>
     </Router>
 
-    <VEBlazor.Components.VEBlazorServicesComponents />
+    <VEFramework.VEBlazor.Components.VEBlazorServicesComponents />
 </Blazorise.ThemeProvider>
 
 @code {
-    Theme theme = VEBlazor.Models.Themes.DefaultTheme.GetDefaultTheme();
+    Theme theme = VEFramework.VEBlazor.Models.Themes.DefaultTheme.GetDefaultTheme();
 
     protected override async Task OnInitializedAsync()
     {
