@@ -4,7 +4,30 @@
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+	  <PackageId>VEFramework.VEBlazor</PackageId>
+	  <Version>0.3.0</Version>
+	  <Authors>fyziktom</Authors>
+	  <Company>VEFramework</Company>
+	  <Description>.NET6 Blazor component and dApp template library. It contains lots of components related to blockchain, IPFS, NFTs and other web3 and Industry4.0 technologies.</Description>
+	  <PackageProjectUrl>https://veframework.com/</PackageProjectUrl>
+	  <RepositoryUrl>https://github.com/fyziktom/VirtualEconomyFramework</RepositoryUrl>
+	  <RepositoryType>Git</RepositoryType>
+	  <PackageTags>VEFramework, Blazor, MAUI, Cryptocurrencies, Crypto, NFT, NFTs, NFTTech, NFTIoT, Bitcoin, ReddCoin, Neblio, Nebl, Doge, Dogecoin, Blockchain, eCommerce, dApps, WooCommerce, WordPress</PackageTags>
+	  <Copyright>fyziktom</Copyright>
+	  <PackageReleaseNotes>
+		  - Account components
+		  - Transactions components
+		  - NFTs components
+		  - Tags components
+		  - Main template for MyAccount, Gallery, Minting, Readme pages.
+	  </PackageReleaseNotes>
+	  <PackageReadmeFile>Readme.md</PackageReadmeFile>
+	  <PackageLicenseExpression>BSD-2-Clause</PackageLicenseExpression>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="license.txt" />
+  </ItemGroup>
 
 
   <ItemGroup>
@@ -29,6 +52,17 @@
 
   <ItemGroup>
     <ProjectReference Include="..\VEDriversLite\VEDriversLite.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="license.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Readme.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>
