@@ -25,35 +25,35 @@
                                 else if (item.Type == DataItemType.PDF)
                                 {
                                     <CardImage Border="@(item.IsMain ? Border.Is2.Success : Border.Is0)" 
-                                            Source="_content/VEBlazor/images/pdf-image.png" 
+                                            Source="_content/VEFramework.VEBlazor/images/pdf-image.png" 
                                             @onclick="() => DisplayItem(item)" 
                                             Style="max-width:40px; min-width:25px; min-height:25px; max-height:80px;"/> 
                                 }
                                 else if (item.Type == DataItemType.AVMedia)
                                 {
                                     <CardImage Border="@(item.IsMain ? Border.Is2.Success : Border.Is0)" 
-                                            Source="_content/VEBlazor/images/blankvideo.png" 
+                                            Source="_content/VEFramework.VEBlazor/images/blankvideo.png" 
                                             @onclick="() => DisplayItem(item)" 
                                             Style="max-width:40px; min-width:25px; min-height:25px; max-height:80px;"/> 
                                 }
                                 else if (item.Type == DataItemType.JSON)
                                 {
                                     <CardImage Border="@(item.IsMain ? Border.Is2.Success : Border.Is0)" 
-                                            Source="_content/VEBlazor/images/json-image.png" 
+                                            Source="_content/VEFramework.VEBlazor/images/json-image.png" 
                                             @onclick="() => DisplayItem(item)" 
                                             Style="max-width:40px; min-width:25px; min-height:25px; max-height:80px;"/> 
                                 }
                                 else if (item.Type == DataItemType.HTML)
                                 {
                                     <CardImage Border="@(item.IsMain ? Border.Is2.Success : Border.Is0)" 
-                                            Source="_content/VEBlazor/images/html-image.png" 
+                                            Source="_content/VEFramework.VEBlazor/images/html-image.png" 
                                             @onclick="() => DisplayItem(item)" 
                                             Style="max-width:40px; min-width:25px; min-height:25px; max-height:80px;"/> 
                                 }
                                 else if (item.Type == DataItemType.Mermaid)
                                 {
                                     <CardImage Border="@(item.IsMain ? Border.Is2.Success : Border.Is0)" 
-                                            Source="_content/VEBlazor/images/mermaid-image.png" 
+                                            Source="_content/VEFramework.VEBlazor/images/mermaid-image.png" 
                                             @onclick="() => DisplayItem(item)" 
                                             Style="max-width:40px; min-width:25px; min-height:25px; max-height:80px;"/> 
                                 }
@@ -83,7 +83,7 @@
                                 <Row>
                                     <Column Flex="Flex.JustifyContent.Center">
                                         <Figure Size="FigureSize.Is256x256">
-                                            <FigureImage Source="_content/VEBlazor/images/pdf-image.png" />
+                                            <FigureImage Source="_content/VEFramework.VEBlazor/images/pdf-image.png" />
                                             <FigureCaption>This is the PDF file. Please display it in new browser tab</FigureCaption>
                                         </Figure>
                                     </Column>

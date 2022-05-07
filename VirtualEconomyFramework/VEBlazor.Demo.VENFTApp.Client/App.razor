@@ -5,21 +5,21 @@
 <ThemeProvider Theme="@theme">
     <Router AppAssembly="@typeof(App).Assembly">
         <Found Context="routeData">
-            <RouteView RouteData="@routeData" DefaultLayout="@typeof(VEBlazor.Layouts.MainLayout)" />
+            <RouteView RouteData="@routeData" DefaultLayout="@typeof(VEFramework.VEBlazor.Layouts.MainLayout)" />
             <FocusOnNavigate RouteData="@routeData" Selector="h1" />
         </Found>
         <NotFound>
             <PageTitle>Not found</PageTitle>
-            <LayoutView Layout="@typeof(VEBlazor.Layouts.MainLayout)">
+            <LayoutView Layout="@typeof(VEFramework.VEBlazor.Layouts.MainLayout)">
                 <p role="alert">Sorry, there's nothing at this address.</p>
             </LayoutView>
         </NotFound>
     </Router>
     
-<VEBlazor.Components.VEBlazorServicesComponents />
+<VEFramework.VEBlazor.Components.VEBlazorServicesComponents />
 </ThemeProvider>
 @code {
-    Theme theme = VEBlazor.Models.Themes.DefaultTheme.GetDefaultTheme();
+    Theme theme = VEFramework.VEBlazor.Models.Themes.DefaultTheme.GetDefaultTheme();
 
     protected override async Task OnInitializedAsync()
     {

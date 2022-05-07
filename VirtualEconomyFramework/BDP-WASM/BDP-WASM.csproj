@@ -24,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\VEBlazor\VEBlazor.csproj" />
+    <ProjectReference Include="..\VEBlazor\VEFramework.VEBlazor.csproj" />
     <ProjectReference Include="..\VEDriversLite\VEDriversLite.csproj" />
   </ItemGroup>
 

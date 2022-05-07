@@ -52,7 +52,7 @@
                             else if (itemType == DataItemType.PDF)
                             {
                                 <Figure Size="@(SmallThumbnails ? FigureSize.Is64x64 : FigureSize.Is256x256)">
-                                    <FigureImage Source="_content/VEBlazor/images/pdf-image.png" AlternateText="empty-256x256" />
+                                    <FigureImage Source="_content/VEFramework.VEBlazor/images/pdf-image.png" AlternateText="empty-256x256" />
                                     <FigureCaption TextAlignment="TextAlignment.Center">Uploaded New PDF Document: @fileName</FigureCaption>
                                  </Figure>
                             }
@@ -69,7 +69,7 @@
                                     </Column>
                                 </Row> *@                               
                                 <Figure Size="@(SmallThumbnails ? FigureSize.Is64x64 : FigureSize.Is256x256)">
-                                    <FigureImage Source="_content/VEBlazor/images/blankvideo.png" AlternateText="empty-256x256" />
+                                    <FigureImage Source="_content/VEFramework.VEBlazor/images/blankvideo.png" AlternateText="empty-256x256" />
                                     <FigureCaption TextAlignment="TextAlignment.Center">Uploaded New Video: @fileName. Wait for the upload of video to see preview.</FigureCaption>
                                  </Figure>                                
                             }
@@ -121,19 +121,19 @@
                                             }
                                             else if (item.Type == DataItemType.PDF)
                                             {
-                                                <CardImage Source="_content/VEBlazor/images/pdf-image.png"></CardImage>
+                                                <CardImage Source="_content/VEFramework.VEBlazor/images/pdf-image.png"></CardImage>
                                             }
                                             else if (item.Type == DataItemType.JSON)
                                             {
-                                                <CardImage Source="_content/VEBlazor/images/json-image.png"></CardImage>
+                                                <CardImage Source="_content/VEFramework.VEBlazor/images/json-image.png"></CardImage>
                                             }
                                             else if (item.Type == DataItemType.HTML)
                                             {
-                                                <CardImage Source="_content/VEBlazor/images/html-image.png"></CardImage>
+                                                <CardImage Source="_content/VEFramework.VEBlazor/images/html-image.png"></CardImage>
                                             }
                                             else if (item.Type == DataItemType.Mermaid)
                                             {
-                                                <CardImage Source="_content/VEBlazor/images/mermaid-image.png"></CardImage>
+                                                <CardImage Source="_content/VEFramework.VEBlazor/images/mermaid-image.png"></CardImage>
                                             }                                            
                                             <CardBody>
                                                 @if (item.Type == DataItemType.AVMedia)
@@ -227,7 +227,7 @@
                 }
                 else if (itemType == DataItemType.PDF)
                 {
-                    i = "_content/VEBlazor/images/pdf-image.png";
+                    i = "_content/VEFramework.VEBlazor/images/pdf-image.png";
                 }
                 else if (itemType == DataItemType.AVMedia)
                 {
@@ -235,7 +235,7 @@
                 }
                 else if (itemType == DataItemType.JSON)
                 {
-                    i = "_content/VEBlazor/images/json-image.png";
+                    i = "_content/VEFramework.VEBlazor/images/json-image.png";
                 }
                 else if (itemType == DataItemType.HTML)
                 {

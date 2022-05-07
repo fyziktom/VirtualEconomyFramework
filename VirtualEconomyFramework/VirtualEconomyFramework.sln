@@ -39,7 +39,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VEOnePage", "VEOnePage\VEOn
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BDP-WASM", "BDP-WASM\BDP-WASM.csproj", "{1675020C-37D1-4920-A8B4-65D2996BA4DA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VEBlazor", "VEBlazor\VEBlazor.csproj", "{C088C7CA-C9B9-4C8A-AE60-96F9975CC1F1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VEFramework.VEBlazor", "VEBlazor\VEFramework.VEBlazor.csproj", "{C088C7CA-C9B9-4C8A-AE60-96F9975CC1F1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Demos", "Demos", "{DCD69FD2-C35F-433E-BC8A-BE9E4D5EC8D6}"
 EndProject
@@ -53,7 +53,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VEDriversLite.Builders.Nebl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VEDriversLite.Cryptocurrencies", "VEDriversLite.Cryptocurrencies\VEDriversLite.Cryptocurrencies.csproj", "{D7FABF21-4514-44D0-A351-04D79200A5E4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VEBlazor.Demo.VENFTApp.Client", "VEBlazor.Demo.VENFTApp.Client\VEBlazor.Demo.VENFTApp.Client.csproj", "{DACD7397-84A7-4BD6-9B30-852B3CA95718}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VEBlazor.Demo.VENFTApp.Client", "VEBlazor.Demo.VENFTApp.Client\VEBlazor.Demo.VENFTApp.Client.csproj", "{DACD7397-84A7-4BD6-9B30-852B3CA95718}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\VEBlazor\VEBlazor.csproj" />
+    <ProjectReference Include="..\VEBlazor\VEFramework.VEBlazor.csproj" />
   </ItemGroup>
 
   <ItemGroup>
