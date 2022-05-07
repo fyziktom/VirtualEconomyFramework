@@ -1,14 +1,10 @@
-
-<p align="center">
-  <a href="https://veframework.com/" target="_blank"><img width="250" src="https://ipfs.infura.io/ipfs/QmfLC2seWMzKT7PyTzjhMC2iZKLFktBwHFCfknodwFEx4u"></a>
-</p>
-
+# VEFramework
 
 Virtual Economy framework will help you to create applications related to Web3, Blockchains, IoT, NFTs, Cryptocurrencies and other useful technologies.
 
 This project is OpenSource for personal, educational and commercial use also :)
 
-Main framework is **.NET Core 3.1** (VEDriversLite). You can use it now with **.NET 6.0 Blazor WebAssembly application** :)
+Main framework is **.NET 6.0** (VEDriversLite). You can use it now with **.NET 6.0 Blazor WebAssembly application** :)
 Code is written in C#, HTML, CSS and JavaScript.
 Solution is for [Visual Studio 2022](https://visualstudio.microsoft.com/vs/).
 
@@ -16,13 +12,19 @@ Repository now contains new version of drivers for Neblio and Doge: **VEDriversL
 
 We recommend to use VEDriversLite if you need to build app which uses just Neblio or Doge!
 
+If you need to build dApp with the VEDriversLite we recommend you to explore **New Library VEBlazor**. [Source code you can find here](https://github.com/fyziktom/VirtualEconomyFramework/tree/main/VirtualEconomyFramework/VEBlazor). Soon as [Nuget package](https://www.nuget.org/packages/VEFramework.VEBlazor/). Which is built on top of the [Blazorise](https://blazorise.com/) library.
+
 ## Online Demo VENFT App
 
 <p align="center">
   <img width="200" src="https://ipfs.infura.io/ipfs/QmT8wYFsDR55wCKKUwRwXYfxu67uGWpbVCKfg4kxiCM7pJ">
 <p>
 
-Please explore [VE NFT App](https://ve-nft.com/) - C# [Blazor](https://dotnet.microsoft.com/en-us/apps/aspnet/web-apps/blazor) Neblio NFT Web Wallet which uses VEDriversLite.
+
+New **Testing** Version of the **VENFT App build on the VEBlazor** is [published here](https://apptest.ve-nft.com/). It is testing version and still has few things to solve. It does not display the SubAccounts now, but you can load the backup file from the old version of VENFT App.
+  
+
+Please explore also **old** [VENFT App](https://ve-nft.com/) - C# [Blazor](https://dotnet.microsoft.com/en-us/apps/aspnet/web-apps/blazor) Neblio NFT Web Wallet which uses VEDriversLite. This version does not use the VEBlazor library.
 
 Web Wallet with integrated NFT minting and marketplace.
 
@@ -130,9 +132,23 @@ Here you can see the details of the transaction in the [Neblio Blockchain Explor
 
 [VEDriversLite Documentation](https://docs.veframework.com/VEDriversLite/index.html)
   
+## VEBlazor
+  
+This complete [Blazor component library and dApp template has own readme here](https://github.com/fyziktom/VirtualEconomyFramework/tree/main/VirtualEconomyFramework/VEBlazor).
+  
 ## VENFT App Server
   
-This is actual main application which provides API for most of the commands from the VEDriversLite library. You can run it as app service or in **Docker**. [On Wiki you can find article about how to use Docker and VENFT App Server](https://github.com/fyziktom/VirtualEconomyFramework/wiki/Dockerizing-VENFT-APP-Server).
+This is actual main application which provides API for most of the commands from the VEDriversLite library. 
+
+### Docker
+
+You can run it as app service or in **Docker**. [On Wiki you can find article about how to use Docker and VENFT App Server](https://github.com/fyziktom/VirtualEconomyFramework/wiki/Dockerizing-VENFT-APP-Server).
+
+Here you can find another related services and how to run them as Docker container:
+
+- Nebliod - Neblio Blockchain Node: [Wiki](https://github.com/fyziktom/VirtualEconomyFramework/wiki/Dockerizing-Nebliod)
+- IPFS Node - [Wiki](https://github.com/fyziktom/VirtualEconomyFramework/wiki/Dockerizing-IPFS)
+- Dockercompose to run together VENFT App Server + Nebliod + IPFS is on [Wiki here](https://github.com/fyziktom/VirtualEconomyFramework/wiki/Docker-Compose---VENFTAPP-Server,-Nebliod,-IPFS-Node)
 
 ## VEconomy Application
 
@@ -154,11 +170,15 @@ And other platforms which .NET Core supports.
 # Projects in the solution
 
 -	VEDriversLite - Light version and Actual Recommended! version of Neblio drivers, includes NFT drivers
+- VEBlazor - Blazor component library and dApp template
 -	TestVEDriversLite - testing utility wih integration tests/examples for VEDriversLite
--   VEFrameworkUnitTest - Unit tests project.
--	VENFTApp-Blazor - Example of use of VEDriversLite in Blazor WebAssembly App. Contains lots of Blazor components!!!
+- VEFrameworkUnitTest - Unit tests project.
+- VEBlazor.Demo.VENFTApp.Client - New version of VENFT App build with VEBlazor library
+- VEBlazor.Demo.EventsAndTickets - Another example of the dApp built with the VEBlazor
+- BDP-WASM - dApp for storing the X-Ray Images on Blockchain and IPFS as NFT, especially in industry. Build with VEBlazor.
+-	VENFTApp-Blazor - Example of use of VEDriversLite in Blazor WebAssembly App. Without VEBlazor component library!
 -   VENFTApp-Server - Example of use of VEDriversLite in Blazor Server App. It offers API for lots of VEDriversLite commands.
--	VEOnePage - Example of the simple webpage which works as presentation page for some address NFTs. Example was created for [Coruzant.com](https://coruzant.com/)
+-	VEOnePage - Example of the simple webpage which works as presentation page for some address NFTs. Example was created for [Coruzant.com](https://coruzant.com/).
 -   VECryptographyUtilities - encrypt and decrypt keys example
 
 Older projects. Most of them needs testing and update based on refactoring of VEDriversLite
@@ -185,9 +205,11 @@ For compilation you need to install Arduino IDE and M5Stack libraries and ESP32 
 -   Create Blockchain Account and send transactions or NFTs with just few lines of the code
 -   VEFramework works with multiple blockchains. Now it has support of Neblio and Dogecoin
 -   Blazor Webassebmly example [VE NFT App](https://ve-nft.com/)
+-   Blazor Component library and dApp template - VEBlazor
 -   Server App with prepared API for integration existing app or UI with Web3 environments
 -   Set of drivers/helpers for minting, sell and trade NFTs. Already with Images, Post, Music, Profile, Payment, etc. NFTs.
--	Integration of [IPFS](https://ipfs.io/) API which uses [Infura.io](https://infura.io/) as IPFS node
+-   Store and browse multiple images, pdf, or other kind of files in the one NFT.
+-   Integration of [IPFS](https://ipfs.io/) API which uses [Infura.io](https://infura.io/) as IPFS node
 -   Create blockchain application without need of running own node
 -   NFT Ownership verification system with creating QR codes/messages
 -   NFT Events and Tickets system.
@@ -225,13 +247,11 @@ Feel free to open Issue if you will find some bug or if you are looking for some
 
 # Contributors and Development Partners
 
-Tomas Svoboda - [LinkedIn](https://www.linkedin.com/in/fyziktom), [Twitter](https://twitter.com/fyziktom)
+Tomas Svoboda - [LinkedIn](https://www.linkedin.com/in/fyziktom/), [Twitter](https://twitter.com/fyziktom)
 
 RoundSqr - [Company website](https://www.roundsqr.com/)
 
-Löwenware - [Company website](https://lowenware.com/)
-
-PureCrew - [Company website](https://purecrew.cz/)
+Mladen Macanović - [LinkedIn](https://www.linkedin.com/in/mladenmacanovic/), [Twitter](https://twitter.com/MladenMacanovic)
 
 Francis Karuri - [LinkedIn](https://www.linkedin.com/in/francis-karuri/)
   
@@ -247,31 +267,32 @@ Many thanks for Blazor developers. It is absolutelly amazing tool!
 
 This project uses some other opensource libraries or other tools. Many thanks to all authors of these projects and other opensource projects.
 
--	Neblio – Blockchain solution for Enterprises – https://github.com/NeblioTeam/neblio 
--	Microsoft - .NET Core, C#, Entity Framework Core - https://docs.microsoft.com/en-us/dotnet/core/introduction 
--	Blazor - Web Apps with C# - https://dotnet.microsoft.com/apps/aspnet/web-apps/blazor
--	Newtonsoft.Json – JSON parsing library - https://github.com/JamesNK/Newtonsoft.Json 
--	NBitcoin - .NET C# Library for Bitcoin based cryptocurrencies - https://github.com/MetacoSA/NBitcoin
--	Ant Desing Blazor - Blazor component library - https://antblazor.com/en-US/
--	BlazorFileReader - File Reader component for Blazor - https://github.com/Tewr/BlazorFileReader
--	IPFS Http Client C# - Http Api wrapper for IPFS - https://github.com/richardschneider/net-ipfs-http-client
--	DocFx – API documentation generator - https://github.com/dotnet/docfx 
--	Swagger – OpenAPI description of REST API - https://swagger.io/ 
--	MQTTNet – library for MQTT connection - https://github.com/chkr1011/MQTTnet
--	Log4net – library for logging - https://github.com/apache/logging-log4net
--	Binance.Net – library for connecting to Binance Exchange - https://github.com/JKorf/Binance.Net
--	Jint – library for run JavaScript in C# - https://github.com/sebastienros/jint
--	Npgsql – EFC provider for PostgreSQL - https://github.com/npgsql/efcore.pg
--	Node.js – JavaScript runtime - https://nodejs.org/en/  
--	Node-RED – IoT tool for event driven connections - 
--	Aedes Node-Red node – MQTT Broker - https://github.com/moscajs/aedes 
--	Paho MQTT – JavaScript library for MQTT client - https://github.com/eclipse/paho.mqtt.javascript 
--	Chart JS - JavaScript library for charts - https://github.com/chartjs 
--	CodeJar - Simple JavaScript editor - https://github.com/antonmedv/codejar
--	Prism - Code Syntax Highlight library - https://prismjs.com/
--	Crypto JS - JS library of crypto standards - https://github.com/brix/crypto-js
--	Chessboard JS - JS library for chess game - https://chessboardjs.com/
--	Bootstrap Studio – tool for simplify web-based UI - https://bootstrapstudio.io/ 
+-	[Neblio – Blockchain solution for Enterprises](https://github.com/NeblioTeam/neblio)
+-	[Microsoft - .NET Core, C#, Entity Framework Core](https://docs.microsoft.com/en-us/dotnet/core/introduction)
+-	[Blazor - Web Apps with C#](https://dotnet.microsoft.com/apps/aspnet/web-apps/blazor)
+- [Blazorise - Component library for Blazor](https://blazorise.com)
+-	[Newtonsoft.Json – JSON parsing library](https://github.com/JamesNK/Newtonsoft.Json)
+-	[NBitcoin - .NET C# Library for Bitcoin based cryptocurrencies](https://github.com/MetacoSA/NBitcoin)
+-	[Ant Desing Blazor - Blazor component library](https://antblazor.com/en-US/)
+-	[BlazorFileReader - File Reader component for Blazor](https://github.com/Tewr/BlazorFileReader)
+-	[IPFS Http Client C# - Http Api wrapper for IPFS](https://github.com/richardschneider/net-ipfs-http-client)
+-	[DocFx – API documentation generator](https://github.com/dotnet/docfx)
+-	[Swagger – OpenAPI description of REST API](https://swagger.io/)
+-	[MQTTNet – library for MQTT connection](https://github.com/chkr1011/MQTTnet)
+-	[Log4net – library for logging](https://github.com/apache/logging-log4net)
+-	[Binance.Net – library for connecting to Binance Exchange](https://github.com/JKorf/Binance.Net)
+-	[Jint – library for run JavaScript in C#](https://github.com/sebastienros/jint)
+-	[Npgsql – EFC provider for PostgreSQL](https://github.com/npgsql/efcore.pg)
+-	[Node.js – JavaScript runtime](https://nodejs.org/en/)
+-	[Node-RED – IoT tool for event driven connections](https://nodered.org/)
+-	[Aedes Node-Red node – MQTT Broker](https://github.com/moscajs/aedes)
+-	[Paho MQTT – JavaScript library for MQTT client](https://github.com/eclipse/paho.mqtt.javascript) 
+-	[Chart JS - JavaScript library for charts](https://github.com/chartjs) 
+-	[CodeJar - Simple JavaScript editor](https://github.com/antonmedv/codejar)
+-	[Prism - Code Syntax Highlight library](https://prismjs.com/)
+-	[Crypto JS - JS library of crypto standards](https://github.com/brix/crypto-js)
+-	[Chessboard JS - JS library for chess game](https://chessboardjs.com/)
+-	[Bootstrap Studio – tool for simplify web-based UI](https://bootstrapstudio.io/) 
 
 # License 
 

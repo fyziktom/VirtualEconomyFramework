@@ -6,7 +6,7 @@
 
 # Creating a Wallet
 
-Dogeft App is built using <a href="https://nebl.io" target="_blank">Neblio Blockchain</a> and <a href="https://veframework.com" target="_blank">VEFramework</a>. Neblio Blockchain is an eco-friendly proof of stake Blockchain and is used for storing NFT data. Dogeaplooza App runs in just your web browser. Encrypted Private Keys are stored on your browser and not on any centralized server. Please backup the address and private key as soon as possible. Backing up your address and private key will allow you to recover your account on any other device.
+Dogeft App is built using <a href="https://nebl.io" target="_blank">Neblio Blockchain</a> and <a href="https://veframework.com" target="_blank">VEFramework</a>. Neblio Blockchain is an eco-friendly proof of stake Blockchain and is used for storing NFT data. Dogeft App runs in just your web browser. Encrypted Private Keys are stored on your browser and not on any centralized server. Please backup the address and private key as soon as possible. Backing up your address and private key will allow you to recover your account on any other device.
 
 
 <img src="https://ipfs.infura.io/ipfs/QmNddvwq2UHXpVikKgFqGEgwgwGhPA8KU1qFe4JjxL4Rh2" style="max-width:400px;" class="img-fluid" alt="Creating Address">

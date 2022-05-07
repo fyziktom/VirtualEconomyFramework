@@ -1,23 +1,23 @@
 ﻿@using VEDriversLite.NFT
 @using VEDriversLite.NFT.Imaging.Xray
-@using VEBlazor.Components.Minting
-@using VEBlazor.Components.NFTs.Imaging.Xray
+@using VEFramework.VEBlazor.Components.Minting
+@using VEFramework.VEBlazor.Components.NFTs.Imaging.Xray
 @inject AppData AppData
 
 @page "/addnew"
 
 <PageTitle>@AppData.AppNick - Add New Data</PageTitle>
 
-<VEBlazor.Components.PageHeader Title="Add New Data" BreadcrumbItems="@(new string[] { AppData.AppNick, "Add New Data" })" />
+<VEFramework.VEBlazor.Components.PageHeader Title="Add New Data" BreadcrumbItems="@(new string[] { AppData.AppNick, "Add New Data" })" />
 
-<VEBlazor.Pages.AddNew @ref="AddnewRef" 
-                       MintingPageName="default" 
-                       @bind-NFT="@AppData.GetMintingNFTTab().NFT" 
-                       @bind-Addresses="@AppData.GetMintingNFTTab().Addresses" 
-                       @bind-ConsoleOutFromMinting="@AppData.GetMintingNFTTab().ConsoleOutFromMinting"
-                       OnLoadNFTTemplate="@onLoadNFTTemplateHandler"
-                       NFTType="@NFTTypes.XrayImage" 
-                       Address="@AppData.Account.Address" >
+<VEFramework.VEBlazor.Pages.AddNew @ref="AddnewRef" 
+                                   MintingPageName="default" 
+                                   @bind-NFT="@AppData.GetMintingNFTTab().NFT" 
+                                   @bind-Addresses="@AppData.GetMintingNFTTab().Addresses" 
+                                   @bind-ConsoleOutFromMinting="@AppData.GetMintingNFTTab().ConsoleOutFromMinting"
+                                   OnLoadNFTTemplate="@onLoadNFTTemplateHandler"
+                                   NFTType="@NFTTypes.XrayImage" 
+                                   Address="@AppData.Account.Address" >
                        
     <SpecificParamsStepHeader>
         Xray
@@ -35,11 +35,11 @@
         </Row>
     }
     </SpecificParamsStepContent>
-</VEBlazor.Pages.AddNew>
+</VEFramework.VEBlazor.Pages.AddNew>
 
 @code {
     XrayExposureParamsForm? xrayParamsFormRef;
-    VEBlazor.Pages.AddNew? AddnewRef;
+    VEFramework.VEBlazor.Pages.AddNew? AddnewRef;
     LoadNFTFromTemplate? loadNFTFromTemplate;
 
     async Task onLoadNFTTemplateHandler(INFT nft)
@@ -47,8 +47,8 @@
         if (nft != null)
         {
             await AppData.GetMintingNFTTab().NFT.Fill(nft);
-            if (AddnewRef != null)
-                await AddnewRef.RefreshImageInUploadComponent();
+            //if (AddnewRef != null)
+                //await AddnewRef.RefreshImageInUploadComponent();
             if (xrayParamsFormRef != null)
                 xrayParamsFormRef.SetValues((AppData.GetMintingNFTTab().NFT as XrayImageNFT).XrayParams.Voltage,
                                             (AppData.GetMintingNFTTab().NFT as XrayImageNFT).XrayParams.Current,

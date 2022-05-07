@@ -18,5 +18,14 @@ namespace VEDriversLite
         /// This property holds the actual value
         /// </summary>
         public object Value { get; set; }
+
+        public static CommonReturnTypeDto GetNew<T>(bool success = false, T value = default(T))
+        {
+            return new CommonReturnTypeDto()
+            {
+                Success = success,
+                Value = value
+            };
+        }
     }
 }

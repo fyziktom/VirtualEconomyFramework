@@ -3,18 +3,28 @@
 
 @if ( !string.IsNullOrEmpty( Text ) )
 {
-    <Card Margin="Margin.Is4.FromBottom">
-        <CardBody>
-            <CardTitle Size="5">Description</CardTitle>
-            <CardText>
-                <Span>@((MarkupString)NFTTextMarkuptext)</Span>
-            </CardText>
-        </CardBody>
-    </Card>
+    @if (IsOnCard)
+    {
+        <Card Margin="Margin.Is4.FromBottom">
+            <CardBody>
+                <CardTitle Size="5">Description</CardTitle>
+                <CardText>
+                    <Span>@((MarkupString)NFTTextMarkuptext)</Span>
+                </CardText>
+            </CardBody>
+        </Card>
+    }
+    else
+    {
+        @((MarkupString)NFTTextMarkuptext)
+    }
 }
 
 @code {
     [Inject] protected IJSRuntime? JS { get; set; } = null;
+
+    [Parameter] public bool IsOnCard { get; set; } = true; 
+    
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if(this.JS is not null)
@@ -28,8 +38,13 @@
         }
     }
     
-    [Parameter]
-    public string Text { get; set; } = string.Empty;
+    [Parameter] public string Text { get; set; } = string.Empty;
     
     public string NFTTextMarkuptext => Markdig.Markdown.ToHtml( Text , new MarkdownPipelineBuilder().UseAdvancedExtensions().Build());
+
+    public void Load(string Text)
+    {
+        this.Text = Text;
+        this.StateHasChanged();
+    }
 }

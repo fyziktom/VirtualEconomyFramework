@@ -8,7 +8,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using VEDriversLite.Bookmarks;
-using VEDriversLite.Cryptocurrencies;
 using VEDriversLite.Dto;
 using VEDriversLite.Events;
 using VEDriversLite.Messaging;
@@ -136,11 +135,6 @@ namespace VEDriversLite.Neblio
         [JsonIgnore]
         public List<Utxos> Utxos { get; set; } = new List<Utxos>();
         /// <summary>
-        /// Service which gets prices of cryptocurrencies
-        /// </summary>
-        [JsonIgnore]
-        public PriceService ExchangePriceService { get; set; } = new PriceService();
-        /// <summary>
         /// Actual loaded address info. It has inside list of all transactions.
         /// </summary>
         [JsonIgnore]
@@ -178,11 +172,6 @@ namespace VEDriversLite.Neblio
         /// This event is fired whenever new lot of addresses was airdroped
         /// </summary>
         public event EventHandler<Dictionary<string,string>> AddressesAirdroped;
-
-        /// <summary>
-        /// This event is fired whenever price from exchanges is refreshed. It provides dictionary of the actual available rates.
-        /// </summary>
-        public event EventHandler<IDictionary<CurrencyTypes, double>> PricesRefreshed;
 
         /// <summary>
         /// This event is fired whenever profile nft is updated or found
@@ -402,25 +391,6 @@ namespace VEDriversLite.Neblio
         #endregion
 
         #region AccountStatsLoad
-
-        /// <summary>
-        /// Register event of the PriceService PriceRefreshed. Then the event is resend by NeblioAccountBase class
-        /// </summary>
-        public void RegisterPriceServiceEventHandler()
-        {
-            if (ExchangePriceService != null)
-            {
-                ExchangePriceService.PricesRefreshed -= ExchangePriceService_PricesRefreshed;
-                ExchangePriceService.PricesRefreshed += ExchangePriceService_PricesRefreshed;
-            }
-            else
-                Console.WriteLine("Cannot register Event Handler for PriceRefreshed because the ExchangePriceService is null.");
-        }
-
-        private void ExchangePriceService_PricesRefreshed(object sender, IDictionary<CurrencyTypes, double> e)
-        {
-            PricesRefreshed?.Invoke(sender, e);
-        }
 
         /// <summary>
         /// Reload actual token supplies based on already loaded list of address utxos

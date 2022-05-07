@@ -16,10 +16,11 @@
     </Column>
     <Column>
         <AccountBalances NeblioBalance="@AppData.Account.TotalSpendableBalance"
-                            TokensBalance="@TokenSupply"
-                            BDPBalance="@BDPSupply"
-                            WDOGEBalance="@WDOGESupply"
-                            NFTsCount="@AppData.Account.NFTs.Count" />
+                         NeblioBalanceUnconfirmed="@AppData.Account.TotalUnconfirmedBalance"
+                         TokensBalance="@TokenSupply"
+                         BDPBalance="@BDPSupply"
+                         WDOGEBalance="@WDOGESupply"
+                         NFTsCount="@AppData.Account.NFTs.Count" />
     </Column>
     <Column>
         <Card>
@@ -69,6 +70,35 @@
                     <BookmarksManagerList />
                 </CollapseBody>
             </Collapse>
+            <Collapse Visible="@collapseNFTSalesVisible">
+                <CollapseHeader Padding="Padding.Is0.FromBottom">
+                    <Row>
+                        <Column>
+                            <Button Clicked="@(()=>collapseNFTSalesVisible = !collapseNFTSalesVisible)">
+                                <Icon Name="@(collapseNFTSalesVisible ? IconName.AngleUp : IconName.AngleDown)" />
+                                NFT Sales
+                            </Button>
+                        </Column>
+                    </Row>
+                </CollapseHeader>
+                <CollapseBody>
+                    <Tabs SelectedTab="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged">
+                        <Items>
+                            <Tab Name="payments">Payments</Tab>
+                            <Tab Name="receipts">Receipts</Tab>
+                        </Items>
+                        <Content>
+                            <TabPanel Name="payments">
+                                <NFTPaymentsList @ref="nftPaymentsList" Address="@Address" />
+                            </TabPanel>
+                            <TabPanel Name="receipts">
+                                <NFTReceiptsList @ref="nftReceiptsList" Address="@Address" />
+                            </TabPanel>
+                        </Content>
+                    </Tabs>
+                                        
+                </CollapseBody>
+            </Collapse>
             <Collapse Visible="@collapse2Visible">
                 <CollapseHeader>
                     <Row>
@@ -76,6 +106,11 @@
                             <Button Clicked="@(()=>collapse2Visible = !collapse2Visible)">
                                 <Icon Name="@(collapse2Visible ? IconName.AngleUp : IconName.AngleDown)" />
                                 Transactions History
+                            </Button>
+                        </Column>
+                        <Column>
+                            <Button Color="Color.Light" Clicked="@addNewTransaction" Float="Float.End">
+                                <Icon Name="IconName.Add" /> Add
                             </Button>
                         </Column>
                     </Row>
@@ -87,6 +122,8 @@
         </Accordion>
     </Column>
 </Row>
+
+<SendNeblioTransaction @ref="sendNeblioTxRef" Address="@Address" IsSubAccount="@IsSubAccount" />
 
 @code {
 
@@ -121,18 +158,50 @@
         }
     }
 
-    bool collapse1Visible = true;
+    bool collapse1Visible = false;
     bool collapse2Visible = true;
+    bool collapseNFTSalesVisible = true;
+    string selectedTab = "payments";
 
-    private BookmarkIcon? bookmarkIcon;
+    BookmarkIcon? bookmarkIcon;
+    SendNeblioTransaction? sendNeblioTxRef;
+    NFTReceiptsList? nftReceiptsList;
+    NFTPaymentsList? nftPaymentsList;
 
-    private async Task addNewBookmark()
+    protected override async Task OnInitializedAsync()
+    {
+        AppData.Account.Refreshed -= RefreshedHandler;
+        AppData.Account.Refreshed += RefreshedHandler;   
+        nftPaymentsList?.Load();
+        await base.OnInitializedAsync();
+    }
+
+    void RefreshedHandler(object? sender, EventArgs e)
+    {
+        OnSelectedTabChanged(selectedTab);
+        StateHasChanged();
+    }
+
+    void OnSelectedTabChanged( string name )
+    {
+        selectedTab = name;
+        if (name == "payments")
+            nftPaymentsList?.Load();
+        else if (name == "receipts")
+            nftReceiptsList?.Load();
+    }    
+    
+    void addNewTransaction()
+    {
+        sendNeblioTxRef?.Show();
+    }  
+    async Task addNewBookmark()
     {
         if (bookmarkIcon != null)
             await bookmarkIcon.ShowAddBookmarkModal();
     }    
 
-    private string filename = "";
+    string filename = "";
     private string backupData = "";
 
     async Task Backup()
