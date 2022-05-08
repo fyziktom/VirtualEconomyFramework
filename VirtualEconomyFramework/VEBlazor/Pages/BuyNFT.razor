@@ -446,10 +446,10 @@
             receiver = await NeblioTransactionHelpers.GetTransactionReceiver(NFT.Utxo, NFT.TxDetails);
 
             var r = await NeblioTransactionHelpers.ValidateOneTokenNFTUtxo(receiver, NFT.TokenId, NFT.Utxo, NFT.UtxoIndex);
-            if (r != 0)
-                isPossibleToBuy = false;
-            else
+            if (r >= 0)
                 isPossibleToBuy = true;
+            else
+                isPossibleToBuy = false;
             
             tab = new ActiveTab(receiver);
             tab.MaxLoadedNFTItems = 5;
@@ -525,7 +525,7 @@
                 txid = string.Empty;
                 sucessfullSend = false;
                 if ( NotificationService != null )                
-                await NotificationService.Warning( res.Item2, "Cannot send" );
+                    await NotificationService.Warning( res.Item2, "Cannot send" );
             }
             else
             {

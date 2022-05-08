@@ -115,6 +115,9 @@ namespace VEDriversLite.NFT
                         case "NFT XrayImage":
                             type = NFTTypes.XrayImage;
                             break;
+                        case "NFT App":
+                            type = NFTTypes.App;
+                            break;
                     }
                     return type;
                 }
@@ -480,6 +483,14 @@ namespace VEDriversLite.NFT
                     nft.UtxoIndex = utxoindex;
                     await (nft as XrayImageNFT).LoadLastData(meta);
                     break;
+                case NFTTypes.App:
+                    nft = new AppNFT(utxo);
+                    nft.TokenId = tokid;
+                    nft.Time = Time;
+                    nft.TxDetails = txinfo;
+                    nft.UtxoIndex = utxoindex;
+                    await (nft as AppNFT).LoadLastData(meta);
+                    break;
             }
 
             if (VEDLDataContext.AllowCache && tokid == NFTHelpers.TokenId && VEDLDataContext.NFTCache.Count < VEDLDataContext.MaxCachedItems)
@@ -625,6 +636,10 @@ namespace VEDriversLite.NFT
                     nft = new XrayImageNFT(NFT.Utxo);
                     await nft.Fill(NFT);
                     return nft;
+                case NFTTypes.App:
+                    nft = new AppNFT(NFT.Utxo);
+                    await nft.Fill(NFT);
+                    return nft;
             }
 
             return null;
@@ -759,6 +774,9 @@ namespace VEDriversLite.NFT
                     break;
                 case NFTTypes.XrayImage:
                     nft = new XrayImageNFT(utxo);
+                    break;
+                case NFTTypes.App:
+                    nft = new AppNFT(utxo);
                     break;
             }
 

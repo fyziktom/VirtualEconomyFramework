@@ -4771,6 +4771,52 @@
             <param name="tokenId">Token Id hash</param>
             <returns></returns>
         </member>
+        <member name="T:VEDriversLite.NFT.AppNFT">
+            <summary>
+            App NFT is the carrier for the Applications in DataItems. Usually it is some HTML/JS or Blazor App
+            Apps are hosted from the IPFS
+            </summary>
+        </member>
+        <member name="M:VEDriversLite.NFT.AppNFT.#ctor(System.String)">
+            <summary>
+            Create empty NFT class
+            </summary>
+        </member>
+        <member name="M:VEDriversLite.NFT.AppNFT.Fill(VEDriversLite.NFT.INFT)">
+            <summary>
+            Fill basic parameters
+            </summary>
+            <param name="NFT"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.AppNFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>
+            Parse specific parameters
+            </summary>
+            <param name="metadata"></param>
+        </member>
+        <member name="M:VEDriversLite.NFT.AppNFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>
+            Find and parse origin data
+            </summary>
+            <param name="lastmetadata"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.AppNFT.GetLastData">
+            <summary>
+            Get last data of this NFT
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.AppNFT.GetMetadata(System.String,System.String,System.String)">
+            <summary>
+            Get the NFT data for the NFT
+            </summary>
+            <param name="address">Address of the sender</param>
+            <param name="key">Private key of the sender for encryption</param>
+            <param name="receiver">receiver of the NFT</param>
+            <returns></returns>
+        </member>
         <member name="T:VEDriversLite.NFT.CommonNFT">
             <summary>
             Common NFT class. It implements lots of functions for the parsing the basic parameter of the NFT.
@@ -6031,6 +6077,16 @@
             3d model in STL, file .stl
             </summary>
         </member>
+        <member name="F:VEDriversLite.NFT.Dto.DataItemType.BlazorApp">
+            <summary>
+            Blazor WASM App
+            </summary>
+        </member>
+        <member name="F:VEDriversLite.NFT.Dto.DataItemType.HTMLApp">
+            <summary>
+            Standard HTML + JS app
+            </summary>
+        </member>
         <member name="T:VEDriversLite.NFT.Dto.DataItemStorageType">
             <summary>
             Type of the storage where the data are stored. Usually it is IPFS.
@@ -6979,6 +7035,11 @@
             Xray Image
             </summary>
         </member>
+        <member name="F:VEDriversLite.NFT.NFTTypes.App">
+            <summary>
+            Application in NFT
+            </summary>
+        </member>
         <member name="T:VEDriversLite.NFT.INFT">
             <summary>
             Main NFT interface
@@ -7855,6 +7916,13 @@
         <member name="M:VEDriversLite.NFT.NFTHelpers.IPFSDownloadFromInfuraAsync(System.String)">
             <summary>
             Download file from IPFS Infura with use of credentials
+            </summary>
+            <param name="hash"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.NFT.NFTHelpers.PinToInfuraAsync(System.String)">
+            <summary>
+            Pin file to IPFS Infura with use of credentials
             </summary>
             <param name="hash"></param>
             <returns></returns>

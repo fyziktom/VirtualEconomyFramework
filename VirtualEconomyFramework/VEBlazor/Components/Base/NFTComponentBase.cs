@@ -108,7 +108,12 @@ namespace VEFramework.VEBlazor.Components.Base
                     foreach (var item in NFT.DataItems)
                     {
                         if (item.IsMain)
-                            return NFTHelpers.GetIPFSLinkFromHash(item.Hash);
+                        {
+                            if (item.Storage == DataItemStorageType.IPFS)
+                                return NFTHelpers.GetIPFSLinkFromHash(item.Hash);
+                            else if (item.Storage == DataItemStorageType.Url)
+                                return item.Hash;
+                        }                            
                     }
                     if (NFT.DataItems.Count > 0)
                     {
@@ -143,7 +148,12 @@ namespace VEFramework.VEBlazor.Components.Base
                 foreach (var item in nft.DataItems)
                 {
                     if (item.IsMain)
-                        return NFTHelpers.GetIPFSLinkFromHash(item.Hash);
+                    {
+                        if (item.Storage == DataItemStorageType.IPFS)
+                            return NFTHelpers.GetIPFSLinkFromHash(item.Hash);
+                        else if (item.Storage == DataItemStorageType.Url)
+                            return item.Hash;
+                    }
                 }
                 if (nft.DataItems.Count > 0)
                 {

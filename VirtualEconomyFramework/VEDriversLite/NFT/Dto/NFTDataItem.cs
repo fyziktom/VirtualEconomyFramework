@@ -45,7 +45,15 @@ namespace VEDriversLite.NFT.Dto
         /// <summary>
         /// 3d model in STL, file .stl
         /// </summary>
-        Model3dSTL
+        Model3dSTL,
+        /// <summary>
+        /// Blazor WASM App
+        /// </summary>
+        BlazorApp = 5000,
+        /// <summary>
+        /// Standard HTML + JS app
+        /// </summary>
+        HTMLApp = 5001
     }
     /// <summary>
     /// Type of the storage where the data are stored. Usually it is IPFS.

@@ -57,6 +57,13 @@
                                             @onclick="() => DisplayItem(item)" 
                                             Style="max-width:40px; min-width:25px; min-height:25px; max-height:80px;"/> 
                                 }
+                                else if (item.Type == DataItemType.BlazorApp)
+                                {
+                                    <CardImage Border="@(item.IsMain ? Border.Is2.Success : Border.Is0)" 
+                                            Source="_content/VEFramework.VEBlazor/images/app-image.png" 
+                                            @onclick="() => DisplayItem(item)" 
+                                            Style="max-width:40px; min-width:25px; min-height:25px; max-height:80px;"/> 
+                                }
                             </Card> 
                         </Column>
                     }
@@ -119,6 +126,10 @@
                     {   
                         <MermaidEditor @ref="mermaidTextRef" OnDataSaved="OnDataSavedHandler"  />
                     }
+                    else if (actualFileType == DataItemType.BlazorApp)
+                    {   
+                        <iframe src="@NFT.ImageLink" frameborder="0" style="min-width:300px; min-height:500px; width:100%; height:100%;"></iframe>
+                    }
                 </Column> 
             </Row> 
         </Column>
@@ -169,6 +180,12 @@
             if (mermaidTextRef != null)
                 await mermaidTextRef.LoadFromIPFS(item.Hash);
         }
+        else if (item.Type == DataItemType.BlazorApp)
+        {
+            if (item.Storage == DataItemStorageType.Url)
+                NFT.ImageLink = item.Hash;
+        }
+        
         await InvokeAsync( StateHasChanged );
     }  
 

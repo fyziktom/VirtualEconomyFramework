@@ -61,6 +61,7 @@ else if(NFT.Type == NFTTypes.Receipt)
 }
 else if (NFT.Type == NFTTypes.Image || 
          NFT.Type == NFTTypes.Post || 
+         NFT.Type == NFTTypes.App || 
          NFT.Type == NFTTypes.Music)
 {
             <NFTDetails @ref="NFTDetailsModalComponent"
@@ -106,6 +107,9 @@ else if (NFT.Type == NFTTypes.Image ||
                 break;  
             case NFTTypes.Post:
                 NFTDetailsModalComponent?.ShowNFTDetails(nft);
+                break; 
+            case NFTTypes.App:
+                NFTDetailsModalComponent?.ShowNFTDetails(nft);
                 break;  
             case NFTTypes.Payment:
                 NFTPaymentDetailsModalComponent?.ShowNFTDetails(nft);
@@ -134,6 +138,9 @@ else if (NFT.Type == NFTTypes.Image ||
                 NFTDetailsModalComponent?.HideNFTDetails();
                 break;
             case NFTTypes.Post:
+                NFTDetailsModalComponent?.HideNFTDetails();
+                break;
+            case NFTTypes.App:
                 NFTDetailsModalComponent?.HideNFTDetails();
                 break;
             case NFTTypes.Payment:
