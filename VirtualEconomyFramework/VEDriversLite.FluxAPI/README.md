@@ -13,7 +13,14 @@ mkdir CreateFluxAPIExample
 cd CreateFluxAPIExample
 dotnet new console
 ```
-2. Add project reference (later will be available like nuget package) 
+
+2. Add project reference or nuget package 
+
+
+```code 
+dotnet add package VEFramework.VEDriversLite.FluxAPI
+```
+
 
 ```csharp
 
