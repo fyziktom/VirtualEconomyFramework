@@ -344,7 +344,7 @@ namespace VEDriversLite.Builders.Neblio
             {
                 if (!string.IsNullOrEmpty(TxHexSigned))
                 {
-                    var res = await NeblioTransactionHelpers.BroadcastSignedTransaction(TxHexSigned);
+                    var res = await NeblioAPIHelpers.BroadcastSignedTransaction(TxHexSigned);
                     return res;
                 }
                 return "Cannot broadcast unsigned transaction. ";

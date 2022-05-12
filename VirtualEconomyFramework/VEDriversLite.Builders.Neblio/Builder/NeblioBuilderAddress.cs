@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using NBitcoin;
+using VEDriversLite.NeblioAPI;
 
 namespace VEDriversLite.Builders.Neblio
 {
@@ -62,7 +63,7 @@ namespace VEDriversLite.Builders.Neblio
         public async Task LoadUtxos()
         {
             //Utxos.Clear();
-            var ux = await NeblioTransactionHelpers.GetAddressUtxosObjects(Address);
+            var ux = await NeblioAPIHelpers.GetAddressUtxosObjects(Address);
             // add new ones
             foreach (var u in ux)
             {

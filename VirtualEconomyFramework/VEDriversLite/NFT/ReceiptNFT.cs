@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 using System.Threading.Tasks;
+using VEDriversLite.NeblioAPI;
 
 namespace VEDriversLite.NFT
 {
@@ -97,7 +98,7 @@ namespace VEDriversLite.NFT
             if (metadata.TryGetValue("OriginalPaymentTxId", out var optxid))
                 OriginalPaymentTxId = optxid;
 
-            Buyer = NeblioTransactionHelpers.GetTransactionReceiver(Utxo, TxDetails).GetAwaiter().GetResult();
+            Buyer = NeblioAPIHelpers.GetTransactionReceiver(Utxo, TxDetails).GetAwaiter().GetResult();
         }
         /// <summary>
         /// Find and parse origin data

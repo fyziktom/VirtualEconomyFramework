@@ -3,6 +3,7 @@
 @using VEDriversLite.NFT
 @using VEDriversLite.NFT.Imaging.Xray
 @using VEDriversLite.Neblio
+@using VEDriversLite.NeblioAPI
 @inject AppData AppData
 
 @if ( TxDetails != null )
@@ -283,7 +284,7 @@
             return ti;
         else
         {
-            var toi = NeblioTransactionHelpers.GetTokenInfo( tokenId ).GetAwaiter().GetResult();
+            var toi = NeblioAPIHelpers.GetTokenInfo( tokenId ).GetAwaiter().GetResult();
             tokenInfo.Add( tokenId, toi );
             return toi;
         }

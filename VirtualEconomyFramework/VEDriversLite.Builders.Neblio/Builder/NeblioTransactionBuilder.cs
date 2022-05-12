@@ -44,7 +44,7 @@ namespace VEDriversLite.Builders.Neblio
             var dto = new SendTokenRequest();
             try
             {
-                dto = NeblioTransactionHelpers.GetSendTokenObject(1, 20000, "DEFAULT", "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8");
+                dto = NeblioAPIHelpers.GetSendTokenObject(1, 20000, "DEFAULT", "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8");
 
                 dto.To = new List<To>();
 
@@ -81,7 +81,7 @@ namespace VEDriversLite.Builders.Neblio
             var hexToSign = string.Empty;
             try
             {
-                hexToSign = await NeblioTransactionHelpers.SendRawNTP1TxAsync(dto);
+                hexToSign = await NeblioAPIHelpers.SendRawNTP1TxAsync(dto);
                 if (string.IsNullOrEmpty(hexToSign))
                     throw new Exception("Cannot get correct raw token hex.");
             }

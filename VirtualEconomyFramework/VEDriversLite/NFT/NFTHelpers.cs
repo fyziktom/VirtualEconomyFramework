@@ -471,7 +471,7 @@ namespace VEDriversLite.NFT
         /// <returns></returns>
         public static async Task InitNFTHelpers()
         {
-            await NeblioTransactionHelpers.LoadAllowedTokensInfo(AllowedTokens);
+            await NeblioAPIHelpers.LoadAllowedTokensInfo(AllowedTokens);
         }
 
         /// <summary>
@@ -544,7 +544,7 @@ namespace VEDriversLite.NFT
             var txid = utxo;
             try
             {
-                var meta = await NeblioTransactionHelpers.GetTransactionMetadata(TokenId, utxo);
+                var meta = await NeblioAPIHelpers.GetTransactionMetadata(TokenId, utxo);
                 if (meta.TryGetValue("NFT", out var value))
                     if (!string.IsNullOrEmpty(value) && value == "true")
                     {
@@ -570,7 +570,7 @@ namespace VEDriversLite.NFT
         /// <returns></returns>
         public static async Task<Dictionary<string, string>> CheckIfContainsNFTData(string utxo)
         {
-            var meta = await NeblioTransactionHelpers.GetTransactionMetadata(TokenId, utxo);
+            var meta = await NeblioAPIHelpers.GetTransactionMetadata(TokenId, utxo);
 
             if (meta.TryGetValue("NFT", out var value))
                 if (!string.IsNullOrEmpty(value) && value == "true")
@@ -587,7 +587,7 @@ namespace VEDriversLite.NFT
         /// <returns></returns>
         public static async Task<(bool, string)> CheckIfMintTx(string utxo)
         {
-            var info = await NeblioTransactionHelpers.GetTransactionInfo(utxo);
+            var info = await NeblioAPIHelpers.GetTransactionInfo(utxo);
 
             if (info != null && info.Vin != null && info.Vin.Count > 0)
             {
@@ -617,7 +617,7 @@ namespace VEDriversLite.NFT
         public static async Task<INFT> FindProfileOfAddress(string address, ICollection<Utxos> utxos = null)
         {
             if (utxos == null)
-                utxos = await NeblioTransactionHelpers.GetAddressNFTsUtxos(address, AllowedTokens);
+                utxos = await NeblioAPIHelpers.GetAddressNFTsUtxos(address, AllowedTokens);
             INFT profile = null;
 
             foreach (var u in utxos)
@@ -644,7 +644,7 @@ namespace VEDriversLite.NFT
         public static async Task<INFT> FindEventOnTheAddress(string address, string nftOriginTxId, ICollection<Utxos> utxos = null)
         {
             if (utxos == null)
-                utxos = await NeblioTransactionHelpers.GetAddressNFTsUtxos(address, AllowedTokens);
+                utxos = await NeblioAPIHelpers.GetAddressNFTsUtxos(address, AllowedTokens);
             INFT eventNFT = null;
 
             foreach (var u in utxos)
@@ -676,7 +676,7 @@ namespace VEDriversLite.NFT
         public static async Task<(INFT, List<INFT>)> LoadAddressNFTsWithProfile(string address)
         {
             List<INFT> nfts = new List<INFT>();
-            var utxos = await NeblioTransactionHelpers.GetAddressNFTsUtxos(address, AllowedTokens);
+            var utxos = await NeblioAPIHelpers.GetAddressNFTsUtxos(address, AllowedTokens);
             INFT profile = null;
 
             foreach (var u in utxos)
@@ -723,9 +723,9 @@ namespace VEDriversLite.NFT
             List<INFT> nfts = new List<INFT>();
             ICollection<Utxos> uts = null;
             if (inutxos == null)
-                uts = await NeblioTransactionHelpers.GetAddressNFTsUtxos(address, AllowedTokens);
+                uts = await NeblioAPIHelpers.GetAddressNFTsUtxos(address, AllowedTokens);
             else
-                uts = await NeblioTransactionHelpers.GetAddressNFTsUtxos(address, AllowedTokens, new GetAddressInfoResponse() { Utxos = inutxos });
+                uts = await NeblioAPIHelpers.GetAddressNFTsUtxos(address, AllowedTokens, new GetAddressInfoResponse() { Utxos = inutxos });
             var utxos = uts.OrderBy(u => u.Blocktime).Reverse().ToList();
 
             var ns = new List<INFT>();
@@ -833,7 +833,7 @@ namespace VEDriversLite.NFT
                     List<Vin> vins = new List<Vin>();
                     try
                     {
-                        txinfo = await NeblioTransactionHelpers.GetTransactionInfo(txid);
+                        txinfo = await NeblioAPIHelpers.GetTransactionInfo(txid);
                         vins = txinfo.Vin.ToList();
                     }
                     catch (Exception ex)
@@ -909,7 +909,7 @@ namespace VEDriversLite.NFT
                         {
                             try
                             {
-                                nft.TxDetails = await NeblioTransactionHelpers.GetTransactionInfo(nft.Utxo);
+                                nft.TxDetails = await NeblioAPIHelpers.GetTransactionInfo(nft.Utxo);
                             }
                             catch (Exception ex)
                             {
@@ -918,8 +918,8 @@ namespace VEDriversLite.NFT
                         }
                         if (nft.TxDetails != null && nft.TxDetails.Vin != null)
                         {
-                            var sender = await NeblioTransactionHelpers.GetTransactionSender(nft.Utxo, nft.TxDetails);
-                            var receiver = await NeblioTransactionHelpers.GetTransactionReceiver(nft.Utxo, nft.TxDetails);
+                            var sender = await NeblioAPIHelpers.GetTransactionSender(nft.Utxo, nft.TxDetails);
+                            var receiver = await NeblioAPIHelpers.GetTransactionReceiver(nft.Utxo, nft.TxDetails);
                             if ((sender == aliceAddress && receiver == bobAddress) || (receiver == aliceAddress && sender == bobAddress))
                                 nftmessages.Add(nft);
                         }
@@ -1203,7 +1203,7 @@ namespace VEDriversLite.NFT
             metadata.Add("ReceiptFromPaymentUtxo", payment.Utxo);
             metadata.Add("SourceUtxo", NFT.NFTOriginTxId);
 
-            var mintingutxos = await NeblioTransactionHelpers.FindUtxoForMintNFT(address, NFT.TokenId);
+            var mintingutxos = await NeblioAPIHelpers.FindUtxoForMintNFT(address, NFT.TokenId);
             
             if (mintingutxos == null || mintingutxos.Count == 0)
                 throw new Exception("No minting supply available.");
@@ -1460,7 +1460,7 @@ namespace VEDriversLite.NFT
             //var profile = await FindProfileNFT(nfts);
             if (profile == null)
                 return (false, null);
-            var txhex = await NeblioTransactionHelpers.GetTxHex(profile.Utxo);
+            var txhex = await NeblioAPIHelpers.GetTxHex(profile.Utxo);
             if (string.IsNullOrEmpty(txhex))
                 return (false, null);
             var tx = Transaction.Parse(txhex, NeblioTransactionHelpers.Network);
@@ -1481,7 +1481,7 @@ namespace VEDriversLite.NFT
         /// <returns></returns>
         public static async Task<(bool, PubKey)> GetPubKeyFromLastFoundTx(string address)
         {
-            var tx = await NeblioTransactionHelpers.GetLastSentTransaction(address);
+            var tx = await NeblioAPIHelpers.GetLastSentTransaction(address);
             //var profile = await FindProfileNFT(nfts);
             if (tx == null)
                 return (false, null);
@@ -1502,7 +1502,7 @@ namespace VEDriversLite.NFT
             var nft = await NFTFactory.GetNFT(TokenId, txid, 0, 0, true); // todo utxoindex
             if (nft != null && txid == nft.Utxo)
             {
-                var txi = await NeblioTransactionHelpers.GetTransactionInfo(txid);
+                var txi = await NeblioAPIHelpers.GetTransactionInfo(txid);
                 nft.Time = TimeHelpers.UnixTimestampToDateTime((double)txi.Blocktime);
                 var tx = NBitcoin.Transaction.Parse(txi.Hex, NeblioTransactionHelpers.Network);
 
@@ -1514,7 +1514,7 @@ namespace VEDriversLite.NFT
                     {
                         var scr = outp.ScriptPubKey;
                         var add = scr.GetDestinationAddress(NeblioTransactionHelpers.Network);
-                        var utxos = await NeblioTransactionHelpers.GetAddressUtxosObjects(add.ToString());
+                        var utxos = await NeblioAPIHelpers.GetAddressUtxosObjects(add.ToString());
                         var addi = inpt.ScriptSig.GetSignerAddress(NeblioTransactionHelpers.Network);
                         if (utxos.FirstOrDefault(u => (u.Txid == txid && u.Value == 10000 && u.Tokens.Count > 0 && u.Tokens.FirstOrDefault()?.Amount == 1)) != null)
                         {

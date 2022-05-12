@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Text;
 using System.Threading.Tasks;
 using VEDriversLite.Security;
+using VEDriversLite.NeblioAPI;
 
 namespace VEDriversLite.NFT
 {
@@ -113,7 +114,7 @@ namespace VEDriversLite.NFT
         /// <returns></returns>
         public async Task GetPartner()
         {
-            var rec = await NeblioTransactionHelpers.GetTransactionSender(Utxo, TxDetails);
+            var rec = await NeblioAPIHelpers.GetTransactionSender(Utxo, TxDetails);
             if (!string.IsNullOrEmpty(rec))
                 Partner = rec;
         }
@@ -123,7 +124,7 @@ namespace VEDriversLite.NFT
         /// <returns></returns>
         public async Task GetReceiver()
         {
-            var rec = await NeblioTransactionHelpers.GetTransactionReceiver(Utxo, TxDetails);
+            var rec = await NeblioAPIHelpers.GetTransactionReceiver(Utxo, TxDetails);
             if (!string.IsNullOrEmpty(rec))
                 Partner = rec;
         }
@@ -151,7 +152,7 @@ namespace VEDriversLite.NFT
             if (Partner == add.ToString() && !decryptEvenOnSameAddress)
             {
                 IsReceivedMessage = false;
-                Partner = await NeblioTransactionHelpers.GetTransactionReceiver(Utxo);
+                Partner = await NeblioAPIHelpers.GetTransactionReceiver(Utxo);
                 if (string.IsNullOrEmpty(Partner))
                     return false;//throw new Exception("Cannot decrypt without loaded Partner address.");
             }

@@ -1,5 +1,6 @@
 ﻿@using VEDriversLite
 @using VEDriversLite.NFT
+@using VEDriversLite.NeblioAPI
 @inject AppData AppData
 
 <div class="row d-flex justify-content-center align-items-center">
@@ -59,7 +60,7 @@
                                     </div>
                                 </td>
 
-                                <td style="min-width:60px;"><a href="https://explorer.nebl.io/address/@pnft.Sender" target="_blank">@NeblioTransactionHelpers.ShortenAddress(pnft.Sender)</a></td>
+                                <td style="min-width:60px;"><a href="https://explorer.nebl.io/address/@pnft.Sender" target="_blank">@NeblioAPIHelpers.ShortenAddress(pnft.Sender)</a></td>
                                 @if (!string.IsNullOrEmpty(pnft.ImageLink))
                                 {
                                     <td @onclick="() => showNFTDetails(pnft.NFTUtxoTxId)" style="margin-left:10px;min-width:60px;">
@@ -149,7 +150,7 @@
                                             </div>
                                         </div>
                                     </td>
-                                    <td><a href="https://explorer.nebl.io/address/@pnft.Sender" target="_blank">@NeblioTransactionHelpers.ShortenAddress(pnft.Sender)</a></td>
+                                    <td><a href="https://explorer.nebl.io/address/@pnft.Sender" target="_blank">@NeblioAPIHelpers.ShortenAddress(pnft.Sender)</a></td>
                                     @if (!string.IsNullOrEmpty(pnft.ImageLink))
                                     {
                                         <td @onclick="() => showNFTDetails(pnft.NFTUtxoTxId)" style="margin-left:10px;min-width:60px;">

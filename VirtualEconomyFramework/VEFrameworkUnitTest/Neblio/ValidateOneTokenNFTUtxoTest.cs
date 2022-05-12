@@ -41,7 +41,7 @@ namespace VEFrameworkUnitTest.Neblio
             addressObject.Utxos = addressObject.Utxos.OrderBy(u => u.Blockheight).Reverse().ToList();
             var u = addressObject.Utxos.FirstOrDefault();
 
-            var result = await NeblioTransactionHelpers.ValidateOneTokenNFTUtxo(address, tokenId, transactionId, index, addressObject, (double)u.Blockheight);
+            var result = await NeblioAPIHelpers.ValidateOneTokenNFTUtxo(address, tokenId, transactionId, index, addressObject, (double)u.Blockheight);
 
             Assert.Equal(index, result);
         }

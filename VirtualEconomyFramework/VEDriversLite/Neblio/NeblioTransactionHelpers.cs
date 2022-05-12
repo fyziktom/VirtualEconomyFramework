@@ -20,15 +20,28 @@ namespace VEDriversLite
     /// <summary>
     /// Main Helper class for the Neblio Blockchain Transactions
     /// </summary>
-    public static partial class NeblioTransactionHelpers
+    public static class NeblioTransactionHelpers
     {
         /// <summary>
         /// NBitcoin Instance of Mainet Network of Neblio
         /// </summary>
         public static Network Network = NBitcoin.Altcoins.Neblio.Instance.Mainnet;
 
+        /// <summary>
+        /// Conversion ration for Neblio to convert from sat to 1 NEBL
+        /// </summary>
+        public const double FromSatToMainRatio = 100000000;
+
+        /// <summary>
+        /// Minimum amount in Satoshi on Neblio Blockchain
+        /// </summary>
+        public static long MinimumAmount = 10000;
 
 
+        /// <summary>
+        /// Main event info handler
+        /// </summary>
+        public static event EventHandler<IEventInfo> NewEventInfo;
 
         private static (BitcoinAddress, BitcoinSecret) GetAddressAndKeyInternal(EncryptionKey ekey, string password)
         {
@@ -233,18 +246,18 @@ namespace VEDriversLite
             data.Metadata.Add(new KeyValuePair<string, string>("SourceUtxo", tutxo.Txid));
             data.Metadata.Add(new KeyValuePair<string, string>("NFT FirstTx", "true"));
 
-            var fee = CalcFee(2, 1 + coppies, JsonConvert.SerializeObject(data.Metadata), true);
+            var fee = NeblioAPIHelpers.CalcFee(2, 1 + coppies, JsonConvert.SerializeObject(data.Metadata), true);
 
             // create and init send token request dto for Neblio API
             SendTokenRequest dto;
 
             if (!string.IsNullOrEmpty(data.ReceiverAddress))
             {
-                dto = GetSendTokenObject(1, fee, data.ReceiverAddress, data.Id);
+                dto = NeblioAPIHelpers.GetSendTokenObject(1, fee, data.ReceiverAddress, data.Id);
             }
             else
             {
-                dto = GetSendTokenObject(1, fee, data.SenderAddress, data.Id);
+                dto = NeblioAPIHelpers.GetSendTokenObject(1, fee, data.SenderAddress, data.Id);
             }
 
             if (data.Metadata != null)
@@ -316,7 +329,7 @@ namespace VEDriversLite
             try
             {
                 //var dtostr = JsonConvert.SerializeObject(dto);
-                hexToSign = await SendRawNTP1TxAsync(dto);
+                hexToSign = await NeblioAPIHelpers.SendRawNTP1TxAsync(dto);
                 if (string.IsNullOrEmpty(hexToSign))
                 {
                     Console.WriteLine("Cannot get correct raw token hex.");
@@ -471,7 +484,7 @@ namespace VEDriversLite
 
             metadata.Add("TransactionType", "Token Split");
 
-            var fee = CalcFee(2, lots, JsonConvert.SerializeObject(metadata), true);
+            var fee = NeblioAPIHelpers.CalcFee(2, lots, JsonConvert.SerializeObject(metadata), true);
 
             // create and init send token request dto for Neblio API
             SendTokenRequest dto;
@@ -480,11 +493,11 @@ namespace VEDriversLite
             {
                 var dummykey = new Key();
                 var dummyadd = dummykey.PubKey.GetAddress(ScriptPubKeyType.Legacy, Network);
-                dto = GetSendTokenObject(amount, fee, dummyadd.ToString(), tokenId);
+                dto = NeblioAPIHelpers.GetSendTokenObject(amount, fee, dummyadd.ToString(), tokenId);
             }
             else
             {
-                dto = GetSendTokenObject(amount, fee, receiversAddresses[0].ToString(), tokenId);
+                dto = NeblioAPIHelpers.GetSendTokenObject(amount, fee, receiversAddresses[0].ToString(), tokenId);
             }
 
             if (metadata != null)
@@ -564,7 +577,7 @@ namespace VEDriversLite
             try
             {
                 //var dtostr = JsonConvert.SerializeObject(dto);
-                hexToSign = await SendRawNTP1TxAsync(dto);
+                hexToSign = await NeblioAPIHelpers.SendRawNTP1TxAsync(dto);
                 if (string.IsNullOrEmpty(hexToSign))
                 {
                     throw new Exception("Cannot get correct raw token hex.");
@@ -641,7 +654,7 @@ namespace VEDriversLite
                 }
             }
 
-            var val = await ValidateOneTokenNFTUtxo(data.SenderAddress, data.Id, itt, indx);
+            var val = await NeblioAPIHelpers.ValidateOneTokenNFTUtxo(data.SenderAddress, data.Id, itt, indx);
             string tutxo;
             if (val == -1)
             {
@@ -663,12 +676,12 @@ namespace VEDriversLite
                 throw new Exception("Cannot send transaction, cannot load sender nebl utxo!");
             }
 
-            var fee = CalcFee(2, 1, JsonConvert.SerializeObject(data.Metadata), true);
+            var fee = NeblioAPIHelpers.CalcFee(2, 1, JsonConvert.SerializeObject(data.Metadata), true);
 
             // create and init send token request dto for Neblio API
             SendTokenRequest dto;
 
-            dto = GetSendTokenObject(1, fee, data.ReceiverAddress, data.Id);
+            dto = NeblioAPIHelpers.GetSendTokenObject(1, fee, data.ReceiverAddress, data.Id);
 
             if (data.Metadata != null)
             {
@@ -699,7 +712,7 @@ namespace VEDriversLite
             string hexToSign;
             try
             {
-                hexToSign = await SendRawNTP1TxAsync(dto);
+                hexToSign = await NeblioAPIHelpers.SendRawNTP1TxAsync(dto);
                 if (string.IsNullOrEmpty(hexToSign))
                 {
                     throw new Exception("Cannot get correct raw token hex.");
@@ -757,12 +770,12 @@ namespace VEDriversLite
                 throw new Exception("Cannot send transaction, cannot load sender nebl utxo!");
             }
 
-            fee = CalcFee(2, 1, JsonConvert.SerializeObject(data.Metadata), true);
+            fee = NeblioAPIHelpers.CalcFee(2, 1, JsonConvert.SerializeObject(data.Metadata), true);
 
             // create and init send token request dto for Neblio API
             SendTokenRequest dto;
 
-            dto = GetSendTokenObject(data.Amount, fee, data.ReceiverAddress, data.Id);
+            dto = NeblioAPIHelpers.GetSendTokenObject(data.Amount, fee, data.ReceiverAddress, data.Id);
 
             if (data.Metadata != null)
             {
@@ -802,7 +815,7 @@ namespace VEDriversLite
             string hexToSign;
             try
             {
-                hexToSign = await SendRawNTP1TxAsync(dto);
+                hexToSign = await NeblioAPIHelpers.SendRawNTP1TxAsync(dto);
                 if (string.IsNullOrEmpty(hexToSign))
                 {
                     throw new Exception("Cannot get correct raw token hex.");
@@ -874,7 +887,7 @@ namespace VEDriversLite
             try
             {
 
-                var fee = CalcFee(transaction.Inputs.Count, 1, data.CustomMessage, false);
+                var fee = NeblioAPIHelpers.CalcFee(transaction.Inputs.Count, 1, data.CustomMessage, false);
 
                 var diff = (allNeblInputCoins - data.Amount) - (fee / FromSatToMainRatio);
 
@@ -974,7 +987,7 @@ namespace VEDriversLite
 
             try
             {
-                var fee = CalcFee(transaction.Inputs.Count, 1, "", false);
+                var fee = NeblioAPIHelpers.CalcFee(transaction.Inputs.Count, 1, "", false);
 
                 var totalAmount = 0.0;
                 for (int i = 0; i < lots; i++)
@@ -1069,7 +1082,7 @@ namespace VEDriversLite
             Utxos tutxo;
             if (paymentUtxoToReturn == null)
             {
-                var tutxos = await FindUtxoForMintNFT(data.SenderAddress, data.Id, 5);
+                var tutxos = await NeblioAPIHelpers.FindUtxoForMintNFT(data.SenderAddress, data.Id, 5);
                 if (tutxos == null || tutxos.Count == 0)
                 {
                     throw new Exception("Cannot send transaction, cannot load sender token utxos, for buying you need at least 5 VENFT lot!");
@@ -1103,7 +1116,7 @@ namespace VEDriversLite
             // create and init send token request dto for Neblio API
             var dto = new SendTokenRequest();
 
-            dto = GetSendTokenObject(1, 50000, data.ReceiverAddress, data.Id); //set maximum fee
+            dto = NeblioAPIHelpers.GetSendTokenObject(1, 50000, data.ReceiverAddress, data.Id); //set maximum fee
 
             if (data.Metadata != null)
             {
@@ -1128,7 +1141,7 @@ namespace VEDriversLite
             // create raw tx
             var hexToSign = string.Empty;
 
-            hexToSign = await SendRawNTP1TxAsync(dto);
+            hexToSign = await NeblioAPIHelpers.SendRawNTP1TxAsync(dto);
             if (string.IsNullOrEmpty(hexToSign))
             {
                 throw new Exception("Cannot get correct raw token hex.");
@@ -1180,7 +1193,7 @@ namespace VEDriversLite
                 //remove old calculated output with the diff
                 transaction.Outputs.RemoveAt(2);
 
-                var fee = CalcFee(transaction.Inputs.Count, 2, JsonConvert.SerializeObject(data.Metadata), true);
+                var fee = NeblioAPIHelpers.CalcFee(transaction.Inputs.Count, 2, JsonConvert.SerializeObject(data.Metadata), true);
                 
                 var amountinSat = Convert.ToUInt64(neblAmount * FromSatToMainRatio);
                 var balanceinSat = Convert.ToUInt64(allNeblInputCoins * FromSatToMainRatio);
@@ -1277,7 +1290,7 @@ namespace VEDriversLite
             var dto = new SendTokenRequest();
 
             double fee = 20000;
-            dto = GetSendTokenObject(data.Amount, fee, data.ReceiverAddress, data.Id);
+            dto = NeblioAPIHelpers.GetSendTokenObject(data.Amount, fee, data.ReceiverAddress, data.Id);
 
             if (data.Metadata != null)
             {
@@ -1316,7 +1329,7 @@ namespace VEDriversLite
             // create raw tx
             string hexToSign;
 
-            hexToSign = await SendRawNTP1TxAsync(dto);
+            hexToSign = await NeblioAPIHelpers.SendRawNTP1TxAsync(dto);
             if (string.IsNullOrEmpty(hexToSign))
             {
                 throw new Exception("Cannot get correct raw token hex.");
@@ -1391,7 +1404,7 @@ namespace VEDriversLite
                 var amountinSat = Convert.ToUInt64(neblAmount * FromSatToMainRatio);
                 var balanceinSat = Convert.ToUInt64(allNeblInputCoins * FromSatToMainRatio);
 
-                fee = CalcFee(transaction.Inputs.Count, 2, JsonConvert.SerializeObject(data.Metadata), true);
+                fee = NeblioAPIHelpers.CalcFee(transaction.Inputs.Count, 2, JsonConvert.SerializeObject(data.Metadata), true);
 
                 if ((amountinSat + fee) > balanceinSat)
                 {
@@ -1435,7 +1448,7 @@ namespace VEDriversLite
             List<ICoin> coins = new List<ICoin>();
             try
             {
-                var addrutxos = await GetAddressUtxosObjects(address.ToString());
+                var addrutxos = await NeblioAPIHelpers.GetAddressUtxosObjects(address.ToString());
 
                 // add all spendable coins of this address
                 foreach (var inp in addrutxos)
@@ -1485,7 +1498,7 @@ namespace VEDriversLite
 
             // broadcast            
             var txhex = transaction.ToHex();
-            var res = await BroadcastSignedTransaction(txhex);
+            var res = await NeblioAPIHelpers.BroadcastSignedTransaction(txhex);
             return res;
         }
 
@@ -1525,7 +1538,7 @@ namespace VEDriversLite
             // create and init send token request dto for Neblio API
             var dto = new SendTokenRequest();
 
-            dto = GetSendTokenObject(data.Amount, fee, data.ReceiverAddress, data.Id);
+            dto = NeblioAPIHelpers.GetSendTokenObject(data.Amount, fee, data.ReceiverAddress, data.Id);
 
             dto.To.Add(
                     new To()
@@ -1579,7 +1592,7 @@ namespace VEDriversLite
                         }
                         else
                         {
-                            voutstate = await ValidateOneTokenNFTUtxo(data.SenderAddress, data.Id, itt, indx);
+                            voutstate = await NeblioAPIHelpers.ValidateOneTokenNFTUtxo(data.SenderAddress, data.Id, itt, indx);
                         }
                     }
                     catch (Exception)
@@ -1617,13 +1630,13 @@ namespace VEDriversLite
 
             dto.Sendutxo.Add(nutxo.Txid + ":" + ((int)nutxo.Index).ToString());
 
-            fee = CalcFee(dto.Sendutxo.Count, 1, JsonConvert.SerializeObject(data.Metadata), true);
+            fee = NeblioAPIHelpers.CalcFee(dto.Sendutxo.Count, 1, JsonConvert.SerializeObject(data.Metadata), true);
             dto.Fee = fee;
 
             // create raw tx
             var hexToSign = string.Empty;
 
-            hexToSign = await SendRawNTP1TxAsync(dto);
+            hexToSign = await NeblioAPIHelpers.SendRawNTP1TxAsync(dto);
             if (string.IsNullOrEmpty(hexToSign))
             {
                 throw new Exception("Cannot get correct raw token hex.");
@@ -1679,13 +1692,13 @@ namespace VEDriversLite
                 throw new Exception("Cannot send transaction. cannot create receiver address!");
             }
 
-            fee = CalcFee(data.sendUtxo.Count, 1, JsonConvert.SerializeObject(data.Metadata), true);
+            fee = NeblioAPIHelpers.CalcFee(data.sendUtxo.Count, 1, JsonConvert.SerializeObject(data.Metadata), true);
 
             // create and init send token request dto for Neblio API
             var dto = new SendTokenRequest();
 
             // use just temporary address, will be changed to main address later after go through neblio API create tx command
-            dto = GetSendTokenObject(data.Amount, fee, "NPWBL3i8ZQ8tmhDtrixXwYd93nofmunvhA", data.Id);
+            dto = NeblioAPIHelpers.GetSendTokenObject(data.Amount, fee, "NPWBL3i8ZQ8tmhDtrixXwYd93nofmunvhA", data.Id);
 
             if (data.Metadata != null)
             {
@@ -1722,7 +1735,7 @@ namespace VEDriversLite
 
                     try
                     {
-                        voutstate = await ValidateOneTokenNFTUtxo(data.SenderAddress, data.Id, itt, indx);
+                        voutstate = await NeblioAPIHelpers.ValidateOneTokenNFTUtxo(data.SenderAddress, data.Id, itt, indx);
                     }
                     catch (Exception)
                     {
@@ -1743,7 +1756,7 @@ namespace VEDriversLite
             if (mintingUtxo == null)
             { 
                 // if not utxo provided, check the un NFT tokens sources. These with more than 1 token
-                var utxs = await FindUtxoForMintNFT(data.SenderAddress, data.Id, 5);
+                var utxs = await NeblioAPIHelpers.FindUtxoForMintNFT(data.SenderAddress, data.Id, 5);
                 var ut = utxs?.FirstOrDefault();
                 if (ut != null)
                 {
@@ -1783,7 +1796,7 @@ namespace VEDriversLite
             // create raw tx
             string hexToSign;
 
-            hexToSign = await SendRawNTP1TxAsync(dto);
+            hexToSign = await NeblioAPIHelpers.SendRawNTP1TxAsync(dto);
             if (string.IsNullOrEmpty(hexToSign))
             {
                 throw new Exception("Cannot get correct raw token hex.");

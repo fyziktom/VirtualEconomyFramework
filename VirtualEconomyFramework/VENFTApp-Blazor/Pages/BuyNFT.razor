@@ -1,6 +1,7 @@
 ﻿@using VEDriversLite
 @using VEDriversLite.Bookmarks
 @using VEDriversLite.NFT
+@using VEDriversLite.NeblioAPI
 @using Microsoft.AspNetCore.WebUtilities
 @using System.Globalization
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
@@ -419,9 +420,9 @@
             NFT = await NFTFactory.GetNFT(NFTHelpers.TokenId, nftUtxo, nftUtxoIndex, 0, true);
             AmountToSend = NFT.Price;
 
-            receiver = await NeblioTransactionHelpers.GetTransactionReceiver(NFT.Utxo, NFT.TxDetails);
+            receiver = await NeblioAPIHelpers.GetTransactionReceiver(NFT.Utxo, NFT.TxDetails);
 
-            var r = await NeblioTransactionHelpers.ValidateOneTokenNFTUtxo(receiver, NFT.TokenId, NFT.Utxo, NFT.UtxoIndex);
+            var r = await NeblioAPIHelpers.ValidateOneTokenNFTUtxo(receiver, NFT.TokenId, NFT.Utxo, NFT.UtxoIndex);
             if (r != 0)
             {
                 //await JSRuntime.InvokeVoidAsync("alertMessage", "This is NFT is not spendable tx on the address of receiver of it. Probably it was already spended.");

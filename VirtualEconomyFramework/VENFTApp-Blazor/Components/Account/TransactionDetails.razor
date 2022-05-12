@@ -324,7 +324,7 @@
     async Task StartRefreshing(bool newTx = false)
     {
         await Load(newTx);
-        if (txInDetails.Confirmations < (NeblioTransactionHelpers.MinimumConfirmations + 2))
+        if (txInDetails.Confirmations < (NeblioAPIHelpers.MinimumConfirmations + 2))
         {
             if (txdetailsTimer != null)
                 await txdetailsTimer.DisposeAsync();
@@ -336,7 +336,7 @@
                     try
                     {
                         await Load();
-                        if (txInDetails.Confirmations > (NeblioTransactionHelpers.MinimumConfirmations + 2))
+                        if (txInDetails.Confirmations > (NeblioAPIHelpers.MinimumConfirmations + 2))
                             await txdetailsTimer.DisposeAsync();
 
                     }
@@ -370,7 +370,7 @@
             txDetailsLoading = true;
             StateHasChanged();
 
-            var txinfo = await NeblioTransactionHelpers.GetTransactionInfo(txId);
+            var txinfo = await NeblioAPIHelpers.GetTransactionInfo(txId);
 
             if (newTx)
             {
@@ -383,7 +383,7 @@
                     {
                         toks = true;
                         tokid = o.Tokens.ToArray()[0]?.TokenId;
-                        tokenInfo = await NeblioTransactionHelpers.GetTokenInfo(tokid);
+                        tokenInfo = await NeblioAPIHelpers.GetTokenInfo(tokid);
                     }
                 }
 
@@ -415,7 +415,7 @@
                 {
                     try
                     {
-                        var meta = await NeblioTransactionHelpers.GetTransactionMetadata(tokid, txId);
+                        var meta = await NeblioAPIHelpers.GetTransactionMetadata(tokid, txId);
 
                         if (meta != null)
                         {

@@ -8,23 +8,24 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using VEDriversLite.Events;
-using VEDriversLite.Dto;
-using VEDriversLite.Neblio;
-using VEDriversLite.NeblioAPI;
-using VEDriversLite.Security;
+//using VEDriversLite.Events;
+//using VEDriversLite.Dto;
+//using VEDriversLite.Neblio;
+//using VEDriversLite.Security;
 
-namespace VEDriversLite
+namespace VEDriversLite.NeblioAPI
 {
 
     /// <summary>
     /// Main Helper class for the Neblio Blockchain Transactions
     /// </summary>
-    public static partial class NeblioTransactionHelpers
+    public static class NeblioAPIHelpers
     {
         private static readonly HttpClient httpClient = new HttpClient();
         private static IClient _client;
         private static readonly string BaseURL = "https://ntp1node.nebl.io/";
+
+        public static Network Network = NBitcoin.Altcoins.Neblio.Instance.Mainnet;
 
         /// <summary>
         /// Turn on and off of the cache for address info, transaction info and metadata of the transaction
@@ -70,10 +71,6 @@ namespace VEDriversLite
         /// </summary>
         public static ConcurrentDictionary<string, (DateTime, GetAddressInfoResponse)> AddressInfoCache = new ConcurrentDictionary<string, (DateTime, GetAddressInfoResponse)>();
 
-        /// <summary>
-        /// Main event info handler
-        /// </summary>
-        public static event EventHandler<IEventInfo> NewEventInfo;
 
         /// <summary>
         /// Check if the number of the confirmation is enough for doing transactions.

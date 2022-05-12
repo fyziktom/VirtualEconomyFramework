@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using VEDriversLite.Events;
 using VEDriversLite.Extensions.WooCommerce.Dto;
+using VEDriversLite.NeblioAPI;
 
 namespace VEDriversLite.Extensions.WooCommerce
 {
@@ -80,7 +81,7 @@ namespace VEDriversLite.Extensions.WooCommerce
                 {
                     if (u != null)
                     {
-                        var info = await NeblioTransactionHelpers.GetTransactionInfo(u.Txid);
+                        var info = await NeblioAPIHelpers.GetTransactionInfo(u.Txid);
                         if (info != null && info.Confirmations > 1)
                         {
                             var msg = NeblioTransactionHelpers.ParseNeblioMessage(info);

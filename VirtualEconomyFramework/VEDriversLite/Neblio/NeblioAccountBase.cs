@@ -321,7 +321,7 @@ namespace VEDriversLite.Neblio
                 var txinfotasks = new ConcurrentQueue<Task>();
                 foreach(var utxo in Utxos)
                 {
-                    txinfotasks.Enqueue(NeblioTransactionHelpers.GetTransactionInfo(utxo.Txid));
+                    txinfotasks.Enqueue(NeblioAPIHelpers.GetTransactionInfo(utxo.Txid));
                     var tok = utxo.Tokens?.FirstOrDefault();
                     var tokid = tok?.TokenId;
                     var tokamount = tok?.Amount;
@@ -333,7 +333,7 @@ namespace VEDriversLite.Neblio
                     {
                         if (!VEDLDataContext.NFTCache.ContainsKey(utxo.Txid))
                         {
-                            txinfotasks.Enqueue(NeblioTransactionHelpers.GetTokenMetadataOfUtxoCache(tokid, utxo.Txid));
+                            txinfotasks.Enqueue(NeblioAPIHelpers.GetTokenMetadataOfUtxoCache(tokid, utxo.Txid));
                         }
                     }
                 }
@@ -398,7 +398,7 @@ namespace VEDriversLite.Neblio
         /// <returns></returns>
         public async Task ReloadTokenSupply()
         {
-            var tos = await NeblioTransactionHelpers.CheckTokensSupplies(Address, AddressInfoUtxos);
+            var tos = await NeblioAPIHelpers.CheckTokensSupplies(Address, AddressInfoUtxos);
             lock (_lock)
             {
                 TokensSupplies.Clear();
@@ -415,7 +415,7 @@ namespace VEDriversLite.Neblio
         /// <returns></returns>
         public async Task ReloadCountOfNFTs()
         {
-            var nftsu = await NeblioTransactionHelpers.GetAddressNFTsUtxos(Address, NFTHelpers.AllowedTokens, AddressInfoUtxos);
+            var nftsu = await NeblioAPIHelpers.GetAddressNFTsUtxos(Address, NFTHelpers.AllowedTokens, AddressInfoUtxos);
             if (nftsu != null)
                 AddressNFTCount = nftsu.Count;
         }
@@ -426,7 +426,7 @@ namespace VEDriversLite.Neblio
         /// <returns></returns>
         public async Task ReloadMintingSupply()
         {
-            var mintingSupply = await NeblioTransactionHelpers.GetActualMintingSupply(Address, NFTHelpers.TokenId, AddressInfoUtxos);
+            var mintingSupply = await NeblioAPIHelpers.GetActualMintingSupply(Address, NFTHelpers.TokenId, AddressInfoUtxos);
             SourceTokensBalance = mintingSupply.Item1;
 
         }
@@ -469,7 +469,7 @@ namespace VEDriversLite.Neblio
         /// <returns></returns>
         public async Task ReloadUtxos()
         {
-            var aux = await NeblioTransactionHelpers.AddressInfoUtxosAsync(Address);
+            var aux = await NeblioAPIHelpers.AddressInfoUtxosAsync(Address);
             var ouxox = aux.Utxos.OrderBy(u => u.Blocktime).Reverse().ToList();
 
             if (ouxox.Count > 0)
@@ -506,7 +506,7 @@ namespace VEDriversLite.Neblio
         /// <returns></returns>
         public async Task ReloadAccountInfo()
         {
-            var ai = await NeblioTransactionHelpers.AddressInfoAsync(Address);
+            var ai = await NeblioAPIHelpers.AddressInfoAsync(Address);
             
             if (ai != null)
             {
@@ -714,7 +714,7 @@ namespace VEDriversLite.Neblio
         /// <returns></returns>
         public async Task<(bool, double)> HasSomeSpendableNeblio(double amount = 0.0002)
         {
-            var nutxos = await NeblioTransactionHelpers.GetAddressNeblUtxo(Address, 0.0001, amount);
+            var nutxos = await NeblioAPIHelpers.GetAddressNeblUtxo(Address, 0.0001, amount);
             if (nutxos.Count == 0)
             {
                 return (false, 0.0);
@@ -738,7 +738,7 @@ namespace VEDriversLite.Neblio
         /// <returns></returns>
         public async Task<(bool, int)> HasSomeSourceForMinting()
         {
-            var tutxos = await NeblioTransactionHelpers.FindUtxoForMintNFT(Address, NFTHelpers.TokenId, 1);
+            var tutxos = await NeblioAPIHelpers.FindUtxoForMintNFT(Address, NFTHelpers.TokenId, 1);
 
             if (tutxos.Count == 0)
                 return (false, 0);
@@ -762,10 +762,10 @@ namespace VEDriversLite.Neblio
         /// <returns></returns>
         public async Task<(bool, string)> ValidateNFTUtxo(string utxo, int index)
         {
-            var u = await NeblioTransactionHelpers.ValidateOneTokenNFTUtxo(Address, NFTHelpers.TokenId, utxo, index, addinfo: AddressInfoUtxos);
+            var u = await NeblioAPIHelpers.ValidateOneTokenNFTUtxo(Address, NFTHelpers.TokenId, utxo, index, addinfo: AddressInfoUtxos);
             if (u >= 0)
             {
-                var msg = $"Provided source tx transaction is not spendable. Probably waiting for more than {NeblioTransactionHelpers.MinimumConfirmations} confirmation.";
+                var msg = $"Provided source tx transaction is not spendable. Probably waiting for more than {NeblioAPIHelpers.MinimumConfirmations} confirmation.";
                 return (false, msg);
             }
             else
@@ -781,9 +781,9 @@ namespace VEDriversLite.Neblio
         {
             try
             {
-                var nutxos = await NeblioTransactionHelpers.GetAddressNeblUtxo(Address, 0.0002, amount, addinfo: AddressInfoUtxos);
+                var nutxos = await NeblioAPIHelpers.GetAddressNeblUtxo(Address, 0.0002, amount, addinfo: AddressInfoUtxos);
                 if (nutxos == null || nutxos.Count == 0)
-                    return ($"You dont have Neblio on the address. Probably waiting for more than {NeblioTransactionHelpers.MinimumConfirmations} confirmations.", null);
+                    return ($"You dont have Neblio on the address. Probably waiting for more than {NeblioAPIHelpers.MinimumConfirmations} confirmations.", null);
                 else
                     return ("OK", nutxos);
             }
@@ -803,9 +803,9 @@ namespace VEDriversLite.Neblio
         {
             try
             {
-                var tutxos = await NeblioTransactionHelpers.FindUtxoForMintNFT(Address, id, amount, addinfo: AddressInfoUtxos);
+                var tutxos = await NeblioAPIHelpers.FindUtxoForMintNFT(Address, id, amount, addinfo: AddressInfoUtxos);
                 if (tutxos == null || tutxos.Count == 0)
-                    return ($"You dont have Tokens on the address. You need at least 5 for minting. Probably waiting for more than {NeblioTransactionHelpers.MinimumConfirmations} confirmations.", null);
+                    return ($"You dont have Tokens on the address. You need at least 5 for minting. Probably waiting for more than {NeblioAPIHelpers.MinimumConfirmations} confirmations.", null);
                 else
                     return ("OK", tutxos);
             }
@@ -1098,7 +1098,7 @@ namespace VEDriversLite.Neblio
         {
             if (amount < 0.0005)
                 return (false, "Minimal output splitted coin amount is 0.0005 NEBL.");
-            if (lots < 2 || lots > NeblioTransactionHelpers.MaximumNeblioOutpus)
+            if (lots < 2 || lots > NeblioAPIHelpers.MaximumNeblioOutpus)
                 return (false, "Minimal count of output splitted coin amount is 2. Maximum is 25.");
 
             var totalAmount = amount * lots;
@@ -1216,8 +1216,8 @@ namespace VEDriversLite.Neblio
         /// <returns></returns>
         public async Task<(bool, string)> SplitTokens(string tokenId, IDictionary<string, string> metadata, List<string> receivers, int lots, int amount)
         {
-            if (lots > NeblioTransactionHelpers.MaximumTokensOutpus)
-                return (false, $"Cannot create more than {NeblioTransactionHelpers.MaximumTokensOutpus} lots.");
+            if (lots > NeblioAPIHelpers.MaximumTokensOutpus)
+                return (false, $"Cannot create more than {NeblioAPIHelpers.MaximumTokensOutpus} lots.");
 
             var totalAmount = amount * lots;
             if (!TokensSupplies.TryGetValue(tokenId, out var tsdto))
@@ -1426,8 +1426,8 @@ namespace VEDriversLite.Neblio
                 
                 int cps = coppies;
                 
-                if (maxInLot <= 0 && NeblioTransactionHelpers.MaximumTokensOutpus >= 2)
-                    maxInLot = NeblioTransactionHelpers.MaximumTokensOutpus - 1;
+                if (maxInLot <= 0 && NeblioAPIHelpers.MaximumTokensOutpus >= 2)
+                    maxInLot = NeblioAPIHelpers.MaximumTokensOutpus - 1;
 
                 Console.WriteLine("Start of minting.");
                 int lots = 0;
@@ -2316,8 +2316,8 @@ namespace VEDriversLite.Neblio
                     {
                         if (!((PaymentNFT)p).AlreadySoldItem && !((PaymentNFT)p).Returned)
                         {
-                            var txinfo = await NeblioTransactionHelpers.GetTransactionInfo(p.Utxo);
-                            if (txinfo != null && txinfo.Confirmations > NeblioTransactionHelpers.MinimumConfirmations)
+                            var txinfo = await NeblioAPIHelpers.GetTransactionInfo(p.Utxo);
+                            if (txinfo != null && txinfo.Confirmations > NeblioAPIHelpers.MinimumConfirmations)
                             {
                                 INFT pn = null;
                                 lock (_lock)
