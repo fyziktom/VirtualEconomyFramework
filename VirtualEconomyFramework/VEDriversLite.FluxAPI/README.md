@@ -2,6 +2,9 @@
 
 This is .NET 6.0 API wrapper for [Flux Blockchain](https://runonflux.io/) API
 
+## Nuget Package
+
+You can download the [Nuget package here](https://www.nuget.org/packages/VEFramework.VEDriversLite.FluxAPI)
 
 # Example Usage
 
