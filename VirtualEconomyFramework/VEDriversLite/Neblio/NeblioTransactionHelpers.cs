@@ -43,6 +43,72 @@ namespace VEDriversLite
         /// </summary>
         public static event EventHandler<IEventInfo> NewEventInfo;
 
+
+        /// <summary>
+        /// This function will calculate the fee based of the known lenght of the intputs and the outputs
+        /// If there is the OP_RETURN output it is considered as the customMessage. Please fill it for token transactions.
+        /// Token transaction also will add just for sure one output to calculation of the size for the case there will be some tokens back to original address
+        /// </summary>
+        /// <param name="numOfInputs">Number of input of the transaction "in" vector</param>
+        /// <param name="numOfOutputs">Number of outpus of the transaction "out" vector</param>
+        /// <param name="customMessageInOPReturn">Custom message - "OP_RETURN" output</param>
+        /// <param name="isTokenTransaction">Token transaction will add another output for getting back the tokens</param>
+        /// <returns></returns>
+        public static double CalcFee(int numOfInputs, int numOfOutputs, string customMessageInOPReturn, bool isTokenTransaction)
+        {
+            if (numOfInputs <= 0)
+                numOfInputs = 1;
+            if (numOfOutputs <= 0)
+                numOfOutputs = 1;
+
+            const string exceptionMessage = "Cannot send transaction bigger than 4kB on Neblio network!";
+            var basicFee = MinimumAmount;
+
+            // inputs
+            var blankInput = 41;
+            var inputSignature = 56;
+            var signedInput = blankInput + inputSignature;
+
+            // outputs
+            var outputWithAddress = 34;
+            var emptyOpReturn = 11; // OP_RETURN with custom message with 10 characters had 21 bytes...etc.
+
+            //common properties in each transaction
+            var commonPropertiesSize = 214;
+
+            var expectedSize = signedInput * numOfInputs + outputWithAddress * numOfOutputs + commonPropertiesSize;
+
+            // add custom message if there is some
+            if (!string.IsNullOrEmpty(customMessageInOPReturn))
+            {
+                var zipstr = StringExt.ZipStr(customMessageInOPReturn);
+                expectedSize += emptyOpReturn + zipstr.Length;
+            }
+
+            // Expected outputs for the rest of the coins/tokens
+            expectedSize += outputWithAddress; // NEBL
+            if (isTokenTransaction)
+            {
+                expectedSize += outputWithAddress;
+            }
+
+            double size_m = ((double)expectedSize / 1024);
+            if (size_m > 4)
+            {
+                throw new Exception(exceptionMessage);
+            }
+
+            var fee = basicFee + (int)(size_m) * basicFee;
+
+            if (isTokenTransaction)
+            {
+                fee += basicFee;
+            }
+
+            return fee;
+        }
+
+
         private static (BitcoinAddress, BitcoinSecret) GetAddressAndKeyInternal(EncryptionKey ekey, string password)
         {
             var key = string.Empty;
@@ -246,7 +312,7 @@ namespace VEDriversLite
             data.Metadata.Add(new KeyValuePair<string, string>("SourceUtxo", tutxo.Txid));
             data.Metadata.Add(new KeyValuePair<string, string>("NFT FirstTx", "true"));
 
-            var fee = NeblioAPIHelpers.CalcFee(2, 1 + coppies, JsonConvert.SerializeObject(data.Metadata), true);
+            var fee = CalcFee(2, 1 + coppies, JsonConvert.SerializeObject(data.Metadata), true);
 
             // create and init send token request dto for Neblio API
             SendTokenRequest dto;
@@ -484,7 +550,7 @@ namespace VEDriversLite
 
             metadata.Add("TransactionType", "Token Split");
 
-            var fee = NeblioAPIHelpers.CalcFee(2, lots, JsonConvert.SerializeObject(metadata), true);
+            var fee = CalcFee(2, lots, JsonConvert.SerializeObject(metadata), true);
 
             // create and init send token request dto for Neblio API
             SendTokenRequest dto;
@@ -676,7 +742,7 @@ namespace VEDriversLite
                 throw new Exception("Cannot send transaction, cannot load sender nebl utxo!");
             }
 
-            var fee = NeblioAPIHelpers.CalcFee(2, 1, JsonConvert.SerializeObject(data.Metadata), true);
+            var fee = CalcFee(2, 1, JsonConvert.SerializeObject(data.Metadata), true);
 
             // create and init send token request dto for Neblio API
             SendTokenRequest dto;
@@ -770,7 +836,7 @@ namespace VEDriversLite
                 throw new Exception("Cannot send transaction, cannot load sender nebl utxo!");
             }
 
-            fee = NeblioAPIHelpers.CalcFee(2, 1, JsonConvert.SerializeObject(data.Metadata), true);
+            fee = CalcFee(2, 1, JsonConvert.SerializeObject(data.Metadata), true);
 
             // create and init send token request dto for Neblio API
             SendTokenRequest dto;
@@ -887,7 +953,7 @@ namespace VEDriversLite
             try
             {
 
-                var fee = NeblioAPIHelpers.CalcFee(transaction.Inputs.Count, 1, data.CustomMessage, false);
+                var fee = CalcFee(transaction.Inputs.Count, 1, data.CustomMessage, false);
 
                 var diff = (allNeblInputCoins - data.Amount) - (fee / FromSatToMainRatio);
 
@@ -987,7 +1053,7 @@ namespace VEDriversLite
 
             try
             {
-                var fee = NeblioAPIHelpers.CalcFee(transaction.Inputs.Count, 1, "", false);
+                var fee = CalcFee(transaction.Inputs.Count, 1, "", false);
 
                 var totalAmount = 0.0;
                 for (int i = 0; i < lots; i++)
@@ -1193,7 +1259,7 @@ namespace VEDriversLite
                 //remove old calculated output with the diff
                 transaction.Outputs.RemoveAt(2);
 
-                var fee = NeblioAPIHelpers.CalcFee(transaction.Inputs.Count, 2, JsonConvert.SerializeObject(data.Metadata), true);
+                var fee = CalcFee(transaction.Inputs.Count, 2, JsonConvert.SerializeObject(data.Metadata), true);
                 
                 var amountinSat = Convert.ToUInt64(neblAmount * FromSatToMainRatio);
                 var balanceinSat = Convert.ToUInt64(allNeblInputCoins * FromSatToMainRatio);
@@ -1404,7 +1470,7 @@ namespace VEDriversLite
                 var amountinSat = Convert.ToUInt64(neblAmount * FromSatToMainRatio);
                 var balanceinSat = Convert.ToUInt64(allNeblInputCoins * FromSatToMainRatio);
 
-                fee = NeblioAPIHelpers.CalcFee(transaction.Inputs.Count, 2, JsonConvert.SerializeObject(data.Metadata), true);
+                fee = CalcFee(transaction.Inputs.Count, 2, JsonConvert.SerializeObject(data.Metadata), true);
 
                 if ((amountinSat + fee) > balanceinSat)
                 {
@@ -1630,7 +1696,7 @@ namespace VEDriversLite
 
             dto.Sendutxo.Add(nutxo.Txid + ":" + ((int)nutxo.Index).ToString());
 
-            fee = NeblioAPIHelpers.CalcFee(dto.Sendutxo.Count, 1, JsonConvert.SerializeObject(data.Metadata), true);
+            fee = CalcFee(dto.Sendutxo.Count, 1, JsonConvert.SerializeObject(data.Metadata), true);
             dto.Fee = fee;
 
             // create raw tx
@@ -1692,7 +1758,7 @@ namespace VEDriversLite
                 throw new Exception("Cannot send transaction. cannot create receiver address!");
             }
 
-            fee = NeblioAPIHelpers.CalcFee(data.sendUtxo.Count, 1, JsonConvert.SerializeObject(data.Metadata), true);
+            fee = CalcFee(data.sendUtxo.Count, 1, JsonConvert.SerializeObject(data.Metadata), true);
 
             // create and init send token request dto for Neblio API
             var dto = new SendTokenRequest();
