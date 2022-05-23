@@ -436,7 +436,7 @@ namespace VEDriversLite
             return CommonReturnTypeDto.GetNew<string>();
         }
 
-        private static byte[] HexStringToBytes(string hexString)
+        public static byte[] HexStringToBytes(string hexString)
         {
             if (hexString == null)
             {
