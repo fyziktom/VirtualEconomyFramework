@@ -427,34 +427,13 @@ namespace VEDriversLite
                 if (!string.IsNullOrEmpty(o.Script) && o.Script.Contains("OP_RETURN"))
                 {
                     var message = o.Script.Replace("OP_RETURN ", string.Empty);
-                    var bytes = HexStringToBytes(message);
+                    var bytes = StringExt.HexStringToBytes(message);
                     var msg = Encoding.UTF8.GetString(bytes);
                     return CommonReturnTypeDto.GetNew(true, msg);
                 }
             }
 
             return CommonReturnTypeDto.GetNew<string>();
-        }
-
-        public static byte[] HexStringToBytes(string hexString)
-        {
-            if (hexString == null)
-            {
-                throw new ArgumentNullException("hexString");
-            }
-
-            if (hexString.Length % 2 != 0)
-            {
-                throw new ArgumentException("hexString must have an even length", "hexString");
-            }
-
-            var bytes = new byte[hexString.Length / 2];
-            for (int i = 0; i < bytes.Length; i++)
-            {
-                string currentHex = hexString.Substring(i * 2, 2);
-                bytes[i] = Convert.ToByte(currentHex, 16);
-            }
-            return bytes;
         }
 
         ///////////////////////////////////////////

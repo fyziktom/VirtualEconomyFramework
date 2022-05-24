@@ -17,7 +17,7 @@ namespace VEFrameworkUnitTest.DogeCoin
             var paramName = "hexString";
 
             //Assert
-            var exception = Assert.Throws<ArgumentNullException>(() => DogeTransactionHelpers.HexStringToBytes(null));
+            var exception = Assert.Throws<ArgumentNullException>(() => StringExt.HexStringToBytes(null));
             Assert.Equal(paramName, exception.ParamName);
         }
 
@@ -30,7 +30,7 @@ namespace VEFrameworkUnitTest.DogeCoin
             string message = "hexString must have an even length (Parameter 'hexString')";
 
             //Assert
-            var exception = Assert.Throws<ArgumentException>(() => DogeTransactionHelpers.HexStringToBytes("123"));
+            var exception = Assert.Throws<ArgumentException>(() => StringExt.HexStringToBytes("123"));
             Assert.Equal(message, exception.Message);
         }
 
