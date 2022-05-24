@@ -453,10 +453,7 @@ namespace VEDriversLite.NeblioAPI
 
         private static void AddToTransactionInfoCache(GetTransactionInfoResponse txinfo)
         {
-            if (txinfo == null)
-            {
-                return;
-            }
+            if (txinfo == null) return;
 
             if (txinfo.Confirmations > MinimumConfirmations + 2)
             {
@@ -797,18 +794,18 @@ namespace VEDriversLite.NeblioAPI
                         txinfo = tx;
                     }
                 }
-
-                var data = "";
+                
+                var data = string.Empty;
                 if (mode == "sender")
                 {
-                    data = txinfo.Vin.ToList()[0]?.PreviousOutput?.Addresses.ToList()[0];
+                    data = txinfo?.Vin.ToList()[0]?.PreviousOutput?.Addresses.ToList()[0];
                 }
                 else if (mode == "receiver" )
                 {
-                    data = txinfo.Vout.ToList()[0]?.ScriptPubKey.Addresses.ToList()[0];
+                    data = txinfo?.Vout.ToList()[0]?.ScriptPubKey.Addresses.ToList()[0];
                 }
                                 
-                return data;
+                return data ?? string.Empty;
             }
             catch (Exception ex)
             {
@@ -1080,19 +1077,16 @@ namespace VEDriversLite.NeblioAPI
                     {
                         var shadd = h.Address.Substring(0, 3) + "..." + h.Address.Substring(h.Address.Length - 3);
                         var utxs = await GetAddressNFTsUtxos(h.Address, new List<string>() { tokenId });
-                        if (utxs != null)
+                        if (utxs != null && utxs.Count > 0)
                         {
-                            if (utxs.Count > 0)
+                            var us = utxs.ToList();
+                            resp.Add(new TokenOwnerDto()
                             {
-                                var us = utxs.ToList();
-                                resp.Add(new TokenOwnerDto()
-                                {
-                                    Address = h.Address,
-                                    ShortenAddress = shadd,
-                                    AmountOfNFTs = us.Count,
-                                    AmountOfTokens = (int)h.Amount
-                                });
-                            }
+                                Address = h.Address,
+                                ShortenAddress = shadd,
+                                AmountOfNFTs = us.Count,
+                                AmountOfTokens = (int)(h.Amount ?? 0)
+                            });
                         }
                         i++;
                         if (i > 1000)
