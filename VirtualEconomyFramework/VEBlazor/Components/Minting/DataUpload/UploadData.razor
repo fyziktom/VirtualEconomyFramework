@@ -13,7 +13,7 @@
         </CardTitle>
         <Alert Color="Color.Info" Visible>
             <AlertDescription>
-                You can upload any image file such as <Strong>PNG, BMP, JPEG, MP3, MP4, JSON, PDF, HTML</Strong> For images we recommend you to use the PNG format.
+                You can upload any image file such as <Strong>PNG, BMP, JPEG, MP3, MP4, JSON, PDF, HTML, MMD</Strong> For images we recommend you to use the PNG format.
             </AlertDescription>
         </Alert>
         <Row Flex="Flex.AlignItems.Center">
@@ -134,6 +134,10 @@
                                             else if (item.Type == DataItemType.Mermaid)
                                             {
                                                 <CardImage Source="_content/VEFramework.VEBlazor/images/mermaid-image.png"></CardImage>
+                                            }
+                                            else if (item.Type == DataItemType.BlazorApp)
+                                            {
+                                                <CardImage Source="_content/VEFramework.VEBlazor/images/app-image.png"></CardImage>
                                             }                                            
                                             <CardBody>
                                                 @if (item.Type == DataItemType.AVMedia)

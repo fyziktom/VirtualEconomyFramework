@@ -112,7 +112,7 @@ namespace VEDriversLite.Extensions.WooCommerce
                                                     var resdeposit = await SendDepositPayment(u, ord);
                                                     Console.WriteLine(resdeposit.Item2);
                                                 }
-                                                catch (Exception ex)
+                                                catch
                                                 {
                                                     Console.WriteLine("Cannot set order to processing state.");
                                                 }
@@ -279,7 +279,7 @@ namespace VEDriversLite.Extensions.WooCommerce
                 return new Dictionary<string, double>();
 
             Dictionary<string, double> receiversAmounts = new Dictionary<string, double>();
-            order.line_items.ForEach(async (item) =>
+            order.line_items.ForEach(async (item) => 
             {
                 var authoraddress = string.Empty;
                 var sh = string.Empty;
@@ -299,7 +299,7 @@ namespace VEDriversLite.Extensions.WooCommerce
                             {
                                 var schemeName = nfthash.DogeftInfo.RewardSchemeName;
                                 if (string.IsNullOrEmpty(schemeName))
-                                    schemeName = VEDLDataContext.DepositSchemes.Values.FirstOrDefault().Name;
+                                    schemeName = VEDLDataContext.DepositSchemes.Values.FirstOrDefault()?.Name;
 
                                 if (VEDLDataContext.DepositSchemes.TryGetValue(nfthash.DogeftInfo.RewardSchemeName, out var sch))
                                 {

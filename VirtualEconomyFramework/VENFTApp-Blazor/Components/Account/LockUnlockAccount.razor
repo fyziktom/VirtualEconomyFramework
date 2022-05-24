@@ -55,18 +55,18 @@
     private string password = string.Empty;
     private bool unlockAcocuntModalVisible = false;
 
-    private async Task lockWallet()
+    private void lockWallet()
     {
         AppData.Account.AccountKey.Lock();
         StateHasChanged();
     }
 
-    private async Task unlockWallet()
+    private void unlockWallet()
     {
         unlockAcocuntModalVisible = true;
     }
 
-    private async Task UnlockAccountConfirm(MouseEventArgs e)
+    private void UnlockAccountConfirm(MouseEventArgs e)
     {
         unlockAcocuntModalVisible = false;
 

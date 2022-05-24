@@ -52,7 +52,7 @@ namespace VEDrivers.Security
             {
                 key.Id = new Guid(Id);
             }
-            catch (Exception ex)
+            catch
             {
                 key.Id = new Guid();
             }
@@ -61,7 +61,7 @@ namespace VEDrivers.Security
             {
                 key.RelatedItemId = new Guid(RelatedItemId);
             }
-            catch (Exception ex)
+            catch
             {
                 key.RelatedItemId = new Guid();
             }

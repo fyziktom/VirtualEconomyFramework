@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using VEDriversLite;
 using VEDriversLite.NFT;
 using VEDriversLite.Security;
+using VEDriversLite.NeblioAPI;
 
 namespace VENFTApp_Server
 {
@@ -36,14 +37,14 @@ namespace VENFTApp_Server
 
             var msg = CreateMessage(dto.TxId); // create verification message ASAP because of time relation
 
-            var txi = await NeblioTransactionHelpers.GetTransactionInfo(dto.TxId);
+            var txi = await NeblioAPIHelpers.GetTransactionInfo(dto.TxId);
 
             var Time = TimeHelpers.UnixTimestampToDateTime((double)txi.Blocktime);
             bool isYesterdayOrOlder = DateTime.Today - Time.Date >= TimeSpan.FromDays(1);
             if (isYesterdayOrOlder)
                 throw new Exception("This ticket was used earlier than today. Or it is not used at all.");
 
-            var metadata = await NeblioTransactionHelpers.GetTransactionMetadata(NFTHelpers.TokenId, dto.TxId);
+            var metadata = await NeblioAPIHelpers.GetTransactionMetadata(NFTHelpers.TokenId, dto.TxId);
             if (metadata.TryGetValue("NFT", out var isnft))
                 if (isnft != "true")
                     throw new Exception("This is not NFT");
@@ -89,12 +90,12 @@ namespace VENFTApp_Server
                         throw new Exception("Signature of the NFT is not valid.");
 
                     // check if the NFT is still as utxo on the address
-                    var utxos = await NeblioTransactionHelpers.GetAddressUtxosObjects(add.ToString());
+                    var utxos = await NeblioAPIHelpers.GetAddressUtxosObjects(add.ToString());
                     if (utxos.FirstOrDefault(u => (u.Txid == dto.TxId && u.Value == 10000 && u.Tokens.Count > 0 && u.Tokens.FirstOrDefault()?.Amount == 1)) == null)
                         throw new Exception("This ticket is not available on the address as spendable.");
 
                     // check if in previous transaction the ticket was unused
-                    var prevmeta = await NeblioTransactionHelpers.GetTransactionMetadata(NFTHelpers.TokenId, inpt.PrevOut.Hash.ToString());
+                    var prevmeta = await NeblioAPIHelpers.GetTransactionMetadata(NFTHelpers.TokenId, inpt.PrevOut.Hash.ToString());
                     if (prevmeta.TryGetValue("NFT", out var isprevnft))
                         if (isprevnft != "true")
                             throw new Exception("This is not NFT");
@@ -137,7 +138,7 @@ namespace VENFTApp_Server
             var mintingAddress = string.Empty;
             while (!found)
             {
-                var info = await NeblioTransactionHelpers.GetTransactionInfo(intxid);
+                var info = await NeblioAPIHelpers.GetTransactionInfo(intxid);
 
                 if (info != null && info.Vin != null && info.Vin.Count > 0)
                 {
@@ -147,7 +148,7 @@ namespace VENFTApp_Server
                         var vintok = vin.Tokens.ToArray()?[0];
                         if (vintok != null)
                         {
-                            var meta = await NeblioTransactionHelpers.GetTransactionMetadata(NFTHelpers.TokenId, intxid);
+                            var meta = await NeblioAPIHelpers.GetTransactionMetadata(NFTHelpers.TokenId, intxid);
                             if (meta.TryGetValue("NFT", out var isnft))
                                 if (isnft != "true")
                                     throw new Exception("This is not NFT");

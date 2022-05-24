@@ -12,6 +12,7 @@ using VEDriversLite.NFT;
 using VEDriversLite.NFT.Coruzant;
 using VENFTApp_Server.Common;
 using static VEDriversLite.AccountHandler;
+using VEDriversLite.NeblioAPI;
 
 namespace VENFTApp_Server.Controllers
 {
@@ -162,7 +163,7 @@ namespace VENFTApp_Server.Controllers
                 var resp = new BroadcastTransactionResponseDto();
                 if (data.network == "neblio")
                 {
-                    var txid = await NeblioTransactionHelpers.BroadcastSignedTransaction(data.tx_hex);
+                    var txid = await NeblioAPIHelpers.BroadcastSignedTransaction(data.tx_hex);
                     if (!string.IsNullOrEmpty(txid))
                     {
                         resp.data = new BroadcastDataResponseDto() { network = "neblio", txid = txid };

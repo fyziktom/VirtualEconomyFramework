@@ -103,7 +103,7 @@ namespace VEDriversLite.NFT
         /// <summary>
         /// Shorten hash including index number
         /// </summary>
-        public string ShortHash => $"{NeblioTransactionHelpers.ShortenTxId(Utxo, false, 16)}:{UtxoIndex}";
+        public string ShortHash => $"{NeblioAPIHelpers.ShortenTxId(Utxo, false, 16)}:{UtxoIndex}";
         /// <summary>
         /// NFT Origin transaction hash - minting transaction in the case of original NFTs (Image, Music, Ticket)
         /// </summary>
@@ -212,7 +212,7 @@ namespace VEDriversLite.NFT
         public bool IsSpendable()
         {
             if (TxDetails != null)
-                return (TxDetails.Confirmations > NeblioTransactionHelpers.MinimumConfirmations);
+                return (TxDetails.Confirmations > NeblioAPIHelpers.MinimumConfirmations);
             else
                 return false;
         }
@@ -545,7 +545,7 @@ namespace VEDriversLite.NFT
                         return true;
                     }
                 }
-                catch (Exception ex)
+                catch
                 {
                     Console.WriteLine("Cannot download the Image Preview data");
                 }
@@ -570,7 +570,7 @@ namespace VEDriversLite.NFT
                         return true;
                     }
                 }
-                catch (Exception ex)
+                catch
                 {
                     Console.WriteLine("Cannot download the Image data");
                 }
@@ -668,7 +668,7 @@ namespace VEDriversLite.NFT
         /// <returns></returns>
         public async Task StartRefreshingTxData(int interval = 5000)
         {
-            if (TxDetails.Confirmations < (NeblioTransactionHelpers.MinimumConfirmations + 2))
+            if (TxDetails.Confirmations < (NeblioAPIHelpers.MinimumConfirmations + 2))
             {
                 TxDetails.Confirmations = 0;
                 TxDetails.Time = 0;
@@ -677,7 +677,7 @@ namespace VEDriversLite.NFT
 
                 try
                 {
-                    TxDetails = await NeblioTransactionHelpers.GetTransactionInfo(Utxo);
+                    TxDetails = await NeblioAPIHelpers.GetTransactionInfo(Utxo);
                     TxDataRefreshed?.Invoke(this, TxDetails);
                 }
                 catch (Exception ex)
@@ -691,10 +691,10 @@ namespace VEDriversLite.NFT
                     {
                         try
                         {
-                            var txi = await NeblioTransactionHelpers.GetTransactionInfo(Utxo);
+                            var txi = await NeblioAPIHelpers.GetTransactionInfo(Utxo);
                             TxDetails = txi;
                             TxDataRefreshed?.Invoke(this, TxDetails);
-                            if (TxDetails.Confirmations > (NeblioTransactionHelpers.MinimumConfirmations))
+                            if (TxDetails.Confirmations > (NeblioAPIHelpers.MinimumConfirmations))
                                 await StopRefreshingData();
                         }
                         catch (Exception ex)

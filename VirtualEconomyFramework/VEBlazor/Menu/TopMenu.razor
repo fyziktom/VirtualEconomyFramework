@@ -108,6 +108,6 @@
     {
         if (NotificationService != null)
             await NotificationService.Success( "Account Unlocked :)", "Unlocked" );
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
     }
 }

@@ -14,9 +14,9 @@ namespace VEFrameworkUnitTest.Neblio.Common
 
         public static void CleanNeblioTransactionHelpersCache()
         {
-            NeblioTransactionHelpers.AddressInfoCache = new ConcurrentDictionary<string, (DateTime, GetAddressInfoResponse)>();
-            NeblioTransactionHelpers.TransactionInfoCache = new ConcurrentDictionary<string, GetTransactionInfoResponse>();
-            NeblioTransactionHelpers.TokenTxMetadataCache = new ConcurrentDictionary<string, GetTokenMetadataResponse>(); 
+            NeblioAPIHelpers.AddressInfoCache = new ConcurrentDictionary<string, (DateTime, GetAddressInfoResponse)>();
+            NeblioAPIHelpers.TransactionInfoCache = new ConcurrentDictionary<string, GetTransactionInfoResponse>();
+            NeblioAPIHelpers.TokenTxMetadataCache = new ConcurrentDictionary<string, GetTokenMetadataResponse>(); 
         }
 
     }

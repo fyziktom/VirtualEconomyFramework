@@ -130,6 +130,10 @@ namespace VEDriversLite.NFT
         /// Xray Image
         /// </summary>
         XrayImage = 1896,
+        /// <summary>
+        /// Application in NFT
+        /// </summary>
+        App = 5000
 
 
     }

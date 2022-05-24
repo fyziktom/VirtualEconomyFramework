@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using VEDriversLite.NeblioAPI;
 
 namespace VEDriversLite.NFT.Dto
 {
@@ -64,7 +65,7 @@ namespace VEDriversLite.NFT.Dto
         /// <summary>
         /// Shorten hash of the NFT
         /// </summary>
-        public string ShortHash => $"{NeblioTransactionHelpers.ShortenTxId(TxId, false, 16)}:{Index}";
+        public string ShortHash => $"{NeblioAPIHelpers.ShortenTxId(TxId, false, 16)}:{Index}";
 
         /// <summary>
         /// Get shorten hash of the NFT
@@ -75,7 +76,7 @@ namespace VEDriversLite.NFT.Dto
         public static string GetShortHash(string txid, int index = 0)
         {
             //return String.Format("{0:X}", ($"{txid}:{index}").GetHashCode());
-            return $"{NeblioTransactionHelpers.ShortenTxId(txid, false, 16)}:{index}";
+            return $"{NeblioAPIHelpers.ShortenTxId(txid, false, 16)}:{index}";
         }
     }
 

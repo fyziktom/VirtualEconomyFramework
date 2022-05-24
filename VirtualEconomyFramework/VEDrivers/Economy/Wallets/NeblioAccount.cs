@@ -29,7 +29,6 @@ namespace VEDrivers.Economy.Wallets
         {
             Tokens = new ConcurrentDictionary<string, IToken>();
             Transactions = new ConcurrentDictionary<string, ITransaction>();
-            NumberOfTransaction = 0;
             Type = AccountTypes.Neblio;
             //client = (IClient)new Client(httpClient) { BaseUrl = NeblioCrypto.BaseURL };
 
@@ -47,14 +46,6 @@ namespace VEDrivers.Economy.Wallets
         public override event EventHandler<NewTransactionDTO> ConfirmedTransaction;
 
         private LastTxSaveDto lastTxSaveDto;
-
-        public double NumberOfLoadedTransaction 
-        { 
-            get
-            {
-                return Transactions.Count;
-            }
-        }
 
         [JsonIgnore]
         public VEDriversLite.NeblioAccount VEDLNeblioAccount { get; set; } = new VEDriversLite.NeblioAccount();
@@ -357,7 +348,7 @@ namespace VEDrivers.Economy.Wallets
                                     initNumberOfTx = addrinfo.Transactions.Count;
                             }
 
-                            NumberOfTransaction = addrinfo.Transactions.Count;
+                            //NumberOfTransaction = addrinfo.Transactions.Count;
 
                             try
                             {

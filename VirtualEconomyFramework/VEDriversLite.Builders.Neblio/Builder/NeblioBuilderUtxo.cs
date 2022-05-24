@@ -56,7 +56,7 @@ namespace VEDriversLite.Builders.Neblio
             {
                 foreach (var tok in Utxo.Tokens)
                 {
-                    var ti = await NeblioTransactionHelpers.GetTokenMetadata(tok.TokenId);
+                    var ti = await NeblioAPIHelpers.GetTokenMetadata(tok.TokenId);
                     if (ti != null) 
                     {
                         TokenInfo.Add(ti);
@@ -65,7 +65,7 @@ namespace VEDriversLite.Builders.Neblio
                 }
             }
 
-            TxInfo = await NeblioTransactionHelpers.GetTransactionInfo(Utxo.Txid);
+            TxInfo = await NeblioAPIHelpers.GetTransactionInfo(Utxo.Txid);
         }
     }
 }

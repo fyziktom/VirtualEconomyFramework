@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using VEDriversLite.NFT.Coruzant;
 using VEDriversLite.NFT.DevicesNFTs;
 using VEDriversLite.NFT.Imaging.Xray;
+using VEDriversLite.NeblioAPI;
 
 namespace VEDriversLite.NFT
 {
@@ -115,6 +116,9 @@ namespace VEDriversLite.NFT
                         case "NFT XrayImage":
                             type = NFTTypes.XrayImage;
                             break;
+                        case "NFT App":
+                            type = NFTTypes.App;
+                            break;
                     }
                     return type;
                 }
@@ -153,7 +157,7 @@ namespace VEDriversLite.NFT
             INFT nft = null;
 
             if (txinfo == null)
-                txinfo = await NeblioTransactionHelpers.GetTransactionInfo(utxo);
+                txinfo = await NeblioAPIHelpers.GetTransactionInfo(utxo);
             if (txinfo == null)
                 return null;
             if (txinfo.Vout == null)
@@ -202,7 +206,7 @@ namespace VEDriversLite.NFT
                 }
             }
 
-            var meta = await NeblioTransactionHelpers.GetTransactionMetadata(tokid, utxo);
+            var meta = await NeblioAPIHelpers.GetTransactionMetadata(tokid, utxo);
 
             if (meta == null)
                 return null;
@@ -480,6 +484,14 @@ namespace VEDriversLite.NFT
                     nft.UtxoIndex = utxoindex;
                     await (nft as XrayImageNFT).LoadLastData(meta);
                     break;
+                case NFTTypes.App:
+                    nft = new AppNFT(utxo);
+                    nft.TokenId = tokid;
+                    nft.Time = Time;
+                    nft.TxDetails = txinfo;
+                    nft.UtxoIndex = utxoindex;
+                    await (nft as AppNFT).LoadLastData(meta);
+                    break;
             }
 
             if (VEDLDataContext.AllowCache && tokid == NFTHelpers.TokenId && VEDLDataContext.NFTCache.Count < VEDLDataContext.MaxCachedItems)
@@ -625,6 +637,10 @@ namespace VEDriversLite.NFT
                     nft = new XrayImageNFT(NFT.Utxo);
                     await nft.Fill(NFT);
                     return nft;
+                case NFTTypes.App:
+                    nft = new AppNFT(NFT.Utxo);
+                    await nft.Fill(NFT);
+                    return nft;
             }
 
             return null;
@@ -663,7 +679,7 @@ namespace VEDriversLite.NFT
 
             if (txinfo == null)
             {
-                txinfo = await NeblioTransactionHelpers.GetTransactionInfo(utxo);
+                txinfo = await NeblioAPIHelpers.GetTransactionInfo(utxo);
                 if (txinfo == null)
                     return null;
                 if (txinfo.Vout == null)
@@ -759,6 +775,9 @@ namespace VEDriversLite.NFT
                     break;
                 case NFTTypes.XrayImage:
                     nft = new XrayImageNFT(utxo);
+                    break;
+                case NFTTypes.App:
+                    nft = new AppNFT(utxo);
                     break;
             }
 

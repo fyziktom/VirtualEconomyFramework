@@ -76,7 +76,7 @@
         (NFT as TicketNFT).Used = true;
 
         Saving = true;
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
 
         if (!IsSubAccount)
             SaveResult = await AppData.Account.UseNFTTicket(NFT);
@@ -89,7 +89,7 @@
         SaveFinished = false;
 
         Saving = false;
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
 
         //close automatically after 2 seconds
         await Task.Delay(2000);

@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using VEDriversLite.Bookmarks;
 using VEDriversLite.NFT;
+using VEDriversLite.NeblioAPI;
 
 namespace VEDriversLite.Messaging
 {
@@ -24,7 +25,7 @@ namespace VEDriversLite.Messaging
         public MessageTab(string address)
         {
             Address = address;
-            ShortAddress = NeblioTransactionHelpers.ShortenAddress(address);
+            ShortAddress = NeblioAPIHelpers.ShortenAddress(address);
         }
         /// <summary>
         /// Message tab is selected

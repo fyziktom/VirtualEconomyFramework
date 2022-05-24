@@ -68,7 +68,7 @@
     {
         if (NFT == null) return;
         Destroying = true;
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
         
         if (NotificationService != null)
             await NotificationService.Info( "Destroying data...", "Destroying" );
@@ -90,7 +90,7 @@
             else
                 await NotificationService.Warning( DestroyResult.Item2, "Cannot destroy" );
         }
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
 
         //close automatically after 2 seconds
         await Task.Delay(2000);
