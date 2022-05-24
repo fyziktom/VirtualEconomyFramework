@@ -21580,6 +21580,96 @@ references:
   commentId: N:VEDriversLite.NFT
   fullName: VEDriversLite.NFT
   nameWithType: VEDriversLite.NFT
+- uid: VEDriversLite.NFT.AppNFT
+  name: AppNFT
+  href: api/VEDriversLite.NFT.AppNFT.html
+  commentId: T:VEDriversLite.NFT.AppNFT
+  fullName: VEDriversLite.NFT.AppNFT
+  nameWithType: AppNFT
+- uid: VEDriversLite.NFT.AppNFT.#ctor(System.String)
+  name: AppNFT(String)
+  href: api/VEDriversLite.NFT.AppNFT.html#VEDriversLite_NFT_AppNFT__ctor_System_String_
+  commentId: M:VEDriversLite.NFT.AppNFT.#ctor(System.String)
+  fullName: VEDriversLite.NFT.AppNFT.AppNFT(System.String)
+  nameWithType: AppNFT.AppNFT(String)
+- uid: VEDriversLite.NFT.AppNFT.#ctor*
+  name: AppNFT
+  href: api/VEDriversLite.NFT.AppNFT.html#VEDriversLite_NFT_AppNFT__ctor_
+  commentId: Overload:VEDriversLite.NFT.AppNFT.#ctor
+  isSpec: "True"
+  fullName: VEDriversLite.NFT.AppNFT.AppNFT
+  nameWithType: AppNFT.AppNFT
+- uid: VEDriversLite.NFT.AppNFT.Fill(VEDriversLite.NFT.INFT)
+  name: Fill(INFT)
+  href: api/VEDriversLite.NFT.AppNFT.html#VEDriversLite_NFT_AppNFT_Fill_VEDriversLite_NFT_INFT_
+  commentId: M:VEDriversLite.NFT.AppNFT.Fill(VEDriversLite.NFT.INFT)
+  fullName: VEDriversLite.NFT.AppNFT.Fill(VEDriversLite.NFT.INFT)
+  nameWithType: AppNFT.Fill(INFT)
+- uid: VEDriversLite.NFT.AppNFT.Fill*
+  name: Fill
+  href: api/VEDriversLite.NFT.AppNFT.html#VEDriversLite_NFT_AppNFT_Fill_
+  commentId: Overload:VEDriversLite.NFT.AppNFT.Fill
+  isSpec: "True"
+  fullName: VEDriversLite.NFT.AppNFT.Fill
+  nameWithType: AppNFT.Fill
+- uid: VEDriversLite.NFT.AppNFT.GetLastData
+  name: GetLastData()
+  href: api/VEDriversLite.NFT.AppNFT.html#VEDriversLite_NFT_AppNFT_GetLastData
+  commentId: M:VEDriversLite.NFT.AppNFT.GetLastData
+  fullName: VEDriversLite.NFT.AppNFT.GetLastData()
+  nameWithType: AppNFT.GetLastData()
+- uid: VEDriversLite.NFT.AppNFT.GetLastData*
+  name: GetLastData
+  href: api/VEDriversLite.NFT.AppNFT.html#VEDriversLite_NFT_AppNFT_GetLastData_
+  commentId: Overload:VEDriversLite.NFT.AppNFT.GetLastData
+  isSpec: "True"
+  fullName: VEDriversLite.NFT.AppNFT.GetLastData
+  nameWithType: AppNFT.GetLastData
+- uid: VEDriversLite.NFT.AppNFT.GetMetadata(System.String,System.String,System.String)
+  name: GetMetadata(String, String, String)
+  href: api/VEDriversLite.NFT.AppNFT.html#VEDriversLite_NFT_AppNFT_GetMetadata_System_String_System_String_System_String_
+  commentId: M:VEDriversLite.NFT.AppNFT.GetMetadata(System.String,System.String,System.String)
+  fullName: VEDriversLite.NFT.AppNFT.GetMetadata(System.String, System.String, System.String)
+  nameWithType: AppNFT.GetMetadata(String, String, String)
+- uid: VEDriversLite.NFT.AppNFT.GetMetadata*
+  name: GetMetadata
+  href: api/VEDriversLite.NFT.AppNFT.html#VEDriversLite_NFT_AppNFT_GetMetadata_
+  commentId: Overload:VEDriversLite.NFT.AppNFT.GetMetadata
+  isSpec: "True"
+  fullName: VEDriversLite.NFT.AppNFT.GetMetadata
+  nameWithType: AppNFT.GetMetadata
+- uid: VEDriversLite.NFT.AppNFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.String})
+  name: ParseOriginData(IDictionary<String, String>)
+  href: api/VEDriversLite.NFT.AppNFT.html#VEDriversLite_NFT_AppNFT_ParseOriginData_System_Collections_Generic_IDictionary_System_String_System_String__
+  commentId: M:VEDriversLite.NFT.AppNFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.String})
+  name.vb: ParseOriginData(IDictionary(Of String, String))
+  fullName: VEDriversLite.NFT.AppNFT.ParseOriginData(System.Collections.Generic.IDictionary<System.String, System.String>)
+  fullName.vb: VEDriversLite.NFT.AppNFT.ParseOriginData(System.Collections.Generic.IDictionary(Of System.String, System.String))
+  nameWithType: AppNFT.ParseOriginData(IDictionary<String, String>)
+  nameWithType.vb: AppNFT.ParseOriginData(IDictionary(Of String, String))
+- uid: VEDriversLite.NFT.AppNFT.ParseOriginData*
+  name: ParseOriginData
+  href: api/VEDriversLite.NFT.AppNFT.html#VEDriversLite_NFT_AppNFT_ParseOriginData_
+  commentId: Overload:VEDriversLite.NFT.AppNFT.ParseOriginData
+  isSpec: "True"
+  fullName: VEDriversLite.NFT.AppNFT.ParseOriginData
+  nameWithType: AppNFT.ParseOriginData
+- uid: VEDriversLite.NFT.AppNFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.String})
+  name: ParseSpecific(IDictionary<String, String>)
+  href: api/VEDriversLite.NFT.AppNFT.html#VEDriversLite_NFT_AppNFT_ParseSpecific_System_Collections_Generic_IDictionary_System_String_System_String__
+  commentId: M:VEDriversLite.NFT.AppNFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.String})
+  name.vb: ParseSpecific(IDictionary(Of String, String))
+  fullName: VEDriversLite.NFT.AppNFT.ParseSpecific(System.Collections.Generic.IDictionary<System.String, System.String>)
+  fullName.vb: VEDriversLite.NFT.AppNFT.ParseSpecific(System.Collections.Generic.IDictionary(Of System.String, System.String))
+  nameWithType: AppNFT.ParseSpecific(IDictionary<String, String>)
+  nameWithType.vb: AppNFT.ParseSpecific(IDictionary(Of String, String))
+- uid: VEDriversLite.NFT.AppNFT.ParseSpecific*
+  name: ParseSpecific
+  href: api/VEDriversLite.NFT.AppNFT.html#VEDriversLite_NFT_AppNFT_ParseSpecific_
+  commentId: Overload:VEDriversLite.NFT.AppNFT.ParseSpecific
+  isSpec: "True"
+  fullName: VEDriversLite.NFT.AppNFT.ParseSpecific
+  nameWithType: AppNFT.ParseSpecific
 - uid: VEDriversLite.NFT.ClassOfNFTEvent
   name: ClassOfNFTEvent
   href: api/VEDriversLite.NFT.ClassOfNFTEvent.html
@@ -25159,12 +25249,24 @@ references:
   commentId: F:VEDriversLite.NFT.Dto.DataItemType.AVMedia
   fullName: VEDriversLite.NFT.Dto.DataItemType.AVMedia
   nameWithType: DataItemType.AVMedia
+- uid: VEDriversLite.NFT.Dto.DataItemType.BlazorApp
+  name: BlazorApp
+  href: api/VEDriversLite.NFT.Dto.DataItemType.html#VEDriversLite_NFT_Dto_DataItemType_BlazorApp
+  commentId: F:VEDriversLite.NFT.Dto.DataItemType.BlazorApp
+  fullName: VEDriversLite.NFT.Dto.DataItemType.BlazorApp
+  nameWithType: DataItemType.BlazorApp
 - uid: VEDriversLite.NFT.Dto.DataItemType.HTML
   name: HTML
   href: api/VEDriversLite.NFT.Dto.DataItemType.html#VEDriversLite_NFT_Dto_DataItemType_HTML
   commentId: F:VEDriversLite.NFT.Dto.DataItemType.HTML
   fullName: VEDriversLite.NFT.Dto.DataItemType.HTML
   nameWithType: DataItemType.HTML
+- uid: VEDriversLite.NFT.Dto.DataItemType.HTMLApp
+  name: HTMLApp
+  href: api/VEDriversLite.NFT.Dto.DataItemType.html#VEDriversLite_NFT_Dto_DataItemType_HTMLApp
+  commentId: F:VEDriversLite.NFT.Dto.DataItemType.HTMLApp
+  fullName: VEDriversLite.NFT.Dto.DataItemType.HTMLApp
+  nameWithType: DataItemType.HTMLApp
 - uid: VEDriversLite.NFT.Dto.DataItemType.Image
   name: Image
   href: api/VEDriversLite.NFT.Dto.DataItemType.html#VEDriversLite_NFT_Dto_DataItemType_Image
@@ -29568,6 +29670,19 @@ references:
   commentId: E:VEDriversLite.NFT.NFTHelpers.NFTLoadingStateChanged
   fullName: VEDriversLite.NFT.NFTHelpers.NFTLoadingStateChanged
   nameWithType: NFTHelpers.NFTLoadingStateChanged
+- uid: VEDriversLite.NFT.NFTHelpers.PinToInfuraAsync(System.String)
+  name: PinToInfuraAsync(String)
+  href: api/VEDriversLite.NFT.NFTHelpers.html#VEDriversLite_NFT_NFTHelpers_PinToInfuraAsync_System_String_
+  commentId: M:VEDriversLite.NFT.NFTHelpers.PinToInfuraAsync(System.String)
+  fullName: VEDriversLite.NFT.NFTHelpers.PinToInfuraAsync(System.String)
+  nameWithType: NFTHelpers.PinToInfuraAsync(String)
+- uid: VEDriversLite.NFT.NFTHelpers.PinToInfuraAsync*
+  name: PinToInfuraAsync
+  href: api/VEDriversLite.NFT.NFTHelpers.html#VEDriversLite_NFT_NFTHelpers_PinToInfuraAsync_
+  commentId: Overload:VEDriversLite.NFT.NFTHelpers.PinToInfuraAsync
+  isSpec: "True"
+  fullName: VEDriversLite.NFT.NFTHelpers.PinToInfuraAsync
+  nameWithType: NFTHelpers.PinToInfuraAsync
 - uid: VEDriversLite.NFT.NFTHelpers.ProfileNFTFound
   name: ProfileNFTFound
   href: api/VEDriversLite.NFT.NFTHelpers.html#VEDriversLite_NFT_NFTHelpers_ProfileNFTFound
@@ -29618,6 +29733,12 @@ references:
   commentId: T:VEDriversLite.NFT.NFTTypes
   fullName: VEDriversLite.NFT.NFTTypes
   nameWithType: NFTTypes
+- uid: VEDriversLite.NFT.NFTTypes.App
+  name: App
+  href: api/VEDriversLite.NFT.NFTTypes.html#VEDriversLite_NFT_NFTTypes_App
+  commentId: F:VEDriversLite.NFT.NFTTypes.App
+  fullName: VEDriversLite.NFT.NFTTypes.App
+  nameWithType: NFTTypes.App
 - uid: VEDriversLite.NFT.NFTTypes.CoruzantArticle
   name: CoruzantArticle
   href: api/VEDriversLite.NFT.NFTTypes.html#VEDriversLite_NFT_NFTTypes_CoruzantArticle
