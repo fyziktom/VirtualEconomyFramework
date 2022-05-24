@@ -84,14 +84,14 @@
         }
         await base.OnAfterRenderAsync( firstRender );
     }
-    private void RefreshedHandler( object sender, EventArgs e )
+    private async void RefreshedHandler( object sender, EventArgs e )
     {
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
     }  
 
-    private void LockUnlockAccountHandler(object sender, bool e)
+    private async void LockUnlockAccountHandler(object sender, bool e)
     {
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
     }
 
     private async Task CheckAccount()
@@ -103,19 +103,19 @@
             IsAccountStored = true;
     }
 
-    void AccountCreatedHandler( string e )
+    async Task AccountCreatedHandler( string e )
     {
         Address = e;
         IsAccountStored = true;
         NotificationService?.Success( "Account Created :)", "Created" );
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
     }
     
-    void AccountImportedHandler( string e )
+    async Task AccountImportedHandler( string e )
     {
         Address = e;
         IsAccountStored = true;
         NotificationService?.Success( "Account Imported :)", "Imported" );
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
     }    
 }

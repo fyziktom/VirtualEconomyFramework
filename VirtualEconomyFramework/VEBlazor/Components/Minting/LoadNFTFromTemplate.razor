@@ -79,7 +79,7 @@
             if (NFT != null)
             {
                 if (nftCard != null)
-                    nftCard.LoadNFT(NFT);
+                    await nftCard.LoadNFT(NFT);
             }
             else
             {
@@ -88,7 +88,7 @@
             }
             loading = false;
         }
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
     }
 
     async Task OpenNFTDetailsRequestHandler(INFT nft)
@@ -99,14 +99,14 @@
         }
     }
 
-    public bool Show(INFT nft = null)
+    public async Task<bool> Show(INFT nft = null)
     {
         if (NFT == null && nft == null)
             return false;
         else if (NFT == null && nft != null)
         {
             NFT = nft;
-            StateHasChanged();
+            await InvokeAsync(StateHasChanged);
         }   
         LoadNFTModal?.Show();
         return true;
@@ -124,14 +124,14 @@
             if (await MessageService.Confirm("Are you sure you want to load the NFT to Mintin Form? It will remove existing data in the form?", "Load NFT Template"))
             {
                 loadingImage = true;
-                StateHasChanged();
+                await InvokeAsync(StateHasChanged);
 
                 if (!string.IsNullOrEmpty(NFT.ImageLink))
                     NFT.ImageData = await NFTHelpers.IPFSDownloadFromInfuraAsync(NFTHelpers.GetHashFromIPFSLink(NFT.ImageLink));
                 await OnLoadNFTTemplate.InvokeAsync(NFT);
                 openNFTDetailsFactory?.HideNFTDetails();
                 loadingImage = false;
-                StateHasChanged();
+                await InvokeAsync(StateHasChanged);
                 Hide();
             }
         }        

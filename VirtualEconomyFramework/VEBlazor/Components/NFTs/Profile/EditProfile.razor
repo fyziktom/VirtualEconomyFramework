@@ -219,7 +219,7 @@
         {
             Console.WriteLine( "Profile saved. Txid: " + result );
             NFT.Utxo = result;
-            StateHasChanged();
+            await InvokeAsync(StateHasChanged);
             await Task.Delay(2000); //to let read success message in modal before hide
             
             await NFTChanged.InvokeAsync( NFT );
@@ -236,6 +236,6 @@
         if (PageProgressService != null)
             await PageProgressService.Go( -1 );
         mintingChanges = false;
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
     }
 }

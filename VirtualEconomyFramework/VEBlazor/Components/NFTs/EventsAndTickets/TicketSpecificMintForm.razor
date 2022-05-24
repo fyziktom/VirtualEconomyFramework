@@ -218,7 +218,7 @@
 
     async Task onLoadNFTTemplateHandler( INFT nft )
     {
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
         await OnLoadNFTTemplate.InvokeAsync( nft );
     }
 }

@@ -50,10 +50,10 @@
             //if (AddnewRef != null)
                 //await AddnewRef.RefreshImageInUploadComponent();
             if (xrayParamsFormRef != null)
-                xrayParamsFormRef.SetValues((AppData.GetMintingNFTTab().NFT as XrayImageNFT).XrayParams.Voltage,
-                                            (AppData.GetMintingNFTTab().NFT as XrayImageNFT).XrayParams.Current,
-                                            (AppData.GetMintingNFTTab().NFT as XrayImageNFT).XrayParams.ExposureTime);
-            StateHasChanged();
+                await xrayParamsFormRef.SetValues( ( AppData.GetMintingNFTTab().NFT as XrayImageNFT ).XrayParams.Voltage,
+                                            ( AppData.GetMintingNFTTab().NFT as XrayImageNFT ).XrayParams.Current,
+                                            ( AppData.GetMintingNFTTab().NFT as XrayImageNFT ).XrayParams.ExposureTime );
+           await InvokeAsync(StateHasChanged);
         }
     }
 }

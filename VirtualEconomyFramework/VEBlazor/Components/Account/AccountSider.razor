@@ -172,28 +172,28 @@
     {
         AppData.Account.Refreshed -= RefreshedHandler;
         AppData.Account.Refreshed += RefreshedHandler;   
-        nftPaymentsList?.Load();
+        await nftPaymentsList.Load();
         await base.OnInitializedAsync();
     }
 
-    void RefreshedHandler(object? sender, EventArgs e)
+    async void RefreshedHandler(object? sender, EventArgs e)
     {
-        OnSelectedTabChanged(selectedTab);
-        StateHasChanged();
+        await OnSelectedTabChanged(selectedTab);
+        await InvokeAsync(StateHasChanged);
     }
 
-    void OnSelectedTabChanged( string name )
+    async Task OnSelectedTabChanged( string name )
     {
         selectedTab = name;
         if (name == "payments")
-            nftPaymentsList?.Load();
+            await nftPaymentsList.Load();
         else if (name == "receipts")
-            nftReceiptsList?.Load();
+            await nftReceiptsList.Load();
     }    
     
-    void addNewTransaction()
+    Task addNewTransaction()
     {
-        sendNeblioTxRef?.Show();
+        return sendNeblioTxRef.Show();
     }  
     async Task addNewBookmark()
     {

@@ -88,7 +88,7 @@ else if (NFT.Type == NFTTypes.Image ||
     {
         if (nft == null) return;
         NFT = nft;
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
         await Task.Delay(50);
         
         switch(nft.Type)

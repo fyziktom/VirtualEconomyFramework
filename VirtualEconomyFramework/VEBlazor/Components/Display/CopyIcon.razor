@@ -38,9 +38,9 @@ else
     private async Task copyCodeToClipboardButtonTextEfect()
     {
         copyTextButtonCoppied = true;
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
         await Task.Delay( 1000 );
         copyTextButtonCoppied = false;
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
     }
 }
