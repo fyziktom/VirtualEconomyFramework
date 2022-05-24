@@ -11,7 +11,7 @@
 <Row Margin="Margin.Is3.FromBottom.Is3.FromTop" Flex="Flex.JustifyContent.Between">
     <Column>
         <ErrorBoundary>
-            <AccountProfile Profile="@AppData.Account.Profile" />
+            <AccountProfile NFT="@(AppData.Account.Profile as INFT)" NFTChanged="@NFTChangedHandler" />
         </ErrorBoundary>
     </Column>
     <Column>
@@ -190,6 +190,12 @@
         else if (name == "receipts")
             nftReceiptsList?.Load();
     }    
+    
+    void NFTChangedHandler( INFT e )
+    {
+        if (e != null && e.Type == NFTTypes.Profile)
+            AppData.Account.Profile = e as ProfileNFT;
+    }
     
     void addNewTransaction()
     {
