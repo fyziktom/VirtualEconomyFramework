@@ -14,7 +14,6 @@ namespace VEDrivers.Economy.Tokens
             {
                 case TokenTypes.Common:
                     return null;
-                    break;
                 case TokenTypes.NTP1:
                     var tok = new NeblioNTP1Token("") { Name = name, Symbol = symbol, ActualBalance = totalbalance }; // todo get Id by symbol
                     return tok;
@@ -29,7 +28,6 @@ namespace VEDrivers.Economy.Tokens
             {
                 case TokenTypes.Common:
                     return null;
-                    break;
                 case TokenTypes.NTP1:
                     var tok = new NeblioNTP1Token(tokenId) { Name = name, Id = tokenId, ActualBalance = totalbalance };
                     return tok;

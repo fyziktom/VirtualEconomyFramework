@@ -20,6 +20,7 @@ using VEDriversLite.Admin;
 using VEDriversLite.NFT.Dto;
 using System.IO;
 using Ipfs;
+using VEDriversLite.NeblioAPI;
 
 namespace VENFTApp_Server.Controllers
 {
@@ -164,7 +165,7 @@ namespace VENFTApp_Server.Controllers
         [HttpGet("GetVENFTOwners")]
         public async Task<IDictionary<string,TokenOwnerDto>> GetVENFTOwners()
         {
-            return MainDataContext.VENFTTokenOwners;
+            return (IDictionary<string, TokenOwnerDto>)MainDataContext.VENFTTokenOwners;
         }
 
         [AllowCrossSiteJsonAttribute]

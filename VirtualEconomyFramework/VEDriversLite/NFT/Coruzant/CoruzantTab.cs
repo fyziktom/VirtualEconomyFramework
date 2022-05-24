@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using VEDriversLite.Bookmarks;
 using VEDriversLite.NFT;
+using VEDriversLite.NeblioAPI;
 
 namespace VEDriversLite.NFT.Coruzant
 {
@@ -23,7 +24,7 @@ namespace VEDriversLite.NFT.Coruzant
         public CoruzantTab(string address)
         {
             Address = address;
-            ShortAddress = NeblioTransactionHelpers.ShortenAddress(address);
+            ShortAddress = NeblioAPIHelpers.ShortenAddress(address);
         }
 
         /// <summary>

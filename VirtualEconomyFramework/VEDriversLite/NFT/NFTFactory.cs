@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using VEDriversLite.NFT.Coruzant;
 using VEDriversLite.NFT.DevicesNFTs;
 using VEDriversLite.NFT.Imaging.Xray;
+using VEDriversLite.NeblioAPI;
 
 namespace VEDriversLite.NFT
 {
@@ -156,7 +157,7 @@ namespace VEDriversLite.NFT
             INFT nft = null;
 
             if (txinfo == null)
-                txinfo = await NeblioTransactionHelpers.GetTransactionInfo(utxo);
+                txinfo = await NeblioAPIHelpers.GetTransactionInfo(utxo);
             if (txinfo == null)
                 return null;
             if (txinfo.Vout == null)
@@ -205,7 +206,7 @@ namespace VEDriversLite.NFT
                 }
             }
 
-            var meta = await NeblioTransactionHelpers.GetTransactionMetadata(tokid, utxo);
+            var meta = await NeblioAPIHelpers.GetTransactionMetadata(tokid, utxo);
 
             if (meta == null)
                 return null;
@@ -678,7 +679,7 @@ namespace VEDriversLite.NFT
 
             if (txinfo == null)
             {
-                txinfo = await NeblioTransactionHelpers.GetTransactionInfo(utxo);
+                txinfo = await NeblioAPIHelpers.GetTransactionInfo(utxo);
                 if (txinfo == null)
                     return null;
                 if (txinfo.Vout == null)

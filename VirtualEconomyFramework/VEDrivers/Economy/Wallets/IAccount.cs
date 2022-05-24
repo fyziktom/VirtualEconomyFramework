@@ -32,7 +32,7 @@ namespace VEDrivers.Economy.Wallets
         Guid WalletId { get; set; }
         AccountTypes Type { get; set; }
         Guid OwnerId { get; set; }
-        double NumberOfTransaction { get; set; }
+        double NumberOfTransaction { get; }
         double NumberOfLoadedTransaction { get; }
         bool LoadingData { get; set; }
         string SpendableTxId { get; set; }

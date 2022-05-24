@@ -27,7 +27,7 @@ namespace VEDriversLite.Bookmarks
         public ActiveTab(string address)
         {
             Address = address;
-            ShortAddress = NeblioTransactionHelpers.ShortenAddress(address);
+            ShortAddress = NeblioAPIHelpers.ShortenAddress(address);
         }
 
         /// <summary>
@@ -129,7 +129,7 @@ namespace VEDriversLite.Bookmarks
                 var txinfotasks = new ConcurrentQueue<Task>();
                 foreach (var utxo in utxos_segment)
                 {
-                    txinfotasks.Enqueue(NeblioTransactionHelpers.GetTransactionInfo(utxo.Txid));
+                    txinfotasks.Enqueue(NeblioAPIHelpers.GetTransactionInfo(utxo.Txid));
                     var tok = utxo.Tokens?.FirstOrDefault();
                     var tokid = tok?.TokenId;
                     var tokamount = tok?.Amount;
@@ -141,7 +141,7 @@ namespace VEDriversLite.Bookmarks
                     {
                         if (!VEDLDataContext.NFTCache.ContainsKey(utxo.Txid))
                         {
-                            txinfotasks.Enqueue(NeblioTransactionHelpers.GetTokenMetadataOfUtxoCache(tokid, utxo.Txid));
+                            txinfotasks.Enqueue(NeblioAPIHelpers.GetTokenMetadataOfUtxoCache(tokid, utxo.Txid));
                         }
                     }
                 }
@@ -234,7 +234,7 @@ namespace VEDriversLite.Bookmarks
         {
             try
             {
-                UtxosList = await NeblioTransactionHelpers.GetAddressNFTsUtxos(Address, NFTHelpers.AllowedTokens);
+                UtxosList = await NeblioAPIHelpers.GetAddressNFTsUtxos(Address, NFTHelpers.AllowedTokens);
                 if (NFTs.Count == 0 && cachePreload)
                 {
                     try

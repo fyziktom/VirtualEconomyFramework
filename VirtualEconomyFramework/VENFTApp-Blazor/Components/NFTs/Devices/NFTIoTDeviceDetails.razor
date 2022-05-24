@@ -3,6 +3,7 @@
 @using VEDriversLite.NFT
 @using VEDriversLite.NFT.DevicesNFTs
 @using Markdig
+@using VEDriversLite.NeblioAPI
 @inject AppData AppData
 
 <div class="row">
@@ -20,7 +21,7 @@
                     <a href="https://explorer.nebl.io/tx/@NFT.Utxo" target="_blank">
                         <span class="badge badge-secondary" style="margin-left:5px;">Tx Info</span>
                     </a>
-                    <span class="badge badge-warning" style="margin-left:5px;">Conf: @(NeblioTransactionHelpers.IsEnoughConfirmationsForSend((int)NFT.TxDetails.Confirmations))</span>
+                    <span class="badge badge-warning" style="margin-left:5px;">Conf: @(NeblioAPIHelpers.IsEnoughConfirmationsForSend((int)NFT.TxDetails.Confirmations))</span>
                 </div>
                 @if (OwnNFT)
                 {
@@ -436,12 +437,12 @@
             if (!string.IsNullOrEmpty(r))
             {
                 if (s == null)
-                    return NeblioTransactionHelpers.ShortenAddress(sender);
+                    return NeblioAPIHelpers.ShortenAddress(sender);
 
                 if (!string.IsNullOrEmpty(s.Name))
                     return s.Name;
                 else
-                    return NeblioTransactionHelpers.ShortenAddress(sender);
+                    return NeblioAPIHelpers.ShortenAddress(sender);
             }
             else
             {

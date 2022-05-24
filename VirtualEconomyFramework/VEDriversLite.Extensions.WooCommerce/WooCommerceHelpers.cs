@@ -38,7 +38,7 @@ namespace VEDriversLite.Extensions.WooCommerce
         /// <summary>
         /// TODO
         /// </summary>
-        public static WordPressClient wpClient { get; set; }
+        public static WordPressClient? wpClient { get; set; }
         private static void RequestFilter(HttpWebRequest request)
         {
             request.UserAgent = "VENFT App";
@@ -276,7 +276,7 @@ namespace VEDriversLite.Extensions.WooCommerce
                 if (System.Text.RegularExpressions.Regex.Match(nft.Description, RegexMatchPaterns.EmojiPattern).Success)
                     throw new Exception("You cannot use Emojis in the description if you want to publish it into the shop.");
 
-                Product p = null;
+                Product p;
                 var link = nft.ImageLink;
                 var productlink = nft.ImageLink;
                 var desc = nft.Description;
@@ -359,7 +359,7 @@ namespace VEDriversLite.Extensions.WooCommerce
                     var resmsg = await res.Content.ReadAsStringAsync();
                     //Console.WriteLine(resmsg);
                     var prd = JsonConvert.DeserializeObject<Product>(resmsg);
-                    return prd;
+                    return prd ?? new Product();
                 }
                 catch (Exception ex) 
                 {
@@ -395,7 +395,7 @@ namespace VEDriversLite.Extensions.WooCommerce
                 var resmsg = await res.Content.ReadAsStringAsync();
                 //Console.WriteLine(resmsg);
                 var ordr = JsonConvert.DeserializeObject<Order>(resmsg);
-                return ordr;
+                return ordr ?? new Order();
             }
             catch (Exception ex) { Console.WriteLine(ex.Message); }
 
@@ -420,7 +420,7 @@ namespace VEDriversLite.Extensions.WooCommerce
                 var prd = JsonConvert.DeserializeObject<Product>(resmsg);
                 if (resmsg.Contains("\"virtual\": true") || resmsg.Contains("\"virtual\":true") || resmsg.Contains("\'virtual\': true") || resmsg.Contains("\'virtual\':true"))
                     prd._virtual = true;
-                return prd;
+                return prd ?? new Product();
             }
             catch (Exception ex) { Console.WriteLine(ex.Message); }
 
@@ -443,7 +443,7 @@ namespace VEDriversLite.Extensions.WooCommerce
                 var resmsg = await res.Content.ReadAsStringAsync();
                 //Console.WriteLine(resmsg);
                 var ord = JsonConvert.DeserializeObject<Order>(resmsg);
-                return ord;
+                return ord ?? new Order();
             }
             catch (Exception ex) { Console.WriteLine(ex.Message); }
 

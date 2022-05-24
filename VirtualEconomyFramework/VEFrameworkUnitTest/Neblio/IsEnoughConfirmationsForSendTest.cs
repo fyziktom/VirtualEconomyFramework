@@ -18,7 +18,7 @@ namespace VEFrameworkUnitTest.Neblio
         {
             int confirmations = 10;
 
-            var result = NeblioTransactionHelpers.IsEnoughConfirmationsForSend(confirmations);
+            var result = NeblioAPIHelpers.IsEnoughConfirmationsForSend(confirmations);
 
             Assert.Contains(">", result);
         }
@@ -31,7 +31,7 @@ namespace VEFrameworkUnitTest.Neblio
         {
             int confirmations = 1;
 
-            var result = NeblioTransactionHelpers.IsEnoughConfirmationsForSend(confirmations);
+            var result = NeblioAPIHelpers.IsEnoughConfirmationsForSend(confirmations);
 
             Assert.Equal(confirmations.ToString(), result);
         }

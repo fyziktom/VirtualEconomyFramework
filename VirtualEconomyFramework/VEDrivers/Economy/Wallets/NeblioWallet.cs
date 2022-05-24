@@ -68,7 +68,7 @@ namespace VEDrivers.Economy.Wallets
 
                 Console.WriteLine("Result:\n\n" + r);
             }
-            catch (Exception ex)
+            catch
             {
                 log.Error("Exeption in input data format");
             }

@@ -96,7 +96,7 @@
                                                 <div class="col d-flex justify-content-center align-items-center">
                                                     @if (!string.IsNullOrEmpty(tabBookmark.Name))
                                                     {
-                                                        <span>@tabBookmark.Name - @NeblioTransactionHelpers.ShortenAddress(addressInOpenTab)</span>
+                                                        <span>@tabBookmark.Name - @NeblioAPIHelpers.ShortenAddress(addressInOpenTab)</span>
                                                     }
                                                     else
                                                     {
@@ -333,7 +333,7 @@
                 }
             }
         }
-        catch (Exception ex)
+        catch
         {
             Redirect();
         }

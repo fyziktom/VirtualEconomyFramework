@@ -14,7 +14,6 @@ namespace VEDrivers.Economy.Receipt
             {
                 case ReceiptTypes.Bitcoin:
                     return null;
-                    break;
                 case ReceiptTypes.Neblio:
                     var rcp = new NeblioReceipt(txId, walletId, accountId, accountAddr, loadtxdetails, loadCurrencyDetails);
                     return rcp;

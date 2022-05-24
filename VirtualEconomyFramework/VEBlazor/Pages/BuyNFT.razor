@@ -2,6 +2,7 @@
 @using VEDriversLite.Bookmarks
 @using VEDriversLite.NFT
 @using System.Globalization
+@using VEDriversLite.NeblioAPI
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject HttpClient _client
 @inject AppData AppData
@@ -444,7 +445,7 @@
             NFT = await NFTFactory.GetNFT(NFTHelpers.TokenId, nftUtxo, nftUtxoIndex, 0, true);
             AmountToSend = NFT.Price;
 
-            receiver = await NeblioTransactionHelpers.GetTransactionReceiver(NFT.Utxo, NFT.TxDetails);
+            receiver = await NeblioAPIHelpers.GetTransactionReceiver(NFT.Utxo, NFT.TxDetails);
 
             var r = await NeblioTransactionHelpers.ValidateOneTokenNFTUtxo(receiver, NFT.TokenId, NFT.Utxo, NFT.UtxoIndex);
             if (r >= 0)
