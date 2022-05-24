@@ -1724,7 +1724,7 @@ namespace VEDriversLite.Neblio
 
             try
             {
-                var sendTokenTxData = await NFTHelpers.GetNFTTxData(Address, receiver, AccountKey, nft, priceWrite, price, withDogePrice, dogeprice);
+                var sendTokenTxData = await NFTHelpers.GetNFTTxData(Address, receiver, nft, priceWrite, price, withDogePrice, dogeprice);
                               
                 var transaction = await NeblioTransactionHelpers.SendNFTTokenAsync(sendTokenTxData, res.Item2);
 

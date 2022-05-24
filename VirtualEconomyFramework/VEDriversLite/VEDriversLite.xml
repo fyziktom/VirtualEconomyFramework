@@ -616,6 +616,31 @@
             This pattern identify the emojis in the text
             </summary>
         </member>
+        <member name="T:VEDriversLite.Common.QTRPCConfig">
+            <summary>
+            Configuration of the RPC node connection
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Common.QTRPCConfig.Host">
+            <summary>
+            Host of RPC server
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Common.QTRPCConfig.Port">
+            <summary>
+            Port of RPC server
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Common.QTRPCConfig.User">
+            <summary>
+            User name for RPC server
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Common.QTRPCConfig.Pass">
+            <summary>
+            Password for RPC server
+            </summary>
+        </member>
         <member name="T:VEDriversLite.Common.QTWalletRPC">
             <summary>
             QT Wallet RPC client controler
@@ -665,6 +690,69 @@
             <param name="args"></param>
             <param name="jsonClient"></param>
             <returns></returns>
+        </member>
+        <member name="T:VEDriversLite.Common.QTWalletResponseDto">
+            <summary>
+            RPC Wallet response dto
+            </summary>
+        </member>
+        <member name="T:VEDriversLite.Common.QTWalletRPCClient">
+            <summary>
+            RPC client for QT Wallets
+            </summary>
+        </member>
+        <member name="M:VEDriversLite.Common.QTWalletRPCClient.#ctor(System.String,System.Int32)">
+            <summary>
+            Constructor
+            </summary>
+            <param name="baseurl">connection url or IP of QT wallet RPC server</param>
+            <param name="port">connection port of QT wallet RPC server</param>
+        </member>
+        <member name="M:VEDriversLite.Common.QTWalletRPCClient.#ctor(VEDriversLite.Common.QTRPCConfig)">
+            <summary>
+            Create client from config dto
+            </summary>
+            <param name="cfg"></param>
+        </member>
+        <member name="P:VEDriversLite.Common.QTWalletRPCClient.ConnectionUrlBaseAddress">
+            <summary>
+            Base URL for connection to RPC server
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Common.QTWalletRPCClient.ConnectionPort">
+            <summary>
+            Base port for connection to RPC server
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Common.QTWalletRPCClient.ConnectionAddress">
+            <summary>
+            Connection address in "clickable form
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Common.QTWalletRPCClient.IsConnected">
+            <summary>
+            Is connected to RPC server flag
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Common.QTWalletRPCClient.User">
+            <summary>
+            User for connection to RPC server
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Common.QTWalletRPCClient.Pass">
+            <summary>
+            Password for connection to RPC server
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Common.QTWalletRPCClient.ClientInitialized">
+            <summary>
+            Is set if the client is initialized
+            </summary>
+        </member>
+        <member name="M:VEDriversLite.Common.QTWalletRPCClient.InitClients">
+            <summary>
+            Initialize client. You need to load connection info first - usually during the construction
+            </summary>
         </member>
         <member name="M:VEDriversLite.Common.QTWalletRPCClient.RPCLocalCommandAsync(System.String,System.Object)">
             <summary>
@@ -2016,7 +2104,6 @@
             </summary>
             <param name="transaction">NBitcoin Transaction object</param>
             <param name="key">NBitcoin Key - must contain Private Key</param>
-            <param name="address">NBitcoin address - must match with the provided key</param>
             <param name="utxos">List of the input utxos</param>
             <returns>New Transaction Hash - TxId</returns>
         </member>
@@ -2046,7 +2133,7 @@
             Function will send standard Neblio transaction - Async version
             </summary>
             <param name="data">Send data, please see SendTxData class for the details</param>
-            <param name="ekey">Input EncryptionKey of the account</param>
+            <param name="addressForTx">Address for process transaction - signature</param>
             <param name="utxos">Optional input neblio utxo</param>
             <returns>New Transaction Hash - TxId</returns>
         </member>
@@ -2055,8 +2142,8 @@
             Function will send standard Neblio transaction with included message.
             </summary>
             <param name="data">Send data, please see SendTxData class for the details - this include field for custom message</param>
-            <param name="ekey">Input EncryptionKey of the account</param>
             <param name="utxos">Optional input neblio utxo</param>
+            <param name="addressForTx">Address for process transaction - signature</param>
             <returns>New Transaction Hash - TxId</returns>
         </member>
         <member name="M:VEDriversLite.DogeTransactionHelpers.SendDogeTransactionWithMessageMultipleOutputAsync(System.Collections.Generic.Dictionary{System.String,System.Double},NBitcoin.BitcoinAddress,System.Collections.Generic.ICollection{VEDriversLite.DogeAPI.Utxo},System.String,System.String)">
@@ -2064,7 +2151,7 @@
             Function will send standard Neblio transaction with message and outputs which goes to different addresses
             </summary>
             <param name="receiverAmount">Dictionary of all receivers and amounts to send them</param>
-            <param name="ekey">Input EncryptionKey of the account</param>
+            <param name="addressForTx">Address for process transaction - signature</param>
             <param name="utxos">Optional input neblio utxo</param>
             <param name="password">Password for encrypted key if it is encrypted and locked</param>
             <param name="message">Custom message</param>
@@ -4295,20 +4382,17 @@
             <param name="data">Send data, please see SendTxData class for the details</param>
             <param name="ekey">Input EncryptionKey of the account</param>
             <param name="nutxos">Optional input neblio utxo</param>
-            <param name="fee">Fee - 10000 minimum</param>
             <returns>New Transaction Hash - TxId</returns>
         </member>
         <member name="M:VEDriversLite.NeblioTransactionHelpers.SplitNeblioCoinTransactionAPIAsync(System.Collections.Generic.List{System.String},System.Int32,System.Double,VEDriversLite.Security.EncryptionKey,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})">
             <summary>
             Function will send standard Neblio transaction
             </summary>
-            <param name="sender"></param>
             <param name="receivers"></param>
             <param name="lots"></param>
             <param name="amount"></param>
             <param name="ekey">Input EncryptionKey of the account</param>
             <param name="nutxos">Optional input neblio utxo</param>
-            <param name="fee">Fee - 10000 minimum</param>
             <returns>New Transaction Hash - TxId</returns>
         </member>
         <member name="M:VEDriversLite.NeblioTransactionHelpers.SendNTP1TokenWithPaymentAPIAsync(VEDriversLite.SendTokenTxData,VEDriversLite.Security.EncryptionKey,System.Double,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.String,System.Int32)">
@@ -7645,11 +7729,7 @@
             It means in one transaction it will create multiple 1 tokens outputs which are NFTs with same origin metadata.
             </summary>
             <param name="address">sender address</param>
-            <param name="coppies">number of copies. one NFT is minted even 0 coppies is input</param>
-            <param name="ekey">Encryption Key object of the address</param>
             <param name="NFT">Input NFT object with data to save to metadata</param>
-            <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
-            <param name="tutxos">List of spendable token utxos if you have it loaded.</param>
             <param name="receiver">Receiver of the NFT</param>
             <returns>New Tx Id Hash</returns>
         </member>
@@ -7670,10 +7750,8 @@
             During this the payment NFT token is send back to project address
             </summary>
             <param name="address">sender address</param>
-            <param name="ekey">Encryption Key object of the address</param>
             <param name="payment">Payment NFT of received payment</param>
             <param name="NFT">NFT for sale</param>
-            <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
             <returns></returns>
         </member>
         <member name="M:VEDriversLite.NFT.NFTHelpers.GetTokenTxDataCopy(System.String,VEDriversLite.NFT.PaymentNFT,VEDriversLite.NFT.INFT)">
@@ -7682,10 +7760,8 @@
             During this the payment NFT token is send back to project address
             </summary>
             <param name="address">sender address</param>
-            <param name="ekey">Encryption Key object of the address</param>
             <param name="payment">Payment NFT of received payment</param>
             <param name="NFT">NFT for sale</param>
-            <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
             <returns></returns>
         </member>
         <member name="M:VEDriversLite.NFT.NFTHelpers.GetTxDataForDestroyNFTs(System.String,System.Collections.Generic.ICollection{VEDriversLite.NFT.INFT},System.String)">
@@ -7693,10 +7769,7 @@
             This function will destroy selected NFTs
             </summary>
             <param name="address">sender address</param>
-            <param name="ekey">Encryption Key object of the address</param>
-            <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
             <param name="nfts">Input NFTs to destroy</param>
-            <param name="mintingUtxo">Minting input Utxo if known</param>
             <param name="receiver">Receiver of the NFT</param>
             <returns></returns>
         </member>
@@ -7705,7 +7778,6 @@
             This function will send payment for some NFT.
             </summary>
             <param name="address">sender address</param>
-            <param name="ekey">Encryption Key object of the address</param>
             <param name="receiver">Receiver of the NFT</param>
             <param name="nft">Input NFT object with data to save to metadata. It is NFT what you are buying.</param>
             <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
@@ -7716,12 +7788,10 @@
             This function will return payment to the original sender.
             </summary>
             <param name="address">sender address</param>
-            <param name="ekey">Encryption Key object of the address</param>
             <param name="nft">Input PaymentNFT.</param>
-            <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
             <returns>New Tx Id Hash</returns>
         </member>
-        <member name="M:VEDriversLite.NFT.NFTHelpers.GetNFTTxData(System.String,System.String,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Boolean,System.Double,System.Boolean,System.Double)">
+        <member name="M:VEDriversLite.NFT.NFTHelpers.GetNFTTxData(System.String,System.String,VEDriversLite.NFT.INFT,System.Boolean,System.Double,System.Boolean,System.Double)">
             <summary>
             This function will send NFT. It can be also used for write the price of the NFT.
             </summary>
@@ -7730,7 +7800,6 @@
             <param name="ekey">Encryption Key object of the address</param>
             <param name="NFT">Input NFT object with data to save to metadata. It is NFT what you are sending.</param>
             <param name="priceWrite">Set this if you just want to set price of the NFT. means resend to yourself</param>
-            <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
             <param name="price">Price must be higher than 0.0002 Neblio</param>
             <param name="withDogePrice">Set if Doge Price should be written</param>
             <param name="dogeprice">Set doge price, min 0.1</param>
@@ -7741,9 +7810,7 @@
             This function will write Used flag to the NFT Ticket
             </summary>
             <param name="address">adress of sender</param>
-            <param name="ekey">Encryption Key object of the address</param>
             <param name="NFT">Input NFT object with data to save to metadata. It is NFT what you are sending.</param>
-            <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
             <returns>New Tx Id hash</returns>
         </member>
         <member name="M:VEDriversLite.NFT.NFTHelpers.FindProfileNFT(System.Collections.Generic.ICollection{VEDriversLite.NFT.INFT})">

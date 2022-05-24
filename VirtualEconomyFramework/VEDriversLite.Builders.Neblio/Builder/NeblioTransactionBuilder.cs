@@ -70,7 +70,7 @@ namespace VEDriversLite.Builders.Neblio
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw new Exception(ex.Message);
             }
 
             dto.From = null;

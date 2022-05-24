@@ -9,14 +9,25 @@ using System.Threading.Tasks;
 
 namespace VEDriversLite.Common
 {
+    /// <summary>
+    /// RPC Wallet response dto
+    /// </summary>
     public class QTWalletResponseDto
     {
         public string result { get; set; }
         public string id { get; set; }
     }
 
+    /// <summary>
+    /// RPC client for QT Wallets
+    /// </summary>
     public class QTWalletRPCClient
     {
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="baseurl">connection url or IP of QT wallet RPC server</param>
+        /// <param name="port">connection port of QT wallet RPC server</param>
         public QTWalletRPCClient(string baseurl = "127.0.0.1", int port = 6326)
         {
             ConnectionUrlBaseAddress = baseurl;
@@ -24,7 +35,10 @@ namespace VEDriversLite.Common
 
             Console.WriteLine("Connection Wallet Address setted to:" + ConnectionAddress);
         }
-
+        /// <summary>
+        /// Create client from config dto
+        /// </summary>
+        /// <param name="cfg"></param>
         public QTWalletRPCClient(QTRPCConfig cfg)
         {
             ConnectionUrlBaseAddress = cfg.Host;
@@ -34,11 +48,19 @@ namespace VEDriversLite.Common
 
             Console.WriteLine("Connection Wallet Address setted to:" + ConnectionAddress);
         }
-
+        /// <summary>
+        /// Base URL for connection to RPC server
+        /// </summary>
         public string ConnectionUrlBaseAddress { get; set; } = "127.0.0.1";
+        /// <summary>
+        /// Base port for connection to RPC server
+        /// </summary>
         public int ConnectionPort { get; set; } = 6326;
 
         private string _connectionAddress = "http://127.0.0.1:6326/";
+        /// <summary>
+        /// Connection address in "clickable form
+        /// </summary>
         public string ConnectionAddress
         {
             get
@@ -49,6 +71,9 @@ namespace VEDriversLite.Common
         }
 
         private bool _isConnected = false;
+        /// <summary>
+        /// Is connected to RPC server flag
+        /// </summary>
         public bool IsConnected
         {
             get
@@ -59,6 +84,9 @@ namespace VEDriversLite.Common
 
         private string user = "user";
         private string pass = "password";
+        /// <summary>
+        /// User for connection to RPC server
+        /// </summary>
         public string User
         {
             get
@@ -77,6 +105,9 @@ namespace VEDriversLite.Common
                 }
             }
         }
+        /// <summary>
+        /// Password for connection to RPC server
+        /// </summary>
         public string Pass
         {
             get
@@ -95,12 +126,17 @@ namespace VEDriversLite.Common
                 }
             }
         }
-
+        /// <summary>
+        /// Is set if the client is initialized
+        /// </summary>
         public bool ClientInitialized { get; set; } = false;
 
         private JsonClient jsonClient;
         private HttpClient httpClient;
 
+        /// <summary>
+        /// Initialize client. You need to load connection info first - usually during the construction
+        /// </summary>
         public void InitClients()
         {
             try

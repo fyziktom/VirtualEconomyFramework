@@ -237,7 +237,7 @@ namespace VEDriversLite.Extensions.WooCommerce
                                                         Console.WriteLine($"Order {order.id}, {order.order_key}. NFT {dto.ShortHash} sent in tx: https://explorer.nebl.io/tx/{rs.Item2}");
                                                     }
                                                 }
-                                                catch (Exception ex)
+                                                catch
                                                 {
                                                     await Task.Delay(5000);
                                                 }

@@ -545,7 +545,7 @@ namespace VEDriversLite.NFT
                         return true;
                     }
                 }
-                catch (Exception ex)
+                catch
                 {
                     Console.WriteLine("Cannot download the Image Preview data");
                 }
@@ -570,7 +570,7 @@ namespace VEDriversLite.NFT
                         return true;
                     }
                 }
-                catch (Exception ex)
+                catch
                 {
                     Console.WriteLine("Cannot download the Image data");
                 }

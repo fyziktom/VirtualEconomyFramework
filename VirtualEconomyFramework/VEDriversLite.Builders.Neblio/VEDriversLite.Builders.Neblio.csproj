@@ -30,7 +30,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\VEDriversLite\VEDriversLite.csproj" />
-    <ProjectReference Include="..\VEDrivers\VEDrivers.csproj" />
   </ItemGroup>
 
 </Project>

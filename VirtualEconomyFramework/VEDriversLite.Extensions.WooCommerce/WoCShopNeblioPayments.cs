@@ -98,7 +98,7 @@ namespace VEDriversLite.Extensions.WooCommerce
                                             Console.WriteLine($"Order {ord.id}, {ord.order_key} received Neblio payment in value {u.Value}.");
                                             try
                                             {
-                                                if (((double)u.Value/NeblioTransactionHelpers.FromSatToMainRatio) >= Convert.ToDouble(ord.total, CultureInfo.InvariantCulture))
+                                                if (((double)(u.Value ?? 0)/NeblioTransactionHelpers.FromSatToMainRatio) >= Convert.ToDouble(ord.total, CultureInfo.InvariantCulture))
                                                 {
                                                     Console.WriteLine($"Order {ord.id}, {ord.order_key} payment has correct amount and it is moved to processing state.");
                                                     if (AllowDispatchNFTOrders)
@@ -109,7 +109,7 @@ namespace VEDriversLite.Extensions.WooCommerce
                                                             Console.WriteLine($"Order {ord.id}, {ord.order_key} Neblio Address in the order is correct.");
                                                             ord.statusclass = OrderStatus.processing;
                                                             ord.transaction_id = $"{u.Txid}:{u.Index}";
-                                                            ord.date_paid = TimeHelpers.UnixTimestampToDateTime((double)u.Blocktime);
+                                                            ord.date_paid = TimeHelpers.UnixTimestampToDateTime((double)(u.Blocktime ?? 0));
                                                             var o = await UpdateOrder(ord);
                                                         }
                                                     }
@@ -117,7 +117,7 @@ namespace VEDriversLite.Extensions.WooCommerce
                                                     {
                                                         ord.statusclass = OrderStatus.processing;
                                                         ord.transaction_id = $"{u.Txid}:{u.Index}";
-                                                        ord.date_paid = TimeHelpers.UnixTimestampToDateTime((double)u.Blocktime);
+                                                        ord.date_paid = TimeHelpers.UnixTimestampToDateTime((double)(u.Blocktime ?? 0));
                                                         var o = await UpdateOrder(ord);
                                                     }
                                                 }

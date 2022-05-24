@@ -908,7 +908,6 @@ namespace VEDriversLite
         /// <param name="data">Send data, please see SendTxData class for the details</param>
         /// <param name="ekey">Input EncryptionKey of the account</param>
         /// <param name="nutxos">Optional input neblio utxo</param>
-        /// <param name="fee">Fee - 10000 minimum</param>
         /// <returns>New Transaction Hash - TxId</returns>
         public static Transaction GetNeblioTransactionObject(SendTxData data, EncryptionKey ekey, ICollection<Utxos> nutxos)
         {
@@ -983,13 +982,11 @@ namespace VEDriversLite
         /// <summary>
         /// Function will send standard Neblio transaction
         /// </summary>
-        /// <param name="sender"></param>
         /// <param name="receivers"></param>
         /// <param name="lots"></param>
         /// <param name="amount"></param>
         /// <param name="ekey">Input EncryptionKey of the account</param>
         /// <param name="nutxos">Optional input neblio utxo</param>
-        /// <param name="fee">Fee - 10000 minimum</param>
         /// <returns>New Transaction Hash - TxId</returns>
         public static async Task<Transaction> SplitNeblioCoinTransactionAPIAsync(List<string> receivers, int lots, double amount, EncryptionKey ekey, ICollection<Utxos> nutxos)
         {
