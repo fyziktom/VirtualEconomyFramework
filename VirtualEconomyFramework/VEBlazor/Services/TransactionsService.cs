@@ -39,14 +39,14 @@ public class TransactionsService
     {
         if (!subAccount)
         {
-            var inf = await NeblioTransactionHelpers.AddressInfoAsync(account.Address);
+            var inf = await NeblioAPIHelpers.AddressInfoAsync(account.Address);
             return inf.Transactions?.Reverse().ToList() ?? new List<string>();
         }
         else
         {
             if (account.SubAccounts.TryGetValue(address, out _))
             {
-                var inf = await NeblioTransactionHelpers.AddressInfoAsync(address);
+                var inf = await NeblioAPIHelpers.AddressInfoAsync(address);
                 return inf.Transactions?.Reverse().ToList() ?? new List<string>();
             }
         }
@@ -55,11 +55,11 @@ public class TransactionsService
 
     public async Task<TxDetails> LoadTxDetails(string txid, NeblioAccount account)
     {
-        var tinfo = await NeblioTransactionHelpers.GetTransactionInfo(txid);
+        var tinfo = await NeblioAPIHelpers.GetTransactionInfo(txid);
         if (tinfo == null)
             return new TxDetails();
         
-        string sender = await NeblioTransactionHelpers.GetTransactionSender(txid, tinfo);
+        string sender = await NeblioAPIHelpers.GetTransactionSender(txid, tinfo);
         bool fromAnotherAccount = true;
         bool fromSubAccount = true;
 
@@ -88,7 +88,7 @@ public class TransactionsService
             fromSubAccount = true;
         }
                 
-        string rec = await NeblioTransactionHelpers.GetTransactionReceiver(txid, tinfo);
+        string rec = await NeblioAPIHelpers.GetTransactionReceiver(txid, tinfo);
         string receiver = string.Empty;
         var recbkm = account.IsInTheBookmarks(rec);
 

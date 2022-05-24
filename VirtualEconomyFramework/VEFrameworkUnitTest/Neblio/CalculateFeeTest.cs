@@ -2,6 +2,7 @@ using System;
 using VEDriversLite;
 using Xunit;
 using Moq;
+using VEDriversLite.Neblio;
 
 namespace VEFrameworkUnitTest.Neblio
 {

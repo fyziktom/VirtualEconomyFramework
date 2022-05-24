@@ -114,7 +114,7 @@ namespace VEDrivers.Messages
                                                         prevmsgdata = decprevmsg;
                                                     }
                                                 }
-                                                catch (Exception ex)
+                                                catch
                                                 {
                                                     throw new Exception("Cannot send message - Cannot decrypt prevouis message, requeired keuy is not correct format!");
                                                 }
@@ -136,7 +136,7 @@ namespace VEDrivers.Messages
                                         // encrypt prevoius message
                                         prevmsg = AsymmetricProvider.EncryptString(prevmsgdata, receiverpubkey);
                                     }
-                                    catch (Exception ex)
+                                    catch
                                     {
                                         throw new Exception("Cannot send message - Cannot encrypt the message, probably wrong Key");
                                     }
@@ -275,9 +275,8 @@ namespace VEDrivers.Messages
                                     {
                                         resp.PrevMsg = AsymmetricProvider.DecryptString(prevmsg, key.GetEncryptedKey(data.Password));
                                     }
-                                    catch(Exception ex)
+                                    catch
                                     {
-                                        ;//todo
                                     }
                                 }
                                 if (msgtok.Metadata.TryGetValue("MessageData", out var newvmsg))
@@ -286,9 +285,8 @@ namespace VEDrivers.Messages
                                     {
                                         resp.NewMsg = AsymmetricProvider.DecryptString(newvmsg, key.GetEncryptedKey(data.Password));
                                     }
-                                    catch(Exception ex)
+                                    catch
                                     {
-                                        ;//todo
                                     }
                                 }
                             }

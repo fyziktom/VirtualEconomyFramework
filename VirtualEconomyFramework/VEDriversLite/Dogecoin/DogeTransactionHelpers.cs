@@ -39,7 +39,6 @@ namespace VEDriversLite
         /// </summary>
         /// <param name="transaction">NBitcoin Transaction object</param>
         /// <param name="key">NBitcoin Key - must contain Private Key</param>
-        /// <param name="address">NBitcoin address - must match with the provided key</param>
         /// <param name="utxos">List of the input utxos</param>
         /// <returns>New Transaction Hash - TxId</returns>
         public static async Task<string> SignAndBroadcastTransaction(Transaction transaction, BitcoinSecret key, ICollection<Utxo> utxos)
@@ -277,7 +276,7 @@ namespace VEDriversLite
         /// Function will send standard Neblio transaction - Async version
         /// </summary>
         /// <param name="data">Send data, please see SendTxData class for the details</param>
-        /// <param name="ekey">Input EncryptionKey of the account</param>
+        /// <param name="addressForTx">Address for process transaction - signature</param>
         /// <param name="utxos">Optional input neblio utxo</param>
         /// <returns>New Transaction Hash - TxId</returns>
         public static Transaction GetDogeTransactionAsync(SendTxData data, BitcoinAddress addressForTx, ICollection<Utxo> utxos)
@@ -289,8 +288,8 @@ namespace VEDriversLite
         /// Function will send standard Neblio transaction with included message.
         /// </summary>
         /// <param name="data">Send data, please see SendTxData class for the details - this include field for custom message</param>
-        /// <param name="ekey">Input EncryptionKey of the account</param>
         /// <param name="utxos">Optional input neblio utxo</param>
+        /// <param name="addressForTx">Address for process transaction - signature</param>
         /// <returns>New Transaction Hash - TxId</returns>
         public static Transaction GetDogeTransactionWithMessageAsync(SendTxData data, BitcoinAddress addressForTx, ICollection<Utxo> utxos)
         {
@@ -301,7 +300,7 @@ namespace VEDriversLite
         /// Function will send standard Neblio transaction with message and outputs which goes to different addresses
         /// </summary>
         /// <param name="receiverAmount">Dictionary of all receivers and amounts to send them</param>
-        /// <param name="ekey">Input EncryptionKey of the account</param>
+        /// <param name="addressForTx">Address for process transaction - signature</param>
         /// <param name="utxos">Optional input neblio utxo</param>
         /// <param name="password">Password for encrypted key if it is encrypted and locked</param>
         /// <param name="message">Custom message</param>
@@ -427,34 +426,13 @@ namespace VEDriversLite
                 if (!string.IsNullOrEmpty(o.Script) && o.Script.Contains("OP_RETURN"))
                 {
                     var message = o.Script.Replace("OP_RETURN ", string.Empty);
-                    var bytes = HexStringToBytes(message);
+                    var bytes = StringExt.HexStringToBytes(message);
                     var msg = Encoding.UTF8.GetString(bytes);
                     return CommonReturnTypeDto.GetNew(true, msg);
                 }
             }
 
             return CommonReturnTypeDto.GetNew<string>();
-        }
-
-        private static byte[] HexStringToBytes(string hexString)
-        {
-            if (hexString == null)
-            {
-                throw new ArgumentNullException("hexString");
-            }
-
-            if (hexString.Length % 2 != 0)
-            {
-                throw new ArgumentException("hexString must have an even length", "hexString");
-            }
-
-            var bytes = new byte[hexString.Length / 2];
-            for (int i = 0; i < bytes.Length; i++)
-            {
-                string currentHex = hexString.Substring(i * 2, 2);
-                bytes[i] = Convert.ToByte(currentHex, 16);
-            }
-            return bytes;
         }
 
         ///////////////////////////////////////////

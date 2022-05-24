@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using VEDriversLite;
 using VEDriversLite.NFT;
 using VEDriversLite.Security;
+using VEDriversLite.NeblioAPI;
 
 namespace VEDriversLiteConsoleAppExamples
 {
@@ -329,7 +330,7 @@ namespace VEDriversLiteConsoleAppExamples
         {
             Console.WriteLine("Input Tx Id Hash");
             var txid = Console.ReadLine();
-            var txinfo = await NeblioTransactionHelpers.GetTransactionInfo(txid);
+            var txinfo = await NeblioAPIHelpers.GetTransactionInfo(txid);
             // sign it with loaded account
             Console.WriteLine("Timestamp");
             Console.WriteLine(TimeHelpers.UnixTimestampToDateTime((double)txinfo.Blocktime));

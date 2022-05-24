@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 using System.Threading.Tasks;
+using VEDriversLite.NeblioAPI;
 
 namespace VEDriversLite.NFT
 {
@@ -205,7 +206,7 @@ namespace VEDriversLite.NFT
                 ParseSpecific(lastmetadata);
 
                 Used = nftData.Used;
-                MintAuthorAddress = await NeblioTransactionHelpers.GetTransactionSender(NFTOriginTxId);
+                MintAuthorAddress = await NeblioAPIHelpers.GetTransactionSender(NFTOriginTxId);
                 IsLoaded = true;
             }
         }

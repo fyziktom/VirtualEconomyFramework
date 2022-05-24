@@ -15,7 +15,6 @@ namespace VEDrivers.Economy.Transactions
             {
                 case TransactionTypes.Neblio:
                     return new NeblioTransaction(txid, address, walletName, justDto);
-                    break;
             }
 
             return null;

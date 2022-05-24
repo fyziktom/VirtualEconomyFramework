@@ -20,8 +20,8 @@ namespace VEFrameworkUnitTest.Neblio
         [Fact]
         public async void GetNeblioTransaction_Valid_Test()
         {
-            NeblioTransactionHelpers.GetClient(Common.NeblioTestHelpers.Client.Object);
-            NeblioTransactionHelpers.TurnOnCache = false;
+            NeblioAPIHelpers.GetClient(Common.NeblioTestHelpers.Client.Object);
+            NeblioAPIHelpers.TurnOnCache = false;
 
             //Arrange           
 

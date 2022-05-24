@@ -24,7 +24,7 @@
                     <a href="https://explorer.nebl.io/tx/@NFT.Utxo" target="_blank">
                         <span class="badge badge-secondary" style="margin-left:5px;">Tx Info</span>
                     </a>
-                    <span class="badge badge-warning" style="margin-left:5px;">Conf: @(NeblioTransactionHelpers.IsEnoughConfirmationsForSend((int)NFT.TxDetails.Confirmations))</span>
+                    <span class="badge badge-warning" style="margin-left:5px;">Conf: @(NeblioAPIHelpers.IsEnoughConfirmationsForSend((int)NFT.TxDetails.Confirmations))</span>
                 </div>
                 @if (OwnNFT)
                 {
