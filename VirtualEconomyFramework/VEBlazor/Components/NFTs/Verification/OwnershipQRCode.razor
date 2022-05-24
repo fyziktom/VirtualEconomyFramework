@@ -81,7 +81,7 @@
     private async Task RefreshQRCode()
     {
         showOwnershipDialogLoading = true;
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
         await Task.Delay(100);
 
         (OwnershipVerificationCodeDto, byte[]) res;
@@ -102,7 +102,7 @@
         //await JSRuntime.InvokeVoidAsync("jsFunctions.getQRCode", new object[] { sdto, qrCodeRef });
         creatingOwnerQRCodeState = "Refreshing Key...";
         showOwnershipDialogLoading = false;
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
     }
 
     Task showOwnershipQRCode()
@@ -122,7 +122,7 @@
         if (qrModal == null) return;
         await qrModal.Show();
         
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
         await Task.Delay(1);
         await RefreshQRCode();
 
@@ -152,7 +152,7 @@
                     qrCodeRefreshCounter--;
                 }
 
-                StateHasChanged();
+                await InvokeAsync(StateHasChanged);
             }
             catch (Exception ex)
             {

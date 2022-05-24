@@ -11,7 +11,7 @@
 <Row Margin="Margin.Is3.FromBottom.Is3.FromTop" Flex="Flex.JustifyContent.Between">
     <Column>
         <ErrorBoundary>
-            <AccountProfile Profile="@AppData.Account.Profile" />
+            <AccountProfile NFT="@(AppData.Account.Profile as INFT)" NFTChanged="@NFTChangedHandler" />
         </ErrorBoundary>
     </Column>
     <Column>
@@ -172,28 +172,35 @@
     {
         AppData.Account.Refreshed -= RefreshedHandler;
         AppData.Account.Refreshed += RefreshedHandler;   
-        nftPaymentsList?.Load();
+        if (nftPaymentsList != null)
+            await nftPaymentsList.Load();
         await base.OnInitializedAsync();
     }
 
-    void RefreshedHandler(object? sender, EventArgs e)
+    async void RefreshedHandler(object? sender, EventArgs e)
     {
-        OnSelectedTabChanged(selectedTab);
-        StateHasChanged();
+        await OnSelectedTabChanged(selectedTab);
+        await InvokeAsync(StateHasChanged);
     }
 
-    void OnSelectedTabChanged( string name )
+    async Task OnSelectedTabChanged( string name )
     {
         selectedTab = name;
         if (name == "payments")
-            nftPaymentsList?.Load();
+            await nftPaymentsList.Load();
         else if (name == "receipts")
-            nftReceiptsList?.Load();
+            await nftReceiptsList.Load();
     }    
     
-    void addNewTransaction()
+    void NFTChangedHandler( INFT e )
     {
-        sendNeblioTxRef?.Show();
+        if (e != null && e.Type == NFTTypes.Profile)
+            AppData.Account.Profile = e as ProfileNFT;
+    }
+    
+    Task addNewTransaction()
+    {
+        return sendNeblioTxRef.Show();
     }  
     async Task addNewBookmark()
     {

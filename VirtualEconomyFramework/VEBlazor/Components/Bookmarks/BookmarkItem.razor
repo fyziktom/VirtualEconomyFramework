@@ -46,7 +46,7 @@
     private async Task BookmarkChangedHandler()
     {
         await InputBookmarkChanged.InvokeAsync( InputBookmark );
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
     }
 
     private async Task EditBookmarkHandler()

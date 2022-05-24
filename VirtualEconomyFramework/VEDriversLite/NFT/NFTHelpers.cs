@@ -180,6 +180,8 @@ namespace VEDriversLite.NFT
             if (nftType == NFTTypes.Image || 
                 nftType == NFTTypes.Music || 
                 nftType == NFTTypes.Post || 
+                nftType == NFTTypes.App || 
+                nftType == NFTTypes.XrayImage || 
                 nftType == NFTTypes.Ticket)
                 return true;
             else
@@ -439,6 +441,30 @@ namespace VEDriversLite.NFT
                 Console.WriteLine("Cannot read the file from IPFS from Infura. " + ex.Message);
             }
             return null;
+        }
+
+        /// <summary>
+        /// Pin file to IPFS Infura with use of credentials
+        /// </summary>
+        /// <param name="hash"></param>
+        /// <returns></returns>
+        public static async Task<bool> PinToInfuraAsync(string hash)
+        {
+            var ipfsClient = CreateIpfsClient(InfuraAPIURL, InfuraKey, InfuraSecret);
+            ipfsClient.UserAgent = "VEFramework";
+            try
+            {
+                var cancelSource = new System.Threading.CancellationTokenSource();
+                var token = cancelSource.Token;
+                //using (var stream = await ipfsClient.FileSystem.ReadFileAsync(hash))
+                var _ = await ipfsClient.Pin.AddAsync(hash);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Cannot read the file from IPFS from Infura. " + ex.Message);
+            }
+            return false;
         }
 
         /// <summary>

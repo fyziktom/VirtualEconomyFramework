@@ -3680,5 +3680,68 @@ namespace TestVEDriversLite
             Console.WriteLine(res.Item2);
         }
         #endregion
+
+
+        #region Apps
+
+        /// <summary>
+        /// Pin file to infura
+        /// </summary>
+        /// <param name="param"></param>
+        [TestEntry]
+        public static void PinFileToInfura(string param)
+        {
+            PinFileToInfuraAsync(param);
+        }
+        public static async Task PinFileToInfuraAsync(string param)
+        {
+            Console.WriteLine("Pinning file to infura");
+            if (await NFTHelpers.PinToInfuraAsync(param))
+                Console.WriteLine("Success");
+            else
+                Console.WriteLine("Success");
+        }
+        /// <summary>
+        /// Mint Neblio NFT Producer Profile
+        /// </summary>
+        /// <param name="param"></param>
+        [TestEntry]
+        public static void MintNFTApp(string param)
+        {
+            MintNFTAppAsync(param);
+        }
+        public static async Task MintNFTAppAsync(string param)
+        {
+            Console.WriteLine("Minting NFT App");
+            // create NFT object
+            var nft = new AppNFT("");
+            
+            nft.Author = "fyziktom";
+            nft.Name = "Minesweeper";
+            nft.Description = "Minesweeper from BlazorGames Example";
+            nft.Link = "https://blazorgames.net/minesweeper";
+            nft.DataItems.Add(new VEDriversLite.NFT.Dto.NFTDataItem()
+            {
+                Type = VEDriversLite.NFT.Dto.DataItemType.Image,
+                IsMain = true,
+                Hash = "QmSEoP3wnunvPXcaEPxXARvhw7rrWnwjhgre3BQU43DbjC"
+            });
+            nft.DataItems.Add(new VEDriversLite.NFT.Dto.NFTDataItem()
+            {
+                Type = VEDriversLite.NFT.Dto.DataItemType.BlazorApp,
+                Storage = VEDriversLite.NFT.Dto.DataItemStorageType.Url,
+                Hash = param
+            });
+
+            Console.WriteLine("Start of minting NFT App.");
+
+            var res = await account.MintNFT(nft);
+
+            Console.WriteLine("New TxId hash is: ");
+
+            Console.WriteLine(res);
+        }        
+
+        #endregion
     }
 }

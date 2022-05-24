@@ -227,7 +227,7 @@
         mainValue = Math.Round(_value * 1); 
         kiloValue = Math.Round(_value / 1000); 
         megaValue = Math.Round(_value / 1000000);    
-        StateHasChanged();
+        InvokeAsync(StateHasChanged);
     }
 
     double Calc()
@@ -310,10 +310,10 @@
         await ValueChanged.InvokeAsync( v );
     }
 
-    void UnitOfInputChanged(Units unit)
+    async Task UnitOfInputChanged(Units unit)
     {
         SelectedUnit = unit;
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
     }
 
 }

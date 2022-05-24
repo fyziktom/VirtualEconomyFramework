@@ -309,21 +309,21 @@
         return base.OnInitializedAsync();
     }
 
-    public void Show(string receiver = "", bool sendCopy = false)
+    public async Task Show(string receiver = "", bool sendCopy = false)
     {
         if (NFT == null) return;
         if (!string.IsNullOrEmpty(receiver))
             Receiver = receiver;
 
-        StateHasChanged();
-        SendModal?.Show();
+        await InvokeAsync(StateHasChanged);
+        await SendModal.Show();
     }
     public void Hide()
     {
         SendModal?.Hide();
     }
 
-    void SetTxType(TxType type, string tokenId, string imageUrl, double assetAmount, string tokenSymbol)
+    async Task SetTxType(TxType type, string tokenId, string imageUrl, double assetAmount, string tokenSymbol)
     {
         Type = type;
         if (type == TxType.Token)
@@ -332,7 +332,7 @@
         selectedAssetTokenSymbol = tokenSymbol;
         selectedAssetAmount = assetAmount;
         Value = 0.0;
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
     }
 
     async Task TabChanged(string tab)
@@ -357,7 +357,7 @@
             selectedAssetAmount = asset?.Amount ?? 0.0;
             TokenId = asset?.TokenId ?? NFTHelpers.TokenId;
         }
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
     }
 
     async Task Action()

@@ -14,25 +14,25 @@
                     <Field>
                         <FieldLabel>First Name</FieldLabel>
                         <FieldBody>
-                            <TextEdit Placeholder="Enter your First Name" @bind-Text="Name" @onchange="nameChanged" />
+                            <TextEdit Placeholder="Enter your First Name" @bind-Text="NFT.Name" @onchange="nameChanged" />
                         </FieldBody>
                     </Field>
                     <Field>
                         <FieldLabel>Surname</FieldLabel>
                         <FieldBody>
-                            <TextEdit Placeholder="Enter your Surame" @bind-Text="Surname" @onchange="surnameChanged" />
+                            <TextEdit Placeholder="Enter your Surame" @bind-Text="@((NFT as ProfileNFT).Surname)" @onchange="surnameChanged" />
                         </FieldBody>
                     </Field>
                     <Field>
                         <FieldLabel>Nickname</FieldLabel>
                         <FieldBody>
-                            <TextEdit Placeholder="Enter your Nickname" @bind-Text="Nickname" @onchange="nicknameChanged" />
+                            <TextEdit Placeholder="Enter your Nickname" @bind-Text="@((NFT as ProfileNFT).Nickname)" @onchange="nicknameChanged" />
                         </FieldBody>
                     </Field>
                     <Field>
                         <FieldLabel>Bio</FieldLabel>
                         <FieldBody>
-                            <MemoEdit Placeholder="Enter your Bio" Rows="7" @bind-Text="Description" @onchange="descriptionChanged" />
+                            <MemoEdit Placeholder="Enter your Bio" Rows="7" @bind-Text="@((NFT as ProfileNFT).Description)" @onchange="descriptionChanged" />
                         </FieldBody>
                     </Field>
                 </Column>
@@ -96,31 +96,6 @@
 
     [Inject] IPageProgressService? PageProgressService { get; set; }
 
-    string _name = string.Empty;
-    [Parameter]
-    public string Name { get => _name; set => _name = value; }
-    [Parameter]
-    public EventCallback<string> NameChanged { get; set; }
-
-    string _surname = string.Empty;
-    [Parameter]
-    public string Surname { get => _surname; set => _surname = value; }
-    [Parameter]
-    public EventCallback<string> SurnameChanged { get; set; }
-
-    string _nickname = string.Empty;
-    [Parameter]
-    public string Nickname { get => _nickname; set => _nickname = value; }
-    [Parameter]
-    public EventCallback<string> NicknameChanged { get; set; }
-
-
-    string _description = string.Empty;
-    [Parameter]
-    public string Description { get => _description; set => _description = value; }
-    [Parameter]
-    public EventCallback<string> DescriptionChanged { get; set; }
-
     bool mintingChanges = false;
     bool minted = false;
     string result = string.Empty;
@@ -133,47 +108,42 @@
         if (modalRef != null)
             await modalRef.Show();
     }
-
+    
     async Task nameChanged( ChangeEventArgs e )
     {
         if (e == null || e.Value == null) return;
-
-        AppData.Account.Profile.Name = (string)e.Value;
+        
         NFT.Name = (string)e.Value;
-        await NameChanged.InvokeAsync( (string)e.Value );
+        await NFTChanged.InvokeAsync( NFT );
     }
     async Task surnameChanged( ChangeEventArgs e )
     {
         if (e == null || e.Value == null) return;        
-
-        AppData.Account.Profile.Surname = (string)e.Value;
+        
         ( NFT as ProfileNFT ).Surname = (string)e.Value;
-        await SurnameChanged.InvokeAsync( (string)e.Value );
+        await NFTChanged.InvokeAsync( NFT );
     }
     async Task nicknameChanged( ChangeEventArgs e )
     {
         if (e == null || e.Value == null) return;
 
-        AppData.Account.Profile.Nickname = (string)e.Value;
         ( NFT as ProfileNFT ).Nickname = (string)e.Value;
-        await NicknameChanged.InvokeAsync( (string)e.Value );
+        await NFTChanged.InvokeAsync( NFT );
     }
     async Task descriptionChanged( ChangeEventArgs e )
     {
         if (e == null || e.Value == null) return;        
 
-        AppData.Account.Profile.Description = (string)e.Value;
         NFT.Description = (string)e.Value;
-        await DescriptionChanged.InvokeAsync( (string)e.Value );
+        await NFTChanged.InvokeAsync( NFT );
     }
     void NFTChangedHandler( INFT e )
     {
         if ( e is null )
             return;
-
+            
         NFT = e;
-        if (e.Type == NFTTypes.Profile)
-            AppData.Account.Profile = (e as ProfileNFT);
+        NFTChanged.InvokeAsync( NFT );
     }
     async Task MintProfile()
     {
@@ -218,12 +188,12 @@
         if ( res.Item1 )
         {
             Console.WriteLine( "Profile saved. Txid: " + result );
-            NFT.Utxo = result;
-            StateHasChanged();
+            
+            await InvokeAsync(StateHasChanged);
             await Task.Delay(2000); //to let read success message in modal before hide
             
-            await NFTChanged.InvokeAsync( NFT );
-            AppData.Account.Profile.Utxo = result;
+            NFT.Utxo = result;
+            await NFTChanged.InvokeAsync( NFT );            
             if (modalRef != null)
                 await modalRef.Hide();
         }
@@ -236,6 +206,6 @@
         if (PageProgressService != null)
             await PageProgressService.Go( -1 );
         mintingChanges = false;
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
     }
 }

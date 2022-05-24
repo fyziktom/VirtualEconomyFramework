@@ -108,7 +108,12 @@ namespace VEFramework.VEBlazor.Components.Base
                     foreach (var item in NFT.DataItems)
                     {
                         if (item.IsMain)
-                            return NFTHelpers.GetIPFSLinkFromHash(item.Hash);
+                        {
+                            if (item.Storage == DataItemStorageType.IPFS)
+                                return NFTHelpers.GetIPFSLinkFromHash(item.Hash);
+                            else if (item.Storage == DataItemStorageType.Url)
+                                return item.Hash;
+                        }                            
                     }
                     if (NFT.DataItems.Count > 0)
                     {
@@ -143,7 +148,12 @@ namespace VEFramework.VEBlazor.Components.Base
                 foreach (var item in nft.DataItems)
                 {
                     if (item.IsMain)
-                        return NFTHelpers.GetIPFSLinkFromHash(item.Hash);
+                    {
+                        if (item.Storage == DataItemStorageType.IPFS)
+                            return NFTHelpers.GetIPFSLinkFromHash(item.Hash);
+                        else if (item.Storage == DataItemStorageType.Url)
+                            return item.Hash;
+                    }
                 }
                 if (nft.DataItems.Count > 0)
                 {
@@ -191,14 +201,14 @@ namespace VEFramework.VEBlazor.Components.Base
         public bool Loading = false;
         public NFTCard? nftCard;        
 
-        public void LoadNFT(INFT nft)
+        public async Task LoadNFT(INFT nft)
         {
             if (nft != null)
             {
                 NFT = nft;
                 Utxo = NFT.Utxo;
                 UtxoIndex = NFT.UtxoIndex;
-                StateHasChanged();
+                await InvokeAsync( StateHasChanged );
             }
         }
 
@@ -215,14 +225,14 @@ namespace VEFramework.VEBlazor.Components.Base
                 if (NFT != null)
                 {
                     if (nftCard != null)
-                        nftCard.LoadNFT(NFT);
+                        await nftCard.LoadNFT(NFT);
                 }
                 else
                     NFT = new ImageNFT("");
                 
                 Loading = false;
             }
-            StateHasChanged();
+            await InvokeAsync( StateHasChanged );
         }
         
         /// <summary>
@@ -338,7 +348,7 @@ namespace VEFramework.VEBlazor.Components.Base
             else if (NFT == null && nft != null)
             {
                 NFT = nft;
-                StateHasChanged();
+                InvokeAsync( StateHasChanged );
             }
 
             if (nft != null)

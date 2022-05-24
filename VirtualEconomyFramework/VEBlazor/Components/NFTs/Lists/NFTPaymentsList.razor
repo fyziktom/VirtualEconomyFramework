@@ -162,15 +162,15 @@ else
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        Load();
+        await Load();
     }
 
-    public void Load()
+    public async Task Load()
     {
         var pit = (double)PaymentNFTs.Count() / PerPage + ( PaymentNFTs.Count() % PerPage > 0 ? 1 : 0 );
         if (pit > 5) pit = 5;
         pageItems = Convert.ToInt32( pit > 1 ? pit : 1 );
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
     }
 
     private async Task ShowNFTDetails( INFT nft )
@@ -186,7 +186,7 @@ else
     private async Task HandlePaginationChanged( int offset )
     {
         Offset = offset;
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
     }
 
     private bool IsPageNavigationDisabled( string navigation )

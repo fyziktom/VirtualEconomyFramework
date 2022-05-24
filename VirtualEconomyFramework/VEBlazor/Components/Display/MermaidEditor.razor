@@ -39,7 +39,7 @@
     [Parameter] public EventCallback<string> OnDataSaved { get; set; }
 
     PanzoomMermaid? mermaidViewRef;
-    Markdown markdownRef;
+    Markdown? markdownRef;
 
     string selectedTab = "preview";
     string originalText = string.Empty;
@@ -98,10 +98,11 @@
         await InvokeAsync(StateHasChanged);
     }
 
-    void TabChanged(string tab)
+    Task TabChanged(string tab)
     {    
         selectedTab = tab;
-        StateHasChanged();
+
+        return Task.CompletedTask;
     }
 
     public async Task Save()

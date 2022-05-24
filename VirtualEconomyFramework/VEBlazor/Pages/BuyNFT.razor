@@ -406,18 +406,19 @@
     {    
         if (nft != null && openNFTDetailsFactory != null)
         {        
-            StateHasChanged();
-            await openNFTDetailsFactory?.OpenNFTDetails(NFT);
+            await InvokeAsync(StateHasChanged);
+            await openNFTDetailsFactory.OpenNFTDetails(NFT);
         }
     }
     
-    void NFTRefreshedHandler(object sender, string e)
+    async void NFTRefreshedHandler(object sender, string e)
     {
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
     }
-    void RefreshedHandler(object sender, EventArgs e)
+    
+    async void RefreshedHandler(object sender, EventArgs e)
     {
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
     }
 
     bool IsInThePayments()
@@ -446,11 +447,11 @@
 
             receiver = await NeblioAPIHelpers.GetTransactionReceiver(NFT.Utxo, NFT.TxDetails);
 
-            var r = await NeblioAPIHelpers.ValidateOneTokenNFTUtxo(receiver, NFT.TokenId, NFT.Utxo, NFT.UtxoIndex);
-            if (r != 0)
-                isPossibleToBuy = false;
-            else
+            var r = await NeblioTransactionHelpers.ValidateOneTokenNFTUtxo(receiver, NFT.TokenId, NFT.Utxo, NFT.UtxoIndex);
+            if (r >= 0)
                 isPossibleToBuy = true;
+            else
+                isPossibleToBuy = false;
             
             tab = new ActiveTab(receiver);
             tab.MaxLoadedNFTItems = 5;
@@ -511,7 +512,7 @@
                 await NotificationService.Info( "Sending payment...", "Sending Payment" );
                 
             sendingTransaction = true;
-            StateHasChanged();
+            await InvokeAsync(StateHasChanged);
             (bool, string) res = (false, string.Empty);
             switch (PaymentCurrency)
             {
@@ -526,7 +527,7 @@
                 txid = string.Empty;
                 sucessfullSend = false;
                 if ( NotificationService != null )                
-                await NotificationService.Warning( res.Item2, "Cannot send" );
+                    await NotificationService.Warning( res.Item2, "Cannot send" );
             }
             else
             {
@@ -553,12 +554,12 @@
         if (!string.IsNullOrEmpty(redirect))
         {
             redirectModalRef?.Show();
-            StateHasChanged();
+            await InvokeAsync(StateHasChanged);
             while (redirectingBackToShopCountDown > 0)
             {
                 await Task.Delay(1000);
                 redirectingBackToShopCountDown--;
-                StateHasChanged();
+                await InvokeAsync(StateHasChanged);
             }
             NavManager.NavigateTo(redirect);
         }

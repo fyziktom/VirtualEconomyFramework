@@ -6,7 +6,7 @@
     @GetTokenBadge()
     <Badge Color="Color.Success" Margin="Margin.Is1.FromEnd">NFT</Badge>
     <NFTCardBadge Margin="Margin.Is1.FromEnd" NFTType="@NFTType" />
-    @if (IsGallery)
+    @if (IsGallery && NFTType != NFTTypes.App)
     {
         <Badge Color="Color.Success" Margin="Margin.Is1.FromEnd">Gallery</Badge>
     }

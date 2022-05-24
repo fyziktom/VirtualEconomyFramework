@@ -70,12 +70,12 @@
     {
         await TimeChanged.InvokeAsync( e );
     }
-    public void SetValues(double voltage, double current, double time)
+    public async Task SetValues(double voltage, double current, double time)
     {
         Voltage = voltage;
         Current = current;
         Time = time;
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
     }
 
 }

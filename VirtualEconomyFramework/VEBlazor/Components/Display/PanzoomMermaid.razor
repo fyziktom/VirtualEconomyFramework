@@ -17,8 +17,8 @@
     [Parameter] public string Text { get; set; } = string.Empty;
     [Parameter] public int InitWidth { get; set; } = 800;
     [Parameter] public int InitHeight { get; set; } = 400;
-    
-    public string NFTTextMarkuptext => Markdig.Markdown.ToHtml( Text , new MarkdownPipelineBuilder().UseAdvancedExtensions().Build());
+
+    public string NFTTextMarkuptext => Markdig.Markdown.ToHtml( Text ?? string.Empty , new MarkdownPipelineBuilder().UseAdvancedExtensions().Build());
 
     Panzoom? _panzoom;
 
