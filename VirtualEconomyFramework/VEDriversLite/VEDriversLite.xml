@@ -2395,56 +2395,6 @@
             Total amount of all lots together
             </summary>
         </member>
-        <member name="T:VEDriversLite.Dto.TokenOwnerDto">
-            <summary>
-            Dto for info about owner of some kind of the tokens
-            </summary>
-        </member>
-        <member name="P:VEDriversLite.Dto.TokenOwnerDto.Address">
-            <summary>
-            Address of the Owner
-            </summary>
-        </member>
-        <member name="P:VEDriversLite.Dto.TokenOwnerDto.ShortenAddress">
-            <summary>
-            Shorten Address of the Owner
-            </summary>
-        </member>
-        <member name="P:VEDriversLite.Dto.TokenOwnerDto.AmountOfTokens">
-            <summary>
-            Amount of the tokens on the Owner Address
-            </summary>
-        </member>
-        <member name="P:VEDriversLite.Dto.TokenOwnerDto.AmountOfNFTs">
-            <summary>
-            Amount of the NFTs on the Owner Address
-            </summary>
-        </member>
-        <member name="T:VEDriversLite.Dto.TokenSupplyDto">
-            <summary>
-            Dto for info about actual Token supply on address
-            </summary>
-        </member>
-        <member name="P:VEDriversLite.Dto.TokenSupplyDto.TokenSymbol">
-            <summary>
-            Symbol of token - up to 5 unique letters
-            </summary>
-        </member>
-        <member name="P:VEDriversLite.Dto.TokenSupplyDto.TokenId">
-            <summary>
-            Token Id hash
-            </summary>
-        </member>
-        <member name="P:VEDriversLite.Dto.TokenSupplyDto.Amount">
-            <summary>
-            Amount of tokens available
-            </summary>
-        </member>
-        <member name="P:VEDriversLite.Dto.TokenSupplyDto.ImageUrl">
-            <summary>
-            Token icon image url
-            </summary>
-        </member>
         <member name="T:VEDriversLite.KeyDto">
             <summary>
             Key export import Dto
@@ -4195,50 +4145,19 @@
             <param name="interval">Default interval is 3000 = 3 seconds</param>
             <returns></returns>
         </member>
-        <member name="T:VEDriversLite.Neblio.NeblioTransactionsCache">
-            <summary>
-            This class will query Neblio API with the input address, stores the BlockHeight from address's latest Utxo in Cache.
-            Cache will expiry for every 10 seconds so when accessed system will check cache and return the latest blockheight 
-            </summary>
-        </member>
-        <member name="M:VEDriversLite.Neblio.NeblioTransactionsCache.LatestBlockHeight(System.String,System.String)">
-            <summary>
-            Method will check if the data for current address is available in cache and returns the blockheight, IF not avaialble then retrievs from API.
-            </summary>
-            <param name="address">The address for which we need the latest block height</param>
-            <param name="utxo"></param>
-            <returns></returns>
-        </member>
-        <member name="M:VEDriversLite.Neblio.NeblioTransactionsCache.SetChacheValue(System.String,System.Object)">
-            <summary>
-            Set value in the cache
-            </summary>
-            <param name="key"></param>
-            <param name="value"></param>
-        </member>
         <member name="T:VEDriversLite.NeblioTransactionHelpers">
             <summary>
             Main Helper class for the Neblio Blockchain Transactions
             </summary>
+        </member>
+        <member name="F:VEDriversLite.NeblioTransactionHelpers.Network">
             <summary>
-            Main Helper class for the Neblio Blockchain Transactions
+            NBitcoin Instance of Mainet Network of Neblio
             </summary>
         </member>
-        <member name="F:VEDriversLite.NeblioTransactionHelpers.TurnOnCache">
+        <member name="F:VEDriversLite.NeblioTransactionHelpers.FromSatToMainRatio">
             <summary>
-            Turn on and off of the cache for address info, transaction info and metadata of the transaction
-            If it is true the cache is on. It is default state.
-            Usually it is important to turn it off just for unit tests which uses simulated address and tx data
-            </summary>
-        </member>
-        <member name="F:VEDriversLite.NeblioTransactionHelpers.MaximumTokensOutpus">
-            <summary>
-            Maximum number of outputs which carry some token in the Neblio transaction
-            </summary>
-        </member>
-        <member name="F:VEDriversLite.NeblioTransactionHelpers.MaximumNeblioOutpus">
-            <summary>
-            Maximum number of outputs without tokens in the Neblio transaction
+            Conversion ration for Neblio to convert from sat to 1 NEBL
             </summary>
         </member>
         <member name="F:VEDriversLite.NeblioTransactionHelpers.MinimumAmount">
@@ -4246,49 +4165,10 @@
             Minimum amount in Satoshi on Neblio Blockchain
             </summary>
         </member>
-        <member name="F:VEDriversLite.NeblioTransactionHelpers.TransactionInfoCache">
-            <summary>
-            Transaction info cache. If the tx was already loaded it will remember it if it has more than MinimumConfirmations
-            </summary>
-        </member>
-        <member name="F:VEDriversLite.NeblioTransactionHelpers.TokenTxMetadataCache">
-            <summary>
-            Token metadata cache. It is same all the time for the specific hash of the tx
-            </summary>
-        </member>
-        <member name="F:VEDriversLite.NeblioTransactionHelpers.AddressInfoCache">
-            <summary>
-            Address info cache. It will save for at least one second address info. If it is older, it will reqeuest new info.
-            </summary>
-        </member>
         <member name="E:VEDriversLite.NeblioTransactionHelpers.NewEventInfo">
             <summary>
             Main event info handler
             </summary>
-        </member>
-        <member name="M:VEDriversLite.NeblioTransactionHelpers.IsEnoughConfirmationsForSend(System.Int32)">
-            <summary>
-            Check if the number of the confirmation is enough for doing transactions.
-            It mainly usefull for UI stuff or console.
-            </summary>
-            <param name="confirmations"></param>
-            <returns></returns>
-        </member>
-        <member name="M:VEDriversLite.NeblioTransactionHelpers.ShortenAddress(System.String)">
-            <summary>
-            Create short version of address, 3 chars on start...3 chars on end
-            </summary>
-            <param name="address"></param>
-            <returns></returns>
-        </member>
-        <member name="M:VEDriversLite.NeblioTransactionHelpers.ShortenTxId(System.String,System.Boolean,System.Int32)">
-            <summary>
-            Create short version of txid hash, 3 chars on start...3 chars on end
-            </summary>
-            <param name="txid"></param>
-            <param name="withDots">default true. add .... between start and end of the tx hash</param>
-            <param name="len">Length of the result shortened tx hash</param>
-            <returns></returns>
         </member>
         <member name="M:VEDriversLite.NeblioTransactionHelpers.CalcFee(System.Int32,System.Int32,System.String,System.Boolean)">
             <summary>
@@ -4300,14 +4180,6 @@
             <param name="numOfOutputs">Number of outpus of the transaction "out" vector</param>
             <param name="customMessageInOPReturn">Custom message - "OP_RETURN" output</param>
             <param name="isTokenTransaction">Token transaction will add another output for getting back the tokens</param>
-            <returns></returns>
-        </member>
-        <member name="M:VEDriversLite.NeblioTransactionHelpers.GetTransactionMetadata(System.String,System.String)">
-            <summary>
-            Returns metadata in the token transction
-            </summary>
-            <param name="tokenid">token id hash</param>
-            <param name="txid">tx id hash</param>
             <returns></returns>
         </member>
         <member name="M:VEDriversLite.NeblioTransactionHelpers.GetAddressAndKey(VEDriversLite.Security.EncryptionKey,System.String)">
@@ -4326,264 +4198,6 @@
             </summary>
             <param name="ekey"></param>
             <returns></returns>
-        </member>
-        <member name="M:VEDriversLite.NeblioTransactionHelpers.BroadcastSignedTransaction(System.String)">
-            <summary>
-            Function will take hex of signed transaction and broadcast it via Neblio API
-            </summary>
-            <param name="txhex"></param>
-            <returns></returns>
-        </member>
-        <member name="M:VEDriversLite.NeblioTransactionHelpers.GetSendTokenObject(System.Double,System.Double,System.String,System.String)">
-            <summary>
-            Function prepares SendTokenRequest object. It is important to initialitze correct inside properties
-            </summary>
-            <param name="amount">Amount to send</param>
-            <param name="fee">Fee - min 10000, with metadata you need at least 20000</param>
-            <param name="receiver">Receiver of the amount</param>
-            <param name="tokenId">Token Id hash</param>
-            <returns></returns>
-        </member>
-        <member name="M:VEDriversLite.NeblioTransactionHelpers.GetClient">
-            <summary>
-            Returns private client for Neblio API. If it is null, it will create new instance.
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:VEDriversLite.NeblioTransactionHelpers.GetClient(VEDriversLite.NeblioAPI.IClient)">
-            <summary>
-            This method is written for Unit tests to pass in Mock client object
-            </summary>
-            <param name="client"></param>
-        </member>
-        <member name="M:VEDriversLite.NeblioTransactionHelpers.SendRawNTP1TxAsync(VEDriversLite.NeblioAPI.SendTokenRequest)">
-            <summary>
-            Send request for creating RAW token transaction
-            </summary>
-            <param name="data"></param>
-            <returns></returns>
-        </member>
-        <member name="M:VEDriversLite.NeblioTransactionHelpers.BroadcastNTP1TxAsync(VEDriversLite.NeblioAPI.BroadcastTxRequest)">
-            <summary>
-            Broadcast of signed transaction. Works for Neblio and Token transactions.
-            </summary>
-            <param name="data"></param>
-            <returns></returns>
-        </member>
-        <member name="M:VEDriversLite.NeblioTransactionHelpers.AddressInfoAsync(System.String)">
-            <summary>
-            Return Address info object. Contains list of all transactions
-            </summary>
-            <param name="addr"></param>
-            <returns></returns>
-        </member>
-        <member name="M:VEDriversLite.NeblioTransactionHelpers.AddressInfoUtxosAsync(System.String)">
-            <summary>
-            Return address info object. this object contains list of Utxos.
-            </summary>
-            <param name="addr"></param>
-            <returns></returns>
-        </member>
-        <member name="M:VEDriversLite.NeblioTransactionHelpers.GetAddressUtxosObjects(System.String)">
-            <summary>
-            Return list of Utxos object.
-            </summary>
-            <param name="addr"></param>
-            <returns></returns>
-        </member>
-        <member name="M:VEDriversLite.NeblioTransactionHelpers.GetAddressTokensUtxos(System.String,VEDriversLite.NeblioAPI.GetAddressInfoResponse)">
-            <summary>
-            Returns list of all Utxos which contains some tokens
-            </summary>
-            <param name="addr"></param>
-            <param name="addressinfo"></param>
-            <returns></returns>
-        </member>
-        <member name="M:VEDriversLite.NeblioTransactionHelpers.GetTxHex(System.String)">
-            <summary>
-            Return transaction Hex
-            </summary>
-            <param name="txid"></param>
-            <returns></returns>
-        </member>
-        <member name="M:VEDriversLite.NeblioTransactionHelpers.GetAddressNFTsUtxos(System.String,System.Collections.Generic.List{System.String},VEDriversLite.NeblioAPI.GetAddressInfoResponse)">
-            <summary>
-            Returns list of all Utxos which contains just one token, means amount = 1
-            </summary>
-            <param name="addr"></param>
-            <param name="allowedTokens">Load just the allowed tokens</param>
-            <param name="addressinfo"></param>
-            <returns></returns>
-        </member>
-        <member name="M:VEDriversLite.NeblioTransactionHelpers.IsValidUtxo(System.Double,System.Double)">
-            <summary>
-            Does UTXO has enough confirmations? Based on the utxo block height and current block height.
-            </summary>
-            <param name="UtxoBlockHeight"></param>
-            <param name="latestBlockCount"></param>
-            <returns></returns>
-        </member>
-        <member name="M:VEDriversLite.NeblioTransactionHelpers.GetAddressNeblUtxo(System.String,System.Double,System.Double,VEDriversLite.NeblioAPI.GetAddressInfoResponse,System.Double)">
-            <summary>
-            Returns list of spendable utxos which together match some input required amount for some transaction
-            </summary>
-            <param name="address">address which has utxos for spend - sender in tx</param>
-            <param name="addinfo">If you already have loaded addinfo pass it</param>
-            <param name="latestBlockHeight"></param>
-            <param name="minAmount">minimum amount of one utxo</param>
-            <param name="requiredAmount">amount what must be collected even by multiple utxos</param>
-            <returns></returns>
-        </member>
-        <member name="M:VEDriversLite.NeblioTransactionHelpers.ValidateOneTokenNFTUtxo(System.String,System.String,System.String,System.Int32,VEDriversLite.NeblioAPI.GetAddressInfoResponse,System.Double)">
-            <summary>
-            Check if the NFT token is spendable. Means utxos with token amount = 1
-            </summary>
-            <param name="address">address which should have this utxo</param>
-            <param name="addinfo">if you already have addinfo pass it</param>
-            <param name="latestBlockHeight"></param>
-            <param name="tokenId">input token id hash</param>
-            <param name="txid">input txid hash</param>
-            <param name="indx"></param>
-            <returns>true and index of utxo</returns>
-        </member>
-        <member name="M:VEDriversLite.NeblioTransactionHelpers.FindUtxoForMintNFT(System.String,System.String,System.Int32,System.Double,VEDriversLite.NeblioAPI.GetAddressInfoResponse,System.Double)">
-            <summary>
-            Find utxo which can be used for minting. It means it has token amount > 1
-            </summary>
-            <param name="addr">address which has utxos</param>
-            <param name="tokenId">token id hash</param>
-            <param name="numberToMint">number of tokens which will be minted - because of multimint</param>
-            <param name="oneTokenSat">this is usually default. On Neblio all token tx should have value 10000sat</param>
-            <param name="addinfo"></param>
-            <param name="latestBlockHeight"></param>
-            <returns></returns>
-        </member>
-        <member name="M:VEDriversLite.NeblioTransactionHelpers.GetTokenMetadataOfUtxoCache(System.String,System.String,System.Double)">
-            <summary>
-            Get token metadata from the specific transaction cache logic
-            </summary>
-            <param name="tokenid"></param>
-            <param name="txid"></param>
-            <param name="verbosity"></param>
-            <returns></returns>
-        </member>
-        <member name="M:VEDriversLite.NeblioTransactionHelpers.GetLastSentTransaction(System.String)">
-            <summary>
-            Find last send transaction by some address.
-            This is usefull to obtain address public key from signature of input.
-            </summary>
-            <param name="address">Searched address</param>
-            <returns>NBitcoin Transaction object</returns>
-        </member>
-        <member name="M:VEDriversLite.NeblioTransactionHelpers.GetTransactionInfo(System.String)">
-            <summary>
-            Get transaction info.
-            </summary>
-            <param name="txid">tx id hash</param>
-            <returns>Neblio API GetTransactionInfo object</returns>
-        </member>
-        <member name="M:VEDriversLite.NeblioTransactionHelpers.GetTransactionInternal(System.String,System.String,VEDriversLite.NeblioAPI.GetTransactionInfoResponse)">
-            <summary>
-            
-            </summary>
-            <param name="txid"></param>
-            <param name="mode"></param>
-            <param name="txinfo"></param>
-            <returns></returns>
-        </member>
-        <member name="M:VEDriversLite.NeblioTransactionHelpers.GetTransactionSender(System.String,VEDriversLite.NeblioAPI.GetTransactionInfoResponse)">
-            <summary>
-            Get transaction sender.
-            </summary>
-            <param name="txid">tx id hash</param>
-            <param name="txinfo">if you already have txinfo object</param>
-            <returns>Sender address</returns>
-        </member>
-        <member name="M:VEDriversLite.NeblioTransactionHelpers.GetTransactionReceiver(System.String,VEDriversLite.NeblioAPI.GetTransactionInfoResponse)">
-            <summary>
-            Get transaction sender.
-            </summary>
-            <param name="txid">tx id hash</param>
-            <param name="txinfo">if you already have txinfo object</param>
-            <returns>Sender address</returns>
-        </member>
-        <member name="F:VEDriversLite.NeblioTransactionHelpers.TokenMetadataCache">
-            <summary>
-            Token Metadata cache list
-            </summary>
-        </member>
-        <member name="M:VEDriversLite.NeblioTransactionHelpers.GetTokenMetadata(System.String)">
-            <summary>
-            Get token issue metadata. Contains image url, issuer, and other info
-            </summary>
-            <param name="tokenId">token id hash</param>
-            <returns></returns>
-        </member>
-        <member name="M:VEDriversLite.NeblioTransactionHelpers.LoadAllowedTokensInfo(System.Collections.Generic.List{System.String})">
-            <summary>
-            Load informations about allowed tokens.
-            </summary>
-            <param name="tokenIds">List of allowed tokens to works with.</param>
-            <returns></returns>
-        </member>
-        <member name="M:VEDriversLite.NeblioTransactionHelpers.GetTokenInfo(System.String)">
-            <summary>
-            Get token info. Contains image url, issuer, and other info
-            </summary>
-            <param name="tokenId">token id hash</param>
-            <returns></returns>
-        </member>
-        <member name="M:VEDriversLite.NeblioTransactionHelpers.GetActualMintingSupply(System.String,System.String,VEDriversLite.NeblioAPI.GetAddressInfoResponse)">
-            <summary>
-            check actual supply for minting on some address. It is just for VENFT tokens now. 
-            Function will also load token metadta if it has not loaded yet.
-            </summary>
-            <param name="address">address which has utxos</param>
-            <param name="tokenId">Specify the tokenId</param>
-            <param name="addressinfo">if you have already loaded address info with utxo list provide it to prevent unnecessary API requests</param>
-            <returns></returns>
-        </member>
-        <member name="M:VEDriversLite.NeblioTransactionHelpers.CheckTokensSupplies(System.String,VEDriversLite.NeblioAPI.GetAddressInfoResponse)">
-            <summary>
-            Check supply of all tokens on address.
-            </summary>
-            <param name="address">address which has utxos</param>
-            <param name="addressinfo">if you have already loaded address info with utxo list provide it to prevent unnecessary API requests</param>
-            <returns></returns>
-        </member>
-        <member name="M:VEDriversLite.NeblioTransactionHelpers.GetTokenOwnersList(System.String)">
-            <summary>
-            Return VENFT top owners. It eliminate some testing addresses.
-            </summary>
-            <param name="tokenId">Token Id hash</param>
-            <returns></returns>
-        </member>
-        <member name="M:VEDriversLite.NeblioTransactionHelpers.GetTokenOwners(System.String)">
-            <summary>
-            Return VENFT top owners. It eliminate some testing addresses.
-            </summary>
-            <param name="tokenId">Token Id hash</param>
-            <returns></returns>
-        </member>
-        <member name="F:VEDriversLite.NeblioTransactionHelpers.Network">
-            <summary>
-            NBitcoin Instance of Mainet Network of Neblio
-            </summary>
-        </member>
-        <member name="F:VEDriversLite.NeblioTransactionHelpers.FromSatToMainRatio">
-            <summary>
-            Conversion ration for Neblio to convert from sat to 1 NEBL
-            </summary>
-        </member>
-        <member name="F:VEDriversLite.NeblioTransactionHelpers.MinimumConfirmations">
-            <summary>
-            Minimum number of confirmation to send the transaction
-            </summary>
-        </member>
-        <member name="F:VEDriversLite.NeblioTransactionHelpers.TokensInfo">
-            <summary>
-            Tokens Info for all already loaded tokens
-            </summary>
         </member>
         <member name="M:VEDriversLite.NeblioTransactionHelpers.GetTransactionWithNeblioInputs(System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},NBitcoin.BitcoinAddress)">
             <summary>
@@ -4753,6 +4367,14 @@
             <param name="mintingUtxo"></param>
             <returns></returns>
             <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:VEDriversLite.NeblioTransactionHelpers.GetLastSentTransaction(System.String)">
+            <summary>
+            Find last send transaction by some address.
+            This is usefull to obtain address public key from signature of input.
+            </summary>
+            <param name="address">Searched address</param>
+            <returns>NBitcoin Transaction object</returns>
         </member>
         <member name="M:VEDriversLite.NeblioTransactionHelpers.IsPrivateKeyValid(System.String)">
             <summary>

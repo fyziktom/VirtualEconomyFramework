@@ -1885,6 +1885,52 @@ namespace VEDriversLite
 
         ///////////////////////////////////////////
         // Tools for addresses
+
+        /// <summary>
+        /// Find last send transaction by some address.
+        /// This is usefull to obtain address public key from signature of input.
+        /// </summary>
+        /// <param name="address">Searched address</param>
+        /// <returns>NBitcoin Transaction object</returns>
+        public static async Task<Transaction> GetLastSentTransaction(string address)
+        {
+            if (string.IsNullOrEmpty(address))
+            {
+                return null;
+            }
+
+            try
+            {
+                var addinfo = await NeblioAPIHelpers.GetClient().GetAddressAsync(address);
+                if (addinfo == null || addinfo.Transactions.Count == 0)
+                {
+                    return null;
+                }
+
+                foreach (var t in addinfo.Transactions)
+                {
+                    var th = await NeblioAPIHelpers.GetTxHex(t);
+                    var ti = Transaction.Parse(th, Network);
+                    if (ti != null)
+                    {
+                        if (ti.Inputs[0].ScriptSig.GetSignerAddress(Network).ToString() == address)
+                        {
+                            return ti;
+                        }
+                    }
+                }
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Cannot load tx info. " + ex.Message);
+                return null;
+            }
+        }
+
+
+
         /// <summary>
         /// Check if the private key is valid for the Neblio Network
         /// </summary>

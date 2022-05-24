@@ -1481,7 +1481,7 @@ namespace VEDriversLite.NFT
         /// <returns></returns>
         public static async Task<(bool, PubKey)> GetPubKeyFromLastFoundTx(string address)
         {
-            var tx = await NeblioAPIHelpers.GetLastSentTransaction(address);
+            var tx = await NeblioTransactionHelpers.GetLastSentTransaction(address);
             //var profile = await FindProfileNFT(nfts);
             if (tx == null)
                 return (false, null);
