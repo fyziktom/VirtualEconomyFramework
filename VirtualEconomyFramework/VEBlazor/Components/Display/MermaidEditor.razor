@@ -39,7 +39,7 @@
     [Parameter] public EventCallback<string> OnDataSaved { get; set; }
 
     PanzoomMermaid? mermaidViewRef;
-    Markdown markdownRef;
+    Markdown? markdownRef;
 
     string selectedTab = "preview";
     string originalText = string.Empty;

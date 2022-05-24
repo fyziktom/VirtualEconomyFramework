@@ -143,20 +143,29 @@
     JsonViewer? JsonViewerRef;
     MermaidEditor? mermaidTextRef;
 
-    VEDriversLite.NFT.Dto.NFTDataItem displayedItem = null;
+    VEDriversLite.NFT.Dto.NFTDataItem? displayedItem;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        await base.OnAfterRenderAsync(firstRender);
+
         if (firstRender)
         {
             if (NFT != null && NFT.DataItems != null && NFT.DataItems.Count > 0)
             {
-                var item = NFT.DataItems.FirstOrDefault();
-                if (item != null)
-                    await DisplayItem(item);
+                var it = NFT.DataItems.Where(d => d.IsMain)?.FirstOrDefault();
+                if (it == null)
+                {
+                    var item = NFT.DataItems.FirstOrDefault();
+                    if (item != null)
+                        await DisplayItem(item);
+                }
+                else
+                {
+                    await DisplayItem(it);
+                }
             }
         }
-        await base.OnAfterRenderAsync(firstRender);
     }
 
     async Task DisplayItem(VEDriversLite.NFT.Dto.NFTDataItem item)
@@ -166,26 +175,28 @@
 
         item.IsMain = true;
         displayedItem = item;
+        await Task.Delay(1);        
         await InvokeAsync( StateHasChanged );
         
         NFT.ImageLink = NFTHelpers.GetIPFSLinkFromHash(item.Hash); 
-        if (actualFileType == DataItemType.JSON)
+        if (displayedItem.Type == DataItemType.JSON)
         {
             var data = await Http.GetStringAsync(NFT.ImageLink);
             if (JsonViewerRef != null)
                 await JsonViewerRef.Render(data);
         }
-        if (item.Type == DataItemType.Mermaid)
+        else if (displayedItem.Type == DataItemType.Mermaid)
         {
             if (mermaidTextRef != null)
                 await mermaidTextRef.LoadFromIPFS(item.Hash);
         }
-        else if (item.Type == DataItemType.BlazorApp)
+        else if (displayedItem.Type == DataItemType.BlazorApp)
         {
             if (item.Storage == DataItemStorageType.Url)
                 NFT.ImageLink = item.Hash;
         }
         
+        await Task.Delay(1); 
         await InvokeAsync( StateHasChanged );
     }  
 

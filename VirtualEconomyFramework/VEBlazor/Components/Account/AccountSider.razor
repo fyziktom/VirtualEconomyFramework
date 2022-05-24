@@ -172,7 +172,8 @@
     {
         AppData.Account.Refreshed -= RefreshedHandler;
         AppData.Account.Refreshed += RefreshedHandler;   
-        await nftPaymentsList.Load();
+        if (nftPaymentsList != null)
+            await nftPaymentsList.Load();
         await base.OnInitializedAsync();
     }
 
