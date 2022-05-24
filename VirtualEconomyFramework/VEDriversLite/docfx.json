@@ -3,9 +3,13 @@
     {
       "src": [
         {
-          "src": "../../",
+          "src": "..",
           "files": [
-            "**.csproj"
+            "VEDriversLite/**.csproj",
+            "VEDriversLite.NeblioAPI/VEDriversLite.NeblioAPI.csproj",
+            "VEDriversLite.Extensions.WooCommerce/VEDriversLite.Extensions.WooCommerce.csproj",
+            "VEDriversLite.Cryptocurrencies/VEDriversLite.Cryptocurrencies.csproj",
+             "VEDriversLite.Builders.Neblio/VEDriversLite.Builders.Neblio.csproj"
           ]
           
         }
