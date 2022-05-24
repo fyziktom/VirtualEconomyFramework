@@ -74,33 +74,33 @@
     bool SendCopy = false;
     (bool,string) SendResult = (false,string.Empty);
 
-    public void ShowSendNFTModal(string receiver = "", bool sendCopy = false)
+    public async Task ShowSendNFTModal(string receiver = "", bool sendCopy = false)
     {
         if (NFT == null) return;
         if (!string.IsNullOrEmpty(receiver))
             Receiver = receiver;
 
         SendCopy = sendCopy;
-        StateHasChanged();
-        NFTSendModal?.Show();
+        await InvokeAsync(StateHasChanged);
+        await NFTSendModal.Show();
     }
-    public void HideSendNFTModal()
+    public async Task HideSendNFTModal()
     {
         if (NFT == null) return;
-        NFTSendModal?.Hide();
+        await NFTSendModal?.Hide();
     }
 
-    void SendCopyCheckedChanged(bool e)
+    async Task SendCopyCheckedChanged(bool e)
     {
         SendCopy = e;
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
     }
 
     async Task NFTAction()
     {
         if (NFT == null) return;
         Sending = true;
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
         
         if (NotificationService != null)
             await NotificationService.Info( "Sending data...", "Sending" );
@@ -126,7 +126,7 @@
         SendFinished = false;
 
         Sending = false;
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
 
         if (NotificationService != null)
         {

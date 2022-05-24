@@ -189,10 +189,10 @@
         await InvokeAsync( StateHasChanged );
     }  
 
-    void OnDataSavedHandler(string hash)
+    async Task OnDataSavedHandler(string hash)
     {
         if (displayedItem != null)
             displayedItem.Hash = hash;
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
     }
 }

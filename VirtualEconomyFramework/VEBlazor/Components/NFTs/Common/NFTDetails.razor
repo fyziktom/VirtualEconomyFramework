@@ -58,7 +58,7 @@
         else if (NFT == null && nft != null)
         {
             NFT = nft;
-            StateHasChanged();
+            InvokeAsync(StateHasChanged);
         }   
         NFTDetailsModal?.Show();
         return true;

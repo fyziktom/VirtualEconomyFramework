@@ -63,24 +63,24 @@
     bool SaveFinished = false;
     (bool,string) SaveResult = (false,string.Empty);
 
-    public void ShowSaveNFTModal(string receiver = "")
+    public async Task ShowSaveNFTModal(string receiver = "")
     {
         if (NFT == null) return;
         if (!string.IsNullOrEmpty(receiver))
             Receiver = receiver;
-        NFTSaveModal?.Show();
+        await NFTSaveModal.Show();
     }
-    public void HideSaveNFTModal()
+    public async Task HideSaveNFTModal()
     {
         if (NFT == null) return;
-        NFTSaveModal?.Hide();
+        await NFTSaveModal.Hide();
     }
 
     async Task NFTAction()
     {
         if (NFT == null) return;
         Saving = true;
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
         //save means send to yourself
         if (NotificationService != null)
             await NotificationService.Info( "Saving data...", "Saving" );
@@ -104,11 +104,11 @@
                 await NotificationService.Warning( SaveResult.Item2, "Cannot save" );
         }
         
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
 
         //close automatically after 2 seconds
         await Task.Delay(2000);
-        HideSaveNFTModal();
+        await HideSaveNFTModal();
         await NFTSent.InvokeAsync(new NFTSentResultDto() { sucess = SaveResult.Item1, message = SaveResult.Item2, NFT = NFT });       
     }
 }

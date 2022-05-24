@@ -77,8 +77,8 @@
         base.OnAfterRender(firstRender);
     }
 
-    private void RefreshedHandler(object? sender, EventArgs e)
+    private async void RefreshedHandler(object? sender, EventArgs e)
     {
-        this.StateHasChanged();
+        await InvokeAsync(StateHasChanged);
     }
 }

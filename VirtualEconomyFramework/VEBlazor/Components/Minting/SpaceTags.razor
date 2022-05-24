@@ -83,13 +83,13 @@
         else
             Tags += $" {tag}";
         await TagsChanged.InvokeAsync( Tags );
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
     }
 
     async Task Clear()
     {
         Tags = string.Empty;
         await TagsChanged.InvokeAsync( Tags );
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
     }
 }

@@ -405,18 +405,19 @@
     {    
         if (nft != null && openNFTDetailsFactory != null)
         {        
-            StateHasChanged();
-            await openNFTDetailsFactory?.OpenNFTDetails(NFT);
+            await InvokeAsync(StateHasChanged);
+            await openNFTDetailsFactory.OpenNFTDetails(NFT);
         }
     }
     
-    void NFTRefreshedHandler(object sender, string e)
+    async void NFTRefreshedHandler(object sender, string e)
     {
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
     }
-    void RefreshedHandler(object sender, EventArgs e)
+    
+    async void RefreshedHandler(object sender, EventArgs e)
     {
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
     }
 
     bool IsInThePayments()
@@ -510,7 +511,7 @@
                 await NotificationService.Info( "Sending payment...", "Sending Payment" );
                 
             sendingTransaction = true;
-            StateHasChanged();
+            await InvokeAsync(StateHasChanged);
             (bool, string) res = (false, string.Empty);
             switch (PaymentCurrency)
             {
@@ -552,12 +553,12 @@
         if (!string.IsNullOrEmpty(redirect))
         {
             redirectModalRef?.Show();
-            StateHasChanged();
+            await InvokeAsync(StateHasChanged);
             while (redirectingBackToShopCountDown > 0)
             {
                 await Task.Delay(1000);
                 redirectingBackToShopCountDown--;
-                StateHasChanged();
+                await InvokeAsync(StateHasChanged);
             }
             NavManager.NavigateTo(redirect);
         }

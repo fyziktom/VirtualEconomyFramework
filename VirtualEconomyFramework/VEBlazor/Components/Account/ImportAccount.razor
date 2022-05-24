@@ -268,7 +268,7 @@
                 importAccountKey = bdto.Key;
                 importDogeAccountKey = bdto.DogeKey;
                 backupData = bdto;
-                StateHasChanged();
+                await InvokeAsync(StateHasChanged);
             }
             else
             {
@@ -292,7 +292,7 @@
         try
         {
             importingAccount = true;
-            StateHasChanged();
+            await InvokeAsync(StateHasChanged);
             await Task.Delay(1);
 
             await AppData.LoadTags();
@@ -321,7 +321,7 @@
         finally
         {
             importingAccount = false;
-            StateHasChanged();
+            await InvokeAsync(StateHasChanged);
             await Task.Delay(1);
         }        
     }
@@ -422,10 +422,10 @@
         return false;
     }
 
-    void FirstLoadingStatusHandler(object sender, string e)
+    async void FirstLoadingStatusHandler(object sender, string e)
     {
         if (!string.IsNullOrEmpty(e)) state = e;
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
     }
     
     void FileValidator( ValidatorEventArgs e )

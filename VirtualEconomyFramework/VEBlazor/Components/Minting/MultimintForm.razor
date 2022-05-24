@@ -234,13 +234,13 @@
             return false;
     }
 
-    public void Update()
+    public async Task Update()
     {    
         ParseAdresses();
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
     }
 
-    public void LoadAddresees(IDictionary<string, ReceiversListItem> dict)
+    public async Task LoadAddresees(IDictionary<string, ReceiversListItem> dict)
     {    
         if (dict != null && dict.Count > 0)
         {
@@ -250,7 +250,7 @@
             foreach (var add in Addresses)
                 builder.AppendLine(add.Key);
             fileString = builder.ToString();
-            StateHasChanged();
+            await InvokeAsync(StateHasChanged);
         }      
     }
 
@@ -319,7 +319,7 @@
         }
 
         await Save();
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
     }
 
     private void Account_AddressesAirdropedHanlder(object sender, Dictionary<string,string> e)
@@ -349,8 +349,8 @@
         {
             var adds = await localStorage.GetItemAsync<Dictionary<string, ReceiversListItem>>($"multiminting-{MintingPageName}");
             if (adds != null)
-                LoadAddresees(adds);
-            StateHasChanged();
+                await LoadAddresees(adds);
+            await InvokeAsync(StateHasChanged);
         }
         catch { }
     }
@@ -388,14 +388,14 @@
 
     async Task resetHandler()
     {
-        if (await MessageService.Confirm("Are you sure you want reset the airdrop form? The NFT Template will not be cleared. Just the list of the addresses and actual results.", "Reset Airdrop Form") == true)
+        if (MessageService != null && await MessageService.Confirm("Are you sure you want reset the airdrop form? The NFT Template will not be cleared. Just the list of the addresses and actual results.", "Reset Airdrop Form") == true)
         {
             consoleMintingOutput = string.Empty;
             fileString = string.Empty;
             Addresses = new Dictionary<string, ReceiversListItem>();
             await localStorage.SetItemAsStringAsync($"multiminting-{MintingPageName}", "");
             IsAllMinted();
-            StateHasChanged();
+            await InvokeAsync(StateHasChanged);
         }
     }
 }
