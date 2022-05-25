@@ -2239,73 +2239,6 @@ references:
   isSpec: "True"
   fullName: VEDriversLite.Common.QTWalletRPCClient.User
   nameWithType: QTWalletRPCClient.User
-- uid: VEDriversLite.Common.RegexMatchPaterns
-  name: RegexMatchPaterns
-  href: api/VEDriversLite.Common.RegexMatchPaterns.html
-  commentId: T:VEDriversLite.Common.RegexMatchPaterns
-  fullName: VEDriversLite.Common.RegexMatchPaterns
-  nameWithType: RegexMatchPaterns
-- uid: VEDriversLite.Common.RegexMatchPaterns.EmojiPattern
-  name: EmojiPattern
-  href: api/VEDriversLite.Common.RegexMatchPaterns.html#VEDriversLite_Common_RegexMatchPaterns_EmojiPattern
-  commentId: P:VEDriversLite.Common.RegexMatchPaterns.EmojiPattern
-  fullName: VEDriversLite.Common.RegexMatchPaterns.EmojiPattern
-  nameWithType: RegexMatchPaterns.EmojiPattern
-- uid: VEDriversLite.Common.RegexMatchPaterns.EmojiPattern*
-  name: EmojiPattern
-  href: api/VEDriversLite.Common.RegexMatchPaterns.html#VEDriversLite_Common_RegexMatchPaterns_EmojiPattern_
-  commentId: Overload:VEDriversLite.Common.RegexMatchPaterns.EmojiPattern
-  isSpec: "True"
-  fullName: VEDriversLite.Common.RegexMatchPaterns.EmojiPattern
-  nameWithType: RegexMatchPaterns.EmojiPattern
-- uid: VEDriversLite.CommonReturnTypeDto
-  name: CommonReturnTypeDto
-  href: api/VEDriversLite.CommonReturnTypeDto.html
-  commentId: T:VEDriversLite.CommonReturnTypeDto
-  fullName: VEDriversLite.CommonReturnTypeDto
-  nameWithType: CommonReturnTypeDto
-- uid: VEDriversLite.CommonReturnTypeDto.GetNew*
-  name: GetNew
-  href: api/VEDriversLite.CommonReturnTypeDto.html#VEDriversLite_CommonReturnTypeDto_GetNew_
-  commentId: Overload:VEDriversLite.CommonReturnTypeDto.GetNew
-  isSpec: "True"
-  fullName: VEDriversLite.CommonReturnTypeDto.GetNew
-  nameWithType: CommonReturnTypeDto.GetNew
-- uid: VEDriversLite.CommonReturnTypeDto.GetNew``1(System.Boolean,``0)
-  name: GetNew<T>(Boolean, T)
-  href: api/VEDriversLite.CommonReturnTypeDto.html#VEDriversLite_CommonReturnTypeDto_GetNew__1_System_Boolean___0_
-  commentId: M:VEDriversLite.CommonReturnTypeDto.GetNew``1(System.Boolean,``0)
-  name.vb: GetNew(Of T)(Boolean, T)
-  fullName: VEDriversLite.CommonReturnTypeDto.GetNew<T>(System.Boolean, T)
-  fullName.vb: VEDriversLite.CommonReturnTypeDto.GetNew(Of T)(System.Boolean, T)
-  nameWithType: CommonReturnTypeDto.GetNew<T>(Boolean, T)
-  nameWithType.vb: CommonReturnTypeDto.GetNew(Of T)(Boolean, T)
-- uid: VEDriversLite.CommonReturnTypeDto.Success
-  name: Success
-  href: api/VEDriversLite.CommonReturnTypeDto.html#VEDriversLite_CommonReturnTypeDto_Success
-  commentId: P:VEDriversLite.CommonReturnTypeDto.Success
-  fullName: VEDriversLite.CommonReturnTypeDto.Success
-  nameWithType: CommonReturnTypeDto.Success
-- uid: VEDriversLite.CommonReturnTypeDto.Success*
-  name: Success
-  href: api/VEDriversLite.CommonReturnTypeDto.html#VEDriversLite_CommonReturnTypeDto_Success_
-  commentId: Overload:VEDriversLite.CommonReturnTypeDto.Success
-  isSpec: "True"
-  fullName: VEDriversLite.CommonReturnTypeDto.Success
-  nameWithType: CommonReturnTypeDto.Success
-- uid: VEDriversLite.CommonReturnTypeDto.Value
-  name: Value
-  href: api/VEDriversLite.CommonReturnTypeDto.html#VEDriversLite_CommonReturnTypeDto_Value
-  commentId: P:VEDriversLite.CommonReturnTypeDto.Value
-  fullName: VEDriversLite.CommonReturnTypeDto.Value
-  nameWithType: CommonReturnTypeDto.Value
-- uid: VEDriversLite.CommonReturnTypeDto.Value*
-  name: Value
-  href: api/VEDriversLite.CommonReturnTypeDto.html#VEDriversLite_CommonReturnTypeDto_Value_
-  commentId: Overload:VEDriversLite.CommonReturnTypeDto.Value
-  isSpec: "True"
-  fullName: VEDriversLite.CommonReturnTypeDto.Value
-  nameWithType: CommonReturnTypeDto.Value
 - uid: VEDriversLite.Cryptocurrencies
   name: VEDriversLite.Cryptocurrencies
   href: api/VEDriversLite.Cryptocurrencies.html
@@ -3610,11 +3543,11 @@ references:
   isSpec: "True"
   fullName: VEDriversLite.Devices.APIs.HARDWARIO.HARDWARIOApiClient.GetUnreadedMessage
   nameWithType: HARDWARIOApiClient.GetUnreadedMessage
-- uid: VEDriversLite.Devices.APIs.HARDWARIO.HARDWARIOApiClient.SetCommonConnectionParameters(VEDriversLite.Devices.Dto.CommonConnectionParams)
+- uid: VEDriversLite.Devices.APIs.HARDWARIO.HARDWARIOApiClient.SetCommonConnectionParameters(VEDriversLite.Common.IoT.Dto.CommonConnectionParams)
   name: SetCommonConnectionParameters(CommonConnectionParams)
-  href: api/VEDriversLite.Devices.APIs.HARDWARIO.HARDWARIOApiClient.html#VEDriversLite_Devices_APIs_HARDWARIO_HARDWARIOApiClient_SetCommonConnectionParameters_VEDriversLite_Devices_Dto_CommonConnectionParams_
-  commentId: M:VEDriversLite.Devices.APIs.HARDWARIO.HARDWARIOApiClient.SetCommonConnectionParameters(VEDriversLite.Devices.Dto.CommonConnectionParams)
-  fullName: VEDriversLite.Devices.APIs.HARDWARIO.HARDWARIOApiClient.SetCommonConnectionParameters(VEDriversLite.Devices.Dto.CommonConnectionParams)
+  href: api/VEDriversLite.Devices.APIs.HARDWARIO.HARDWARIOApiClient.html#VEDriversLite_Devices_APIs_HARDWARIO_HARDWARIOApiClient_SetCommonConnectionParameters_VEDriversLite_Common_IoT_Dto_CommonConnectionParams_
+  commentId: M:VEDriversLite.Devices.APIs.HARDWARIO.HARDWARIOApiClient.SetCommonConnectionParameters(VEDriversLite.Common.IoT.Dto.CommonConnectionParams)
+  fullName: VEDriversLite.Devices.APIs.HARDWARIO.HARDWARIOApiClient.SetCommonConnectionParameters(VEDriversLite.Common.IoT.Dto.CommonConnectionParams)
   nameWithType: HARDWARIOApiClient.SetCommonConnectionParameters(CommonConnectionParams)
 - uid: VEDriversLite.Devices.APIs.HARDWARIO.HARDWARIOApiClient.SetCommonConnectionParameters*
   name: SetCommonConnectionParameters
@@ -3752,11 +3685,11 @@ references:
   commentId: E:VEDriversLite.Devices.CommonIoTDataDriver.NewDataReceived
   fullName: VEDriversLite.Devices.CommonIoTDataDriver.NewDataReceived
   nameWithType: CommonIoTDataDriver.NewDataReceived
-- uid: VEDriversLite.Devices.CommonIoTDataDriver.SetConnParams(VEDriversLite.Devices.Dto.CommonConnectionParams)
+- uid: VEDriversLite.Devices.CommonIoTDataDriver.SetConnParams(VEDriversLite.Common.IoT.Dto.CommonConnectionParams)
   name: SetConnParams(CommonConnectionParams)
-  href: api/VEDriversLite.Devices.CommonIoTDataDriver.html#VEDriversLite_Devices_CommonIoTDataDriver_SetConnParams_VEDriversLite_Devices_Dto_CommonConnectionParams_
-  commentId: M:VEDriversLite.Devices.CommonIoTDataDriver.SetConnParams(VEDriversLite.Devices.Dto.CommonConnectionParams)
-  fullName: VEDriversLite.Devices.CommonIoTDataDriver.SetConnParams(VEDriversLite.Devices.Dto.CommonConnectionParams)
+  href: api/VEDriversLite.Devices.CommonIoTDataDriver.html#VEDriversLite_Devices_CommonIoTDataDriver_SetConnParams_VEDriversLite_Common_IoT_Dto_CommonConnectionParams_
+  commentId: M:VEDriversLite.Devices.CommonIoTDataDriver.SetConnParams(VEDriversLite.Common.IoT.Dto.CommonConnectionParams)
+  fullName: VEDriversLite.Devices.CommonIoTDataDriver.SetConnParams(VEDriversLite.Common.IoT.Dto.CommonConnectionParams)
   nameWithType: CommonIoTDataDriver.SetConnParams(CommonConnectionParams)
 - uid: VEDriversLite.Devices.CommonIoTDataDriver.SetConnParams*
   name: SetConnParams
@@ -3778,280 +3711,6 @@ references:
   isSpec: "True"
   fullName: VEDriversLite.Devices.CommonIoTDataDriver.Type
   nameWithType: CommonIoTDataDriver.Type
-- uid: VEDriversLite.Devices.CommunicationSchemeType
-  name: CommunicationSchemeType
-  href: api/VEDriversLite.Devices.CommunicationSchemeType.html
-  commentId: T:VEDriversLite.Devices.CommunicationSchemeType
-  fullName: VEDriversLite.Devices.CommunicationSchemeType
-  nameWithType: CommunicationSchemeType
-- uid: VEDriversLite.Devices.CommunicationSchemeType.PubSub
-  name: PubSub
-  href: api/VEDriversLite.Devices.CommunicationSchemeType.html#VEDriversLite_Devices_CommunicationSchemeType_PubSub
-  commentId: F:VEDriversLite.Devices.CommunicationSchemeType.PubSub
-  fullName: VEDriversLite.Devices.CommunicationSchemeType.PubSub
-  nameWithType: CommunicationSchemeType.PubSub
-- uid: VEDriversLite.Devices.CommunicationSchemeType.Requests
-  name: Requests
-  href: api/VEDriversLite.Devices.CommunicationSchemeType.html#VEDriversLite_Devices_CommunicationSchemeType_Requests
-  commentId: F:VEDriversLite.Devices.CommunicationSchemeType.Requests
-  fullName: VEDriversLite.Devices.CommunicationSchemeType.Requests
-  nameWithType: CommunicationSchemeType.Requests
-- uid: VEDriversLite.Devices.Dto
-  name: VEDriversLite.Devices.Dto
-  href: api/VEDriversLite.Devices.Dto.html
-  commentId: N:VEDriversLite.Devices.Dto
-  fullName: VEDriversLite.Devices.Dto
-  nameWithType: VEDriversLite.Devices.Dto
-- uid: VEDriversLite.Devices.Dto.CommonConnectionParams
-  name: CommonConnectionParams
-  href: api/VEDriversLite.Devices.Dto.CommonConnectionParams.html
-  commentId: T:VEDriversLite.Devices.Dto.CommonConnectionParams
-  fullName: VEDriversLite.Devices.Dto.CommonConnectionParams
-  nameWithType: CommonConnectionParams
-- uid: VEDriversLite.Devices.Dto.CommonConnectionParams.CommonRefreshInterval
-  name: CommonRefreshInterval
-  href: api/VEDriversLite.Devices.Dto.CommonConnectionParams.html#VEDriversLite_Devices_Dto_CommonConnectionParams_CommonRefreshInterval
-  commentId: P:VEDriversLite.Devices.Dto.CommonConnectionParams.CommonRefreshInterval
-  fullName: VEDriversLite.Devices.Dto.CommonConnectionParams.CommonRefreshInterval
-  nameWithType: CommonConnectionParams.CommonRefreshInterval
-- uid: VEDriversLite.Devices.Dto.CommonConnectionParams.CommonRefreshInterval*
-  name: CommonRefreshInterval
-  href: api/VEDriversLite.Devices.Dto.CommonConnectionParams.html#VEDriversLite_Devices_Dto_CommonConnectionParams_CommonRefreshInterval_
-  commentId: Overload:VEDriversLite.Devices.Dto.CommonConnectionParams.CommonRefreshInterval
-  isSpec: "True"
-  fullName: VEDriversLite.Devices.Dto.CommonConnectionParams.CommonRefreshInterval
-  nameWithType: CommonConnectionParams.CommonRefreshInterval
-- uid: VEDriversLite.Devices.Dto.CommonConnectionParams.DeviceId
-  name: DeviceId
-  href: api/VEDriversLite.Devices.Dto.CommonConnectionParams.html#VEDriversLite_Devices_Dto_CommonConnectionParams_DeviceId
-  commentId: P:VEDriversLite.Devices.Dto.CommonConnectionParams.DeviceId
-  fullName: VEDriversLite.Devices.Dto.CommonConnectionParams.DeviceId
-  nameWithType: CommonConnectionParams.DeviceId
-- uid: VEDriversLite.Devices.Dto.CommonConnectionParams.DeviceId*
-  name: DeviceId
-  href: api/VEDriversLite.Devices.Dto.CommonConnectionParams.html#VEDriversLite_Devices_Dto_CommonConnectionParams_DeviceId_
-  commentId: Overload:VEDriversLite.Devices.Dto.CommonConnectionParams.DeviceId
-  isSpec: "True"
-  fullName: VEDriversLite.Devices.Dto.CommonConnectionParams.DeviceId
-  nameWithType: CommonConnectionParams.DeviceId
-- uid: VEDriversLite.Devices.Dto.CommonConnectionParams.Encrypted
-  name: Encrypted
-  href: api/VEDriversLite.Devices.Dto.CommonConnectionParams.html#VEDriversLite_Devices_Dto_CommonConnectionParams_Encrypted
-  commentId: P:VEDriversLite.Devices.Dto.CommonConnectionParams.Encrypted
-  fullName: VEDriversLite.Devices.Dto.CommonConnectionParams.Encrypted
-  nameWithType: CommonConnectionParams.Encrypted
-- uid: VEDriversLite.Devices.Dto.CommonConnectionParams.Encrypted*
-  name: Encrypted
-  href: api/VEDriversLite.Devices.Dto.CommonConnectionParams.html#VEDriversLite_Devices_Dto_CommonConnectionParams_Encrypted_
-  commentId: Overload:VEDriversLite.Devices.Dto.CommonConnectionParams.Encrypted
-  isSpec: "True"
-  fullName: VEDriversLite.Devices.Dto.CommonConnectionParams.Encrypted
-  nameWithType: CommonConnectionParams.Encrypted
-- uid: VEDriversLite.Devices.Dto.CommonConnectionParams.GroupId
-  name: GroupId
-  href: api/VEDriversLite.Devices.Dto.CommonConnectionParams.html#VEDriversLite_Devices_Dto_CommonConnectionParams_GroupId
-  commentId: P:VEDriversLite.Devices.Dto.CommonConnectionParams.GroupId
-  fullName: VEDriversLite.Devices.Dto.CommonConnectionParams.GroupId
-  nameWithType: CommonConnectionParams.GroupId
-- uid: VEDriversLite.Devices.Dto.CommonConnectionParams.GroupId*
-  name: GroupId
-  href: api/VEDriversLite.Devices.Dto.CommonConnectionParams.html#VEDriversLite_Devices_Dto_CommonConnectionParams_GroupId_
-  commentId: Overload:VEDriversLite.Devices.Dto.CommonConnectionParams.GroupId
-  isSpec: "True"
-  fullName: VEDriversLite.Devices.Dto.CommonConnectionParams.GroupId
-  nameWithType: CommonConnectionParams.GroupId
-- uid: VEDriversLite.Devices.Dto.CommonConnectionParams.IP
-  name: IP
-  href: api/VEDriversLite.Devices.Dto.CommonConnectionParams.html#VEDriversLite_Devices_Dto_CommonConnectionParams_IP
-  commentId: P:VEDriversLite.Devices.Dto.CommonConnectionParams.IP
-  fullName: VEDriversLite.Devices.Dto.CommonConnectionParams.IP
-  nameWithType: CommonConnectionParams.IP
-- uid: VEDriversLite.Devices.Dto.CommonConnectionParams.IP*
-  name: IP
-  href: api/VEDriversLite.Devices.Dto.CommonConnectionParams.html#VEDriversLite_Devices_Dto_CommonConnectionParams_IP_
-  commentId: Overload:VEDriversLite.Devices.Dto.CommonConnectionParams.IP
-  isSpec: "True"
-  fullName: VEDriversLite.Devices.Dto.CommonConnectionParams.IP
-  nameWithType: CommonConnectionParams.IP
-- uid: VEDriversLite.Devices.Dto.CommonConnectionParams.Password
-  name: Password
-  href: api/VEDriversLite.Devices.Dto.CommonConnectionParams.html#VEDriversLite_Devices_Dto_CommonConnectionParams_Password
-  commentId: P:VEDriversLite.Devices.Dto.CommonConnectionParams.Password
-  fullName: VEDriversLite.Devices.Dto.CommonConnectionParams.Password
-  nameWithType: CommonConnectionParams.Password
-- uid: VEDriversLite.Devices.Dto.CommonConnectionParams.Password*
-  name: Password
-  href: api/VEDriversLite.Devices.Dto.CommonConnectionParams.html#VEDriversLite_Devices_Dto_CommonConnectionParams_Password_
-  commentId: Overload:VEDriversLite.Devices.Dto.CommonConnectionParams.Password
-  isSpec: "True"
-  fullName: VEDriversLite.Devices.Dto.CommonConnectionParams.Password
-  nameWithType: CommonConnectionParams.Password
-- uid: VEDriversLite.Devices.Dto.CommonConnectionParams.Port
-  name: Port
-  href: api/VEDriversLite.Devices.Dto.CommonConnectionParams.html#VEDriversLite_Devices_Dto_CommonConnectionParams_Port
-  commentId: P:VEDriversLite.Devices.Dto.CommonConnectionParams.Port
-  fullName: VEDriversLite.Devices.Dto.CommonConnectionParams.Port
-  nameWithType: CommonConnectionParams.Port
-- uid: VEDriversLite.Devices.Dto.CommonConnectionParams.Port*
-  name: Port
-  href: api/VEDriversLite.Devices.Dto.CommonConnectionParams.html#VEDriversLite_Devices_Dto_CommonConnectionParams_Port_
-  commentId: Overload:VEDriversLite.Devices.Dto.CommonConnectionParams.Port
-  isSpec: "True"
-  fullName: VEDriversLite.Devices.Dto.CommonConnectionParams.Port
-  nameWithType: CommonConnectionParams.Port
-- uid: VEDriversLite.Devices.Dto.CommonConnectionParams.Secured
-  name: Secured
-  href: api/VEDriversLite.Devices.Dto.CommonConnectionParams.html#VEDriversLite_Devices_Dto_CommonConnectionParams_Secured
-  commentId: P:VEDriversLite.Devices.Dto.CommonConnectionParams.Secured
-  fullName: VEDriversLite.Devices.Dto.CommonConnectionParams.Secured
-  nameWithType: CommonConnectionParams.Secured
-- uid: VEDriversLite.Devices.Dto.CommonConnectionParams.Secured*
-  name: Secured
-  href: api/VEDriversLite.Devices.Dto.CommonConnectionParams.html#VEDriversLite_Devices_Dto_CommonConnectionParams_Secured_
-  commentId: Overload:VEDriversLite.Devices.Dto.CommonConnectionParams.Secured
-  isSpec: "True"
-  fullName: VEDriversLite.Devices.Dto.CommonConnectionParams.Secured
-  nameWithType: CommonConnectionParams.Secured
-- uid: VEDriversLite.Devices.Dto.CommonConnectionParams.SType
-  name: SType
-  href: api/VEDriversLite.Devices.Dto.CommonConnectionParams.html#VEDriversLite_Devices_Dto_CommonConnectionParams_SType
-  commentId: P:VEDriversLite.Devices.Dto.CommonConnectionParams.SType
-  fullName: VEDriversLite.Devices.Dto.CommonConnectionParams.SType
-  nameWithType: CommonConnectionParams.SType
-- uid: VEDriversLite.Devices.Dto.CommonConnectionParams.SType*
-  name: SType
-  href: api/VEDriversLite.Devices.Dto.CommonConnectionParams.html#VEDriversLite_Devices_Dto_CommonConnectionParams_SType_
-  commentId: Overload:VEDriversLite.Devices.Dto.CommonConnectionParams.SType
-  isSpec: "True"
-  fullName: VEDriversLite.Devices.Dto.CommonConnectionParams.SType
-  nameWithType: CommonConnectionParams.SType
-- uid: VEDriversLite.Devices.Dto.CommonConnectionParams.Token
-  name: Token
-  href: api/VEDriversLite.Devices.Dto.CommonConnectionParams.html#VEDriversLite_Devices_Dto_CommonConnectionParams_Token
-  commentId: P:VEDriversLite.Devices.Dto.CommonConnectionParams.Token
-  fullName: VEDriversLite.Devices.Dto.CommonConnectionParams.Token
-  nameWithType: CommonConnectionParams.Token
-- uid: VEDriversLite.Devices.Dto.CommonConnectionParams.Token*
-  name: Token
-  href: api/VEDriversLite.Devices.Dto.CommonConnectionParams.html#VEDriversLite_Devices_Dto_CommonConnectionParams_Token_
-  commentId: Overload:VEDriversLite.Devices.Dto.CommonConnectionParams.Token
-  isSpec: "True"
-  fullName: VEDriversLite.Devices.Dto.CommonConnectionParams.Token
-  nameWithType: CommonConnectionParams.Token
-- uid: VEDriversLite.Devices.Dto.CommonConnectionParams.Url
-  name: Url
-  href: api/VEDriversLite.Devices.Dto.CommonConnectionParams.html#VEDriversLite_Devices_Dto_CommonConnectionParams_Url
-  commentId: P:VEDriversLite.Devices.Dto.CommonConnectionParams.Url
-  fullName: VEDriversLite.Devices.Dto.CommonConnectionParams.Url
-  nameWithType: CommonConnectionParams.Url
-- uid: VEDriversLite.Devices.Dto.CommonConnectionParams.Url*
-  name: Url
-  href: api/VEDriversLite.Devices.Dto.CommonConnectionParams.html#VEDriversLite_Devices_Dto_CommonConnectionParams_Url_
-  commentId: Overload:VEDriversLite.Devices.Dto.CommonConnectionParams.Url
-  isSpec: "True"
-  fullName: VEDriversLite.Devices.Dto.CommonConnectionParams.Url
-  nameWithType: CommonConnectionParams.Url
-- uid: VEDriversLite.Devices.Dto.CommonConnectionParams.UserId
-  name: UserId
-  href: api/VEDriversLite.Devices.Dto.CommonConnectionParams.html#VEDriversLite_Devices_Dto_CommonConnectionParams_UserId
-  commentId: P:VEDriversLite.Devices.Dto.CommonConnectionParams.UserId
-  fullName: VEDriversLite.Devices.Dto.CommonConnectionParams.UserId
-  nameWithType: CommonConnectionParams.UserId
-- uid: VEDriversLite.Devices.Dto.CommonConnectionParams.UserId*
-  name: UserId
-  href: api/VEDriversLite.Devices.Dto.CommonConnectionParams.html#VEDriversLite_Devices_Dto_CommonConnectionParams_UserId_
-  commentId: Overload:VEDriversLite.Devices.Dto.CommonConnectionParams.UserId
-  isSpec: "True"
-  fullName: VEDriversLite.Devices.Dto.CommonConnectionParams.UserId
-  nameWithType: CommonConnectionParams.UserId
-- uid: VEDriversLite.Devices.Dto.CommonConnectionParams.Username
-  name: Username
-  href: api/VEDriversLite.Devices.Dto.CommonConnectionParams.html#VEDriversLite_Devices_Dto_CommonConnectionParams_Username
-  commentId: P:VEDriversLite.Devices.Dto.CommonConnectionParams.Username
-  fullName: VEDriversLite.Devices.Dto.CommonConnectionParams.Username
-  nameWithType: CommonConnectionParams.Username
-- uid: VEDriversLite.Devices.Dto.CommonConnectionParams.Username*
-  name: Username
-  href: api/VEDriversLite.Devices.Dto.CommonConnectionParams.html#VEDriversLite_Devices_Dto_CommonConnectionParams_Username_
-  commentId: Overload:VEDriversLite.Devices.Dto.CommonConnectionParams.Username
-  isSpec: "True"
-  fullName: VEDriversLite.Devices.Dto.CommonConnectionParams.Username
-  nameWithType: CommonConnectionParams.Username
-- uid: VEDriversLite.Devices.Dto.CommunitacionSecurityType
-  name: CommunitacionSecurityType
-  href: api/VEDriversLite.Devices.Dto.CommunitacionSecurityType.html
-  commentId: T:VEDriversLite.Devices.Dto.CommunitacionSecurityType
-  fullName: VEDriversLite.Devices.Dto.CommunitacionSecurityType
-  nameWithType: CommunitacionSecurityType
-- uid: VEDriversLite.Devices.Dto.CommunitacionSecurityType.Bearer
-  name: Bearer
-  href: api/VEDriversLite.Devices.Dto.CommunitacionSecurityType.html#VEDriversLite_Devices_Dto_CommunitacionSecurityType_Bearer
-  commentId: F:VEDriversLite.Devices.Dto.CommunitacionSecurityType.Bearer
-  fullName: VEDriversLite.Devices.Dto.CommunitacionSecurityType.Bearer
-  nameWithType: CommunitacionSecurityType.Bearer
-- uid: VEDriversLite.Devices.Dto.CommunitacionSecurityType.JWT
-  name: JWT
-  href: api/VEDriversLite.Devices.Dto.CommunitacionSecurityType.html#VEDriversLite_Devices_Dto_CommunitacionSecurityType_JWT
-  commentId: F:VEDriversLite.Devices.Dto.CommunitacionSecurityType.JWT
-  fullName: VEDriversLite.Devices.Dto.CommunitacionSecurityType.JWT
-  nameWithType: CommunitacionSecurityType.JWT
-- uid: VEDriversLite.Devices.Dto.CommunitacionSecurityType.None
-  name: None
-  href: api/VEDriversLite.Devices.Dto.CommunitacionSecurityType.html#VEDriversLite_Devices_Dto_CommunitacionSecurityType_None
-  commentId: F:VEDriversLite.Devices.Dto.CommunitacionSecurityType.None
-  fullName: VEDriversLite.Devices.Dto.CommunitacionSecurityType.None
-  nameWithType: CommunitacionSecurityType.None
-- uid: VEDriversLite.Devices.Dto.CommunitacionSecurityType.SSL
-  name: SSL
-  href: api/VEDriversLite.Devices.Dto.CommunitacionSecurityType.html#VEDriversLite_Devices_Dto_CommunitacionSecurityType_SSL
-  commentId: F:VEDriversLite.Devices.Dto.CommunitacionSecurityType.SSL
-  fullName: VEDriversLite.Devices.Dto.CommunitacionSecurityType.SSL
-  nameWithType: CommunitacionSecurityType.SSL
-- uid: VEDriversLite.Devices.Dto.IoTDataDriverSettings
-  name: IoTDataDriverSettings
-  href: api/VEDriversLite.Devices.Dto.IoTDataDriverSettings.html
-  commentId: T:VEDriversLite.Devices.Dto.IoTDataDriverSettings
-  fullName: VEDriversLite.Devices.Dto.IoTDataDriverSettings
-  nameWithType: IoTDataDriverSettings
-- uid: VEDriversLite.Devices.Dto.IoTDataDriverSettings.ComSchemeType
-  name: ComSchemeType
-  href: api/VEDriversLite.Devices.Dto.IoTDataDriverSettings.html#VEDriversLite_Devices_Dto_IoTDataDriverSettings_ComSchemeType
-  commentId: P:VEDriversLite.Devices.Dto.IoTDataDriverSettings.ComSchemeType
-  fullName: VEDriversLite.Devices.Dto.IoTDataDriverSettings.ComSchemeType
-  nameWithType: IoTDataDriverSettings.ComSchemeType
-- uid: VEDriversLite.Devices.Dto.IoTDataDriverSettings.ComSchemeType*
-  name: ComSchemeType
-  href: api/VEDriversLite.Devices.Dto.IoTDataDriverSettings.html#VEDriversLite_Devices_Dto_IoTDataDriverSettings_ComSchemeType_
-  commentId: Overload:VEDriversLite.Devices.Dto.IoTDataDriverSettings.ComSchemeType
-  isSpec: "True"
-  fullName: VEDriversLite.Devices.Dto.IoTDataDriverSettings.ComSchemeType
-  nameWithType: IoTDataDriverSettings.ComSchemeType
-- uid: VEDriversLite.Devices.Dto.IoTDataDriverSettings.ConnectionParams
-  name: ConnectionParams
-  href: api/VEDriversLite.Devices.Dto.IoTDataDriverSettings.html#VEDriversLite_Devices_Dto_IoTDataDriverSettings_ConnectionParams
-  commentId: P:VEDriversLite.Devices.Dto.IoTDataDriverSettings.ConnectionParams
-  fullName: VEDriversLite.Devices.Dto.IoTDataDriverSettings.ConnectionParams
-  nameWithType: IoTDataDriverSettings.ConnectionParams
-- uid: VEDriversLite.Devices.Dto.IoTDataDriverSettings.ConnectionParams*
-  name: ConnectionParams
-  href: api/VEDriversLite.Devices.Dto.IoTDataDriverSettings.html#VEDriversLite_Devices_Dto_IoTDataDriverSettings_ConnectionParams_
-  commentId: Overload:VEDriversLite.Devices.Dto.IoTDataDriverSettings.ConnectionParams
-  isSpec: "True"
-  fullName: VEDriversLite.Devices.Dto.IoTDataDriverSettings.ConnectionParams
-  nameWithType: IoTDataDriverSettings.ConnectionParams
-- uid: VEDriversLite.Devices.Dto.IoTDataDriverSettings.IoTComType
-  name: IoTComType
-  href: api/VEDriversLite.Devices.Dto.IoTDataDriverSettings.html#VEDriversLite_Devices_Dto_IoTDataDriverSettings_IoTComType
-  commentId: P:VEDriversLite.Devices.Dto.IoTDataDriverSettings.IoTComType
-  fullName: VEDriversLite.Devices.Dto.IoTDataDriverSettings.IoTComType
-  nameWithType: IoTDataDriverSettings.IoTComType
-- uid: VEDriversLite.Devices.Dto.IoTDataDriverSettings.IoTComType*
-  name: IoTComType
-  href: api/VEDriversLite.Devices.Dto.IoTDataDriverSettings.html#VEDriversLite_Devices_Dto_IoTDataDriverSettings_IoTComType_
-  commentId: Overload:VEDriversLite.Devices.Dto.IoTDataDriverSettings.IoTComType
-  isSpec: "True"
-  fullName: VEDriversLite.Devices.Dto.IoTDataDriverSettings.IoTComType
-  nameWithType: IoTDataDriverSettings.IoTComType
 - uid: VEDriversLite.Devices.HARDWARIOIoTDataDriver
   name: HARDWARIOIoTDataDriver
   href: api/VEDriversLite.Devices.HARDWARIOIoTDataDriver.html
@@ -4103,11 +3762,11 @@ references:
   commentId: E:VEDriversLite.Devices.HARDWARIOIoTDataDriver.NewDataReceived
   fullName: VEDriversLite.Devices.HARDWARIOIoTDataDriver.NewDataReceived
   nameWithType: HARDWARIOIoTDataDriver.NewDataReceived
-- uid: VEDriversLite.Devices.HARDWARIOIoTDataDriver.SetConnParams(VEDriversLite.Devices.Dto.CommonConnectionParams)
+- uid: VEDriversLite.Devices.HARDWARIOIoTDataDriver.SetConnParams(VEDriversLite.Common.IoT.Dto.CommonConnectionParams)
   name: SetConnParams(CommonConnectionParams)
-  href: api/VEDriversLite.Devices.HARDWARIOIoTDataDriver.html#VEDriversLite_Devices_HARDWARIOIoTDataDriver_SetConnParams_VEDriversLite_Devices_Dto_CommonConnectionParams_
-  commentId: M:VEDriversLite.Devices.HARDWARIOIoTDataDriver.SetConnParams(VEDriversLite.Devices.Dto.CommonConnectionParams)
-  fullName: VEDriversLite.Devices.HARDWARIOIoTDataDriver.SetConnParams(VEDriversLite.Devices.Dto.CommonConnectionParams)
+  href: api/VEDriversLite.Devices.HARDWARIOIoTDataDriver.html#VEDriversLite_Devices_HARDWARIOIoTDataDriver_SetConnParams_VEDriversLite_Common_IoT_Dto_CommonConnectionParams_
+  commentId: M:VEDriversLite.Devices.HARDWARIOIoTDataDriver.SetConnParams(VEDriversLite.Common.IoT.Dto.CommonConnectionParams)
+  fullName: VEDriversLite.Devices.HARDWARIOIoTDataDriver.SetConnParams(VEDriversLite.Common.IoT.Dto.CommonConnectionParams)
   nameWithType: HARDWARIOIoTDataDriver.SetConnParams(CommonConnectionParams)
 - uid: VEDriversLite.Devices.HARDWARIOIoTDataDriver.SetConnParams*
   name: SetConnParams
@@ -4245,11 +3904,11 @@ references:
   commentId: E:VEDriversLite.Devices.IIoTDataDriver.NewDataReceived
   fullName: VEDriversLite.Devices.IIoTDataDriver.NewDataReceived
   nameWithType: IIoTDataDriver.NewDataReceived
-- uid: VEDriversLite.Devices.IIoTDataDriver.SetConnParams(VEDriversLite.Devices.Dto.CommonConnectionParams)
+- uid: VEDriversLite.Devices.IIoTDataDriver.SetConnParams(VEDriversLite.Common.IoT.Dto.CommonConnectionParams)
   name: SetConnParams(CommonConnectionParams)
-  href: api/VEDriversLite.Devices.IIoTDataDriver.html#VEDriversLite_Devices_IIoTDataDriver_SetConnParams_VEDriversLite_Devices_Dto_CommonConnectionParams_
-  commentId: M:VEDriversLite.Devices.IIoTDataDriver.SetConnParams(VEDriversLite.Devices.Dto.CommonConnectionParams)
-  fullName: VEDriversLite.Devices.IIoTDataDriver.SetConnParams(VEDriversLite.Devices.Dto.CommonConnectionParams)
+  href: api/VEDriversLite.Devices.IIoTDataDriver.html#VEDriversLite_Devices_IIoTDataDriver_SetConnParams_VEDriversLite_Common_IoT_Dto_CommonConnectionParams_
+  commentId: M:VEDriversLite.Devices.IIoTDataDriver.SetConnParams(VEDriversLite.Common.IoT.Dto.CommonConnectionParams)
+  fullName: VEDriversLite.Devices.IIoTDataDriver.SetConnParams(VEDriversLite.Common.IoT.Dto.CommonConnectionParams)
   nameWithType: IIoTDataDriver.SetConnParams(CommonConnectionParams)
 - uid: VEDriversLite.Devices.IIoTDataDriver.SetConnParams*
   name: SetConnParams
@@ -4271,54 +3930,6 @@ references:
   isSpec: "True"
   fullName: VEDriversLite.Devices.IIoTDataDriver.Type
   nameWithType: IIoTDataDriver.Type
-- uid: VEDriversLite.Devices.IoTCommunicationType
-  name: IoTCommunicationType
-  href: api/VEDriversLite.Devices.IoTCommunicationType.html
-  commentId: T:VEDriversLite.Devices.IoTCommunicationType
-  fullName: VEDriversLite.Devices.IoTCommunicationType
-  nameWithType: IoTCommunicationType
-- uid: VEDriversLite.Devices.IoTCommunicationType.API
-  name: API
-  href: api/VEDriversLite.Devices.IoTCommunicationType.html#VEDriversLite_Devices_IoTCommunicationType_API
-  commentId: F:VEDriversLite.Devices.IoTCommunicationType.API
-  fullName: VEDriversLite.Devices.IoTCommunicationType.API
-  nameWithType: IoTCommunicationType.API
-- uid: VEDriversLite.Devices.IoTCommunicationType.DbMSSQL
-  name: DbMSSQL
-  href: api/VEDriversLite.Devices.IoTCommunicationType.html#VEDriversLite_Devices_IoTCommunicationType_DbMSSQL
-  commentId: F:VEDriversLite.Devices.IoTCommunicationType.DbMSSQL
-  fullName: VEDriversLite.Devices.IoTCommunicationType.DbMSSQL
-  nameWithType: IoTCommunicationType.DbMSSQL
-- uid: VEDriversLite.Devices.IoTCommunicationType.DbPostgreSQL
-  name: DbPostgreSQL
-  href: api/VEDriversLite.Devices.IoTCommunicationType.html#VEDriversLite_Devices_IoTCommunicationType_DbPostgreSQL
-  commentId: F:VEDriversLite.Devices.IoTCommunicationType.DbPostgreSQL
-  fullName: VEDriversLite.Devices.IoTCommunicationType.DbPostgreSQL
-  nameWithType: IoTCommunicationType.DbPostgreSQL
-- uid: VEDriversLite.Devices.IoTCommunicationType.DbSQLite
-  name: DbSQLite
-  href: api/VEDriversLite.Devices.IoTCommunicationType.html#VEDriversLite_Devices_IoTCommunicationType_DbSQLite
-  commentId: F:VEDriversLite.Devices.IoTCommunicationType.DbSQLite
-  fullName: VEDriversLite.Devices.IoTCommunicationType.DbSQLite
-  nameWithType: IoTCommunicationType.DbSQLite
-- uid: VEDriversLite.Devices.IoTCommunicationType.File
-  name: File
-  href: api/VEDriversLite.Devices.IoTCommunicationType.html#VEDriversLite_Devices_IoTCommunicationType_File
-  commentId: F:VEDriversLite.Devices.IoTCommunicationType.File
-  fullName: VEDriversLite.Devices.IoTCommunicationType.File
-  nameWithType: IoTCommunicationType.File
-- uid: VEDriversLite.Devices.IoTCommunicationType.MQTT
-  name: MQTT
-  href: api/VEDriversLite.Devices.IoTCommunicationType.html#VEDriversLite_Devices_IoTCommunicationType_MQTT
-  commentId: F:VEDriversLite.Devices.IoTCommunicationType.MQTT
-  fullName: VEDriversLite.Devices.IoTCommunicationType.MQTT
-  nameWithType: IoTCommunicationType.MQTT
-- uid: VEDriversLite.Devices.IoTCommunicationType.OPCUA
-  name: OPCUA
-  href: api/VEDriversLite.Devices.IoTCommunicationType.html#VEDriversLite_Devices_IoTCommunicationType_OPCUA
-  commentId: F:VEDriversLite.Devices.IoTCommunicationType.OPCUA
-  fullName: VEDriversLite.Devices.IoTCommunicationType.OPCUA
-  nameWithType: IoTCommunicationType.OPCUA
 - uid: VEDriversLite.Devices.IoTDataDriverFactory
   name: IoTDataDriverFactory
   href: api/VEDriversLite.Devices.IoTDataDriverFactory.html
@@ -10530,142 +10141,6 @@ references:
   isSpec: "True"
   fullName: VEDriversLite.Extensions.WooCommerce.WooCommerceShop.WooCommerceStoreUrl
   nameWithType: WooCommerceShop.WooCommerceStoreUrl
-- uid: VEDriversLite.FileHelpers
-  name: FileHelpers
-  href: api/VEDriversLite.FileHelpers.html
-  commentId: T:VEDriversLite.FileHelpers
-  fullName: VEDriversLite.FileHelpers
-  nameWithType: FileHelpers
-- uid: VEDriversLite.FileHelpers.AppendLineToTextFile(System.String,System.String)
-  name: AppendLineToTextFile(String, String)
-  href: api/VEDriversLite.FileHelpers.html#VEDriversLite_FileHelpers_AppendLineToTextFile_System_String_System_String_
-  commentId: M:VEDriversLite.FileHelpers.AppendLineToTextFile(System.String,System.String)
-  fullName: VEDriversLite.FileHelpers.AppendLineToTextFile(System.String, System.String)
-  nameWithType: FileHelpers.AppendLineToTextFile(String, String)
-- uid: VEDriversLite.FileHelpers.AppendLineToTextFile*
-  name: AppendLineToTextFile
-  href: api/VEDriversLite.FileHelpers.html#VEDriversLite_FileHelpers_AppendLineToTextFile_
-  commentId: Overload:VEDriversLite.FileHelpers.AppendLineToTextFile
-  isSpec: "True"
-  fullName: VEDriversLite.FileHelpers.AppendLineToTextFile
-  nameWithType: FileHelpers.AppendLineToTextFile
-- uid: VEDriversLite.FileHelpers.CheckOrCreateTheFolder(System.String,System.String,System.Boolean)
-  name: CheckOrCreateTheFolder(String, String, Boolean)
-  href: api/VEDriversLite.FileHelpers.html#VEDriversLite_FileHelpers_CheckOrCreateTheFolder_System_String_System_String_System_Boolean_
-  commentId: M:VEDriversLite.FileHelpers.CheckOrCreateTheFolder(System.String,System.String,System.Boolean)
-  fullName: VEDriversLite.FileHelpers.CheckOrCreateTheFolder(System.String, System.String, System.Boolean)
-  nameWithType: FileHelpers.CheckOrCreateTheFolder(String, String, Boolean)
-- uid: VEDriversLite.FileHelpers.CheckOrCreateTheFolder*
-  name: CheckOrCreateTheFolder
-  href: api/VEDriversLite.FileHelpers.html#VEDriversLite_FileHelpers_CheckOrCreateTheFolder_
-  commentId: Overload:VEDriversLite.FileHelpers.CheckOrCreateTheFolder
-  isSpec: "True"
-  fullName: VEDriversLite.FileHelpers.CheckOrCreateTheFolder
-  nameWithType: FileHelpers.CheckOrCreateTheFolder
-- uid: VEDriversLite.FileHelpers.ClearEmptyDirs(System.String)
-  name: ClearEmptyDirs(String)
-  href: api/VEDriversLite.FileHelpers.html#VEDriversLite_FileHelpers_ClearEmptyDirs_System_String_
-  commentId: M:VEDriversLite.FileHelpers.ClearEmptyDirs(System.String)
-  fullName: VEDriversLite.FileHelpers.ClearEmptyDirs(System.String)
-  nameWithType: FileHelpers.ClearEmptyDirs(String)
-- uid: VEDriversLite.FileHelpers.ClearEmptyDirs*
-  name: ClearEmptyDirs
-  href: api/VEDriversLite.FileHelpers.html#VEDriversLite_FileHelpers_ClearEmptyDirs_
-  commentId: Overload:VEDriversLite.FileHelpers.ClearEmptyDirs
-  isSpec: "True"
-  fullName: VEDriversLite.FileHelpers.ClearEmptyDirs
-  nameWithType: FileHelpers.ClearEmptyDirs
-- uid: VEDriversLite.FileHelpers.CopyFile(System.String,System.String)
-  name: CopyFile(String, String)
-  href: api/VEDriversLite.FileHelpers.html#VEDriversLite_FileHelpers_CopyFile_System_String_System_String_
-  commentId: M:VEDriversLite.FileHelpers.CopyFile(System.String,System.String)
-  fullName: VEDriversLite.FileHelpers.CopyFile(System.String, System.String)
-  nameWithType: FileHelpers.CopyFile(String, String)
-- uid: VEDriversLite.FileHelpers.CopyFile*
-  name: CopyFile
-  href: api/VEDriversLite.FileHelpers.html#VEDriversLite_FileHelpers_CopyFile_
-  commentId: Overload:VEDriversLite.FileHelpers.CopyFile
-  isSpec: "True"
-  fullName: VEDriversLite.FileHelpers.CopyFile
-  nameWithType: FileHelpers.CopyFile
-- uid: VEDriversLite.FileHelpers.GetDateString
-  name: GetDateString()
-  href: api/VEDriversLite.FileHelpers.html#VEDriversLite_FileHelpers_GetDateString
-  commentId: M:VEDriversLite.FileHelpers.GetDateString
-  fullName: VEDriversLite.FileHelpers.GetDateString()
-  nameWithType: FileHelpers.GetDateString()
-- uid: VEDriversLite.FileHelpers.GetDateString*
-  name: GetDateString
-  href: api/VEDriversLite.FileHelpers.html#VEDriversLite_FileHelpers_GetDateString_
-  commentId: Overload:VEDriversLite.FileHelpers.GetDateString
-  isSpec: "True"
-  fullName: VEDriversLite.FileHelpers.GetDateString
-  nameWithType: FileHelpers.GetDateString
-- uid: VEDriversLite.FileHelpers.GetDateTimeString
-  name: GetDateTimeString()
-  href: api/VEDriversLite.FileHelpers.html#VEDriversLite_FileHelpers_GetDateTimeString
-  commentId: M:VEDriversLite.FileHelpers.GetDateTimeString
-  fullName: VEDriversLite.FileHelpers.GetDateTimeString()
-  nameWithType: FileHelpers.GetDateTimeString()
-- uid: VEDriversLite.FileHelpers.GetDateTimeString*
-  name: GetDateTimeString
-  href: api/VEDriversLite.FileHelpers.html#VEDriversLite_FileHelpers_GetDateTimeString_
-  commentId: Overload:VEDriversLite.FileHelpers.GetDateTimeString
-  isSpec: "True"
-  fullName: VEDriversLite.FileHelpers.GetDateTimeString
-  nameWithType: FileHelpers.GetDateTimeString
-- uid: VEDriversLite.FileHelpers.GetTimeString
-  name: GetTimeString()
-  href: api/VEDriversLite.FileHelpers.html#VEDriversLite_FileHelpers_GetTimeString
-  commentId: M:VEDriversLite.FileHelpers.GetTimeString
-  fullName: VEDriversLite.FileHelpers.GetTimeString()
-  nameWithType: FileHelpers.GetTimeString()
-- uid: VEDriversLite.FileHelpers.GetTimeString*
-  name: GetTimeString
-  href: api/VEDriversLite.FileHelpers.html#VEDriversLite_FileHelpers_GetTimeString_
-  commentId: Overload:VEDriversLite.FileHelpers.GetTimeString
-  isSpec: "True"
-  fullName: VEDriversLite.FileHelpers.GetTimeString
-  nameWithType: FileHelpers.GetTimeString
-- uid: VEDriversLite.FileHelpers.IsFileExists(System.String)
-  name: IsFileExists(String)
-  href: api/VEDriversLite.FileHelpers.html#VEDriversLite_FileHelpers_IsFileExists_System_String_
-  commentId: M:VEDriversLite.FileHelpers.IsFileExists(System.String)
-  fullName: VEDriversLite.FileHelpers.IsFileExists(System.String)
-  nameWithType: FileHelpers.IsFileExists(String)
-- uid: VEDriversLite.FileHelpers.IsFileExists*
-  name: IsFileExists
-  href: api/VEDriversLite.FileHelpers.html#VEDriversLite_FileHelpers_IsFileExists_
-  commentId: Overload:VEDriversLite.FileHelpers.IsFileExists
-  isSpec: "True"
-  fullName: VEDriversLite.FileHelpers.IsFileExists
-  nameWithType: FileHelpers.IsFileExists
-- uid: VEDriversLite.FileHelpers.ReadTextFromFile(System.String)
-  name: ReadTextFromFile(String)
-  href: api/VEDriversLite.FileHelpers.html#VEDriversLite_FileHelpers_ReadTextFromFile_System_String_
-  commentId: M:VEDriversLite.FileHelpers.ReadTextFromFile(System.String)
-  fullName: VEDriversLite.FileHelpers.ReadTextFromFile(System.String)
-  nameWithType: FileHelpers.ReadTextFromFile(String)
-- uid: VEDriversLite.FileHelpers.ReadTextFromFile*
-  name: ReadTextFromFile
-  href: api/VEDriversLite.FileHelpers.html#VEDriversLite_FileHelpers_ReadTextFromFile_
-  commentId: Overload:VEDriversLite.FileHelpers.ReadTextFromFile
-  isSpec: "True"
-  fullName: VEDriversLite.FileHelpers.ReadTextFromFile
-  nameWithType: FileHelpers.ReadTextFromFile
-- uid: VEDriversLite.FileHelpers.WriteTextToFile(System.String,System.String)
-  name: WriteTextToFile(String, String)
-  href: api/VEDriversLite.FileHelpers.html#VEDriversLite_FileHelpers_WriteTextToFile_System_String_System_String_
-  commentId: M:VEDriversLite.FileHelpers.WriteTextToFile(System.String,System.String)
-  fullName: VEDriversLite.FileHelpers.WriteTextToFile(System.String, System.String)
-  nameWithType: FileHelpers.WriteTextToFile(String, String)
-- uid: VEDriversLite.FileHelpers.WriteTextToFile*
-  name: WriteTextToFile
-  href: api/VEDriversLite.FileHelpers.html#VEDriversLite_FileHelpers_WriteTextToFile_
-  commentId: Overload:VEDriversLite.FileHelpers.WriteTextToFile
-  isSpec: "True"
-  fullName: VEDriversLite.FileHelpers.WriteTextToFile
-  nameWithType: FileHelpers.WriteTextToFile
 - uid: VEDriversLite.KeyDto
   name: KeyDto
   href: api/VEDriversLite.KeyDto.html
@@ -32682,99 +32157,6 @@ references:
   isSpec: "True"
   fullName: VEDriversLite.SendTxData.Symbol
   nameWithType: SendTxData.Symbol
-- uid: VEDriversLite.StringExt
-  name: StringExt
-  href: api/VEDriversLite.StringExt.html
-  commentId: T:VEDriversLite.StringExt
-  fullName: VEDriversLite.StringExt
-  nameWithType: StringExt
-- uid: VEDriversLite.StringExt.HexStringToBytes(System.String)
-  name: HexStringToBytes(String)
-  href: api/VEDriversLite.StringExt.html#VEDriversLite_StringExt_HexStringToBytes_System_String_
-  commentId: M:VEDriversLite.StringExt.HexStringToBytes(System.String)
-  fullName: VEDriversLite.StringExt.HexStringToBytes(System.String)
-  nameWithType: StringExt.HexStringToBytes(String)
-- uid: VEDriversLite.StringExt.HexStringToBytes*
-  name: HexStringToBytes
-  href: api/VEDriversLite.StringExt.html#VEDriversLite_StringExt_HexStringToBytes_
-  commentId: Overload:VEDriversLite.StringExt.HexStringToBytes
-  isSpec: "True"
-  fullName: VEDriversLite.StringExt.HexStringToBytes
-  nameWithType: StringExt.HexStringToBytes
-- uid: VEDriversLite.StringExt.Truncate(System.String,System.Int32)
-  name: Truncate(String, Int32)
-  href: api/VEDriversLite.StringExt.html#VEDriversLite_StringExt_Truncate_System_String_System_Int32_
-  commentId: M:VEDriversLite.StringExt.Truncate(System.String,System.Int32)
-  fullName: VEDriversLite.StringExt.Truncate(System.String, System.Int32)
-  nameWithType: StringExt.Truncate(String, Int32)
-- uid: VEDriversLite.StringExt.Truncate*
-  name: Truncate
-  href: api/VEDriversLite.StringExt.html#VEDriversLite_StringExt_Truncate_
-  commentId: Overload:VEDriversLite.StringExt.Truncate
-  isSpec: "True"
-  fullName: VEDriversLite.StringExt.Truncate
-  nameWithType: StringExt.Truncate
-- uid: VEDriversLite.StringExt.UnZipStr(System.Byte[])
-  name: UnZipStr(Byte[])
-  href: api/VEDriversLite.StringExt.html#VEDriversLite_StringExt_UnZipStr_System_Byte___
-  commentId: M:VEDriversLite.StringExt.UnZipStr(System.Byte[])
-  name.vb: UnZipStr(Byte())
-  fullName: VEDriversLite.StringExt.UnZipStr(System.Byte[])
-  fullName.vb: VEDriversLite.StringExt.UnZipStr(System.Byte())
-  nameWithType: StringExt.UnZipStr(Byte[])
-  nameWithType.vb: StringExt.UnZipStr(Byte())
-- uid: VEDriversLite.StringExt.UnZipStr*
-  name: UnZipStr
-  href: api/VEDriversLite.StringExt.html#VEDriversLite_StringExt_UnZipStr_
-  commentId: Overload:VEDriversLite.StringExt.UnZipStr
-  isSpec: "True"
-  fullName: VEDriversLite.StringExt.UnZipStr
-  nameWithType: StringExt.UnZipStr
-- uid: VEDriversLite.StringExt.ZipStr(System.String)
-  name: ZipStr(String)
-  href: api/VEDriversLite.StringExt.html#VEDriversLite_StringExt_ZipStr_System_String_
-  commentId: M:VEDriversLite.StringExt.ZipStr(System.String)
-  fullName: VEDriversLite.StringExt.ZipStr(System.String)
-  nameWithType: StringExt.ZipStr(String)
-- uid: VEDriversLite.StringExt.ZipStr*
-  name: ZipStr
-  href: api/VEDriversLite.StringExt.html#VEDriversLite_StringExt_ZipStr_
-  commentId: Overload:VEDriversLite.StringExt.ZipStr
-  isSpec: "True"
-  fullName: VEDriversLite.StringExt.ZipStr
-  nameWithType: StringExt.ZipStr
-- uid: VEDriversLite.TimeHelpers
-  name: TimeHelpers
-  href: api/VEDriversLite.TimeHelpers.html
-  commentId: T:VEDriversLite.TimeHelpers
-  fullName: VEDriversLite.TimeHelpers
-  nameWithType: TimeHelpers
-- uid: VEDriversLite.TimeHelpers.DateTimeToUnixTimestamp(System.DateTime)
-  name: DateTimeToUnixTimestamp(DateTime)
-  href: api/VEDriversLite.TimeHelpers.html#VEDriversLite_TimeHelpers_DateTimeToUnixTimestamp_System_DateTime_
-  commentId: M:VEDriversLite.TimeHelpers.DateTimeToUnixTimestamp(System.DateTime)
-  fullName: VEDriversLite.TimeHelpers.DateTimeToUnixTimestamp(System.DateTime)
-  nameWithType: TimeHelpers.DateTimeToUnixTimestamp(DateTime)
-- uid: VEDriversLite.TimeHelpers.DateTimeToUnixTimestamp*
-  name: DateTimeToUnixTimestamp
-  href: api/VEDriversLite.TimeHelpers.html#VEDriversLite_TimeHelpers_DateTimeToUnixTimestamp_
-  commentId: Overload:VEDriversLite.TimeHelpers.DateTimeToUnixTimestamp
-  isSpec: "True"
-  fullName: VEDriversLite.TimeHelpers.DateTimeToUnixTimestamp
-  nameWithType: TimeHelpers.DateTimeToUnixTimestamp
-- uid: VEDriversLite.TimeHelpers.UnixTimestampToDateTime(System.Double)
-  name: UnixTimestampToDateTime(Double)
-  href: api/VEDriversLite.TimeHelpers.html#VEDriversLite_TimeHelpers_UnixTimestampToDateTime_System_Double_
-  commentId: M:VEDriversLite.TimeHelpers.UnixTimestampToDateTime(System.Double)
-  fullName: VEDriversLite.TimeHelpers.UnixTimestampToDateTime(System.Double)
-  nameWithType: TimeHelpers.UnixTimestampToDateTime(Double)
-- uid: VEDriversLite.TimeHelpers.UnixTimestampToDateTime*
-  name: UnixTimestampToDateTime
-  href: api/VEDriversLite.TimeHelpers.html#VEDriversLite_TimeHelpers_UnixTimestampToDateTime_
-  commentId: Overload:VEDriversLite.TimeHelpers.UnixTimestampToDateTime
-  isSpec: "True"
-  fullName: VEDriversLite.TimeHelpers.UnixTimestampToDateTime
-  nameWithType: TimeHelpers.UnixTimestampToDateTime
 - uid: VEDriversLite.UnstoppableDomains
   name: VEDriversLite.UnstoppableDomains
   href: api/VEDriversLite.UnstoppableDomains.html
