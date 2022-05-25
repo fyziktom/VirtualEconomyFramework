@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using VEDriversLite.Devices.Dto;
+using VEDriversLite.Common;
+using VEDriversLite.Common.IoT.Dto;
 using VEDriversLite.NFT;
 
 namespace VEDriversLite.Devices

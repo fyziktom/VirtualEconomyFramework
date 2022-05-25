@@ -478,320 +478,6 @@
             If this is true, the bookmark is on some subaccount
             </summary>
         </member>
-        <member name="T:VEDriversLite.CommonReturnTypeDto">
-            <summary>
-            This class is to declare the common method return type used mostly in helper classes. To generalize the return data we have added this class.
-            </summary>
-        </member>
-        <member name="P:VEDriversLite.CommonReturnTypeDto.Success">
-            <summary>
-            This property tells whether the return type is a success or a failure
-            </summary>
-        </member>
-        <member name="P:VEDriversLite.CommonReturnTypeDto.Value">
-            <summary>
-            This property holds the actual value
-            </summary>
-        </member>
-        <member name="T:VEDriversLite.StringExt">
-            <summary>
-            Extend of the String functions
-            </summary>
-        </member>
-        <member name="M:VEDriversLite.StringExt.Truncate(System.String,System.Int32)">
-            <summary>
-            Turncate the string to some max length
-            </summary>
-            <param name="value"></param>
-            <param name="maxLength"></param>
-            <returns></returns>
-        </member>
-        <member name="M:VEDriversLite.StringExt.ZipStr(System.String)">
-            <summary>
-            https://stackoverflow.com/questions/2118904/zip-and-unzip-string-with-deflate
-            </summary>
-            <param name="str"></param>
-            <returns></returns>
-        </member>
-        <member name="M:VEDriversLite.StringExt.HexStringToBytes(System.String)">
-            <summary>
-            Convert the hex string to bytes
-            </summary>
-            <param name="hexString"></param>
-            <returns></returns>
-            <exception cref="T:System.ArgumentNullException"></exception>
-            <exception cref="T:System.ArgumentException"></exception>
-        </member>
-        <member name="M:VEDriversLite.StringExt.UnZipStr(System.Byte[])">
-            <summary>
-            https://stackoverflow.com/questions/2118904/zip-and-unzip-string-with-deflate
-            </summary>
-            <param name="input"></param>
-            <returns></returns>
-        </member>
-        <member name="T:VEDriversLite.FileHelpers">
-            <summary>
-            Helper class for handle the files
-            </summary>
-        </member>
-        <member name="M:VEDriversLite.FileHelpers.ClearEmptyDirs(System.String)">
-            <summary>
-            Remove all the empty folders in the main folder
-            </summary>
-            <param name="DataFolder">Main folder address</param>
-        </member>
-        <member name="M:VEDriversLite.FileHelpers.CopyFile(System.String,System.String)">
-            <summary>
-            Copy file from one to another destionation
-            </summary>
-            <param name="sourceFilePath">Input file destionation</param>
-            <param name="destinatinFilePath">Final file destination</param>
-            <returns></returns>
-        </member>
-        <member name="M:VEDriversLite.FileHelpers.GetDateTimeString">
-            <summary>
-            short datetime string...todo use formating in ToString
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:VEDriversLite.FileHelpers.GetTimeString">
-            <summary>
-            short time string...todo use formating in ToString
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:VEDriversLite.FileHelpers.GetDateString">
-            <summary>
-            short date string...todo use formating in ToString
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:VEDriversLite.FileHelpers.CheckOrCreateTheFolder(System.String,System.String,System.Boolean)">
-            <summary>
-            Check if the folder exists in the inputed location. If not exists, it will create it
-            The new folder name can contains the automatic datetime stamp and optional suffix
-            </summary>
-            <param name="_outputFolderPath">The path to check</param>
-            <param name="suffix">Sufix for the new folder</param>
-            <param name="withdatetime">If you want to add datetime stamp automatically</param>
-            <returns></returns>
-        </member>
-        <member name="M:VEDriversLite.FileHelpers.AppendLineToTextFile(System.String,System.String)">
-            <summary>
-            Add line to the end of some file.
-            If the file does not exists it will create the new file.
-            </summary>
-            <param name="line">New line which should be added to the file</param>
-            <param name="outputPath">Output path of the file</param>
-        </member>
-        <member name="M:VEDriversLite.FileHelpers.WriteTextToFile(System.String,System.String)">
-            <summary>
-            Write whole text into the file.
-            If the file does not exists it will create the new file.
-            </summary>
-            <param name="path">Output path of the file</param>
-            <param name="content">content text</param>
-        </member>
-        <member name="M:VEDriversLite.FileHelpers.ReadTextFromFile(System.String)">
-            <summary>
-            Read all the text from the file
-            </summary>
-            <param name="path">Path of the input file</param>
-            <returns></returns>
-        </member>
-        <member name="M:VEDriversLite.FileHelpers.IsFileExists(System.String)">
-            <summary>
-            Check if the file exists
-            </summary>
-            <param name="path">Path of the file</param>
-            <returns>true if the file exists</returns>
-        </member>
-        <member name="T:VEDriversLite.Common.RegexMatchPaterns">
-            <summary>
-            Common patterns for Regex
-            </summary>
-        </member>
-        <member name="P:VEDriversLite.Common.RegexMatchPaterns.EmojiPattern">
-            <summary>
-            This pattern identify the emojis in the text
-            </summary>
-        </member>
-        <member name="T:VEDriversLite.Common.QTRPCConfig">
-            <summary>
-            Configuration of the RPC node connection
-            </summary>
-        </member>
-        <member name="P:VEDriversLite.Common.QTRPCConfig.Host">
-            <summary>
-            Host of RPC server
-            </summary>
-        </member>
-        <member name="P:VEDriversLite.Common.QTRPCConfig.Port">
-            <summary>
-            Port of RPC server
-            </summary>
-        </member>
-        <member name="P:VEDriversLite.Common.QTRPCConfig.User">
-            <summary>
-            User name for RPC server
-            </summary>
-        </member>
-        <member name="P:VEDriversLite.Common.QTRPCConfig.Pass">
-            <summary>
-            Password for RPC server
-            </summary>
-        </member>
-        <member name="T:VEDriversLite.Common.QTWalletRPC">
-            <summary>
-            QT Wallet RPC client controler
-            </summary>
-        </member>
-        <member name="F:VEDriversLite.Common.QTWalletRPC.ApiFunctions">
-            <summary>
-            Main API functions
-            </summary>
-        </member>
-        <member name="M:VEDriversLite.Common.QTWalletRPC.ProcessRequest(System.String,System.String,System.String[],VEDriversLite.NeblioAPI.JsonClient)">
-            <summary>
-            Find match for command in ApiDictionary and invoke function
-            </summary>
-            <param name="uid">Request UID</param>
-            <param name="command">Command to do</param>
-            <param name="args">set of arguments</param>
-            <param name="jsonClient"></param>
-            <returns></returns>
-        </member>
-        <member name="M:VEDriversLite.Common.QTWalletRPC.CommonMultipleParameterRequest(System.String,System.String,System.String[],VEDriversLite.NeblioAPI.JsonClient)">
-            <summary>
-            Common Api Function - Common call for command with multiple parameter
-            </summary>
-            <param name="uid"></param>
-            <param name="command"></param>
-            <param name="args"></param>
-            <param name="jsonClient"></param>
-            <returns></returns>
-        </member>
-        <member name="M:VEDriversLite.Common.QTWalletRPC.CommonOneParameterRequest(System.String,System.String,System.String[],VEDriversLite.NeblioAPI.JsonClient)">
-            <summary>
-            Common Api Function - Common call for command with one parameter
-            </summary>
-            <param name="uid"></param>
-            <param name="command"></param>
-            <param name="args"></param>
-            <param name="jsonClient"></param>
-            <returns></returns>
-        </member>
-        <member name="M:VEDriversLite.Common.QTWalletRPC.CommonNoParameterRequest(System.String,System.String,System.String[],VEDriversLite.NeblioAPI.JsonClient)">
-            <summary>
-            Common Api Function - Common request without parameter
-            </summary>
-            <param name="uid"></param>
-            <param name="command"></param>
-            <param name="args"></param>
-            <param name="jsonClient"></param>
-            <returns></returns>
-        </member>
-        <member name="T:VEDriversLite.Common.QTWalletResponseDto">
-            <summary>
-            RPC Wallet response dto
-            </summary>
-        </member>
-        <member name="T:VEDriversLite.Common.QTWalletRPCClient">
-            <summary>
-            RPC client for QT Wallets
-            </summary>
-        </member>
-        <member name="M:VEDriversLite.Common.QTWalletRPCClient.#ctor(System.String,System.Int32)">
-            <summary>
-            Constructor
-            </summary>
-            <param name="baseurl">connection url or IP of QT wallet RPC server</param>
-            <param name="port">connection port of QT wallet RPC server</param>
-        </member>
-        <member name="M:VEDriversLite.Common.QTWalletRPCClient.#ctor(VEDriversLite.Common.QTRPCConfig)">
-            <summary>
-            Create client from config dto
-            </summary>
-            <param name="cfg"></param>
-        </member>
-        <member name="P:VEDriversLite.Common.QTWalletRPCClient.ConnectionUrlBaseAddress">
-            <summary>
-            Base URL for connection to RPC server
-            </summary>
-        </member>
-        <member name="P:VEDriversLite.Common.QTWalletRPCClient.ConnectionPort">
-            <summary>
-            Base port for connection to RPC server
-            </summary>
-        </member>
-        <member name="P:VEDriversLite.Common.QTWalletRPCClient.ConnectionAddress">
-            <summary>
-            Connection address in "clickable form
-            </summary>
-        </member>
-        <member name="P:VEDriversLite.Common.QTWalletRPCClient.IsConnected">
-            <summary>
-            Is connected to RPC server flag
-            </summary>
-        </member>
-        <member name="P:VEDriversLite.Common.QTWalletRPCClient.User">
-            <summary>
-            User for connection to RPC server
-            </summary>
-        </member>
-        <member name="P:VEDriversLite.Common.QTWalletRPCClient.Pass">
-            <summary>
-            Password for connection to RPC server
-            </summary>
-        </member>
-        <member name="P:VEDriversLite.Common.QTWalletRPCClient.ClientInitialized">
-            <summary>
-            Is set if the client is initialized
-            </summary>
-        </member>
-        <member name="M:VEDriversLite.Common.QTWalletRPCClient.InitClients">
-            <summary>
-            Initialize client. You need to load connection info first - usually during the construction
-            </summary>
-        </member>
-        <member name="M:VEDriversLite.Common.QTWalletRPCClient.RPCLocalCommandAsync(System.String,System.Object)">
-            <summary>
-            Function for call of RPC command. Parameters is string splitted with ','
-            First is command, then goes the parameters. If parameters must cointain ',' please use function RPCLocalCommandSplitedAsync
-            </summary>
-            <param name="param">First is command, then goes the parameters.</param>
-            <param name="obj"></param>
-            <returns></returns>
-        </member>
-        <member name="M:VEDriversLite.Common.QTWalletRPCClient.RPCLocalCommandSplitedAsync(System.String,System.String[])">
-            <summary>
-            This function require already splitted command and parameters
-            This is for the case that some of the parameters must contain ',' which is used as separator
-            </summary>
-            <param name="command">RPC command name</param>
-            <param name="parameters">string array of parameters</param>
-            <returns></returns>
-        </member>
-        <member name="T:VEDriversLite.TimeHelpers">
-            <summary>
-            Time helpers to convert time between UnixTimeStamp and classic time
-            https://stackoverflow.com/questions/249760/how-can-i-convert-a-unix-timestamp-to-datetime-and-vice-versa
-            </summary>
-        </member>
-        <member name="M:VEDriversLite.TimeHelpers.UnixTimestampToDateTime(System.Double)">
-            <summary>
-            Convert Unix Time stamp in miliseconds to DateTime
-            </summary>
-            <param name="unixTime">timestamp in miliseconds</param>
-            <returns></returns>
-        </member>
-        <member name="M:VEDriversLite.TimeHelpers.DateTimeToUnixTimestamp(System.DateTime)">
-            <summary>
-            Convert DateTime to Unix timestamp in miliseconds
-            </summary>
-            <param name="dateTime"></param>
-            <returns></returns>
-        </member>
         <member name="T:VEDriversLite.Devices.APIs.HARDWARIO.Dto.Acceleration">
             <summary>
             Dto for HARDWARIO CHESTER data about acceleration
@@ -942,7 +628,7 @@
             Common connection properties like Url, security, etc.
             </summary>
         </member>
-        <member name="M:VEDriversLite.Devices.APIs.HARDWARIO.HARDWARIOApiClient.SetCommonConnectionParameters(VEDriversLite.Devices.Dto.CommonConnectionParams)">
+        <member name="M:VEDriversLite.Devices.APIs.HARDWARIO.HARDWARIOApiClient.SetCommonConnectionParameters(VEDriversLite.Common.IoT.Dto.CommonConnectionParams)">
             <summary>
             Load the connection parameters
             </summary>
@@ -1046,129 +732,12 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.Devices.CommonIoTDataDriver.SetConnParams(VEDriversLite.Devices.Dto.CommonConnectionParams)">
+        <member name="M:VEDriversLite.Devices.CommonIoTDataDriver.SetConnParams(VEDriversLite.Common.IoT.Dto.CommonConnectionParams)">
             <summary>
             Set connection parameters
             </summary>
             <param name="ccop"></param>
             <returns></returns>
-        </member>
-        <member name="T:VEDriversLite.Devices.Dto.CommunitacionSecurityType">
-            <summary>
-            Security of the API
-            </summary>
-        </member>
-        <member name="F:VEDriversLite.Devices.Dto.CommunitacionSecurityType.None">
-            <summary>
-            Without credentials
-            </summary>
-        </member>
-        <member name="F:VEDriversLite.Devices.Dto.CommunitacionSecurityType.SSL">
-            <summary>
-            SSL classic user and pass
-            </summary>
-        </member>
-        <member name="F:VEDriversLite.Devices.Dto.CommunitacionSecurityType.Bearer">
-            <summary>
-            common Bearer token
-            </summary>
-        </member>
-        <member name="F:VEDriversLite.Devices.Dto.CommunitacionSecurityType.JWT">
-            <summary>
-            JWT Token
-            </summary>
-        </member>
-        <member name="T:VEDriversLite.Devices.Dto.CommonConnectionParams">
-            <summary>
-            Main connection parameters for the IoT data driver to access the API
-            </summary>
-        </member>
-        <member name="P:VEDriversLite.Devices.Dto.CommonConnectionParams.IP">
-            <summary>
-            IP for connection
-            </summary>
-        </member>
-        <member name="P:VEDriversLite.Devices.Dto.CommonConnectionParams.Url">
-            <summary>
-            URL for connection
-            </summary>
-        </member>
-        <member name="P:VEDriversLite.Devices.Dto.CommonConnectionParams.Port">
-            <summary>
-            PORT for connection
-            </summary>
-        </member>
-        <member name="P:VEDriversLite.Devices.Dto.CommonConnectionParams.Encrypted">
-            <summary>
-            Is communication encrypted
-            </summary>
-        </member>
-        <member name="P:VEDriversLite.Devices.Dto.CommonConnectionParams.Secured">
-            <summary>
-            is commection secured
-            </summary>
-        </member>
-        <member name="P:VEDriversLite.Devices.Dto.CommonConnectionParams.SType">
-            <summary>
-            Type of security type like: SSL, Bearer, etc.
-            </summary>
-        </member>
-        <member name="P:VEDriversLite.Devices.Dto.CommonConnectionParams.Username">
-            <summary>
-            User name for the case of secured connection
-            </summary>
-        </member>
-        <member name="P:VEDriversLite.Devices.Dto.CommonConnectionParams.Password">
-            <summary>
-            Password name for the case of secured connection
-            </summary>
-        </member>
-        <member name="P:VEDriversLite.Devices.Dto.CommonConnectionParams.Token">
-            <summary>
-            Token for the case of secured connection
-            </summary>
-        </member>
-        <member name="P:VEDriversLite.Devices.Dto.CommonConnectionParams.GroupId">
-            <summary>
-            Group Id of the device
-            </summary>
-        </member>
-        <member name="P:VEDriversLite.Devices.Dto.CommonConnectionParams.DeviceId">
-            <summary>
-            Device Id of the device
-            </summary>
-        </member>
-        <member name="P:VEDriversLite.Devices.Dto.CommonConnectionParams.UserId">
-            <summary>
-            User Id of the owner of the device
-            </summary>
-        </member>
-        <member name="P:VEDriversLite.Devices.Dto.CommonConnectionParams.CommonRefreshInterval">
-            <summary>
-            Common data refresh interval in miliseconds
-            Default value is 10s = 10000ms
-            This is usually used for request type of the communication
-            </summary>
-        </member>
-        <member name="T:VEDriversLite.Devices.Dto.IoTDataDriverSettings">
-            <summary>
-            Settings of the IoT data driver. Most of the settings are for connection to the API or source of the data
-            </summary>
-        </member>
-        <member name="P:VEDriversLite.Devices.Dto.IoTDataDriverSettings.ComSchemeType">
-            <summary>
-            Communication Schemes (Requests - classic API), (PubSub - like MQTT)
-            </summary>
-        </member>
-        <member name="P:VEDriversLite.Devices.Dto.IoTDataDriverSettings.IoTComType">
-            <summary>
-            Communication type - REST API, MSSQL Database, MQTT, etc.
-            </summary>
-        </member>
-        <member name="P:VEDriversLite.Devices.Dto.IoTDataDriverSettings.ConnectionParams">
-            <summary>
-            Main connection parameters
-            </summary>
         </member>
         <member name="T:VEDriversLite.Devices.HARDWARIOIoTDataDriver">
             <summary>
@@ -1199,7 +768,7 @@
             <param name="nft"></param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.Devices.HARDWARIOIoTDataDriver.SetConnParams(VEDriversLite.Devices.Dto.CommonConnectionParams)">
+        <member name="M:VEDriversLite.Devices.HARDWARIOIoTDataDriver.SetConnParams(VEDriversLite.Common.IoT.Dto.CommonConnectionParams)">
             <summary>
             Set connection parameters
             </summary>
@@ -1229,61 +798,6 @@
         <member name="F:VEDriversLite.Devices.IoTDataDriverType.M5Stack">
             <summary>
             M5Stack IoT platform
-            </summary>
-        </member>
-        <member name="T:VEDriversLite.Devices.CommunicationSchemeType">
-            <summary>
-            Scheme of the communication
-            </summary>
-        </member>
-        <member name="F:VEDriversLite.Devices.CommunicationSchemeType.Requests">
-            <summary>
-            Request to API
-            </summary>
-        </member>
-        <member name="F:VEDriversLite.Devices.CommunicationSchemeType.PubSub">
-            <summary>
-            Publisher Subscriber model - for example MQTT
-            </summary>
-        </member>
-        <member name="T:VEDriversLite.Devices.IoTCommunicationType">
-            <summary>
-            Communication type
-            </summary>
-        </member>
-        <member name="F:VEDriversLite.Devices.IoTCommunicationType.API">
-            <summary>
-            API access
-            </summary>
-        </member>
-        <member name="F:VEDriversLite.Devices.IoTCommunicationType.File">
-            <summary>
-            File storage
-            </summary>
-        </member>
-        <member name="F:VEDriversLite.Devices.IoTCommunicationType.DbMSSQL">
-            <summary>
-            Database Microsoft SQL
-            </summary>
-        </member>
-        <member name="F:VEDriversLite.Devices.IoTCommunicationType.DbPostgreSQL">
-            <summary>
-            Database PostgreSQL
-            </summary>
-        </member>
-        <member name="F:VEDriversLite.Devices.IoTCommunicationType.DbSQLite">
-            <summary>
-            Database SQLite
-            </summary>
-        </member>
-        <member name="F:VEDriversLite.Devices.IoTCommunicationType.MQTT">
-            <summary>
-            MQTT protocol
-            </summary>
-        </member>
-        <member name="F:VEDriversLite.Devices.IoTCommunicationType.OPCUA">
-            <summary>
-            OPC UA protocol
             </summary>
         </member>
         <member name="T:VEDriversLite.Devices.IIoTDataDriver">
@@ -1349,7 +863,7 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.Devices.IIoTDataDriver.SetConnParams(VEDriversLite.Devices.Dto.CommonConnectionParams)">
+        <member name="M:VEDriversLite.Devices.IIoTDataDriver.SetConnParams(VEDriversLite.Common.IoT.Dto.CommonConnectionParams)">
             <summary>
             Set connection parameters
             </summary>
@@ -4496,67 +4010,6 @@
             <param name="txinfo"></param>
             <returns></returns>
         </member>
-<<<<<<< HEAD
-        <member name="M:VEDriversLite.NeblioTransactionHelpers.HexStringToBytes(System.String)">
-            <summary>
-            Convert the hex string to bytes
-            </summary>
-            <param name="hexString"></param>
-            <returns></returns>
-            <exception cref="T:System.ArgumentNullException"></exception>
-            <exception cref="T:System.ArgumentException"></exception>
-        </member>
-        <member name="F:VEDriversLite.NeblioTransactionHelpers.TokenMetadataCache">
-            <summary>
-            Token Metadata cache list
-            </summary>
-        </member>
-        <member name="M:VEDriversLite.NeblioTransactionHelpers.GetTokenMetadata(System.String)">
-            <summary>
-            Get token issue metadata. Contains image url, issuer, and other info
-            </summary>
-            <param name="tokenId">token id hash</param>
-            <returns></returns>
-        </member>
-        <member name="M:VEDriversLite.NeblioTransactionHelpers.GetTokenInfo(System.String)">
-            <summary>
-            Get token info. Contains image url, issuer, and other info
-            </summary>
-            <param name="tokenId">token id hash</param>
-            <returns></returns>
-        </member>
-        <member name="M:VEDriversLite.NeblioTransactionHelpers.GetActualMintingSupply(System.String,System.String,VEDriversLite.NeblioAPI.GetAddressInfoResponse)">
-            <summary>
-            check actual supply for minting on some address. It is just for VENFT tokens now. 
-            Function will also load token metadta if it has not loaded yet.
-            </summary>
-            <param name="address">address which has utxos</param>
-            <param name="tokenId">Specify the tokenId</param>
-            <param name="addressinfo">if you have already loaded address info with utxo list provide it to prevent unnecessary API requests</param>
-            <returns></returns>
-        </member>
-        <member name="M:VEDriversLite.NeblioTransactionHelpers.CheckTokensSupplies(System.String,VEDriversLite.NeblioAPI.GetAddressInfoResponse)">
-            <summary>
-            Check supply of all tokens on address.
-            </summary>
-            <param name="address">address which has utxos</param>
-            <param name="addressinfo">if you have already loaded address info with utxo list provide it to prevent unnecessary API requests</param>
-            <returns></returns>
-        </member>
-        <member name="M:VEDriversLite.NeblioTransactionHelpers.GetTokenOwnersList(System.String)">
-            <summary>
-            Return VENFT top owners. It eliminate some testing addresses.
-            </summary>
-            <param name="tokenId">Token Id hash</param>
-            <returns></returns>
-        </member>
-        <member name="M:VEDriversLite.NeblioTransactionHelpers.GetTokenOwners(System.String)">
-            <summary>
-            Return VENFT top owners. It eliminate some testing addresses.
-            </summary>
-            <param name="tokenId">Token Id hash</param>
-            <returns></returns>
-        </member>
         <member name="T:VEDriversLite.NFT.AppNFT">
             <summary>
             App NFT is the carrier for the Applications in DataItems. Usually it is some HTML/JS or Blazor App
@@ -4603,8 +4056,6 @@
             <param name="receiver">receiver of the NFT</param>
             <returns></returns>
         </member>
-=======
->>>>>>> Development
         <member name="T:VEDriversLite.NFT.CommonNFT">
             <summary>
             Common NFT class. It implements lots of functions for the parsing the basic parameter of the NFT.
@@ -8504,6 +7955,162 @@
             <param name="address">Address of the sender</param>
             <param name="key">Private key of the sender for encryption</param>
             <param name="receiver">receiver of the NFT</param>
+            <returns></returns>
+        </member>
+        <member name="T:VEDriversLite.Common.QTRPCConfig">
+            <summary>
+            Configuration of the RPC node connection
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Common.QTRPCConfig.Host">
+            <summary>
+            Host of RPC server
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Common.QTRPCConfig.Port">
+            <summary>
+            Port of RPC server
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Common.QTRPCConfig.User">
+            <summary>
+            User name for RPC server
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Common.QTRPCConfig.Pass">
+            <summary>
+            Password for RPC server
+            </summary>
+        </member>
+        <member name="T:VEDriversLite.Common.QTWalletRPC">
+            <summary>
+            QT Wallet RPC client controler
+            </summary>
+        </member>
+        <member name="F:VEDriversLite.Common.QTWalletRPC.ApiFunctions">
+            <summary>
+            Main API functions
+            </summary>
+        </member>
+        <member name="M:VEDriversLite.Common.QTWalletRPC.ProcessRequest(System.String,System.String,System.String[],VEDriversLite.NeblioAPI.JsonClient)">
+            <summary>
+            Find match for command in ApiDictionary and invoke function
+            </summary>
+            <param name="uid">Request UID</param>
+            <param name="command">Command to do</param>
+            <param name="args">set of arguments</param>
+            <param name="jsonClient"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Common.QTWalletRPC.CommonMultipleParameterRequest(System.String,System.String,System.String[],VEDriversLite.NeblioAPI.JsonClient)">
+            <summary>
+            Common Api Function - Common call for command with multiple parameter
+            </summary>
+            <param name="uid"></param>
+            <param name="command"></param>
+            <param name="args"></param>
+            <param name="jsonClient"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Common.QTWalletRPC.CommonOneParameterRequest(System.String,System.String,System.String[],VEDriversLite.NeblioAPI.JsonClient)">
+            <summary>
+            Common Api Function - Common call for command with one parameter
+            </summary>
+            <param name="uid"></param>
+            <param name="command"></param>
+            <param name="args"></param>
+            <param name="jsonClient"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Common.QTWalletRPC.CommonNoParameterRequest(System.String,System.String,System.String[],VEDriversLite.NeblioAPI.JsonClient)">
+            <summary>
+            Common Api Function - Common request without parameter
+            </summary>
+            <param name="uid"></param>
+            <param name="command"></param>
+            <param name="args"></param>
+            <param name="jsonClient"></param>
+            <returns></returns>
+        </member>
+        <member name="T:VEDriversLite.Common.QTWalletResponseDto">
+            <summary>
+            RPC Wallet response dto
+            </summary>
+        </member>
+        <member name="T:VEDriversLite.Common.QTWalletRPCClient">
+            <summary>
+            RPC client for QT Wallets
+            </summary>
+        </member>
+        <member name="M:VEDriversLite.Common.QTWalletRPCClient.#ctor(System.String,System.Int32)">
+            <summary>
+            Constructor
+            </summary>
+            <param name="baseurl">connection url or IP of QT wallet RPC server</param>
+            <param name="port">connection port of QT wallet RPC server</param>
+        </member>
+        <member name="M:VEDriversLite.Common.QTWalletRPCClient.#ctor(VEDriversLite.Common.QTRPCConfig)">
+            <summary>
+            Create client from config dto
+            </summary>
+            <param name="cfg"></param>
+        </member>
+        <member name="P:VEDriversLite.Common.QTWalletRPCClient.ConnectionUrlBaseAddress">
+            <summary>
+            Base URL for connection to RPC server
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Common.QTWalletRPCClient.ConnectionPort">
+            <summary>
+            Base port for connection to RPC server
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Common.QTWalletRPCClient.ConnectionAddress">
+            <summary>
+            Connection address in "clickable form
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Common.QTWalletRPCClient.IsConnected">
+            <summary>
+            Is connected to RPC server flag
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Common.QTWalletRPCClient.User">
+            <summary>
+            User for connection to RPC server
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Common.QTWalletRPCClient.Pass">
+            <summary>
+            Password for connection to RPC server
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.Common.QTWalletRPCClient.ClientInitialized">
+            <summary>
+            Is set if the client is initialized
+            </summary>
+        </member>
+        <member name="M:VEDriversLite.Common.QTWalletRPCClient.InitClients">
+            <summary>
+            Initialize client. You need to load connection info first - usually during the construction
+            </summary>
+        </member>
+        <member name="M:VEDriversLite.Common.QTWalletRPCClient.RPCLocalCommandAsync(System.String,System.Object)">
+            <summary>
+            Function for call of RPC command. Parameters is string splitted with ','
+            First is command, then goes the parameters. If parameters must cointain ',' please use function RPCLocalCommandSplitedAsync
+            </summary>
+            <param name="param">First is command, then goes the parameters.</param>
+            <param name="obj"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VEDriversLite.Common.QTWalletRPCClient.RPCLocalCommandSplitedAsync(System.String,System.String[])">
+            <summary>
+            This function require already splitted command and parameters
+            This is for the case that some of the parameters must contain ',' which is used as separator
+            </summary>
+            <param name="command">RPC command name</param>
+            <param name="parameters">string array of parameters</param>
             <returns></returns>
         </member>
         <member name="T:VEDriversLite.Security.ECDSAProvider">

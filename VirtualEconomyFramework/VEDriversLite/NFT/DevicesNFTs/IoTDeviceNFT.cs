@@ -6,7 +6,8 @@ using System.Globalization;
 using System.Text;
 using System.Threading.Tasks;
 using VEDriversLite.Devices;
-using VEDriversLite.Devices.Dto;
+using VEDriversLite.Common;
+using VEDriversLite.Common.IoT.Dto;
 using VEDriversLite.Security;
 using VEDriversLite.NeblioAPI;
 

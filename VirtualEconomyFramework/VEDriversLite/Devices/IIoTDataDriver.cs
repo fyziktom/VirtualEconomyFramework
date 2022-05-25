@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using VEDriversLite.Devices.Dto;
+using VEDriversLite.Common;
+using VEDriversLite.Common.IoT.Dto;
 using VEDriversLite.NFT;
 
 namespace VEDriversLite.Devices
@@ -30,54 +31,7 @@ namespace VEDriversLite.Devices
         /// </summary>
         M5Stack
     }
-    /// <summary>
-    /// Scheme of the communication
-    /// </summary>
-    public enum CommunicationSchemeType
-    {
-        /// <summary>
-        /// Request to API
-        /// </summary>
-        Requests,
-        /// <summary>
-        /// Publisher Subscriber model - for example MQTT
-        /// </summary>
-        PubSub
-    }
-    /// <summary>
-    /// Communication type
-    /// </summary>
-    public enum IoTCommunicationType
-    {
-        /// <summary>
-        /// API access
-        /// </summary>
-        API,
-        /// <summary>
-        /// File storage
-        /// </summary>
-        File,
-        /// <summary>
-        /// Database Microsoft SQL
-        /// </summary>
-        DbMSSQL,
-        /// <summary>
-        /// Database PostgreSQL
-        /// </summary>
-        DbPostgreSQL,
-        /// <summary>
-        /// Database SQLite
-        /// </summary>
-        DbSQLite,
-        /// <summary>
-        /// MQTT protocol
-        /// </summary>
-        MQTT = 100,
-        /// <summary>
-        /// OPC UA protocol
-        /// </summary>
-        OPCUA = 101
-    }
+
     /// <summary>
     /// Basic interface for IoT Data Driver
     /// </summary>

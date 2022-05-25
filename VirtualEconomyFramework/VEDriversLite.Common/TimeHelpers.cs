@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace VEDriversLite
+namespace VEDriversLite.Common
 {
     /// <summary>
     /// Time helpers to convert time between UnixTimeStamp and classic time

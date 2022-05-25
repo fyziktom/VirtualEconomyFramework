@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\VEDriversLite.Extensions.WooCommerce\VEDriversLite.Extensions.WooCommerce.csproj" />
+    <ProjectReference Include="..\VEDriversLite.FluxAPI\VEDriversLite.FluxAPI.csproj" />
     <ProjectReference Include="..\VEDriversLite\VEDriversLite.csproj" />
   </ItemGroup>
 

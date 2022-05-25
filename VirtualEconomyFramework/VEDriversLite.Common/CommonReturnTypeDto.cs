@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace VEDriversLite
+namespace VEDriversLite.Common
 {
     /// <summary>
     /// This class is to declare the common method return type used mostly in helper classes. To generalize the return data we have added this class.

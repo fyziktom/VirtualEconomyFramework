@@ -19,6 +19,8 @@ using VEDriversLite.NFT.Dto;
 using VEDriversLite.Security;
 using VEDriversLite.Extensions.WooCommerce;
 using VEDriversLite.NeblioAPI;
+using VEDriversLite.Common;
+using VEDriversLite.Common.IoT.Dto;
 
 namespace VENFTApp_Server
 {
