@@ -87,6 +87,9 @@ namespace TestVEDriversLite
         {
             if (instancesController == null)
                 await InitializeInstancesAsync(string.Empty);
+
+            if (string.IsNullOrEmpty(param))
+                param = "14551152c78cf25265ef006202cb271e344c131070d9d4f5aa309f041907b23e,3ae47ec3dc3e70a0395cbfd41248c9c07e1c6071ca6a7c60536b61a4d2b6350e";
             var split = param.Split(',');
             if (split == null) return;
             if (split.Length == 0 || split.Length == 1) return;
@@ -97,7 +100,7 @@ namespace TestVEDriversLite
             var tasks = new Task[numoftasks];
             for (var i = 0; i < numoftasks; i++)
             {
-                if (i < 5)
+                if (i < (numoftasks/2))
                     tasks[i] = SendRequest(topic, $"Task-{i}-firstNFT", false, true);
                 else
                     tasks[i] = SendRequest(topic1, $"Task-{i}-secondNFT", false, true);
