@@ -186,39 +186,26 @@ namespace VEDriversLite.FluxAPI.InstanceControler
             IInstance instance = InstanceFactory.GetInstance(InstanceType.None);            
             try
             {
-                if (Interlocked.Increment(ref bussy) == 1) //the first one to care becomes master
+                if (Instances.Count > 0)
                 {
-                    wait.Reset();
-                    master = true;
+                    var inst = Instances.Values.Where(i => i.IsConnected).MinBy(i => i.AveragePingTime);
+                    if (inst != null)
+                        instance = inst;
 
-                    if (Instances.Count > 0)
-                    {                        
-                        var inst = Instances.Values.Where(i => i.IsConnected).MinBy(i => i.AveragePingTime);
-                        if (inst != null)
-                            instance = inst;
-                        
-                        if (instance == null) return CommonReturnTypeDto.GetNew<TaskToRunResponseDto>();
-                        
-                        var ts = instance.AddTask(taskrequest);
-                        if (ts.Item1)
-                        {
-                            taskId = ts.Item2;
-                            instance.TaskFinished -= TaskFinishedHandler;
-                            instance.TaskFinished += TaskFinishedHandler;
-                            await instance.ProcessAllTasks();
-                        }
-                    }
-                }
-                
-                var source = new CancellationTokenSource();
-                var tasks = new[] { wait.WaitAsync(), Task.Delay(10000, source.Token) };
-                await Task.WhenAny(tasks);
-
-                source.Cancel(); //finish yet unnecesary delay task
-                if (tasks[0].IsCompleted) //OK
-                {
                     if (instance == null) return CommonReturnTypeDto.GetNew<TaskToRunResponseDto>();
-                    
+
+                    var ts = instance.AddTask(taskrequest);
+                    if (ts.Item1)
+                    {
+                        taskId = ts.Item2;
+                        instance.TaskFinished -= TaskFinishedHandler;
+                        instance.TaskFinished += TaskFinishedHandler;
+                        await instance.ProcessAllTasks();
+                    }
+
+
+                    if (instance == null) return CommonReturnTypeDto.GetNew<TaskToRunResponseDto>();
+
                     if (instance.ProcessedTasks.TryGetValue(taskId, out var finishedTask))
                     {
                         return CommonReturnTypeDto.GetNew<TaskToRunResponseDto>(true, finishedTask.GetResponse());
@@ -232,10 +219,6 @@ namespace VEDriversLite.FluxAPI.InstanceControler
             catch (Exception ex)
             {
                 throw new Exception(ex.Message);
-            }
-            finally
-            {
-                if (master) bussy = 0;
             }
             
             return CommonReturnTypeDto.GetNew<TaskToRunResponseDto>();
