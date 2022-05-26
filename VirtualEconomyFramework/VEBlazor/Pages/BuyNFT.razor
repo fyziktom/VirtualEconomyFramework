@@ -447,7 +447,7 @@
 
             receiver = await NeblioAPIHelpers.GetTransactionReceiver(NFT.Utxo, NFT.TxDetails);
 
-            var r = await NeblioTransactionHelpers.ValidateOneTokenNFTUtxo(receiver, NFT.TokenId, NFT.Utxo, NFT.UtxoIndex);
+            var r = await NeblioAPIHelpers.ValidateOneTokenNFTUtxo(receiver, NFT.TokenId, NFT.Utxo, NFT.UtxoIndex);
             if (r >= 0)
                 isPossibleToBuy = true;
             else

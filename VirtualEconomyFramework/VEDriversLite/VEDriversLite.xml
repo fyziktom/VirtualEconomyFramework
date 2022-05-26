@@ -4496,67 +4496,6 @@
             <param name="txinfo"></param>
             <returns></returns>
         </member>
-<<<<<<< HEAD
-        <member name="M:VEDriversLite.NeblioTransactionHelpers.HexStringToBytes(System.String)">
-            <summary>
-            Convert the hex string to bytes
-            </summary>
-            <param name="hexString"></param>
-            <returns></returns>
-            <exception cref="T:System.ArgumentNullException"></exception>
-            <exception cref="T:System.ArgumentException"></exception>
-        </member>
-        <member name="F:VEDriversLite.NeblioTransactionHelpers.TokenMetadataCache">
-            <summary>
-            Token Metadata cache list
-            </summary>
-        </member>
-        <member name="M:VEDriversLite.NeblioTransactionHelpers.GetTokenMetadata(System.String)">
-            <summary>
-            Get token issue metadata. Contains image url, issuer, and other info
-            </summary>
-            <param name="tokenId">token id hash</param>
-            <returns></returns>
-        </member>
-        <member name="M:VEDriversLite.NeblioTransactionHelpers.GetTokenInfo(System.String)">
-            <summary>
-            Get token info. Contains image url, issuer, and other info
-            </summary>
-            <param name="tokenId">token id hash</param>
-            <returns></returns>
-        </member>
-        <member name="M:VEDriversLite.NeblioTransactionHelpers.GetActualMintingSupply(System.String,System.String,VEDriversLite.NeblioAPI.GetAddressInfoResponse)">
-            <summary>
-            check actual supply for minting on some address. It is just for VENFT tokens now. 
-            Function will also load token metadta if it has not loaded yet.
-            </summary>
-            <param name="address">address which has utxos</param>
-            <param name="tokenId">Specify the tokenId</param>
-            <param name="addressinfo">if you have already loaded address info with utxo list provide it to prevent unnecessary API requests</param>
-            <returns></returns>
-        </member>
-        <member name="M:VEDriversLite.NeblioTransactionHelpers.CheckTokensSupplies(System.String,VEDriversLite.NeblioAPI.GetAddressInfoResponse)">
-            <summary>
-            Check supply of all tokens on address.
-            </summary>
-            <param name="address">address which has utxos</param>
-            <param name="addressinfo">if you have already loaded address info with utxo list provide it to prevent unnecessary API requests</param>
-            <returns></returns>
-        </member>
-        <member name="M:VEDriversLite.NeblioTransactionHelpers.GetTokenOwnersList(System.String)">
-            <summary>
-            Return VENFT top owners. It eliminate some testing addresses.
-            </summary>
-            <param name="tokenId">Token Id hash</param>
-            <returns></returns>
-        </member>
-        <member name="M:VEDriversLite.NeblioTransactionHelpers.GetTokenOwners(System.String)">
-            <summary>
-            Return VENFT top owners. It eliminate some testing addresses.
-            </summary>
-            <param name="tokenId">Token Id hash</param>
-            <returns></returns>
-        </member>
         <member name="T:VEDriversLite.NFT.AppNFT">
             <summary>
             App NFT is the carrier for the Applications in DataItems. Usually it is some HTML/JS or Blazor App
@@ -4603,8 +4542,6 @@
             <param name="receiver">receiver of the NFT</param>
             <returns></returns>
         </member>
-=======
->>>>>>> Development
         <member name="T:VEDriversLite.NFT.CommonNFT">
             <summary>
             Common NFT class. It implements lots of functions for the parsing the basic parameter of the NFT.
