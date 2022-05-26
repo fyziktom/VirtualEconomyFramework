@@ -20,14 +20,14 @@
 </Blazorise.ThemeProvider>
 
 @code {
-    Theme theme = VEFramework.VEBlazor.Models.Themes.DefaultTheme.GetDefaultTheme();
+    Theme theme = Models.MyTheme.GetDefaultTheme();
 
     protected override async Task OnInitializedAsync()
     {
-        AppData.AppName = "Dogepalooza";
-        AppData.AppNick = "DOGEPALOOZA";
-        AppData.AppHomeWebsiteUrl = "https://dogepalooza.com/";
-        AppData.AppShareNFTUrl = "https://dogepalooza.ve-nft.com/";
+        AppData.AppName = "Dogeft";
+        AppData.AppNick = "DOGEFT";
+        AppData.AppHomeWebsiteUrl = "https://dogeft.com/";
+        AppData.AppShareNFTUrl = "https://dogeft.ve-nft.com/";
 
         AppData.AllowWorkTabs = false;
         AppData.AllowSend = true;
@@ -60,11 +60,20 @@
                 TabPageLocationName = "addnewpost",
                 NFT = new PostNFT( "" ),
             } );
+        AppData.MintingTabsData.TryAdd( "imageminting", new MintingTabData()
+            {
+                MintingNFTType = NFTTypes.Image,
+                HeaderLabel = "Add New Image",
+                MenuButonLabel = "New Image",
+                TabPageLocationName = "addnewimage",
+                NFT = new ImageNFT( "" ),
+            } );
 
         AppData.AllowedNFTTypes = new List<NFTTypes>()
         {
             VEDriversLite.NFT.NFTTypes.Profile,
             VEDriversLite.NFT.NFTTypes.Image,
+            VEDriversLite.NFT.NFTTypes.Music,
             VEDriversLite.NFT.NFTTypes.Post,
             VEDriversLite.NFT.NFTTypes.Event,
             VEDriversLite.NFT.NFTTypes.Ticket
