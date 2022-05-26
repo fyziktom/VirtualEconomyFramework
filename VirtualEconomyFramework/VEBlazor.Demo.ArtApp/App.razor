@@ -35,7 +35,9 @@
         AppData.DisplayGettingStartedMenuItem = true;
         AppData.GettingStartedPageName = "gettingstarted";
         AppData.AppTokenId = "La4J7AQrfaaZoQHWwoF9dXuzsa42LApyPUZwDq";
-
+        NFTHelpers.AllowedTokens.Add(AppData.AppTokenId);
+        await VEDriversLite.NeblioAPI.NeblioAPIHelpers.LoadAllowedTokensInfo(NFTHelpers.AllowedTokens);
+        
         if ( AppData.MintingTabsData.TryGetValue( "default", out var tab ) )
         {
             tab.MintingNFTType = NFTTypes.Ticket;

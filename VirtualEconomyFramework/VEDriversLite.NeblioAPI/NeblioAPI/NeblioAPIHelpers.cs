@@ -893,9 +893,7 @@ namespace VEDriversLite.NeblioAPI
                 {
                     var info = await GetTokenMetadata(tok);
                     if (info != null)
-                    {
-                        TokensInfo.Add(tok, info);
-                    }
+                        TokensInfo.TryAdd(tok, info);
                 }
             }
         }
