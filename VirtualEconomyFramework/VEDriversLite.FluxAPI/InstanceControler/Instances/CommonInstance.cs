@@ -268,21 +268,63 @@ namespace VEDriversLite.FluxAPI.InstanceControler.Instances
         /// Check if the Instance has in the list same topic+params. 
         /// It can just wait for the result then.
         /// </summary>
+        /// <param name="taskId"></param>
         /// <param name="topic"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public virtual CommonReturnTypeDto HasTask(string topic, string parameters)
+        public virtual CommonReturnTypeDto HasTask(string taskId, string topic = "", string parameters = "")
         {
             var fp = string.Empty;
-            lock (_lock)
+            if (string.IsNullOrEmpty(taskId))
             {
-                md5.Value = (topic + parameters);
-                fp = md5.FingerPrint;
+                lock (_lock)
+                {
+                    md5.Value = (topic + parameters);
+                    fp = md5.FingerPrint;
+                }
             }
+            else
+            {
+                fp = taskId;
+            }
+
             if (TasksToProcess.ContainsKey(fp) || TasksInProcess.ContainsKey(fp) || ProcessedTasks.ContainsKey(fp))
                 return CommonReturnTypeDto.GetNew(true, fp);
             else
                 return CommonReturnTypeDto.GetNew<string>();
+        }
+
+        /// <summary>
+        /// Get if task if exists
+        /// </summary>
+        /// <param name="taskId"></param>
+        /// <param name="topic"></param>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
+        public virtual CommonReturnTypeDto GetTask(string taskId, string topic = "", string parameters = "")
+        {
+            var fp = string.Empty;
+            if (string.IsNullOrEmpty(taskId))
+            {
+                lock (_lock)
+                {
+                    md5.Value = (topic + parameters);
+                    fp = md5.FingerPrint;
+                }
+            }
+            else
+            {
+                fp = taskId;
+            }
+
+            if (TasksToProcess.TryGetValue(fp, out var taskToRun))
+                return CommonReturnTypeDto.GetNew(true, taskToRun);
+            else if (TasksInProcess.TryGetValue(fp, out taskToRun))
+                return CommonReturnTypeDto.GetNew(true, taskToRun);
+            else if (ProcessedTasks.TryGetValue(fp, out taskToRun))
+                return CommonReturnTypeDto.GetNew(true, taskToRun);
+            else
+                return CommonReturnTypeDto.GetNew<TaskToRun>();
         }
 
         #endregion

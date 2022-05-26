@@ -168,10 +168,19 @@ namespace VEDriversLite.FluxAPI.InstanceControler.Instances
         /// Check if the Instance has in the list same topic+params. 
         /// It can just wait for the result then.
         /// </summary>
+        /// <param name="taskId"></param>
         /// <param name="topic"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        CommonReturnTypeDto HasTask(string topic, string parameters);
+        CommonReturnTypeDto HasTask(string taskId, string topic = "", string parameters = "");
+        /// <summary>
+        /// Get if task if exists
+        /// </summary>
+        /// <param name="taskId"></param>
+        /// <param name="topic"></param>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
+        CommonReturnTypeDto GetTask(string taskId, string topic = "", string parameters = "");
         /// <summary>
         /// Process Next task in the line
         /// </summary>

@@ -41,10 +41,10 @@ namespace VEDriversLite.FluxAPI.InstanceControler
         #region PrivateMembers
 
         private volatile int bussy = 0;
-        private bool awaitingEcho;
         private AsyncManualResetEvent wait = new AsyncManualResetEvent();
         private Common.Encryption.MD5 md5 = new Common.Encryption.MD5();
-
+        private static object _lock = new object();
+        
         #endregion
 
         /// <summary>
@@ -167,7 +167,22 @@ namespace VEDriversLite.FluxAPI.InstanceControler
         {
             bool master = false;
             string taskId = string.Empty;
-            
+
+            lock (_lock)
+            {
+                md5.Value = (taskrequest.Topic + taskrequest.Parameters);
+                taskId = md5.FingerPrint;
+            }
+
+            var instanceWithSameTask = CheckIfRequestAlreadyExists(taskId).Where(i => i.IsConnected).MinBy(i => i.AveragePingTime);
+            if (instanceWithSameTask != null)
+            {
+                Console.WriteLine($"Request for {taskrequest.Topic} with parameters {taskrequest.Parameters} already exists in {instanceWithSameTask.Name}. Client {taskrequest.ClientId} will get result from the existing instance.");
+                var tasktorun = instanceWithSameTask.GetTask(taskId);
+                if (tasktorun.Success)
+                    return await (tasktorun.Value as TaskToRun).RunTask(instanceWithSameTask.Type, instanceWithSameTask.IDDSettings);
+            }
+
             IInstance instance = InstanceFactory.GetInstance(InstanceType.None);            
             try
             {
@@ -175,7 +190,6 @@ namespace VEDriversLite.FluxAPI.InstanceControler
                 {
                     wait.Reset();
                     master = true;
-                    awaitingEcho = true;
 
                     if (Instances.Count > 0)
                     {                        
@@ -214,10 +228,6 @@ namespace VEDriversLite.FluxAPI.InstanceControler
                         return CommonReturnTypeDto.GetNew<TaskToRunResponseDto>();
                     }
                 }
-                if (master)
-                {
-                    awaitingEcho = false;
-                }
             }
             catch (Exception ex)
             {
@@ -234,6 +244,16 @@ namespace VEDriversLite.FluxAPI.InstanceControler
         private void TaskFinishedHandler(object sender, string e)
         {
             wait.Set();
+        }
+
+        private IEnumerable<IInstance> CheckIfRequestAlreadyExists(string taskId)
+        {
+            foreach (var instance in Instances)
+            {
+                var res = instance.Value.HasTask(taskId);
+                if (res.Success)
+                    yield return instance.Value;
+            }
         }
     }
 }

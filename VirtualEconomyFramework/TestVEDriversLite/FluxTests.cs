@@ -27,9 +27,12 @@ namespace TestVEDriversLite
             foreach (var instance in instancesController.Instances.Values)
                 Console.WriteLine($"Average Ping: {instance.Name} - {instance.AveragePingTime} ms.");
 
-            // test API response
-            var nfthash = "4f8292ae54b09111e615ab554616929c83b84469732933d231657d3c21bec9a3";
-            await GetNFTFromInstanceAsync(nfthash);
+            if (!string.IsNullOrEmpty(param) && param.ToLower().Contains("test"))
+            {
+                // test API response
+                var nfthash = "4f8292ae54b09111e615ab554616929c83b84469732933d231657d3c21bec9a3";
+                await GetNFTFromInstanceAsync(nfthash);
+            }
             
             Console.WriteLine("");
             Console.WriteLine("");
@@ -48,27 +51,75 @@ namespace TestVEDriversLite
                 await InitializeInstancesAsync(string.Empty);
             
             var topic = $"api/GetNFT/{param}";
+            await SendRequest(topic, "default");
+            Console.WriteLine("End.");
+        }
+
+        [TestEntry]
+        public static void MultipleClientsGetNFTFromInstance(string param)
+        {
+            MultipleClientsGetNFTFromInstanceAsync(param);
+        }
+        public static async Task MultipleClientsGetNFTFromInstanceAsync(string param)
+        {
+            if (instancesController == null)
+                await InitializeInstancesAsync(string.Empty);
+
+            var topic = $"api/GetNFT/{param}";
+            
+            var numoftasks = 10;
+            var tasks = new Task[numoftasks];
+            for (var i = 0; i < numoftasks; i++)
+            {
+                tasks[i] = SendRequest(topic, $"Task-{i}", false, true);
+            }
+            await Task.WhenAll(tasks);
+            
+            Console.WriteLine("End.");
+        }
+
+        private static async Task SendRequest(string topic, string clientId, bool printWholeObject = true, bool printSimpleResult = false)
+        {
+            Console.WriteLine("---------------------ClientId------------------------");
+            Console.WriteLine("");
+            Console.WriteLine(clientId);
+            Console.WriteLine("---------------------Topic------------------------");
+            Console.WriteLine("");
+            Console.WriteLine(topic);
+            
             var resp = await instancesController.Request(new VEDriversLite.FluxAPI.InstanceControler.Instances.Dto.TaskToRunRequestDto()
             {
-                Topic = topic
+                Topic = topic,
+                ClientId = clientId,
             });
-
-            Console.WriteLine("---------------------Topic------------------------");
-            Console.WriteLine(topic);
-            Console.WriteLine("---------------------Response------------------------");
+            
             if (resp.Success)
             {
-                Console.WriteLine($"Response: {resp.Success}, Topic: {(resp.Value as TaskToRunResponseDto).Topic}, ResponseData:");
+                Console.WriteLine("---------------------Response------------------------");
+                Console.WriteLine("");                
+                Console.WriteLine($"Status: {resp.Success}, Topic: {(resp.Value as TaskToRunResponseDto).Topic}");
                 var datastring = Encoding.UTF8.GetString((resp.Value as TaskToRunResponseDto).TaskOutputData);
-                Console.WriteLine($"{JsonConvert.SerializeObject(JsonConvert.DeserializeObject(datastring), Formatting.Indented)}");
+                if (printSimpleResult || printWholeObject)
+                {
+                    Console.WriteLine("---------------------Data------------------------");
+                    Console.WriteLine("");
+                }
+                if (printWholeObject)
+                    Console.WriteLine($"{JsonConvert.SerializeObject(JsonConvert.DeserializeObject(datastring), Formatting.Indented)}");
+                else if (printSimpleResult)
+                {
+                    var data = JsonConvert.SerializeObject(JsonConvert.DeserializeObject(datastring), Formatting.Indented);
+                    if (data.Length > 100) 
+                        data = data.Substring(0, 100) + "...";
+                    Console.WriteLine($"{data}");
+                }
             }
             else
                 Console.WriteLine($"Cannot get response - Response status: {resp.Success}, Topic {topic}");
 
             Console.WriteLine("");
             Console.WriteLine("");
-            Console.WriteLine("-------------------");
-            Console.WriteLine("End.");
+            Console.WriteLine("-----------------------------------------------");
         }
     }
 }

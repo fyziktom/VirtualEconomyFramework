@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VEDriversLite.Common;
 using VEDriversLite.Common.IoT.Dto;
 
 namespace VEDriversLite.FluxAPI.InstanceControler.Instances.Dto
@@ -16,6 +17,10 @@ namespace VEDriversLite.FluxAPI.InstanceControler.Instances.Dto
         /// Unique ID of the task
         /// </summary>
         public string Id { get; set; } = string.Empty;
+        /// <summary>
+        /// Client Id
+        /// </summary>
+        public string ClientId { get; set; } = string.Empty;
         /// <summary>
         /// Request added At DateTime - UTC Time
         /// </summary>
@@ -94,7 +99,10 @@ namespace VEDriversLite.FluxAPI.InstanceControler.Instances.Dto
         /// Indicates running task
         /// </summary>
         public bool IsRunning { get; set; } = false;
-        
+
+        private volatile int bussy = 0;
+        private AsyncManualResetEvent wait = new AsyncManualResetEvent();
+
         /// <summary>
         /// Cancel task
         /// </summary>
@@ -142,7 +150,43 @@ namespace VEDriversLite.FluxAPI.InstanceControler.Instances.Dto
             };
         }
 
-        public async Task RunTask(InstanceType type, IoTDataDriverSettings idds)
+        public async Task<CommonReturnTypeDto> RunTask(InstanceType type, IoTDataDriverSettings idds)
+        {
+            bool master = false;
+
+            try
+            {
+                if (Interlocked.Increment(ref bussy) == 1) //the first one to care becomes master
+                {
+                    wait.Reset();
+                    master = true;
+
+                    await RunTaskInternal(type, idds);
+                }
+
+                var source = new CancellationTokenSource();
+                var tasks = new[] { wait.WaitAsync(), Task.Delay(10000, source.Token) };
+                await Task.WhenAny(tasks);
+
+                source.Cancel(); //finish yet unnecesary delay task
+                if (tasks[0].IsCompleted) //OK
+                {
+                    IsCompleted = true;
+                    return CommonReturnTypeDto.GetNew(true, GetResponse());
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                if (master) bussy = 0;
+            }
+            return CommonReturnTypeDto.GetNew<TaskToRunResponseDto>();
+        }
+
+        private async Task RunTaskInternal(InstanceType type, IoTDataDriverSettings idds)
         {
             if (type == InstanceType.APIService)
             {
@@ -177,19 +221,23 @@ namespace VEDriversLite.FluxAPI.InstanceControler.Instances.Dto
                     {
                         var data = await resp.Content.ReadAsByteArrayAsync();
                         TaskOutputData = data;
-                        IsCompleted = true;
+                        //IsCompleted = true;
                         IsError = false;
+                        
+                        wait.Set(); //set the awaiter and unblock all waiting clients
                     }
                     else
                     {
                         IsError = true;
                         OutputMessage = $"Error {resp.StatusCode}";
+                        wait.Set(); //set the awaiter and unblock all waiting clients
                     }
                 }
             }
             else
             {
                 await Task.CompletedTask;
+                wait.Set(); //set the awaiter and unblock all waiting clients
             }
         }
     }
