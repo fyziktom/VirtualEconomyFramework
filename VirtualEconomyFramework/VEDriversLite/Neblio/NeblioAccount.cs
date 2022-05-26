@@ -18,6 +18,8 @@ using VEDriversLite.NFT.Coruzant;
 using VEDriversLite.NFT.DevicesNFTs;
 using VEDriversLite.NFT.Dto;
 using VEDriversLite.Security;
+using VEDriversLite.Common;
+using VEDriversLite.Common.IoT.Dto;
 
 namespace VEDriversLite
 {

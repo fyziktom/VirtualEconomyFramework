@@ -7,8 +7,9 @@ using System.Text;
 using System.Threading.Tasks;
 using VEDriversLite.Devices.APIs.HARDWARIO;
 using VEDriversLite.Devices.APIs.HARDWARIO.Dto;
-using VEDriversLite.Devices.Dto;
 using VEDriversLite.NFT;
+using VEDriversLite.Common;
+using VEDriversLite.Common.IoT.Dto;
 
 namespace VEDriversLite.Devices
 {

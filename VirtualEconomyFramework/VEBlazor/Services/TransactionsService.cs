@@ -4,7 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using VEDriversLite;
 using VEDriversLite.NeblioAPI;
-
+using VEDriversLite.Common;
+using VEDriversLite.Common.IoT.Dto;
 public enum TxWay
 {
     In,

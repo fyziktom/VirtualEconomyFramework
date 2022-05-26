@@ -13,6 +13,8 @@ using VEDriversLite.Dto;
 using VEDriversLite.Neblio;
 using VEDriversLite.NeblioAPI;
 using VEDriversLite.Security;
+using VEDriversLite.Common;
+using VEDriversLite.Common.IoT.Dto;
 
 namespace VEDriversLite
 {

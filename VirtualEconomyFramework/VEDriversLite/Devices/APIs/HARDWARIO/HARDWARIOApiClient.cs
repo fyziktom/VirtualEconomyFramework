@@ -6,7 +6,8 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using VEDriversLite.Devices.APIs.HARDWARIO.Dto;
-using VEDriversLite.Devices.Dto;
+using VEDriversLite.Common;
+using VEDriversLite.Common.IoT.Dto;
 
 namespace VEDriversLite.Devices.APIs.HARDWARIO
 {

@@ -13,6 +13,8 @@ using VEDriversLite.Common;
 using VEDriversLite.NFT;
 using VEDriversLite.Extensions.WooCommerce.Dto;
 using WordPressPCL;
+using VEDriversLite.Common;
+using VEDriversLite.Common.IoT.Dto;
 
 namespace VEDriversLite.Extensions.WooCommerce
 {

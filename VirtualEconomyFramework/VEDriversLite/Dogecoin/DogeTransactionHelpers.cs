@@ -9,6 +9,8 @@ using System.Text;
 using System.Threading.Tasks;
 using VEDriversLite.DogeAPI;
 using VEDriversLite.Security;
+using VEDriversLite.Common;
+using VEDriversLite.Common.IoT.Dto;
 
 namespace VEDriversLite
 {

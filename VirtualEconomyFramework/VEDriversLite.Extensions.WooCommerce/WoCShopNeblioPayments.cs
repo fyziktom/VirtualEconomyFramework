@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using VEDriversLite.Events;
 using VEDriversLite.Extensions.WooCommerce.Dto;
 using VEDriversLite.NeblioAPI;
+using VEDriversLite.Common;
 
 namespace VEDriversLite.Extensions.WooCommerce
 {

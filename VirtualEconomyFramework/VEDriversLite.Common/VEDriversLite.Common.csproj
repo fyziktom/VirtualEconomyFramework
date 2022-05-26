@@ -1,41 +1,30 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-	  <PackageId>VEFramework.VEDriversLite.FluxAPI</PackageId>
-	  <Version>0.3.0</Version>
+	  <PackageId>VEFramework.VEDriversLite.Common</PackageId>
+	  <Version>0.3.2</Version>
 	  <Authors>fyziktom</Authors>
 	  <Company>VEFramework</Company>
-	  <Description>.NET drivers for communication with Flux API</Description>
+	  <Description>Common dtos and tools for VEDriversLite packages</Description>
 	  <PackageProjectUrl>https://veframework.com/</PackageProjectUrl>
 	  <RepositoryUrl>https://github.com/fyziktom/VirtualEconomyFramework</RepositoryUrl>
 	  <RepositoryType>Git</RepositoryType>
 	  <PackageTags>VEFramework, Cryptocurrencies, Crypto, NFT, NFTs, Bitcoin, ReddCoin, Neblio, Nebl, Doge, Dogecoin, Flux, Blockchain, eCommerce, dApps, WooCommerce, WordPress</PackageTags>
 	  <Copyright>fyziktom</Copyright>
 	  <PackageReleaseNotes>
-		  - New package with basic API commands for Flux Blockchain API
+		  - Separation from VEDriversLite package
 	  </PackageReleaseNotes>
 	  <PackageReadmeFile>README.md</PackageReadmeFile>
 	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
-	  <Title>RunOnFlux API</Title>
+	  <Title>VEDriversLite Common Dto and Tools</Title>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-	<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
-  </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\VEDriversLite.Common\VEDriversLite.Common.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="README.md">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-    </None>
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+	</ItemGroup>
 
 </Project>

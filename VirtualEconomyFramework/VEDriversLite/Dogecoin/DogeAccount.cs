@@ -10,6 +10,8 @@ using VEDriversLite.DogeAPI;
 using VEDriversLite.Events;
 using VEDriversLite.NFT;
 using VEDriversLite.Security;
+using VEDriversLite.Common;
+using VEDriversLite.Common.IoT.Dto;
 
 namespace VEDriversLite
 {

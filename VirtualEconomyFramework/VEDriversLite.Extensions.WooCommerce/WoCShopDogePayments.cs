@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using VEDriversLite.Dto;
 using VEDriversLite.Events;
 using VEDriversLite.Extensions.WooCommerce.Dto;
+using VEDriversLite.Common;
 
 namespace VEDriversLite.Extensions.WooCommerce
 {

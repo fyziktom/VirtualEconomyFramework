@@ -19,6 +19,8 @@ using VEDriversLite.Security;
 using VEDriversLite.UnstoppableDomains;
 using VEDriversLite.Extensions.WooCommerce;
 using VEDriversLite.NeblioAPI;
+using VEDriversLite.Common;
+using VEDriversLite.Common.IoT.Dto;
 
 namespace TestVEDriversLite
 {
@@ -2735,11 +2737,11 @@ namespace TestVEDriversLite
             var nft = new IoTDeviceNFT("");
 
             nft.Author = "f6f58d275e58970b8879edd164ac605f1413ae8c62e0e2beaca9cb6a6b860aaf"; //hardwario profile utxo
-
+            
             nft.Address = account.Address;
             nft.AutoActivation = true;
-            nft.IDDSettings.IoTComType = VEDriversLite.Devices.IoTCommunicationType.API;
-            nft.IDDSettings.ComSchemeType = VEDriversLite.Devices.CommunicationSchemeType.Requests;
+            nft.IDDSettings.IoTComType = VEDriversLite.Common.IoT.Dto.IoTCommunicationType.API;
+            nft.IDDSettings.ComSchemeType = VEDriversLite.Common.IoT.Dto.CommunicationSchemeType.Requests;
             nft.IoTDDType = VEDriversLite.Devices.IoTDataDriverType.HARDWARIO;
 
             if (param.Contains("chesterdevice") || (!param.Contains("chesterdevice") && !param.Contains("minteddevice")))
@@ -2784,7 +2786,7 @@ namespace TestVEDriversLite
             nft.IDDSettings.ConnectionParams.GroupId = "61c895b629d3ef00117bdaec";
             nft.IDDSettings.ConnectionParams.DeviceId = "5f7722790305b500185b2847";
             nft.IDDSettings.ConnectionParams.Secured = true;
-            nft.IDDSettings.ConnectionParams.SType = VEDriversLite.Devices.Dto.CommunitacionSecurityType.Bearer;
+            nft.IDDSettings.ConnectionParams.SType = VEDriversLite.Common.IoT.Dto.CommunitacionSecurityType.Bearer;
             nft.IDDSettings.ConnectionParams.Token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0eXBlIjoidXNlciIsImlkIjoiNjFjODk2MzQyOWQzZWYwMDExN2JkYmMxIiwiaWF0IjoxNjQwNTM1NjA0fQ.7pnqPVsMcQZQvXlvtDIUgfdOqBq30qZLtKrkN5cVFeA";
             nft.IDDSettings.ConnectionParams.CommonRefreshInterval = 10000;
             
@@ -2938,11 +2940,11 @@ namespace TestVEDriversLite
             Console.WriteLine($"\tApiToken:{apitoken}");
 
             HARDWARIOIoTDataDriver hwiotdd = new HARDWARIOIoTDataDriver();
-            await hwiotdd.SetConnParams(new VEDriversLite.Devices.Dto.CommonConnectionParams()
+            await hwiotdd.SetConnParams(new VEDriversLite.Common.IoT.Dto.CommonConnectionParams()
             {
                 Url = "https://api.hardwario.cloud/v1",
                 Secured = true,
-                SType = VEDriversLite.Devices.Dto.CommunitacionSecurityType.Bearer,
+                SType = VEDriversLite.Common.IoT.Dto.CommunitacionSecurityType.Bearer,
                 Token = apitoken
             });
             try
