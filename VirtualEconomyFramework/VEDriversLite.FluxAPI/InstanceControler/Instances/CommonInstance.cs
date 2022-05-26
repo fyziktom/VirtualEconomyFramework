@@ -218,21 +218,21 @@ namespace VEDriversLite.FluxAPI.InstanceControler.Instances
 
             var task = new TaskToRun();
             task.Fill(taskrequest);
-            //task.Id = (taskrequest.Topic + taskrequest.Parameters).GetHashCode().ToString();
+            var taskId = string.Empty;
             lock (_lock)
             {
                 md5.Value = (taskrequest.Topic + taskrequest.Parameters);
-                task.Id = md5.FingerPrint;
+                taskId = md5.FingerPrint;
             }
 
-            if (TasksToProcess.ContainsKey(task.Id) || TasksInProcess.ContainsKey(task.Id) || ProcessedTasks.ContainsKey(task.Id))
+            if (TasksToProcess.ContainsKey(taskId) || TasksInProcess.ContainsKey(taskId) || ProcessedTasks.ContainsKey(taskId))
             {
-                return (true, task.Id);
+                return (true, taskId);
             }
             else
             {
-                TasksToProcess.TryAdd(task.Id, task);
-                return (true, task.Id);
+                TasksToProcess.TryAdd(taskId, task);
+                return (true, taskId);
             }
         }
         /// <summary>

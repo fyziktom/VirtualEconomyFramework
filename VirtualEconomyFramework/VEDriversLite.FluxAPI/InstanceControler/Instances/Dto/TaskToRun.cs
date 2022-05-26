@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,7 +17,7 @@ namespace VEDriversLite.FluxAPI.InstanceControler.Instances.Dto
         /// <summary>
         /// Unique ID of the task
         /// </summary>
-        public string Id { get; set; } = string.Empty;
+        public string Id { get => GetHash(); }
         /// <summary>
         /// Client Id
         /// </summary>
@@ -54,6 +55,24 @@ namespace VEDriversLite.FluxAPI.InstanceControler.Instances.Dto
         /// Prefered to run on these Instances IDs
         /// </summary>
         public string[] PreferedInstances { get; set; } = new string[0];
+
+        private string lastTextToHash = string.Empty;
+        private string lastFingerPrint = string.Empty;
+        private Common.Encryption.MD5 md5 = new Common.Encryption.MD5();
+        /// <summary>
+        /// Get MD5 hash of the $"{Topic}{Parameters}" string
+        /// </summary>
+        /// <returns></returns>
+        public string GetHash()
+        {
+            if (lastTextToHash != $"{Topic}{Parameters}")
+            {
+                lastTextToHash = $"{Topic}{Parameters}";
+                md5.Value = lastTextToHash;
+                lastFingerPrint = md5.FingerPrint;
+            }              
+            return lastFingerPrint;
+        }
     }
     /// <summary>
     /// Result of the task run. It contains also input parameters
@@ -102,6 +121,7 @@ namespace VEDriversLite.FluxAPI.InstanceControler.Instances.Dto
 
         private volatile int bussy = 0;
         private AsyncManualResetEvent wait = new AsyncManualResetEvent();
+        private Stopwatch stopwatch = new Stopwatch();
 
         /// <summary>
         /// Cancel task
@@ -134,7 +154,6 @@ namespace VEDriversLite.FluxAPI.InstanceControler.Instances.Dto
         {
             return new TaskToRunResponseDto()
             {
-                Id = Id,
                 CreatedAt = CreatedAt,
                 Topic = Topic,
                 Parameters = Parameters,
@@ -158,6 +177,8 @@ namespace VEDriversLite.FluxAPI.InstanceControler.Instances.Dto
             {
                 if (Interlocked.Increment(ref bussy) == 1) //the first one to care becomes master
                 {
+                    stopwatch.Restart();
+                    stopwatch.Start();
                     wait.Reset();
                     master = true;
 
@@ -172,6 +193,9 @@ namespace VEDriversLite.FluxAPI.InstanceControler.Instances.Dto
                 if (tasks[0].IsCompleted) //OK
                 {
                     IsCompleted = true;
+                    stopwatch.Stop();
+                    Time = stopwatch.Elapsed;
+                    
                     return CommonReturnTypeDto.GetNew(true, GetResponse());
                 }
             }

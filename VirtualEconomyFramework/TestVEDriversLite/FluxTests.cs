@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -99,6 +100,8 @@ namespace TestVEDriversLite
 
             var numoftasks = 10;
             var tasks = new Task[numoftasks];
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
             for (var i = 0; i < numoftasks; i++)
             {
                 if (i < (numoftasks/2))
@@ -106,13 +109,16 @@ namespace TestVEDriversLite
                 else
                     tasks[i] = SendRequest(topic1, $"Task-{i}-secondNFT", false, true);
             }
-            
             // mix order of tasks in the list by random
             var rnd = new Random();
             rnd.Shuffle<Task>(tasks);
             
             await Task.WhenAll(tasks);
 
+            stopwatch.Stop();
+            Console.WriteLine("------------------------Total time------------------------");
+            Console.WriteLine("Time to send requests: " + stopwatch.ElapsedMilliseconds + " ms.");
+            
             Console.WriteLine("End.");
         }
 

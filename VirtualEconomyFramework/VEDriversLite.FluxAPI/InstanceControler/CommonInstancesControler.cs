@@ -164,13 +164,9 @@ namespace VEDriversLite.FluxAPI.InstanceControler
         public virtual async Task<CommonReturnTypeDto> Request(TaskToRunRequestDto taskrequest)
         {
             bool master = false;
+            
             string taskId = string.Empty;
-
-            lock (_lock)
-            {
-                md5.Value = (taskrequest.Topic + taskrequest.Parameters);
-                taskId = md5.FingerPrint;
-            }
+            taskId = taskrequest.GetHash();
 
             var instanceWithSameTask = CheckIfRequestAlreadyExists(taskId).Where(i => i.IsConnected).MinBy(i => i.AveragePingTime);
             if (instanceWithSameTask != null)
@@ -187,6 +183,7 @@ namespace VEDriversLite.FluxAPI.InstanceControler
                 if (Instances.Count > 0)
                 {
                     var inst = Instances.Values.Where(i => i.IsConnected && !i.IsProcessing).MinBy(i => i.AveragePingTime);
+
                     if (inst != null)
                         instance = inst;
                     else if (inst == null)
