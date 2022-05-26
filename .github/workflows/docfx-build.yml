@@ -2,9 +2,9 @@ name: docfx-build-Developments
 
 on:
   push:
-    branches: [ Development ]
+    branches: [ main ]
   pull_request:
-    branches: [ Development ]
+    branches: [ main ]
 jobs:
   generate-docs:
     runs-on: windows-latest
