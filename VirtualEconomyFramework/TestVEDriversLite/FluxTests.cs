@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VEDriversLite.Common;
 using VEDriversLite.FluxAPI.InstanceControler;
 using VEDriversLite.FluxAPI.InstanceControler.Instances.Dto;
 
@@ -105,6 +106,11 @@ namespace TestVEDriversLite
                 else
                     tasks[i] = SendRequest(topic1, $"Task-{i}-secondNFT", false, true);
             }
+            
+            // mix order of tasks in the list by random
+            var rnd = new Random();
+            rnd.Shuffle<Task>(tasks);
+            
             await Task.WhenAll(tasks);
 
             Console.WriteLine("End.");

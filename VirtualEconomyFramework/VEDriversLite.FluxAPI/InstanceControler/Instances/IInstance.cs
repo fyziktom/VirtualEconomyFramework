@@ -186,6 +186,12 @@ namespace VEDriversLite.FluxAPI.InstanceControler.Instances
         /// <returns></returns>
         CommonReturnTypeDto GetTask(string taskId, string topic = "", string parameters = "");
         /// <summary>
+        /// Process one task
+        /// </summary>
+        /// <param name="taskId"></param>
+        /// <returns></returns>
+        Task<CommonReturnTypeDto> ProcessTask(string taskId);
+        /// <summary>
         /// Process Next task in the line
         /// </summary>
         /// <returns></returns>

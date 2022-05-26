@@ -40,8 +40,6 @@ namespace VEDriversLite.FluxAPI.InstanceControler
 
         #region PrivateMembers
 
-        private volatile int bussy = 0;
-        private AsyncManualResetEvent wait = new AsyncManualResetEvent();
         private Common.Encryption.MD5 md5 = new Common.Encryption.MD5();
         private static object _lock = new object();
         
@@ -191,28 +189,43 @@ namespace VEDriversLite.FluxAPI.InstanceControler
                     var inst = Instances.Values.Where(i => i.IsConnected && !i.IsProcessing).MinBy(i => i.AveragePingTime);
                     if (inst != null)
                         instance = inst;
+                    else if (inst == null)
+                    {
+                        Console.WriteLine("All instances processing tasks or not connected. Trying to find the best instance...");
+                        var binst = Instances.Values.Where(i => i.IsConnected).MinBy(i => i.AveragePingTime);
+                        if (binst != null)
+                            instance = binst;
+                    }
 
                     if (instance == null) return CommonReturnTypeDto.GetNew<TaskToRunResponseDto>();
+
+                    if (instance.IsProcessing)
+                    {
+                        var attempts = 1000;
+                        while(instance.IsProcessing)
+                        {
+                            await Task.Delay(100);
+                            if (attempts-- <= 0)
+                            {
+                                Console.WriteLine($"Instance {instance.Name} is processing tasks. Client {taskrequest.ClientId} is waiting too long. Cannot process this request.");
+                                return CommonReturnTypeDto.GetNew<TaskToRunResponseDto>();
+                            }
+                        }
+                    }
 
                     var ts = instance.AddTask(taskrequest);
                     if (ts.Item1)
                     {
                         taskId = ts.Item2;
-                        instance.TaskFinished -= TaskFinishedHandler;
-                        instance.TaskFinished += TaskFinishedHandler;
-                        await instance.ProcessAllTasks();
+                        await instance.ProcessTask(taskId);
                     }
 
                     if (instance == null) return CommonReturnTypeDto.GetNew<TaskToRunResponseDto>();
 
                     if (instance.ProcessedTasks.TryGetValue(taskId, out var finishedTask))
-                    {
                         return CommonReturnTypeDto.GetNew<TaskToRunResponseDto>(true, finishedTask.GetResponse());
-                    }
                     else
-                    {
                         return CommonReturnTypeDto.GetNew<TaskToRunResponseDto>();
-                    }
                 }
             }
             catch (Exception ex)
@@ -223,11 +236,6 @@ namespace VEDriversLite.FluxAPI.InstanceControler
             return CommonReturnTypeDto.GetNew<TaskToRunResponseDto>();
         }
         
-        private void TaskFinishedHandler(object sender, string e)
-        {
-            wait.Set();
-        }
-
         private IEnumerable<IInstance> CheckIfRequestAlreadyExists(string taskId)
         {
             foreach (var instance in Instances)

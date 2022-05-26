@@ -85,11 +85,7 @@ namespace VEDriversLite.FluxAPI.InstanceControler.Instances
         /// </summary>
         /// <returns></returns>
         public abstract Task ProcessNextTask();
-        /// <summary>
-        /// Process All Tasks
-        /// </summary>
-        /// <returns></returns>
-        public abstract Task ProcessAllTasks(bool runOnBackground);
+
 
         /// <summary>
         /// History of requets
@@ -260,7 +256,17 @@ namespace VEDriversLite.FluxAPI.InstanceControler.Instances
         /// <returns>returns false if not exists</returns>
         public virtual bool RemoveTask(string taskId)
         {
-            if (TasksInProcess.TryRemove(taskId, out var task))
+            if (TasksToProcess.TryRemove(taskId, out var task))
+            {
+                task.Cancel();
+                return true;
+            }
+            else if (TasksInProcess.TryRemove(taskId, out task))
+            {
+                task.Cancel();
+                return true;
+            }
+            else if (ProcessedTasks.TryRemove(taskId, out task))
             {
                 task.Cancel();
                 return true;
@@ -329,6 +335,140 @@ namespace VEDriversLite.FluxAPI.InstanceControler.Instances
                 return CommonReturnTypeDto.GetNew(true, taskToRun);
             else
                 return CommonReturnTypeDto.GetNew<TaskToRun>();
+        }
+
+        /// <summary>
+        /// Process one task
+        /// </summary>
+        /// <param name="taskId"></param>
+        /// <returns></returns>
+        public virtual async Task<CommonReturnTypeDto> ProcessTask(string taskId)
+        {
+            try
+            {
+                //IsProcessing = true;
+                if (TasksToProcess.TryGetValue(taskId, out var task))
+                {
+                    if (!task.IsRunning && !task.IsCompleted)
+                    {
+                        if (TasksToProcess.TryRemove(taskId, out var taskToStart))
+                        {
+                            taskToStart.IsRunning = true;
+                            TasksInProcess.TryAdd(taskId, taskToStart);
+                        }
+                    }
+                }
+
+                var tasks = new Task[TasksInProcess.Count];
+                if (TasksInProcess.TryGetValue(taskId, out task))
+                {
+                    CommonReturnTypeDto response = CommonReturnTypeDto.GetNew<TaskToRunResponseDto>();
+                    try
+                    {
+                        response = await task.RunTask(Type, IDDSettings);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Cannot process tasks.");
+                    }
+                    if (TasksInProcess.TryRemove(taskId, out var taskToFinish))
+                    {
+                        taskToFinish.IsRunning = false;
+                        ProcessedTasks.TryAdd(taskId, taskToFinish);
+                        TaskFinished?.Invoke(this, taskId);
+                    }
+                    return response;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Cannot process tasks.");
+            }
+            finally
+            {
+                //IsProcessing = false;
+            }
+            return CommonReturnTypeDto.GetNew<TaskToRunResponseDto>();
+        }
+
+        /// <summary>
+        /// Process All Tasks
+        /// </summary>
+        /// <returns></returns>
+        public virtual async Task ProcessAllTasks(bool runOnBackground = false)
+        {
+            var skip = 0;
+            try
+            {
+                IsProcessing = true;
+
+                while (TasksToProcess.Count > (0 + skip))
+                {
+                    var task = TasksToProcess.FirstOrDefault();
+                    if (task.Value == null) break;
+
+                    if (!task.Value.IsRunning && !task.Value.IsCompleted)
+                    {
+                        if (TasksToProcess.TryRemove(task.Key, out var taskToStart))
+                        {
+                            taskToStart.IsRunning = true;
+                            TasksInProcess.TryAdd(task.Key, taskToStart);
+                        }
+                    }
+                    else
+                    {
+                        skip++;
+                    }
+                    if (skip >= TasksToProcess.Count)
+                        break;
+                }
+
+                var tasks = new Task[TasksInProcess.Count];
+
+                var i = 0;
+                foreach (var task in TasksInProcess)
+                {
+                    tasks[i] = task.Value.RunTask(Type, IDDSettings);
+                    i++;
+                }
+
+                try
+                {
+                    await Task.WhenAll(tasks);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Cannot process tasks.");
+                }
+
+                skip = 0;
+                while (TasksInProcess.Count > (0 + skip))
+                {
+                    var task = TasksInProcess.FirstOrDefault();
+                    if (task.Value == null) break;
+
+                    if (TasksInProcess.TryRemove(task.Key, out var taskToFinish))
+                    {
+                        taskToFinish.IsRunning = false;
+                        ProcessedTasks.TryAdd(task.Key, taskToFinish);
+                        TaskFinished?.Invoke(this, task.Key);
+                    }
+                    else
+                    {
+                        skip++;
+                    }
+                    if (skip >= TasksInProcess.Count)
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Cannot process tasks.");
+            }
+            finally
+            {
+                IsProcessing = false;
+            }
         }
 
         #endregion
