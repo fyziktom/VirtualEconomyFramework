@@ -188,7 +188,7 @@ namespace VEDriversLite.FluxAPI.InstanceControler
             {
                 if (Instances.Count > 0)
                 {
-                    var inst = Instances.Values.Where(i => i.IsConnected).MinBy(i => i.AveragePingTime);
+                    var inst = Instances.Values.Where(i => i.IsConnected && !i.IsProcessing).MinBy(i => i.AveragePingTime);
                     if (inst != null)
                         instance = inst;
 
@@ -202,7 +202,6 @@ namespace VEDriversLite.FluxAPI.InstanceControler
                         instance.TaskFinished += TaskFinishedHandler;
                         await instance.ProcessAllTasks();
                     }
-
 
                     if (instance == null) return CommonReturnTypeDto.GetNew<TaskToRunResponseDto>();
 

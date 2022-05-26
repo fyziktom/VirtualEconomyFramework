@@ -82,6 +82,10 @@ namespace VEDriversLite.FluxAPI.InstanceControler.Instances
         /// </summary>
         bool IsConnected { get; set; }
         /// <summary>
+        /// Is set when Instance processing tasks
+        /// </summary>
+        bool IsProcessing { get; set; }
+        /// <summary>
         /// Time of the last ping command response RoundtripTime
         /// </summary>
         long LastPingRoundtripTime { get; set; }
