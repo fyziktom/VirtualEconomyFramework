@@ -14,10 +14,8 @@ namespace VEDrivers.Economy.Wallets
             {
                 case WalletTypes.Bitcoin:
                     return null;
-                    break;
                 case WalletTypes.Neblio:
                     return new NeblioWallet(id, owner, name, useRPC, baseURL, port);
-                    break;
             }
 
             return null;

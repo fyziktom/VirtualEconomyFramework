@@ -18,6 +18,7 @@ using VEDriversLite.NFT.Imaging.Xray;
 using VEDriversLite.Security;
 using VEDriversLite.UnstoppableDomains;
 using VEDriversLite.Extensions.WooCommerce;
+using VEDriversLite.NeblioAPI;
 
 namespace TestVEDriversLite
 {
@@ -410,9 +411,9 @@ namespace TestVEDriversLite
             foreach (var nft in nfts)
             {
                 Console.WriteLine($"Getting creator for NFT {nft.Utxo}:{nft.UtxoIndex}.");
-                var sender = await NeblioTransactionHelpers.GetTransactionSender(nft.NFTOriginTxId);
+                var sender = await NeblioAPIHelpers.GetTransactionSender(nft.NFTOriginTxId);
                 if (string.IsNullOrEmpty(sender))
-                    sender = await NeblioTransactionHelpers.GetTransactionSender(nft.Utxo, nft.TxDetails);
+                    sender = await NeblioAPIHelpers.GetTransactionSender(nft.Utxo, nft.TxDetails);
                 if (!string.IsNullOrEmpty(sender))
                 {
                     Console.WriteLine($"Creator of NFT {nft.Utxo}:{nft.UtxoIndex} is {sender}.");
@@ -826,8 +827,8 @@ namespace TestVEDriversLite
             Console.WriteLine("Start of minting tickets.");
             int lots = 0;
             int rest = 0;
-            rest += cps % NeblioTransactionHelpers.MaximumTokensOutpus;
-            lots += (int)((cps - rest) / NeblioTransactionHelpers.MaximumTokensOutpus);
+            rest += cps % NeblioAPIHelpers.MaximumTokensOutpus;
+            lots += (int)((cps - rest) / NeblioAPIHelpers.MaximumTokensOutpus);
             (bool, string) res = (false, string.Empty);
 
             if (lots > 1 || (lots == 1 && rest > 0))
@@ -840,7 +841,7 @@ namespace TestVEDriversLite
                     done = false;
                     while (!done)
                     {
-                        res = await account.MintMultiNFT(nft, NeblioTransactionHelpers.MaximumTokensOutpus);
+                        res = await account.MintMultiNFT(nft, NeblioAPIHelpers.MaximumTokensOutpus);
                         done = res.Item1;
                         if (!done)
                         {
@@ -916,8 +917,8 @@ namespace TestVEDriversLite
             Console.WriteLine("Start of minting tickets.");
             int lots = 0;
             int rest = 0;
-            rest += cps % NeblioTransactionHelpers.MaximumTokensOutpus;
-            lots += (int)((cps - rest) / NeblioTransactionHelpers.MaximumTokensOutpus);
+            rest += cps % NeblioAPIHelpers.MaximumTokensOutpus;
+            lots += (int)((cps - rest) / NeblioAPIHelpers.MaximumTokensOutpus);
             (bool, string) res = (false, string.Empty);
 
             if (lots > 1 || (lots == 1 && rest > 0))
@@ -930,7 +931,7 @@ namespace TestVEDriversLite
                     done = false;
                     while (!done)
                     {
-                        res = await account.MintMultiNFT(nft, NeblioTransactionHelpers.MaximumTokensOutpus, receiver);
+                        res = await account.MintMultiNFT(nft, NeblioAPIHelpers.MaximumTokensOutpus, receiver);
                         done = res.Item1;
                         if (!done)
                         {
@@ -1576,7 +1577,7 @@ namespace TestVEDriversLite
                 throw new Exception("TxId must be filled.");
 
             Console.WriteLine("Input Tx Id Hash");
-            var txinfo = await NeblioTransactionHelpers.GetTransactionInfo(param); //get old tx info from neblio api
+            var txinfo = await NeblioAPIHelpers.GetTransactionInfo(param); //get old tx info from neblio api
 
             // sign it with loaded account
             Console.WriteLine("Timestamp");
@@ -3247,7 +3248,7 @@ namespace TestVEDriversLite
         public static async Task GetAllIpfsLinksAsync(string param)
         {
 
-            var owners = await NeblioTransactionHelpers.GetTokenOwners(NFTHelpers.TokenId);
+            var owners = await NeblioAPIHelpers.GetTokenOwners(NFTHelpers.TokenId);
 
             var ipfsLinkNFTs = new Dictionary<string, IPFSLinksNFTsDto>();
             var ipfsCIDs = new List<string>();
@@ -3678,6 +3679,69 @@ namespace TestVEDriversLite
             Console.WriteLine("New Url is: ");
             Console.WriteLine(res.Item2);
         }
+        #endregion
+
+
+        #region Apps
+
+        /// <summary>
+        /// Pin file to infura
+        /// </summary>
+        /// <param name="param"></param>
+        [TestEntry]
+        public static void PinFileToInfura(string param)
+        {
+            PinFileToInfuraAsync(param);
+        }
+        public static async Task PinFileToInfuraAsync(string param)
+        {
+            Console.WriteLine("Pinning file to infura");
+            if (await NFTHelpers.PinToInfuraAsync(param))
+                Console.WriteLine("Success");
+            else
+                Console.WriteLine("Success");
+        }
+        /// <summary>
+        /// Mint Neblio NFT Producer Profile
+        /// </summary>
+        /// <param name="param"></param>
+        [TestEntry]
+        public static void MintNFTApp(string param)
+        {
+            MintNFTAppAsync(param);
+        }
+        public static async Task MintNFTAppAsync(string param)
+        {
+            Console.WriteLine("Minting NFT App");
+            // create NFT object
+            var nft = new AppNFT("");
+            
+            nft.Author = "fyziktom";
+            nft.Name = "Minesweeper";
+            nft.Description = "Minesweeper from BlazorGames Example";
+            nft.Link = "https://blazorgames.net/minesweeper";
+            nft.DataItems.Add(new VEDriversLite.NFT.Dto.NFTDataItem()
+            {
+                Type = VEDriversLite.NFT.Dto.DataItemType.Image,
+                IsMain = true,
+                Hash = "QmSEoP3wnunvPXcaEPxXARvhw7rrWnwjhgre3BQU43DbjC"
+            });
+            nft.DataItems.Add(new VEDriversLite.NFT.Dto.NFTDataItem()
+            {
+                Type = VEDriversLite.NFT.Dto.DataItemType.BlazorApp,
+                Storage = VEDriversLite.NFT.Dto.DataItemStorageType.Url,
+                Hash = param
+            });
+
+            Console.WriteLine("Start of minting NFT App.");
+
+            var res = await account.MintNFT(nft);
+
+            Console.WriteLine("New TxId hash is: ");
+
+            Console.WriteLine(res);
+        }        
+
         #endregion
     }
 }

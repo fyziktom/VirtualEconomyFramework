@@ -12,9 +12,20 @@ namespace VEDriversLite.Extensions.WooCommerce
 {
     public partial class WooCommerceShop
     {
+        /// <summary>
+        /// Woo Commerce shop constructor
+        /// </summary>
         public WooCommerceShop()
         {
         }
+        /// <summary>
+        /// Woo Commerce shop constructor
+        /// </summary>
+        /// <param name="apiurl">from WooCommerce administration</param>
+        /// <param name="apikey">from WooCommerce administration</param>
+        /// <param name="secret">from WooCommerce administration</param>
+        /// <param name="jwt">from WordPress administration</param>
+        /// <param name="allowDispatchNFTOrders"></param>
         public WooCommerceShop(string apiurl, string apikey, string secret, string jwt, bool allowDispatchNFTOrders)
         {
             WooCommerceStoreUrl = apiurl;
@@ -113,7 +124,7 @@ namespace VEDriversLite.Extensions.WooCommerce
         /// TODO
         /// </summary>
         /// <returns></returns>
-        public async Task StopRefreshingData()
+        public void StopRefreshingData()
         {
             refreshTimer.Stop();
             refreshTimer.Enabled = false;
@@ -204,7 +215,7 @@ namespace VEDriversLite.Extensions.WooCommerce
                                 Console.WriteLine($"New Order received:{o.id}, {o.order_key}");
                                 Console.WriteLine($"Order {o.id}, {o.order_key} contains valid Neblio Address for receiving NFTs https://explorer.nebl.io/address/{add}");
                                 var validNFTItems = true;
-                                o.line_items.ForEach(async (item) =>
+                                o.line_items.ForEach((item) =>
                                 {
                                     var sh = string.Empty;
                                     item.meta_data.ForEach(m =>
@@ -307,7 +318,7 @@ namespace VEDriversLite.Extensions.WooCommerce
             string response = string.Empty;
             bool counter = false;
             var res = (counter, response);
-            o.meta_data.ForEach(async (m) =>
+            o.meta_data.ForEach((m) =>
             {
                 if (m.key == "_billing_virtual_economy_wallet_nebl_address" || m.key == "_billing_neblio_address" || m.key == VEDLDataContext.WooCommerceStoreCheckoutFieldCustomerNeblioAddress)
                 {
@@ -475,7 +486,7 @@ namespace VEDriversLite.Extensions.WooCommerce
                     );
                 if (order != null)
                     ord = order;
-                return order;
+                return order ?? new Order();
             }
             else
             {
@@ -500,7 +511,7 @@ namespace VEDriversLite.Extensions.WooCommerce
                     );
                 if (order != null)
                     ord = order;
-                return order;
+                return order ?? new Order();
             }
             else
             {
@@ -611,14 +622,14 @@ namespace VEDriversLite.Extensions.WooCommerce
         /// </summary>
         /// <param name="category"></param>
         /// <returns></returns>
-        public async Task<bool> CheckIfCategoryExists(string category)
+        public bool CheckIfCategoryExists(string category)
         {
             var exists = false;
             Products.Values.ToList().ForEach(p =>
             {
                 p.meta_data.ForEach(m =>
                 {
-                    if (m.value == "Category" && m.key == category) exists = true;
+                    if ((string)(m.value) == "Category" && m.key == category) exists = true;
                 });
             });
             return exists;

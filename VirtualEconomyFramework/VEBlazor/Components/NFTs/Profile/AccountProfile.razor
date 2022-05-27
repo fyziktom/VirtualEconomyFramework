@@ -1,4 +1,6 @@
 ﻿@using VEDriversLite.NFT
+@inject AppData AppData
+@inherits NFTComponentBase
 
 @if ( profile != null )
 {
@@ -42,21 +44,15 @@
 {
 <EditProfile @ref="@EditProfileRef"
              NFT="@profile"
-             Name="@profile.Name"
-             Surname="@profile.Surname"
-             Nickname="@profile.Nickname"
-             Description="@profile.Description"
              NFTChanged="@NFTChangedHandler" />
 }
 
 @code {
     private EditProfile? EditProfileRef;
 
-    [Parameter]
-    public INFT Profile { get; set; } = new ProfileNFT( "" );
     public ProfileNFT? profile
     {
-        get => ( Profile.Type == NFTTypes.Profile ) ? ( Profile as ProfileNFT ) : new ProfileNFT( "" );
+        get => ( NFT.Type == NFTTypes.Profile ) ? ( NFT as ProfileNFT ) : new ProfileNFT( "" );
     }
 
     async Task OnEditProfile()
@@ -67,6 +63,7 @@
 
     void NFTChangedHandler( INFT e )
     {
-        Profile = e;
+        NFT = e;
+        NFTChanged.InvokeAsync(e);
     }
 }

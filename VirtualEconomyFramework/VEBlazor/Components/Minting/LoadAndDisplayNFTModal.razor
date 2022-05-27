@@ -85,7 +85,7 @@
             await LoadNFTFromNetwork();
         }
 
-        StateHasChanged();  
+        await InvokeAsync(StateHasChanged);  
         LoadNFTModal?.Show();
         return;
     }
@@ -102,13 +102,13 @@
             if (await MessageService.Confirm("Are you sure you want to load the NFT to Mintin Form? It will remove existing data in the form?", "Load NFT Template"))
             {
                 loadingImage = true;
-                StateHasChanged();
+                await InvokeAsync(StateHasChanged);
 
                 if (!string.IsNullOrEmpty(NFT.ImageLink))
                     NFT.ImageData = await NFTHelpers.IPFSDownloadFromInfuraAsync(NFTHelpers.GetHashFromIPFSLink(NFT.ImageLink));
                 await OnLoadNFTTemplate.InvokeAsync(NFT);
                 loadingImage = false;
-                StateHasChanged();
+                await InvokeAsync(StateHasChanged);
                 openNFTDetailsFactory?.HideNFTDetails();
                 Hide();
             }
@@ -123,7 +123,7 @@
             if (!string.IsNullOrEmpty(u))
             {
                 Utxo = u;
-                StateHasChanged();
+                await InvokeAsync(StateHasChanged);
             }
         }
         catch

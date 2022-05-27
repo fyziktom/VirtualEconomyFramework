@@ -229,7 +229,7 @@
             </div>
             @if (OwnNFT)
             {
-                @if (NFT.TxDetails.Confirmations > NeblioTransactionHelpers.MinimumConfirmations)
+                @if (NFT.TxDetails.Confirmations > NeblioAPIHelpers.MinimumConfirmations)
                 {
                     <div class="row d-flex justify-content-center align-items-center" style="margin-top:20px;">
                         <div class="col d-flex justify-content-center align-items-center w-auto">

@@ -92,19 +92,19 @@
     private bool unstoppableDomainAddressUsed = false;
     private string unstoppableDomainAddress = string.Empty;
 
-    private void receiverAddressChangedHandler( EventArgs e )
+    private async void receiverAddressChangedHandler( EventArgs e )
     {
         if ( string.IsNullOrEmpty( receiver ) )
             return;
         if ( receiver.Length < 8 )
             return;
 
-        ReceiverChanged.InvokeAsync( receiver );
-        checkAddress( receiver );
-        StateHasChanged();
+        await ReceiverChanged.InvokeAsync( receiver );
+        await checkAddress( receiver );
+        await InvokeAsync(StateHasChanged);
     }
 
-    private void selectReceiverFromBookmarkHandler(string address)
+    private async Task selectReceiverFromBookmarkHandler(string address)
     {
         var a = NeblioTransactionHelpers.ValidateNeblioAddress(address);
         if (!string.IsNullOrEmpty(a))
@@ -113,8 +113,8 @@
             SelectedReceiverFromBookmarks = string.Empty;
                     
         Receiver = address;
-        ReceiverChanged.InvokeAsync(receiver);
-        StateHasChanged();
+        await ReceiverChanged.InvokeAsync(receiver);
+        await InvokeAsync(StateHasChanged);
     }
 
     private async Task checkAddress( string address )
@@ -155,6 +155,6 @@
             validAddress = false;
             await AddressCheckedInputed.InvokeAsync( string.Empty );
         }
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
     }
 }

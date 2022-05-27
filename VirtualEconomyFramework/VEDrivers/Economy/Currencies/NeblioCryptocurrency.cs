@@ -40,15 +40,6 @@ namespace VEDrivers.Economy
                 };
             }
             // load other detail about cryptocurrency
-            try
-            {
-                //GetDetails().GetAwaiter().GetResult();
-            }
-            catch(Exception ex)
-            {
-                //todo
-            }
-            
         }
 
         private BinanceSocketClient commonBinanceSocketClient;

@@ -1,0 +1,200 @@
+﻿@page "/gettingstarted-1"
+
+@using VEDriversLite.Dto
+@using Newtonsoft.Json
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject AppData AppData
+@inject IJSRuntime JSRuntime ;
+
+<body>
+    <section class="b-layout b-layout-has-sider b-layout-root b-docs">
+        <section class="b-layout">
+            <main class="b-layout-content px-0 py-4 p-lg-4">
+                <div class="container-lg">
+                    <h1 id="docs-page-title" class="h1 docs-page-title">
+                        Getting Started
+                    </h1>
+
+                    <p class="docs-page-paragraph">
+                        <div class="alert alert-info" role="alert">
+                            <strong>Note: </strong>Please backup your address and private keys as soon as possible. This will allow you to recover your account.
+                            <Row Margin="Margin.Is1.FromBottom">
+                                <Column Flex="Flex.JustifyContent.End">
+                                    <Button Color="Color.Primary" Clicked="@Backup">Backup</Button>
+                                </Column>
+                            </Row>
+                        </div>
+                    </p>
+
+                    <h2 class="h2 docs-page-subtitle">
+                        Creating a Wallet
+                    </h2>
+                    <p class="docs-page-paragraph">
+                        <Container Fluid Flex="Flex.AlignItems.Center.JustifyContent.Start" Height="Height.Is100">
+                            <Row Width="Width.Is100">
+                                <Column>
+                                    <Row Margin="Margin.Is3.FromBottom">
+                                        <Column Flex="Flex.JustifyContent.Center">
+                                            <Span>
+                                                <p class="docs-page-paragraph">
+                                                    Dogepalooza App is built using <a href="https://nebl.io" target="_blank">Neblio Blockchain</a> and <a href="https://veframework.com" target="_blank">VEFramework</a>. Neblio Blockchain is an eco-friendly proof of stake Blockchain and is used for storing NFT data. Dogeaplooza App runs in just your web browser. Encrypted Private Keys are stored
+                                                    on your browser and not on any centralized server. Please backup the address and private key as soon as possible. Backing up your address and private key will allow you to recover your account on any other device.
+                                                </p>
+                                            </Span>
+                                        </Column>
+                                        <Row Margin="Margin.Is1.FromBottom">
+                                            <Column Flex="Flex.JustifyContent.Center">
+                                                <Button Color="Color.Primary" Clicked="@Backup">Backup</Button>
+                                            </Column>
+                                        </Row>
+                                    </Row>
+                                </Column>
+                                <Column>
+                                    <Row Margin="Margin.Is3.FromBottom">
+                                        <Column Flex="Flex.JustifyContent.Center">
+                                            <Span><img src="https://ipfs.infura.io/ipfs/QmZ6Twc5qjZjpwCTmvKaTmofc8dXBpCZXumhzwArpHgH4h" class="img-fluid" alt="Sharing Address"></Span>
+                                        </Column>
+                                    </Row>
+                                </Column>
+                            </Row>
+                        </Container>
+                    </p>
+                    <h2 class="h2 docs-page-subtitle">
+                        Creating a Profile
+                    </h2>
+                    <p class="docs-page-paragraph">
+                        <Container Fluid Flex="Flex.AlignItems.Center.JustifyContent.Start" Height="Height.Is100">
+                            <Row Width="Width.Is100">
+                                <Column>
+                                    <Row Margin="Margin.Is3.FromBottom">
+                                        <Column Flex="Flex.JustifyContent.Center">
+                                            <Span><img src="https://ipfs.infura.io/ipfs/QmSKoXSwPvLqEUgZr7nk53nLCpUwudjwS9Y6sGpm14DCYN" class="img-fluid" alt="Sharing Address"></Span>
+                                        </Column>
+                                    </Row>
+                                </Column>
+                                <Column>
+                                    <Row Margin="Margin.Is3.FromBottom">
+                                        <Column Flex="Flex.JustifyContent.Center">
+                                            <Span>
+                                                <p class="docs-page-paragraph">
+                                                    You can create an NFT Profile by navigating to Home and clicking Edit. In order to mint an NFT Profile, tokens are required. You can request tokens for minting from VENFT App <a href="https://about.ve-nft.com/index.html#airdrop" target="_blank">here.</a>
+                                                </p>
+                                            </Span>
+                                        </Column>
+                                    </Row>
+                                </Column>
+                            </Row>
+                        </Container>
+                    </p>
+
+                    <h2 class="h2 docs-page-subtitle">
+                        Minting NFTs
+                    </h2>
+                    <p class="docs-page-paragraph">
+                        <Container Fluid Flex="Flex.AlignItems.Center.JustifyContent.Start" Height="Height.Is100">
+                            <Row Width="Width.Is100">
+                                <Column>
+                                    <Row Margin="Margin.Is3.FromBottom">
+                                        <Column Flex="Flex.JustifyContent.Center">
+                                            <Span>
+                                                <p class="docs-page-paragraph">
+                                                    Minting an NFT is easy. In fact, you already minted your first NFT on VENFT when you created your profile. Now you can mint NFTs which will be displayed in your collection.
+                                                </p>
+                                            </Span>
+                                        </Column>
+                                    </Row>
+                                    <Row Margin="Margin.Is3.FromBottom">
+                                        <Column Flex="Flex.JustifyContent.Center">
+                                            <Span>
+                                                <p class="docs-page-paragraph">
+                                                    Simple navigate to Add New NFT, upload the image to the Interplanetary File System (IPFS), add the desired NFT details, such as name, author, and description, and click Finish to complete the minting process.
+                                                </p>
+                                            </Span>
+                                        </Column>
+                                    </Row>
+                                </Column>
+                                <Column>
+                                    <Row Margin="Margin.Is3.FromBottom">
+                                        <Column Flex="Flex.JustifyContent.Center">
+                                            <Span><img src="https://ipfs.infura.io/ipfs/QmSV1iWiiWAH3ZihBdrskru1ZT7FjJmW78ZoRtMpw39SKs" class="img-fluid" alt="Sharing Address"></Span>
+                                        </Column>
+                                    </Row>
+                                </Column>
+                            </Row>
+                        </Container>
+                    </p>
+
+                    <h2 class="h2 docs-page-subtitle">
+                        Sharing your Collection
+                    </h2>
+                    <p class="docs-page-paragraph">
+                        <Container Fluid Flex="Flex.AlignItems.Center.JustifyContent.Start" Height="Height.Is100">
+                            <Row Width="Width.Is100">
+                                <Column>
+                                    <Row Margin="Margin.Is3.FromBottom">
+                                        <Column Flex="Flex.JustifyContent.Center">
+                                            <Span><img src="https://ipfs.infura.io/ipfs/QmV838hrnsXRTW6ynvuCh9c4ob8YNA29MoFDaz3Nu9FoXZ" class="img-fluid" alt="Sharing Address"></Span>
+                                        </Column>
+                                    </Row>
+                                </Column>
+                                <Column>
+                                    <Row Margin="Margin.Is3.FromBottom">
+                                        <Column Flex="Flex.JustifyContent.Center">
+                                            <Span>
+                                                <p class="docs-page-paragraph">
+                                                    Using Dogepalooza App, you can share your Neblio address and NFT Collection by navigating to Gallery and selecting your Neblio Address. Use the Share button to share a link to your Collection.
+                                                </p>
+                                            </Span>
+                                        </Column>
+                                    </Row>
+                                </Column>
+                            </Row>
+                        </Container>
+                    </p>
+                </div>
+            </main>
+        </section>
+    </section>
+    </body>
+
+@code { 
+            
+    private string filename = "";
+    private string backupData = "";
+
+    async Task Backup()
+    {
+        var bookmarks = await localStorage.GetItemAsync<string>("bookmarks");
+        var subAccounts = await localStorage.GetItemAsync<string>("subAccounts");
+        var browserTabs = await localStorage.GetItemAsync<string>("browserTabs");
+        var messageTabs = await localStorage.GetItemAsync<string>("messageTabs");
+        var address = await localStorage.GetItemAsync<string>("address");
+        var key = await localStorage.GetItemAsync<string>("key");
+
+        var dto = new BackupDataDto();
+        if (!string.IsNullOrEmpty(bookmarks))
+            dto.Bookmarks = bookmarks;
+        if (!string.IsNullOrEmpty(browserTabs))
+            dto.BrowserTabs = browserTabs;
+        if (!string.IsNullOrEmpty(messageTabs))
+            dto.MessageTabs = messageTabs;
+        if (!string.IsNullOrEmpty(subAccounts))
+            dto.SubAccounts = subAccounts;
+        if (!string.IsNullOrEmpty(address))
+            dto.Address = address;
+        if (!string.IsNullOrEmpty(key))
+            dto.Key = key;
+
+        filename = "Backup-Export-" + AppData.Account.Address + "-" + DateTime.UtcNow.ToString("dd-MM-yyyyThh_mm_ss") + ".txt";
+        backupData = JsonConvert.SerializeObject(dto);
+
+        if (string.IsNullOrEmpty(backupData))
+            return;
+
+        await JSRuntime.InvokeVoidAsync("jsFunctions.downloadText", backupData, filename);
+
+    } 
+}
+
+
+

@@ -130,6 +130,10 @@ namespace VEDriversLite.NFT
         /// Xray Image
         /// </summary>
         XrayImage = 1896,
+        /// <summary>
+        /// Application in NFT
+        /// </summary>
+        App = 5000
 
 
     }
@@ -403,6 +407,9 @@ namespace VEDriversLite.NFT
         /// Then the image is saved in ImageData as bytes.
         /// </summary>
         /// <param name="secret">NFT Owner Private Key</param>
+        /// <param name="imageLink">link to image</param>
+        /// <param name="partner">Communication partner address to find public key</param>
+        /// <param name="sharedkey">If you already know sharedkey it saves time</param>
         /// <returns></returns>
         Task<(bool, byte[])> DecryptImageData(NBitcoin.BitcoinSecret secret, string imageLink, string partner, string sharedkey = "");
         /// <summary>
@@ -410,6 +417,9 @@ namespace VEDriversLite.NFT
         /// </summary>
         /// <param name="prop">Property content</param>
         /// <param name="secret">NFT Owner Private Key</param>
+        /// <param name="address">Address of sender</param>
+        /// <param name="partner">Communication partner address to find public key</param>
+        /// <param name="sharedkey">If you already know sharedkey it saves time</param>
         /// <returns></returns>
         Task<string> DecryptProperty(string prop, NBitcoin.BitcoinSecret secret, string address = "", string partner = "", string sharedkey = "");
     }

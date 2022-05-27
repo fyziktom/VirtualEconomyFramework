@@ -250,14 +250,15 @@
                 await mintNFT( e.Args );
                 break;
             case MintingToolbarActionType.LoadFromTemplate:
-                openLoadFromTemplate( e.Args );
+                await openLoadFromTemplate( e.Args );
                 break;
         }
     }
 
-    void openLoadFromTemplate( string[] args )
+    async Task openLoadFromTemplate( string[] args )
     {
-        loadNFTFromTemplate?.Show();
+        if ( loadNFTFromTemplate != null)
+            await loadNFTFromTemplate.Show();
     }
 
     void NextStep( string[] args )
@@ -331,6 +332,6 @@
             await OnLoadNFTTemplate.InvokeAsync(nft);
         }
         dataInfoFormRef?.Refresh();
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
     }
 }

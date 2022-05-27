@@ -1,8 +1,4 @@
-
-<p align="center">
-  <a href="https://veframework.com/" target="_blank"><img width="250" src="https://ipfs.infura.io/ipfs/QmfLC2seWMzKT7PyTzjhMC2iZKLFktBwHFCfknodwFEx4u"></a>
-</p>
-
+# VEFramework
 
 Virtual Economy framework will help you to create applications related to Web3, Blockchains, IoT, NFTs, Cryptocurrencies and other useful technologies.
 

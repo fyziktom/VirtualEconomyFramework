@@ -197,7 +197,7 @@
                     } );
                 SelectedTabName = tab.ShortAddress;
             }
-            StateHasChanged();
+            await InvokeAsync(StateHasChanged);
         }
         if (PageProgressService != null)            
             await PageProgressService.Go( -1 );
@@ -215,7 +215,7 @@
                 Name = wt.Name
             } );
         SelectedTabName = wt.Name;
-        StateHasChanged();
+        InvokeAsync(StateHasChanged);
     }
 
     void OpenNFTsInWorkTabHandler( List<INFT> e )
@@ -233,7 +233,7 @@
                 Name = wt.Name
             } );
         SelectedTabName = wt.Name;
-        StateHasChanged();
+        InvokeAsync(StateHasChanged);
     }
 
     async Task CloseTab( string tabName )

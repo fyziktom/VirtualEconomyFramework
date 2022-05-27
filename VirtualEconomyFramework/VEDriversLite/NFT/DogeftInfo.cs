@@ -5,6 +5,9 @@ using System.Text;
 
 namespace VEDriversLite.NFT
 {
+    /// <summary>
+    /// Info for Dogeft shop with NFTs
+    /// </summary>
     public class DogeftInfo
     {
         /// <summary>
@@ -27,6 +30,10 @@ namespace VEDriversLite.NFT
         /// Author Deposit Doge address where Dogeft will send the reward from sale
         /// </summary>
         public string AuthorDogeAddress { get; set; } = string.Empty;
+        
+        /// <summary>
+        /// If some of the required NFT info is empty retunrs false
+        /// </summary>
         [JsonIgnore]
         public bool IsEmpty
         {

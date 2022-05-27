@@ -53,7 +53,7 @@ namespace VEDrivers.Common
             }
             catch(Exception ex)
             {
-                // todo
+                Console.WriteLine("Cannot send send object. Error: " + ex.Message);
             }
         }
 
@@ -69,7 +69,7 @@ namespace VEDrivers.Common
             }
             catch(Exception ex)
             {
-                // todo
+                Console.WriteLine("Cannot send send object. Error: " + ex.Message);
             }
         }
         
@@ -200,7 +200,7 @@ namespace VEDrivers.Common
                     if (mqttClient.IsConnected)
                         mqttClient.DisconnectAsync().GetAwaiter().GetResult();
                 }
-                catch(Exception ex)
+                catch
                 {
                     //todo, but probably not connected
                 }

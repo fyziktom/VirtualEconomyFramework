@@ -100,7 +100,7 @@
     {
         if (NFT == null) return;
         Saving = true;
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
         //save means send to yourself
         if (NotificationService != null)
             await NotificationService.Info( "Saving price info...", "Saving" );
@@ -129,7 +129,7 @@
                 await NotificationService.Warning( SaveResult.Item2, "Cannot save" );
         }
         
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
 
         //close automatically after 2 seconds
         await Task.Delay(2000);

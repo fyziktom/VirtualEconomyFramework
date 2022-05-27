@@ -3,6 +3,7 @@
 @using VEDriversLite.NFT
 @using VEDriversLite.NFT.Imaging.Xray
 @using VEDriversLite.Neblio
+@using VEDriversLite.NeblioAPI
 @inject AppData AppData
 
 @if ( TxDetails != null )
@@ -57,7 +58,7 @@
                             <Column>
                                 <Field>
                                     <FieldLabel>Time</FieldLabel>
-                                    <Badge Color="Color.Info" Padding="Padding.Is2">@TxDetails.Time</Badge>
+                                    <Badge Color="Color.Info" Padding="Padding.Is2" Style="cursor:pointer;">@TxDetails.Time</Badge>
                                 </Field>
                             </Column>
                             <Column>
@@ -283,7 +284,7 @@
             return ti;
         else
         {
-            var toi = NeblioTransactionHelpers.GetTokenInfo( tokenId ).GetAwaiter().GetResult();
+            var toi = NeblioAPIHelpers.GetTokenInfo( tokenId ).GetAwaiter().GetResult();
             tokenInfo.Add( tokenId, toi );
             return toi;
         }

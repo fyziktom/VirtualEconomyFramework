@@ -1,12 +1,12 @@
 ﻿@inject IJSRuntime JSRuntime
 
-@if (!copyTextButtonCoppied)
+@if ( !copyTextButtonCoppied )
 {
-    <Icon Name="@InputIconName" IconSize="@InputIconSize" @onclick="copyCodeToClipboard" />
+    <Icon Name="@InputIconName" IconSize="@InputIconSize" @onclick="copyCodeToClipboard" Style="cursor:pointer;" />
 }
 else
 {
-    <Icon Name="IconName.Check" IconSize="@InputIconSize" />
+    <Icon Name="IconName.Check" IconSize="@InputIconSize" Style="cursor:pointer;" />
 }
 
 @code {
@@ -26,21 +26,21 @@ else
 
     private bool copyTextButtonCoppied = false;
 
-    private async Task copyCodeToClipboard(MouseEventArgs e)
+    private async Task copyCodeToClipboard( MouseEventArgs e )
     {
-        if (string.IsNullOrEmpty(textToCopy))
+        if ( string.IsNullOrEmpty( textToCopy ) )
             return;
 
-        await JSRuntime.InvokeVoidAsync("veblazor.copyToClipboard", textToCopy);
+        await JSRuntime.InvokeVoidAsync( "veblazor.copyToClipboard", textToCopy );
         await copyCodeToClipboardButtonTextEfect();
     }
 
     private async Task copyCodeToClipboardButtonTextEfect()
     {
         copyTextButtonCoppied = true;
-        StateHasChanged();
-        await Task.Delay(1000);
+        await InvokeAsync(StateHasChanged);
+        await Task.Delay( 1000 );
         copyTextButtonCoppied = false;
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
     }
 }

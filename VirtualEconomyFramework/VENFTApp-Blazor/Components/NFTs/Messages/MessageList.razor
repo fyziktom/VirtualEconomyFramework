@@ -1,5 +1,6 @@
 ﻿@using VEDriversLite
 @using VEDriversLite.NFT
+@using VEDriversLite.NeblioAPI
 @inject AppData AppData
 
 <div class="container-fluid overflow-auto h-100" style="min-height:600px;">
@@ -259,12 +260,12 @@
             if (!string.IsNullOrEmpty(r))
             {
                 if (s == null)
-                    return NeblioTransactionHelpers.ShortenAddress(sender);
+                    return NeblioAPIHelpers.ShortenAddress(sender);
 
                 if (!string.IsNullOrEmpty(s.Name))
                     return s.Name;
                 else
-                    return NeblioTransactionHelpers.ShortenAddress(sender);
+                    return NeblioAPIHelpers.ShortenAddress(sender);
             }
             else
             {

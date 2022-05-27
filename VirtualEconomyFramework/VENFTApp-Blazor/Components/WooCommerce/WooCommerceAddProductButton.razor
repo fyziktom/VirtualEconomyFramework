@@ -361,9 +361,9 @@
         confirmVisible = false;
     }
 
-    private async Task CheckCategory()
+    private void CheckCategory()
     {
-        if (await WooCommerceHelpers.Shop.CheckIfCategoryExists(category))
+        if (WooCommerceHelpers.Shop.CheckIfCategoryExists(category))
             validCategoryName = false;
         else
             validCategoryName = true;
@@ -373,7 +373,7 @@
         StateHasChanged();
     }
 
-    private async Task showWooComProductCancel(MouseEventArgs e)
+    private void showWooComProductCancel(MouseEventArgs e)
     {
         showWooComProductVisible = false;
     }
@@ -382,7 +382,7 @@
     {
         await AddProduct();
     }
-    private async Task withoutPriceCancel(MouseEventArgs e)
+    private void withoutPriceCancel(MouseEventArgs e)
     {
         withoutPriceVisible = false;
         confirmVisible = false;
@@ -396,11 +396,11 @@
             await AddProduct();
     }
 
-    private async Task showNFTDetails(MouseEventArgs e)
+    private void showNFTDetails(MouseEventArgs e)
     {
         showNFTDetailsVisible = true;
     }
-    private async Task showNFTDetailsCancel(MouseEventArgs e)
+    private void showNFTDetailsCancel(MouseEventArgs e)
     {
         showNFTDetailsVisible = false;
     }

@@ -71,7 +71,7 @@ public class AppData
     public const string BDPImageLink = "https://ipfs.infura.io/ipfs/QmYMVuotTTpW24eJftpbUFgK7Ln8B4ox3ydbKCB6gaVwVB";
     public const string WDOGEImageLink = "https://ipfs.infura.io/ipfs/Qmc9xS9a8TnWmU7AN4dtsbu4vU6hpEXpMNAeUdshFfg1wT";
     
-    public bool Development { get; set; } = true;
+    public bool Development { get; set; } = false;
     public static string AppName { get; set; } = "VEBlazorApp";
     public static string AppNick { get; set; } = "VEBA";
     public static string AppTokenId { get; set; } = NFTHelpers.BDPTokenId;

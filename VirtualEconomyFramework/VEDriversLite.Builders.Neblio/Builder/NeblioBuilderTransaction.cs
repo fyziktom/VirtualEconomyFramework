@@ -69,7 +69,7 @@ namespace VEDriversLite.Builders.Neblio
         /// <summary>
         /// Sender
         /// </summary>
-        public NeblioBuilderAddress Sender { get; set; }
+        public NeblioBuilderAddress? Sender { get; set; }
         /// <summary>
         /// All the receivers
         /// </summary>
@@ -129,7 +129,7 @@ namespace VEDriversLite.Builders.Neblio
         /// <summary>
         /// Sender was refreshed
         /// </summary>
-        public event EventHandler SenderRefreshed;
+        public event EventHandler? SenderRefreshed;
 
         /// <summary>
         /// Add sender to the transaction
@@ -344,7 +344,7 @@ namespace VEDriversLite.Builders.Neblio
             {
                 if (!string.IsNullOrEmpty(TxHexSigned))
                 {
-                    var res = await NeblioTransactionHelpers.BroadcastSignedTransaction(TxHexSigned);
+                    var res = await NeblioAPIHelpers.BroadcastSignedTransaction(TxHexSigned);
                     return res;
                 }
                 return "Cannot broadcast unsigned transaction. ";
@@ -405,7 +405,7 @@ namespace VEDriversLite.Builders.Neblio
                     foreach (var i in Outputs)
                         await RemoveOutput(Outputs.IndexOf(i));
             }
-            catch(Exception ex)
+            catch
             {
 
             }
@@ -495,7 +495,7 @@ namespace VEDriversLite.Builders.Neblio
                     {
                         var tus = JsonConvert.DeserializeObject<List<tokenUrlCarrier>>(JsonConvert.SerializeObject(ti.MetadataOfIssuance.Data.Urls));
                         var img = string.Empty;
-                        var tu = tus.FirstOrDefault();
+                        var tu = tus?.FirstOrDefault();
                         if (tu != null)
                         {
                             img = tu.url;

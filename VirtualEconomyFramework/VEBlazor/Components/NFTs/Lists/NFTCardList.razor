@@ -106,7 +106,7 @@
     Modal? NFTImageDetailModal;
     OpenNFTDetailsFactory? openNFTDetailsFactory;
     string searchNFTsString = string.Empty;
-    string imageInModalUrl = "_content/VEBlazor/images/empty.jpg";
+    string imageInModalUrl = "_content/VEFramework.VEBlazor/images/empty.jpg";
     INFT nftInImageDetails = new ImageNFT("");
     INFT nftInDetails = new ImageNFT("");
 
@@ -119,9 +119,9 @@
         }
         await base.OnAfterRenderAsync( firstRender );
     }
-    private void RefreshedHandler( object sender, EventArgs e )
+    private async void RefreshedHandler( object sender, EventArgs e )
     {
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
     }    
 
     async Task OpenImageDetailModalHandler(INFT nft)
@@ -139,20 +139,23 @@
         if (nft != null && openNFTDetailsFactory != null)
         {        
             nftInDetails = nft;
-            StateHasChanged();
-            await openNFTDetailsFactory?.OpenNFTDetails(nft);
+            await InvokeAsync(StateHasChanged);
+
+            if (openNFTDetailsFactory!=null)
+                await openNFTDetailsFactory?.OpenNFTDetails(nft);
         }
     }
 
-    private void NFTSentHandler(NFTSentResultDto e)
+    private async Task NFTSentHandler(NFTSentResultDto e)
     {
         if (e.sucess)
         {
             openNFTDetailsFactory?.HideNFTDetails();
-            NotificationService?.Success("NFT sent successfully.", "NFT Sent");
+
+            await NotificationService.Success("NFT sent successfully.", "NFT Sent");
         }
         else
-            NotificationService?.Error(e.message, "NFT Not Sent");
+            await NotificationService.Error(e.message, "NFT Not Sent");
     }
 
     void RefreshRequested( KeyboardEventArgs e )
@@ -160,14 +163,16 @@
         if ( e.Code == "Enter" || e.Code == "NumpadEnter" )
             Refresh();
     }
+
     void Refresh()
     {
-        StateHasChanged();
+        InvokeAsync(StateHasChanged);
     }
-    void RefreshSearchString(string search)
+
+    async Task RefreshSearchString(string search)
     {
         searchNFTsString = search;
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
     }
 
     public bool IsInFilter( INFT nft )
