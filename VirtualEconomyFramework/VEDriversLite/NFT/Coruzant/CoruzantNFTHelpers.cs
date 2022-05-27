@@ -61,6 +61,7 @@ namespace VEDriversLite.NFT.Coruzant
         /// <param name="NFT">Input NFT object with data to save to metadata. Must contain Utxo hash</param>
         /// <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
         /// <param name="receiver">Fill when you want to send NFT to another address</param>
+        /// <param name="secret">Bitcoin secret for signature</param>
         /// <returns>New Tx Id Hash</returns>
         public static async Task<string> ChangeCoruzantPostNFT(string address, EncryptionKey ekey, INFT NFT, ICollection<Utxos> nutxos, NBitcoin.BitcoinSecret secret, string receiver = "")
         {

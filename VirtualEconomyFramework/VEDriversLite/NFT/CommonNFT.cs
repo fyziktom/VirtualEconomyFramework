@@ -71,10 +71,11 @@ namespace VEDriversLite.NFT
         /// Probably future replacement of the "ImageLink" property
         /// </summary>
         public List<NFTDataItem> DataItems { get; set; } = new List<NFTDataItem>();
+        
+        private string _tags = string.Empty;
         /// <summary>
         /// List of the tags separated by space
         /// </summary>
-        private string _tags = string.Empty;
         public string Tags 
         {
             get => _tags;

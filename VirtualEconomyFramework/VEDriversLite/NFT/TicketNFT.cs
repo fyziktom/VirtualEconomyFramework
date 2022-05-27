@@ -8,29 +8,92 @@ using VEDriversLite.NeblioAPI;
 
 namespace VEDriversLite.NFT
 {
+    /// <summary>
+    /// Class of the ticket
+    /// </summary>
     public enum ClassOfNFTTicket
     {
+        /// <summary>
+        /// Economy ticket
+        /// </summary>
         Economy,
+        /// <summary>
+        /// General ticket
+        /// </summary>
         General,
+        /// <summary>
+        /// Economy ticket
+        /// </summary>
         Standard,
+        /// <summary>
+        /// VPI ticket
+        /// </summary>
         VIP,
+        /// <summary>
+        /// VPIPlus ticket
+        /// </summary>
         VIPPlus,
+        /// <summary>
+        /// Legendary ticket
+        /// </summary>
         Legendary,
+        /// <summary>
+        /// Family ticket
+        /// </summary>
         Family,
+        /// <summary>
+        /// Children ticket
+        /// </summary>
         Children
     }
+    /// <summary>
+    /// Duration of the ticket
+    /// </summary>
     public enum DurationOfNFTTicket
     {
+        /// <summary>
+        /// One Minute ticket
+        /// </summary>
         OneMinute,
+        /// <summary>
+        /// One Hour ticket
+        /// </summary>
         OneHour,
+        /// <summary>
+        /// One Day ticket
+        /// </summary>
         Day,
+        /// <summary>
+        /// Two Days ticket
+        /// </summary>
         TwoDays,
+        /// <summary>
+        /// Three Days ticket
+        /// </summary>
         ThreeDays,
+        /// <summary>
+        /// Four Days ticket
+        /// </summary>
         FourDays,
+        /// <summary>
+        /// Five Days ticket
+        /// </summary>
         FiveDays,
+        /// <summary>
+        /// One Week ticket
+        /// </summary>
         Week,
+        /// <summary>
+        /// One weekend ticket
+        /// </summary>
         Weekend,
+        /// <summary>
+        /// One Month ticket
+        /// </summary>
         Month,
+        /// <summary>
+        /// One Year ticket
+        /// </summary>
         Year
     }
     /// <summary>
@@ -76,7 +139,11 @@ namespace VEDriversLite.NFT
             Used = nft.Used;
             AddUsedTags();
         }
-
+        /// <summary>
+        /// Fill the NFT from the NFT Event data. Lots of fields are same
+        /// </summary>
+        /// <param name="NFT"></param>
+        /// <returns></returns>
         public async Task FillFromEvent(INFT NFT)
         {
             await FillCommon(NFT);
@@ -99,22 +166,69 @@ namespace VEDriversLite.NFT
             Utxo = string.Empty;
             UtxoIndex = 0;
         }
-
+        /// <summary>
+        /// Specify author address if different than the mint address
+        /// </summary>
         public string MintAuthorAddress { get; set; } = string.Empty;
+        /// <summary>
+        /// Event Address - where the event NFT is stored
+        /// </summary>
         public string EventAddress { get; set; } = string.Empty;
+        /// <summary>
+        /// Event NFT Utxo
+        /// </summary>
         public string EventId { get; set; } = string.Empty;
+        /// <summary>
+        /// Event location name
+        /// </summary>
         public string Location { get; set; } = string.Empty;
+        /// <summary>
+        /// Event coordinates "Lat,Len"
+        /// </summary>
         public string LocationCoordinates { get; set; } = string.Empty;
+        /// <summary>
+        /// Location coordinate Latitude
+        /// </summary>
         public double LocationCoordinatesLat { get; set; } = 0.0;
+        /// <summary>
+        /// Location coordinate Longitude
+        /// </summary>
         public double LocationCoordinatesLen { get; set; } = 0.0;
+        /// <summary>
+        /// Seat on the event
+        /// </summary>
         public string Seat { get; set; } = string.Empty;
+        /// <summary>
+        /// Indicate if the ticket was used. It goes through all history during load
+        /// </summary>
         public bool Used { get; set; } = false;
+        /// <summary>
+        /// Music in the Link property
+        /// </summary>
         public bool MusicInLink { get; set; } = false;
+        /// <summary>
+        /// Video link
+        /// </summary>
         public string VideoLink { get; set; } = string.Empty;
+        /// <summary>
+        /// Author website page
+        /// </summary>
         public string AuthorLink { get; set; } = string.Empty;
+        /// <summary>
+        /// Date of the Event
+        /// </summary>
         public DateTime EventDate { get; set; } = DateTime.UtcNow;
+        /// <summary>
+        /// Class of the ticket
+        /// </summary>
         public ClassOfNFTTicket TicketClass { get; set; } = ClassOfNFTTicket.Standard;
+        /// <summary>
+        /// Duration of the ticket
+        /// </summary>
         public DurationOfNFTTicket TicketDuration { get; set; } = DurationOfNFTTicket.Day;
+        /// <summary>
+        /// Evenf NFT for the ticket
+        /// </summary>
         [JsonIgnore]
         public EventNFT EventNFTForTheTicket { get; set; } = new EventNFT("");
         /// <summary>

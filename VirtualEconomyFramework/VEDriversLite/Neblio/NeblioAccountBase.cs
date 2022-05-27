@@ -1410,6 +1410,8 @@ namespace VEDriversLite.Neblio
         /// <param name="NFT">Input carrier of NFT data. It must specify the type</param>
         /// <param name="coppies">Number of coppies. 1 coppy means 2 final NFTs</param>
         /// <param name="receiver">Receiver of the NFT</param>
+        /// <param name="multipleReceivers">if you have multpiple receivers you can specify them. it must fit the number of minted NFTs</param>
+        /// <param name="maxInLot">maximum number of minted NFTs in one tx</param>
         /// <returns></returns>
         public async Task<(bool, Dictionary<string, string>)> MintMultiNFTLargeAmount(INFT NFT, int coppies, string receiver = "", List<string> multipleReceivers = null, int maxInLot = 0)
         {

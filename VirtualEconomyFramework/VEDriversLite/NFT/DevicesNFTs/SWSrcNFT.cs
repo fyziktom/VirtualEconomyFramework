@@ -6,8 +6,15 @@ using System.Threading.Tasks;
 
 namespace VEDriversLite.NFT.DevicesNFTs
 {
+    /// <summary>
+    /// SW Src NFT - represents the source plans/code of some software
+    /// </summary>
     public class SWSrcNFT : CommonNFT
     {
+        /// <summary>
+        /// Constructor of the empty NFT SWSrc
+        /// </summary>
+        /// <param name="utxo"></param>
         public SWSrcNFT(string utxo)
         {
             Utxo = utxo;
@@ -15,11 +22,27 @@ namespace VEDriversLite.NFT.DevicesNFTs
             TypeText = "NFT SWSrc";
         }
 
+        /// <summary>
+        /// Version of the source
+        /// </summary>
         public string Version { get; set; } = string.Empty;
+        /// <summary>
+        /// Tool to open or edit the source
+        /// </summary>
         public string Tool { get; set; } = string.Empty;
+        /// <summary>
+        /// Type of the repository
+        /// </summary>
         public string RepositoryType { get; set; } = string.Empty;
+        /// <summary>
+        /// Link to repository or its hash
+        /// </summary>
         public string RepositoryLink { get; set; } = string.Empty;
-
+        /// <summary>
+        /// Fill the data of the NFT
+        /// </summary>
+        /// <param name="NFT"></param>
+        /// <returns></returns>
         public override async Task Fill(INFT NFT)
         {
             await FillCommon(NFT);
@@ -29,6 +52,10 @@ namespace VEDriversLite.NFT.DevicesNFTs
             RepositoryType = nft.RepositoryType;
             RepositoryLink = nft.RepositoryLink;
         }
+        /// <summary>
+        /// Parse specific data for the NFT
+        /// </summary>
+        /// <param name="metadata"></param>        
         public override void ParseSpecific(IDictionary<string, string> metadata)
         {
             if (metadata.TryGetValue("Version", out var version))
@@ -40,7 +67,11 @@ namespace VEDriversLite.NFT.DevicesNFTs
             if (metadata.TryGetValue("RepositoryLink", out var repo))
                 RepositoryLink = repo;
         }
-
+        /// <summary>
+        /// Parse origin data of the NFT
+        /// </summary>
+        /// <param name="lastmetadata"></param>
+        /// <returns></returns>
         public override async Task ParseOriginData(IDictionary<string, string> lastmetadata)
         {
             var nftData = await NFTHelpers.LoadNFTOriginData(Utxo);
@@ -57,7 +88,10 @@ namespace VEDriversLite.NFT.DevicesNFTs
                 IsLoaded = true;
             }
         }
-
+        /// <summary>
+        /// Get last data for this NFT
+        /// </summary>
+        /// <returns></returns>
         public async Task GetLastData()
         {
             var nftData = await NFTHelpers.LoadLastData(Utxo);
@@ -73,7 +107,13 @@ namespace VEDriversLite.NFT.DevicesNFTs
             IsLoaded = true;
         }
 
-
+        /// <summary>
+        /// Get NFT metadata.
+        /// </summary>
+        /// <param name="address"></param>
+        /// <param name="key"></param>
+        /// <param name="receiver"></param>
+        /// <returns></returns>
         public override async Task<IDictionary<string, string>> GetMetadata(string address = "", string key = "", string receiver = "")
         {
             // create token metadata

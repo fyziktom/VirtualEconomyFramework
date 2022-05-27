@@ -14,7 +14,13 @@ namespace VEDriversLite.Common
     /// </summary>
     public class QTWalletResponseDto
     {
+        /// <summary>
+        /// Result of the reqest. It contains the data
+        /// </summary>
         public string result { get; set; }
+        /// <summary>
+        /// Id of request for case of async handling
+        /// </summary>
         public string id { get; set; }
     }
 

@@ -55,7 +55,13 @@ namespace VEDriversLite.Security
             var result = DecryptBytes(keybytes, secret);
             return Encoding.UTF8.GetString(result).Trim('\0');
         }
-
+        /// <summary>
+        /// Symmetrical encryption of the bytes.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="secret"></param>
+        /// <param name="iv"></param>
+        /// <returns></returns>
         public static byte[] EncryptBytes(string key, byte[] secret, byte[] iv = null)
         {
             var keybytes = GetKeyBytes(key);
@@ -67,7 +73,8 @@ namespace VEDriversLite.Security
         /// Symmetrical encryption of the bytes
         /// </summary>
         /// <param name="key">Password for the encryption</param>
-        /// <param name="bytes">Bytes array which should be encrypted</param>
+        /// <param name="secret">data to encrypt</param>
+        /// <param name="iv"></param>
         /// <returns></returns>
         public static byte[] EncryptBytes(byte[] key, byte[] secret, byte[] iv = null)
         {
@@ -105,7 +112,8 @@ namespace VEDriversLite.Security
         /// Symmetrical decryption of the bytes
         /// </summary>
         /// <param name="key">Password for the encryption</param>
-        /// <param name="bytes">Bytes array which should be decrypted</param>
+        /// <param name="secret">Data to decrypt</param>
+        /// <param name="iv"></param>
         /// <returns></returns>
         public static byte[] DecryptBytes(byte[] key, byte[] secret, byte[] iv = null)
         {

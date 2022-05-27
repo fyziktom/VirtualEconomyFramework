@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace VEDriversLite.UnstoppableDomains
 {
+    /// <summary>
+    /// Unstoppable domain client interface
+    /// </summary>
     public partial interface IClient
     {
         /// <summary>Returns the Details of Unstoppable Domain address</summary>

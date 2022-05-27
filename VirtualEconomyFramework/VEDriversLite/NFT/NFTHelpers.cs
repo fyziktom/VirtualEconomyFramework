@@ -1143,9 +1143,7 @@ namespace VEDriversLite.NFT
         /// In NFT image and music it will be not relevant because it will always search for origin data even if you will rewrite it.
         /// </summary>
         /// <param name="address">sender address</param>
-        /// <param name="ekey">Encryption Key object of the address</param>
         /// <param name="nft">Input NFT object with data to save to metadata. Must contain Utxo hash</param>
-        /// <param name="nutxos">List of spendable neblio utxos if you have it loaded.</param>
         /// <returns>New Tx Id Hash</returns>
         public static async Task<SendTokenTxData> GetChangeNFTTxData(string address, INFT nft)
         {
@@ -1360,7 +1358,6 @@ namespace VEDriversLite.NFT
         /// </summary>
         /// <param name="address">adress of sender</param>
         /// <param name="receiver">address of receiver</param>
-        /// <param name="ekey">Encryption Key object of the address</param>
         /// <param name="NFT">Input NFT object with data to save to metadata. It is NFT what you are sending.</param>
         /// <param name="priceWrite">Set this if you just want to set price of the NFT. means resend to yourself</param>
         /// <param name="price">Price must be higher than 0.0002 Neblio</param>

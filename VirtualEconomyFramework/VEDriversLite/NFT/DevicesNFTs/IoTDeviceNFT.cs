@@ -450,7 +450,10 @@ namespace VEDriversLite.NFT.DevicesNFTs
 
             return metadata;
         }
-
+        /// <summary>
+        /// Load Device NFT for this IoT Device
+        /// </summary>
+        /// <returns></returns>
         public async Task LoadDeviceNFT()
         {
             if (!string.IsNullOrEmpty(DeviceNFTHash))

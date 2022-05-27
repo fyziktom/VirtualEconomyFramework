@@ -480,7 +480,6 @@ namespace VEDriversLite
         /// <param name="ekey">Input EncryptionKey of the account</param>
         /// <param name="nutxos">Optional input neblio utxo</param>
         /// <param name="tutxos">Optional input token utxo</param>
-        /// <param name="fee">Fee - 20000 minimum</param>
         /// <returns>New Transaction Hash - TxId</returns>
         public static async Task<Transaction> SplitNTP1TokensAsync(List<string> receiver, int lots, int amount, string tokenId,
                                                               IDictionary<string, string> metadata,
@@ -696,9 +695,7 @@ namespace VEDriversLite
         /// You must fill the input token utxo in data object!
         /// </summary>
         /// <param name="data">Send data, please see SendTokenTxData class for the details</param>
-        /// <param name="ekey">Input EncryptionKey of the account</param>
         /// <param name="nutxos">Optional input neblio utxo</param>
-        /// <param name="fee">Fee - 20000 minimum</param>
         /// <returns>New Transaction Hash - TxId</returns>
         public static async Task<Transaction> SendNFTTokenAsync(SendTokenTxData data, ICollection<Utxos> nutxos)
         {
@@ -1501,7 +1498,6 @@ namespace VEDriversLite
         /// </summary>
         /// <param name="transaction">NBitcoin Transaction object</param>
         /// <param name="key">NBitcoin Key - must contain Private Key</param>
-        /// <param name="address">NBitcoin address - must match with the provided key</param>
         /// <returns>New Transaction Hash - TxId</returns>
         private static async Task<string> SignAndBroadcast(Transaction transaction, BitcoinSecret key)
         {
