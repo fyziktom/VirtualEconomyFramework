@@ -4,6 +4,8 @@ VEBlazor is the UI component library for .NET Blazor framework.
 
 It uses the [VEDriversLite library](https://www.nuget.org/packages/VEFramework.VEDriversLite/) for the most "backend" work. It is kind of the demo how you can wrap the VEDriversLite into UI components.
 
+Here you can find the [VEBlazor Nuget package](https://www.nuget.org/packages/VEFramework.VEBlazor/)
+
 The library is now as "preview". We are still working hard on the refactoring. Same as this readme.
 
 The library is based on the [great component library Blazorise](https://blazorise.com/). Thanks to [Mladen Macanovic](https://github.com/stsrki) for help with first steps with Blazorise library :)
@@ -11,6 +13,22 @@ The library is based on the [great component library Blazorise](https://blazoris
 # Live Demo
 
 You can test [live demo here](https://apptest.ve-nft.com/)
+
+<p align="center">
+    <img width="400" alt="Main Page" src="https://ipfs.infura.io/ipfs/QmdmkGUG5nGsFUmXpNvs9APPHhqevium3HGuLjiXinR23B" />
+</p>
+
+<p align="center">
+    <img width="400" alt="Image Gallery" src="https://ipfs.infura.io/ipfs/QmQsRizVtG2vWjr7a6Xyb6V8RwQVypkm56AbxurjK2kcUp" />
+</p>
+
+<p align="center">
+    <img width="400" alt="Minting Page Images" src="https://ipfs.infura.io/ipfs/QmYJ1Wtdhz5W5wHXtUUaqpMrSZqtb4sVVctTmFf3o25Xs7" />
+</p>
+
+<p align="center">
+    <img width="400" alt="Minting Page Data" src="https://ipfs.infura.io/ipfs/QmRzXJrdrBJB1XPGx8JVtEVGjddar6ijGhs4GqwS51sYqb" />
+</p>
 
 If you would like to participate on development and testing please [contact us here](mailto:tomas.svoboda@technicinsider.com).
 
@@ -21,7 +39,7 @@ If you would like to participate on development and testing please [contact us h
 # First steps
 
 - Create Empty Blazor Project (can be Server or WebAssembly)
-- Add VEBlazor project reference or nuget package
+- Add VEBlazor project reference or [VEBlazor Nuget package](https://www.nuget.org/packages/VEFramework.VEBlazor/)
 - Add necessary css and js dependencies in MyApp/wwwroot/index.html
 
 Here is the Example:
@@ -313,72 +331,79 @@ Other pages demo you can find in the Demo projects.
 
 We have created multiple demos. Please search these projects:
 
-- BDP-WASM
-- VEBlazor.Demos.EventsAndTickets
-- VEBlazor.Demos.VENFTApp.Client
+- [BDP-WASM](https://github.com/fyziktom/VirtualEconomyFramework/tree/main/VirtualEconomyFramework/BDP-WASM)
+- [VEBlazor.Demos.EventsAndTickets](https://github.com/fyziktom/VirtualEconomyFramework/tree/main/VirtualEconomyFramework/VEBlazor.Demo.EventsAndTickets)
+- [VEBlazor.Demos.VENFTApp.Client](https://github.com/fyziktom/VirtualEconomyFramework/tree/main/VirtualEconomyFramework/VEBlazor.Demo.VENFTApp.Client)
 
 # Main Components
 
-Most of the components inherits from the NFTComponentBase or similar base classes in this file.
+Most of the components inherits from the [NFTComponentBase or similar base classes in this file](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/Base/NFTComponentBase.cs).
 
 ## Services
 
-- App Data
-- Transaction Service
+- [App Data](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Services/AppData.cs)
+- [Transaction Service](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Services/TransactionsService.cs)
 
 ## Layout Related
 
 ### Layout 
 
-- Main Layout
+Do not forget to override the default one when you will create empty Blazor project. It is reffered in the App.razor file.
+
+- [Main Layout](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Layouts/MainLayout.razor)
 
 ### Models - Themes
 
 In the Themes you can define your own color scheme. We have one default scheme. Soon we will add Dark mode, etc.
 
-- Default Theme
+- [Default Theme](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Models/Themes/DefaultTheme.cs)
 
 ### Pages
 
 All of these pages templates must be placed as component in page in the MyApp/Pages folder. As it was showed upper in "First Steps" on example Gallery page.
 
-- My Account
-- Gallery
-- Add New
-- BuyNFT
-- Readme
-
-Readme page loads the Readme.md file placed in the MyApp/wwwroot/
+- [My Account](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Pages/MyAccount.razor)
+- [Gallery](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Pages/Gallery.razor)
+- [Add New](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Pages/AddNew.razor)
+- [BuyNFT](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Pages/BuyNFT.razor)
+    - Buy NFT page will load the account without NFTs. It is fast load just for do the transaction to buy NFT.
+- [Readme](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Pages/Readme.razor)
+    - Readme page loads the Readme.md file placed in the MyApp/wwwroot/
 
 ### Menu
 
 Main Layout automatically switches the menus from the Side (on Tablet and biggers) to Top Menu (on phones).
 
-- Side Menu
-- Top Menu
+- [Side Menu](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Menu/SideMenu.razor)
+- [Top Menu](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Menu/TopMenu.razor)
 
 ### Tabs
 
-- Gallery Tab Content
-- Work Tab Content
+- [Gallery Tab Content](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/Tabs/GalleryTabContent.razor)
+    - Gallery tab is opened when you are opening new address just to search it. It load the ActiveTab.cs class with (default) 40 newest NFTs.
+- [Work Tab Content](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/Tabs/WorkTabContent.razor)
+    - Work tab is used in the BDP App. It is opened for change of the properties or other functions in future. You can forbid this function [like this](https://github.com/fyziktom/VirtualEconomyFramework/blob/4ddd9550051934386f48da6260c927c62cee2b6a/VirtualEconomyFramework/VEBlazor.Demo.VENFTApp.Client/App.razor#L30). It will hide all buttons/labels in other related components around automatically.
 
 
 ## Account
 
-- Account Balance
-- Accont Sider
-- Create Account
-- Import Account
-- Unlock Account
-- Neblio Address Input
+- [Account Balance](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/Account/AccountBalances.razor)
+- [Accont Sider](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/Account/AccountSider.razor)
+    - Main component to display account stats and other things. Sorry for the name. It should be like account page,Tab...Thanks to responsive design you can use it really as kind of sider.
+- [Create Account](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/Account/CreateAccount.razor)
+    - It creates only Neblio Account now. Doge will be added soon.
+- [Import Account](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/Account/ImportAccount.razor)
+    - Allow to import the standard VENFT backup file. Or you can import the raw or encrypted key.
+- [Unlock Account](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/Account/UnlockAccount.razor)
+- [Neblio Address Input](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/Account/NeblioAddressInput.razor)
 
 Neblio Address Input loads bookmarks and allow to use already saved address. It load part of the Unstoppable Domains. We will need to do some updates in API, but part of the addresses works fine. You will type UD name and it will change it to the Neblio Address.
 
 ## Transaction 
 
-- Transaction List
-- Transaction Details
-- SendNeblioTransaction
+- [Transaction List](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/Account/Transactions/TransactionsList.razor)
+- [Transaction Details](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/Account/Transactions/TransactionDetails.razor)
+- [SendNeblioTransaction](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/Account/Transactions/SendNeblioTransaction.razor)
 
 Send Neblio Transaction component offers multiple different transactions:
 
@@ -392,24 +417,29 @@ Send Neblio Transaction component offers multiple different transactions:
 
 ## Bookmarks
 
-- Bookmark Icon
-- Bookmark Item
-- Bookmark Manager List
+- [Bookmark Icon](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/Bookmarks/BookmarkIcon.razor)
+    - Bookmark Icon contains the way to add/remove bookmark
+- [Bookmark Item](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/Bookmarks/BookmarkItem.razor)
+- [Bookmark Manager List](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/Bookmarks/BookmarksManagerList.razor)
 
 ## Display
 
-- Copy Button
-- Copy Icon
-- Labeled Progress Bookmark
-- PanzoomImage
+- [Copy Button](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/Display/CopyButton.razor)
+    - Button will copy the text which is passed as parameter to the component.
+- [Copy Icon](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/Display/CopyIcon.razor)
+    - Icon will copy the text which is passed as parameter to the component.
+- [Labeled Progress Bar](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/Display/LabeledProgressBar.razor)
+    - Wrapped [Blazorise Progress bar](https://blazorise.com/docs/components/progress) with way to setup Name before and Unit with use of the [Blazorise Field component](https://blazorise.com/docs/components/field).
+- [PanzoomImage](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/Display/PanzoomImage.razor)
+    - Wrap for the image with [BlazorPanzoom](https://github.com/shaigem/BlazorPanzoom) component.
 
 ## NFTs
 
 ### Data Upload
 
-- Upload Data
-- File Upload
-- IPFS Upload
+- [Upload Data](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/Minting/DataUpload/UploadData.razor)
+- [File Upload](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/Minting/DataUpload/FileUpload.razor)
+- [IPFS Upload](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/Minting/DataUpload/IPFSUpload.razor)
 
 Upload of the data allows to upload single or multiple files. You can setup this option in UploadData component.
 
@@ -424,6 +454,8 @@ You can upload different files now:
 - JSON: *.json
 - HTML: *.html
 - PDF: *.pdf
+
+If you are using the upload to the IPFS you need to setup your API key. (please create account on infura.io, and you can pass the key and the secret in/via the NFTHelpers.cs). Infura offeres way to allow just some origins.
 
 ### Minting
 

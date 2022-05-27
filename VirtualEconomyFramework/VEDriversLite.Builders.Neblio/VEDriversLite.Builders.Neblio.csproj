@@ -16,6 +16,7 @@
 	  <Copyright>fyziktom</Copyright>
 	  <PackageReleaseNotes>
 		  - Just cleanup and added XML tags
+		  - Fixed few minor bugs
 	  </PackageReleaseNotes>
 	  <PackageReadmeFile>README.md</PackageReadmeFile>
 	  <PackageLicenseExpression>BSD-2-Clause</PackageLicenseExpression>
