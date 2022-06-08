@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using NBitcoin;
 using NBitcoin.DataEncoders;
-using VEDriversLite.Builder;
 using VEDriversLite.NFT;
 
 namespace VEDriversLite.Security
@@ -21,6 +20,7 @@ namespace VEDriversLite.Security
         /// <param name="message">input original message</param>
         /// <param name="signature">signature made by some dogecoin address</param>
         /// <param name="address">Dogecoin address</param>
+        /// <param name="messageIsAlreadyHash">set if the message is already hash compatible for create singature. otherwise it is created hash from the message.</param>
         /// <returns></returns>
         public static async Task<(bool, string)> VerifyDogeMessage(string message, string signature, string address, bool messageIsAlreadyHash = false)
         {
@@ -66,6 +66,7 @@ namespace VEDriversLite.Security
         /// <param name="message">input original message</param>
         /// <param name="signature">signature made by some Neblio address</param>
         /// <param name="address">Neblio address</param>
+        /// <param name="messageIsAlreadyHash">set if the message is already hash compatible for create singature. otherwise it is created hash from the message.</param>
         /// <returns></returns>
         public static async Task<(bool, string)> VerifyMessage(string message, string signature, string address, bool messageIsAlreadyHash = false)
         {
@@ -110,7 +111,8 @@ namespace VEDriversLite.Security
         /// </summary>
         /// <param name="message">input original message</param>
         /// <param name="signature">signature made by some Neblio address</param>
-        /// <param name="address">Neblio address</param>
+        /// <param name="messageIsAlreadyHash">set if the message is already hash compatible for create singature. otherwise it is created hash from the message.</param>
+        /// <param name="pubkey">public key of the owner</param>
         /// <returns></returns>
         public static async Task<(bool, string)> VerifyMessage(string message, string signature, PubKey pubkey, bool messageIsAlreadyHash = false)
         {
@@ -215,7 +217,7 @@ namespace VEDriversLite.Security
 
                 return (true, msg);
             }
-            catch (Exception ex)
+            catch
             {
                 return (false, "Wrong input. Cannot decrypt the message.");
             }
@@ -236,7 +238,7 @@ namespace VEDriversLite.Security
                 var msg = secret.PrivateKey.Decrypt(cryptedMessage);
                 return (true, msg);
             }
-            catch (Exception ex)
+            catch
             {
                 return (false, "Wrong input. Cannot decrypt the message.");
             }
@@ -258,7 +260,7 @@ namespace VEDriversLite.Security
                 var cmsg = k.Encrypt(message);
                 return (true, cmsg);
             }
-            catch (Exception ex)
+            catch
             {
                 return (false, "Wrong input. Cannot encrypt the message.");
             }
@@ -295,14 +297,14 @@ namespace VEDriversLite.Security
         /// <returns></returns>
         public static async Task<(bool, string)> GetSharedSecret(string bobAddress, string key, PubKey bobPublicKey = null)
         {
-            if (string.IsNullOrEmpty(key) || (!string.IsNullOrEmpty(bobAddress) && bobPublicKey == null))
+            if (string.IsNullOrEmpty(key) || (string.IsNullOrEmpty(bobAddress) && bobPublicKey == null))
                 return (false, "Input parameters cannot be empty or null.");
             try
             {
-               var secret =  new BitcoinSecret(key, NeblioTransactionBuilder.NeblioNetwork);
+               var secret =  new BitcoinSecret(key, NeblioTransactionHelpers.Network);
                 return await GetSharedSecret(bobAddress, secret, bobPublicKey);
             }
-            catch(Exception ex)
+            catch
             {
                 Console.WriteLine("Wrong input key for creation of shared secret.");
             }
@@ -317,7 +319,7 @@ namespace VEDriversLite.Security
         /// <returns></returns>
         public static async Task<(bool, string)> GetSharedSecret(string bobAddress, BitcoinSecret secret, PubKey bobPublicKey = null)
         {
-            if (secret == null || (!string.IsNullOrEmpty(bobAddress) && bobPublicKey == null))
+            if (secret == null || (string.IsNullOrEmpty(bobAddress) && bobPublicKey == null))
                 return (false, "Input parameters cannot be empty or null.");
             
             var aliceadd = secret.PubKey.GetAddress(ScriptPubKeyType.Legacy, NeblioTransactionHelpers.Network);
@@ -357,10 +359,10 @@ namespace VEDriversLite.Security
         {
             try
             {
-                var secret = new BitcoinSecret(key, NeblioTransactionBuilder.NeblioNetwork);
+                var secret = new BitcoinSecret(key, NeblioTransactionHelpers.Network);
                 return await EncryptStringWithSharedSecret(message, bobAddress, secret, sharedkey);
             }
-            catch (Exception ex)
+            catch
             {
                 Console.WriteLine("Wrong input key for creation of shared secret.");
             }
@@ -482,10 +484,10 @@ namespace VEDriversLite.Security
         {
             try
             {
-                var secret = new BitcoinSecret(key, NeblioTransactionBuilder.NeblioNetwork);
+                var secret = new BitcoinSecret(key, NeblioTransactionHelpers.Network);
                 return await DecryptStringWithSharedSecret(emessage, bobAddress, secret);
             }
-            catch (Exception ex)
+            catch
             {
                 Console.WriteLine("Wrong input key for creation of shared secret.");
             }

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <Authors>VEconomy</Authors>
     <UserSecretsId>baa3ee54-1dfa-418c-93d5-6aabcabede01</UserSecretsId>
     <ApplicationIcon>logo-ve.ico</ApplicationIcon>

@@ -1,0 +1,135 @@
+﻿@using System.IO
+@using VEDriversLite.NFT
+@implements IDisposable
+@if ( uploadingToIPFS )
+{
+    <Span>Uploading to IPFS... please wait...</Span>
+    <Div>
+        <Progress Striped Animated Value="@progress" />
+    </Div>
+}
+else if ( uploadFinished )
+{
+        <Row Margin="Margin.Is2.FromTop">
+            <Column Flex="Flex.JustifyContent.Center">
+                <Span>Upload to IPFS finished.</Span>
+            </Column>
+        </Row>
+        <Row Margin="Margin.Is2.FromTop"> 
+            <Column> 
+                <CopyButton TextToCopy="@MainIPFSLink" ButtonText="Copy Link" /> 
+            </Column> 
+            <Column> 
+                <CopyButton TextToCopy="@MainIPFSLink" ButtonText="Copy Hash" /> 
+            </Column> 
+        </Row> 
+        <Row Margin="Margin.Is2.FromTop"> 
+            <Column> 
+                <Button Color="Color.Light" Type="ButtonType.Link" To="@MainIPFSLink" Target="Target.Blank" Block>Open Image Link</Button> 
+            </Column> 
+        </Row> 
+        <Row Margin="Margin.Is2.FromTop">
+            <Column Flex="Flex.JustifyContent.Center">
+                <Span>You can continue now...</Span>
+            </Column>
+        </Row>
+}
+
+@code {
+    [Parameter] public Validations? ValidationsRef { get; set; }
+
+    [Parameter] public EventCallback Started { get; set; }
+
+    [Parameter] public EventCallback<string> Uploaded { get; set; }
+
+    string MainIPFSLink { get; set; } = string.Empty;
+
+    bool uploadingToIPFS = false;
+    bool uploadFinished = false;
+    int progress = 0;
+
+    PeriodicTimer? timer;
+
+    protected override async Task OnInitializedAsync()
+    {
+        timer = new PeriodicTimer( TimeSpan.FromMilliseconds( 200 ) );
+
+        while ( await timer.WaitForNextTickAsync() )
+        {
+            if ( uploadingToIPFS && !uploadFinished )
+            {
+                progress += 10;
+
+                if ( progress > 100 )
+                    progress = 0;
+
+                await InvokeAsync( StateHasChanged );
+            }
+        }
+
+        await base.OnInitializedAsync();
+    }
+
+    public void Dispose()
+    {
+        if ( timer != null )
+        {
+            timer.Dispose();
+        }
+    }
+
+    public async Task LoadIPFSLink(string link)
+    {
+        if (!string.IsNullOrEmpty(link))
+        {
+            MainIPFSLink = link;
+            uploadingToIPFS = false;
+            uploadFinished = true;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    public async Task UploadToIPFS( string fileName, byte[] data )
+    {
+        if ( data != null && data.Length > 0 )
+        {
+            uploadingToIPFS = true;
+            uploadFinished = false;
+            progress = 0;
+
+            await InvokeAsync( StateHasChanged );
+
+            try
+            {
+                using ( Stream stream = new MemoryStream( data ) )
+                {
+                    stream.Seek( 0, SeekOrigin.Begin );
+                    var result = await NFTHelpers.UploadInfura( stream, fileName );
+
+                    if ( !string.IsNullOrEmpty( result ) )
+                    {
+                        MainIPFSLink = result;
+                        uploadFinished = true;
+
+                        await Uploaded.InvokeAsync( MainIPFSLink );
+                    }
+                }
+            }
+            catch ( Exception ex )
+            {
+                Console.WriteLine( "Cannot upload file to the IPFS. " + ex.Message );
+            }
+            finally
+            {
+                uploadingToIPFS = false;
+                progress = 0;
+                await InvokeAsync( StateHasChanged );
+            }
+
+        }
+        else
+        {
+            Console.WriteLine( "Cannot Upload empty image." );
+        }
+    }
+}

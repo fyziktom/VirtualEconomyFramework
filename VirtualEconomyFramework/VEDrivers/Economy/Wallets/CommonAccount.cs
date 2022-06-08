@@ -24,7 +24,16 @@ namespace VEDrivers.Economy.Wallets
         public Guid WalletId { get; set; }
         public AccountTypes Type { get; set; }
         public Guid OwnerId { get; set; }
-        public double NumberOfTransaction { get; set; } = 0;
+        public double NumberOfTransaction
+        { 
+            get
+            {
+                if (Transactions != null)
+                    return Transactions.Count;
+                else
+                    return 0;
+            }
+        }
         public double NumberOfLoadedTransaction { get; } = 0;
         public double? TotalBalance { get; set; } = 0.0;
         public double? TotalSpendableBalance { get; set; } = 0.0;

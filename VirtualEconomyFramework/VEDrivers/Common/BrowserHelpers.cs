@@ -37,7 +37,7 @@ namespace VEDrivers.Common
                 if (noBrowser.ErrorCode == -2147467259)
                     Console.WriteLine(noBrowser.Message);
             }
-            catch(Exception ex)
+            catch
             {
                 Console.WriteLine("Cannot Open Browser Window");
             }

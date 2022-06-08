@@ -24,7 +24,7 @@ namespace VEFrameworkUnitTest.Neblio
             GetAddressInfoResponse addressObject = Common.FakeDataGenerator.GetAddressWithNeblUtxos(address, 10, 1000000);
             var u = addressObject.Utxos.FirstOrDefault();
             //ACT
-            var Utxos = await NeblioTransactionHelpers.GetAddressNeblUtxo(address, 0.0001, amount,addressObject, (double)u.Blockheight);
+            var Utxos = await NeblioAPIHelpers.GetAddressNeblUtxo(address, 0.0001, amount,addressObject, (double)u.Blockheight);
 
             //Assert  
             Assert.Equal(2, Utxos.Count);
@@ -45,7 +45,7 @@ namespace VEFrameworkUnitTest.Neblio
             var u = addressObject.Utxos.FirstOrDefault();
 
             //ACT
-            var Utxos = await NeblioTransactionHelpers.GetAddressNeblUtxo(address, 0.0001, amount, addressObject, (double)u.Blockheight);
+            var Utxos = await NeblioAPIHelpers.GetAddressNeblUtxo(address, 0.0001, amount, addressObject, (double)u.Blockheight);
 
             //Assert  
             Assert.Equal(0, Utxos.Count);

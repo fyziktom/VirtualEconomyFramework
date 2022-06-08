@@ -105,7 +105,7 @@ namespace VEDrivers.Economy.Shops
 
         public override async Task<string> GetShopComponent()
         {
-            throw new NotImplementedException();
+            return string.Empty;
         }
 
         public override async Task<string> StartShop()

@@ -14,25 +14,67 @@ using VEDriversLite.Security;
 
 namespace VEDriversLite.NFT
 {
+    /// <summary>
+    /// Dto for transport of ownership verification signature
+    /// </summary>
     public class OwnershipVerificationCodeDto
     {
+        /// <summary>
+        /// NFT Transaction hash
+        /// </summary>
         public string TxId { get; set; } = string.Empty;
+        /// <summary>
+        /// Signature of TxId + UTCTime.RoundToMinutes()
+        /// </summary>
         public string Signature { get; set; } = string.Empty;
     }
+    /// <summary>
+    /// Result of ownership verification check
+    /// </summary>
     public class OwnershipVerificationResult
     {
+        /// <summary>
+        /// NFT Transaction hash
+        /// </summary>
         public string TxId { get; set; } = string.Empty;
+        /// <summary>
+        /// Owner adress
+        /// </summary>
         public string Owner { get; set; } = string.Empty;
+        /// <summary>
+        /// Sender of request for verification
+        /// </summary>
         public string Sender { get; set; } = string.Empty;
+        /// <summary>
+        /// Is valid NFT ownership signature?
+        /// </summary>
         public bool IsValid { get; set; } = false;
+        /// <summary>
+        /// Found NFT based on TxId
+        /// </summary>
         public INFT NFT { get; set; } = new ImageNFT("");
+        /// <summary>
+        /// Reconstructed message
+        /// </summary>
         public string Message { get; set; } = string.Empty;
+        /// <summary>
+        /// Verification result message
+        /// </summary>
         public string VerifyResult { get; set; } = string.Empty;
     }
+    /// <summary>
+    /// Class provides NFT ownership verification
+    /// </summary>
     public static class OwnershipVerifier
     {
         //private static QRCodeGenerator qrGenerator = new QRCodeGenerator();
 
+        /// <summary>
+        /// Create message:
+        /// TxId + UTCTime.RoundToMinutes()
+        /// </summary>
+        /// <param name="txid">NFT Transaction Id</param>
+        /// <returns></returns>
         public static string CreateMessage(string txid)
         {
             var time = DateTime.UtcNow.ToString("dd MM yyyy hh:mm");
@@ -40,18 +82,36 @@ namespace VEDriversLite.NFT
             var msg = String.Format("{0:X}", combo.GetHashCode());
             return combo;
         }
+        /// <summary>
+        /// Get signed message
+        /// </summary>
+        /// <param name="txid"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
         public static async Task<(bool, string)> GetCode(string txid, EncryptionKey key)
         {
             var msg = CreateMessage(txid);
             var signed = await ECDSAProvider.SignMessage(msg, key.GetEncryptedKey());
             return signed;
         }
+        /// <summary>
+        /// Get signed message - version with alredy known BitcoinSecret to save time
+        /// </summary>
+        /// <param name="txid"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
         public static async Task<(bool, string)> GetCode(string txid, NBitcoin.BitcoinSecret key)
         {
             var msg = CreateMessage(txid);
             var signed = await ECDSAProvider.SignMessage(msg, key);
             return signed;
         }
+        /// <summary>
+        /// Returns result of verification as object - version with alredy known BitcoinSecret to save time
+        /// </summary>
+        /// <param name="txid"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
         public static async Task<OwnershipVerificationCodeDto> GetCodeInDto(string txid, NBitcoin.BitcoinSecret key)
         {
             var dto = new OwnershipVerificationCodeDto();
@@ -59,7 +119,12 @@ namespace VEDriversLite.NFT
             dto.Signature = (await GetCode(txid, key)).Item2;
             return dto;
         }
-
+        /// <summary>
+        /// Returns result of verification as object
+        /// </summary>
+        /// <param name="txid"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
         public static async Task<OwnershipVerificationCodeDto> GetCodeInDto(string txid, EncryptionKey key)
         {
             var dto = new OwnershipVerificationCodeDto();
@@ -67,6 +132,12 @@ namespace VEDriversLite.NFT
             dto.Signature = (await GetCode(txid, key)).Item2;
             return dto;
         }
+        /// <summary>
+        /// Returns QR code - not implemented now
+        /// </summary>
+        /// <param name="txid"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
         public static async Task<(bool, (OwnershipVerificationCodeDto, byte[]))> GetQRCode(string txid, NBitcoin.BitcoinSecret key)
         {
             var signature = await GetCode(txid, key);
@@ -109,7 +180,11 @@ namespace VEDriversLite.NFT
             return (false, (null, null));
         }
         */
-
+        /// <summary>
+        /// Verify owner of the NFT based on the signature
+        /// </summary>
+        /// <param name="dto"></param>
+        /// <returns></returns>
         public static async Task<OwnershipVerificationResult> VerifyOwner(OwnershipVerificationCodeDto dto)
         {
             var msg = CreateMessage(dto.TxId);

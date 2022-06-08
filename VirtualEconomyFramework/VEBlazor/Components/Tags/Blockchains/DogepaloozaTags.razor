@@ -1,0 +1,30 @@
+﻿@using VEDriversLite.NFT
+
+@if (Match(Text))
+{
+    <Badge Margin="@Margin" Color="Color.Primary">
+            <Image Source="https://ipfs.infura.io/ipfs/QmagdrVpjrmEWBqUf5YSYPfz2Zgj9MMVeUvTuRLzoSSJp3" Style="width:11px; max-width:11px; height:11px; max-height:11px; margin-bottom:1px;"/>
+        &nbsp;#@Text
+    </Badge>
+}
+
+@code {
+    [Parameter]
+    public string Text { get; set; } = "Dogecoin";
+
+    [Parameter]
+    public IFluentSpacing Margin { get; set; }
+
+    public static bool Match(string tag)
+    {
+        var text = tag.ToLower();
+        if (text.Contains("dogepalooza") ||
+            text.Contains("dogepalooza2022") ||
+            text.Contains("dogepaloozaTexas") ||
+            text.Contains("dogepaloozaevent") ||
+            text.Contains("doonlygoodeveyday"))
+            return true;
+        else
+            return false;
+    }
+}

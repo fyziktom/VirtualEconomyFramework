@@ -1,0 +1,14 @@
+﻿@using Markdig
+
+<Container Fluid>
+    <Row Margin="Margin.Is2">
+        <Column Flex="Flex.JustifyContent.Center">
+            <Span Width="Width.Is100">@((MarkupString)NFTTextMarkuptext)</Span>
+        </Column>
+    </Row>
+</Container>
+
+@code {
+    [Parameter] public string Text { get; set; } = string.Empty;
+    public string NFTTextMarkuptext => Markdig.Markdown.ToHtml( Text );
+}

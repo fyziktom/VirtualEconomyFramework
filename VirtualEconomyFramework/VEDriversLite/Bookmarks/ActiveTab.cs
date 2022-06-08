@@ -27,7 +27,7 @@ namespace VEDriversLite.Bookmarks
         public ActiveTab(string address)
         {
             Address = address;
-            ShortAddress = NeblioTransactionHelpers.ShortenAddress(address);
+            ShortAddress = NeblioAPIHelpers.ShortenAddress(address);
         }
 
         /// <summary>
@@ -129,18 +129,26 @@ namespace VEDriversLite.Bookmarks
                 var txinfotasks = new ConcurrentQueue<Task>();
                 foreach (var utxo in utxos_segment)
                 {
-                    txinfotasks.Enqueue(NeblioTransactionHelpers.GetTransactionInfo(utxo.Txid));
-                    var tokid = utxo.Tokens?.FirstOrDefault()?.TokenId;
-                    if (!string.IsNullOrEmpty(tokid))
+                    txinfotasks.Enqueue(NeblioAPIHelpers.GetTransactionInfo(utxo.Txid));
+                    var tok = utxo.Tokens?.FirstOrDefault();
+                    var tokid = tok?.TokenId;
+                    var tokamount = tok?.Amount;
+
+                    if (!string.IsNullOrEmpty(tokid) &&
+                        tokamount != null &&
+                        tokamount == 1 &&
+                        NFTHelpers.AllowedTokens.Contains(tokid))
                     {
                         if (!VEDLDataContext.NFTCache.ContainsKey(utxo.Txid))
-                            txinfotasks.Enqueue(NeblioTransactionHelpers.GetTokenMetadataOfUtxoCache(tokid, utxo.Txid));
+                        {
+                            txinfotasks.Enqueue(NeblioAPIHelpers.GetTokenMetadataOfUtxoCache(tokid, utxo.Txid));
+                        }
                     }
                 }
 
                 var tasks = new ConcurrentQueue<Task>();
                 var added = 0;
-                var paralelism = 10;
+                var paralelism = 5;
                 while (txinfotasks.Count > 0)
                 {
                     if (txinfotasks.TryDequeue(out var tsk))
@@ -226,7 +234,7 @@ namespace VEDriversLite.Bookmarks
         {
             try
             {
-                UtxosList = await NeblioTransactionHelpers.GetAddressNFTsUtxos(Address, NFTHelpers.AllowedTokens);
+                UtxosList = await NeblioAPIHelpers.GetAddressNFTsUtxos(Address, NFTHelpers.AllowedTokens);
                 if (NFTs.Count == 0 && cachePreload)
                 {
                     try

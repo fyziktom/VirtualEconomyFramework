@@ -1,0 +1,138 @@
+﻿@inject AppData AppData
+
+<Bar Mode="BarMode.VerticalInline"
+     CollapseMode="BarCollapseMode.Small"
+     Breakpoint="Breakpoint.Desktop"
+     NavigationBreakpoint="Breakpoint.Tablet"
+     ThemeContrast="ThemeContrast.Dark">
+     <BarToggler />     
+    <BarBrand>
+        <BarItem>
+            <BarLink>
+                <BarIcon IconName="IconName.Wrench" />
+                Tools
+            </BarLink>
+        </BarItem>
+    </BarBrand>
+    <BarMenu>
+        <BarStart>
+            <BarItem>
+                <BarDropdown>
+                    <BarDropdownToggle>
+                        <BarIcon IconName="IconName.Edit" />
+                        Edit properties
+                    </BarDropdownToggle>
+                    <BarDropdownMenu>
+                        <BarDropdownItem Clicked="@EditPropsAction">Name</BarDropdownItem>
+                        <BarDropdownItem Clicked="@EditPropsAction">Tags</BarDropdownItem>
+                        <BarDropdownItem Clicked="@EditPropsAction">Description</BarDropdownItem>
+                        <BarDropdownItem Clicked="@EditPropsAction">Text</BarDropdownItem>
+                        <BarDropdownItem Clicked="@EditXrayParamsAction">Xray Parameters</BarDropdownItem>
+                    </BarDropdownMenu>
+                </BarDropdown>
+            </BarItem>
+            <BarItem>
+                <BarLink>
+                    <BarIcon IconName="IconName.Flag" />
+                    Add Flag
+                </BarLink>
+            </BarItem>            
+            <BarItem>
+                <BarDropdown>
+                    <BarDropdownToggle>
+                        <BarIcon IconName="IconName.Edit" />
+                        Image Tools
+                    </BarDropdownToggle>
+                    <BarDropdownMenu>
+                        <BarDropdownItem>Auto Enhance</BarDropdownItem>
+                        <BarDropdownItem>Equalize Histogram</BarDropdownItem>
+                        <BarDropdownItem>Invert</BarDropdownItem>
+                        <BarDropdownItem>Threshold</BarDropdownItem>
+                        <BarDropdownItem>Edge Detection</BarDropdownItem>
+                    </BarDropdownMenu>
+                </BarDropdown>
+            </BarItem>
+            <BarItem>
+                <BarLink Clicked="@ShareAction">
+                    <BarIcon IconName="IconName.Share" />
+                    Share
+                </BarLink>
+            </BarItem>
+            <BarItem>
+                <BarLink Clicked="@SaveAction">
+                    <BarIcon IconName="IconName.Save" />
+                    Save
+                </BarLink>
+            </BarItem>
+            <BarItem>
+                <BarLink Clicked="@ResetAction">
+                    <BarIcon IconName="IconName.Clear" />
+                    Reset to defaults
+                </BarLink>
+            </BarItem> 
+            @if (AppData.AllowSend )
+            {
+                <BarItem>
+                    <BarLink Clicked="@SendAction">
+                        <BarIcon IconName="IconName.Mail" />
+                        Send
+                    </BarLink>
+                </BarItem>
+            }
+            <BarItem>
+                <BarLink Clicked="@SendCopyAction">
+                    <BarIcon IconName="IconName.UserPlus" />
+                    Send Copy
+                </BarLink>
+            </BarItem>       
+            @if (AppData.AllowDestroy )
+            {
+                <BarItem>
+                    <BarLink Clicked="@DeleteAction">
+                        <BarIcon IconName="IconName.Delete" />
+                        Delete
+                    </BarLink>
+                </BarItem>
+            }
+        </BarStart>
+    </BarMenu>
+</Bar>
+
+@code {
+
+    [Parameter]
+    public EventCallback<MintingToolbarActionDto> OnToolAction { get; set; }
+
+    async Task ShareAction()
+    {
+        await OnToolAction.InvokeAsync( new MintingToolbarActionDto { Type = MintingToolbarActionType.Share } );
+    }
+    async Task SaveAction()
+    {
+        await OnToolAction.InvokeAsync( new MintingToolbarActionDto { Type = MintingToolbarActionType.Save } );
+    }
+    async Task SendAction()
+    {
+        await OnToolAction.InvokeAsync( new MintingToolbarActionDto { Type = MintingToolbarActionType.Send } );
+    }
+    async Task SendCopyAction()
+    {
+        await OnToolAction.InvokeAsync( new MintingToolbarActionDto { Type = MintingToolbarActionType.SendCopy } );
+    }
+    async Task ResetAction()
+    {
+        await OnToolAction.InvokeAsync( new MintingToolbarActionDto { Type = MintingToolbarActionType.ClearAll } );
+    }
+    async Task DeleteAction()
+    {
+        await OnToolAction.InvokeAsync( new MintingToolbarActionDto { Type = MintingToolbarActionType.Delete } );
+    }    
+    async Task EditPropsAction()
+    {
+        await OnToolAction.InvokeAsync( new MintingToolbarActionDto { Type = MintingToolbarActionType.EditProps } );
+    } 
+    async Task EditXrayParamsAction()
+    {
+        await OnToolAction.InvokeAsync( new MintingToolbarActionDto { Type = MintingToolbarActionType.EditXrayParams } );
+    } 
+}

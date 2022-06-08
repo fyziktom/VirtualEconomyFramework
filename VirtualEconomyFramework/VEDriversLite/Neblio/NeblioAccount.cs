@@ -18,7 +18,6 @@ using VEDriversLite.NFT.Coruzant;
 using VEDriversLite.NFT.DevicesNFTs;
 using VEDriversLite.NFT.Dto;
 using VEDriversLite.Security;
-using VEDriversLite.WooCommerce;
 
 namespace VEDriversLite
 {
@@ -78,6 +77,10 @@ namespace VEDriversLite
         /// This event is called whenever some progress during multimint happens
         /// </summary>
         public event EventHandler<string> NewMintingProcessInfo;
+        /// <summary>
+        /// This event is fired whenever new lot of addresses was airdroped
+        /// </summary>
+        public event EventHandler<Dictionary<string, string>> AddressesAirdroped;
 
         /// <summary>
         /// This event is called whenever the list of NFTs on SubAccount is changed
@@ -131,6 +134,11 @@ namespace VEDriversLite
         {
             try
             {
+                base.NewMintingProcessInfo -= NeblioAccount_NewMintingProcessInfo;
+                base.NewMintingProcessInfo += NeblioAccount_NewMintingProcessInfo;
+                base.AddressesAirdroped -= NeblioAccount_AddressesAirdroped;
+                base.AddressesAirdroped += NeblioAccount_AddressesAirdroped;
+                base.FirsLoadingStatus -= NeblioAccount_FirsLoadingStatus;
                 base.FirsLoadingStatus += NeblioAccount_FirsLoadingStatus;
                 FirsLoadingStatus?.Invoke(this, "Loading of address data started.");
 
@@ -138,10 +146,9 @@ namespace VEDriversLite
                 AddressInfo.Transactions = new List<string>();
 
                 await ReloadUtxos();
-                await Task.WhenAll(new Task[3] {
+                await Task.WhenAll(new Task[2] {
                                 ReloadMintingSupply(),
-                                ReloadTokenSupply(),
-                                ExchangePriceService.InitPriceService(Cryptocurrencies.ExchangeRatesAPITypes.Coingecko, Address, Cryptocurrencies.CurrencyTypes.NEBL)
+                                ReloadTokenSupply()
                 });
 
                 FirsLoadingStatus?.Invoke(this, "Utxos loaded");
@@ -169,9 +176,7 @@ namespace VEDriversLite
                     tasks[3] = RefreshAddressReceivedPayments();
                     tasks[4] = RefreshAddressReceivedReceipts();
                     await Task.WhenAll(tasks);
-
-                    RegisterPriceServiceEventHandler();
-                    
+                                        
                     Refreshed?.Invoke(this, null);
                     FirsLoadingStatus?.Invoke(this, "Main Account NFTs Loaded.");
 
@@ -270,6 +275,16 @@ namespace VEDriversLite
             return await Task.FromResult("RUNNING");
         }
 
+        private void NeblioAccount_AddressesAirdroped(object sender, Dictionary<string, string> e)
+        {
+            AddressesAirdroped?.Invoke(this, e);
+        }
+
+        private void NeblioAccount_NewMintingProcessInfo(object sender, string e)
+        {
+            NewMintingProcessInfo?.Invoke(this, e);
+        }
+
         private void NeblioAccount_FirsLoadingStatus(object sender, string e)
         {
             FirsLoadingStatus?.Invoke(sender, e);
@@ -341,7 +356,10 @@ namespace VEDriversLite
                     var kdto = JsonConvert.DeserializeObject<KeyDto>(k);
 
                     Address = kdto.Address;
-
+                    
+                    if (string.IsNullOrEmpty(Address))
+                        Address = Secret.GetAddress(ScriptPubKeyType.Legacy).ToString();
+                    
                     LoadAccountKey(password, kdto.Key);
 
                     SignMessage("init");
@@ -388,7 +406,9 @@ namespace VEDriversLite
                 
                 Secret = privateKeyFromNetwork;
                 Address = address;//Secret.GetAddress(ScriptPubKeyType.Legacy).ToString();
-
+                if (string.IsNullOrEmpty(Address))
+                    Address = Secret.GetAddress(ScriptPubKeyType.Legacy).ToString();
+                
                 SignMessage("init");
 
                 WithoutNFTs = withoutNFTs;
@@ -434,7 +454,10 @@ namespace VEDriversLite
 
                     if (Address != bdto.Address)
                         Address = bdto.Address;
-
+                    
+                    if (string.IsNullOrEmpty(Address))
+                        Address = Secret.GetAddress(ScriptPubKeyType.Legacy).ToString();
+                    
                     if (!string.IsNullOrEmpty(bdto.DogeAddress))
                     {
                         var dogeacc = new DogeAccount();
@@ -500,7 +523,9 @@ namespace VEDriversLite
                         Address = address;
                     }
                 }
-
+                if (string.IsNullOrEmpty(Address) && Secret != null)
+                    Address = Secret.GetAddress(ScriptPubKeyType.Legacy).ToString();
+                
                 WithoutNFTs = withoutNFTs;
                 if (!IsRefreshingRunning)
                     await StartRefreshingData();
@@ -694,11 +719,11 @@ namespace VEDriversLite
         /// <summary>
         /// Check if the address is already in the bookmarks and return this bookmark
         /// </summary>
-        /// <param name="address">Address which should be in the bookmarks</param>
+        /// <param name="address">Address or Name which should be in the bookmarks</param>
         /// <returns>true and bookmark class if exists</returns>
-        public async Task<(bool, Bookmark)> IsInTheBookmarks(string address)
+        public (bool, Bookmark) IsInTheBookmarks(string address)
         {
-            var bkm = Bookmarks.Find(b => b.Address == address);
+            var bkm = Bookmarks.Find(b => b.Address == address || b.Name == address);
             if (bkm == null || string.IsNullOrEmpty(bkm.Address) || string.IsNullOrEmpty(bkm.Name))
                 return (false, new Bookmark());
             //return (false, new Bookmark() { Address = NeblioTransactionHelpers.ShortenAddress(address) });
@@ -738,7 +763,7 @@ namespace VEDriversLite
                     var first = true;
                     foreach (var t in Tabs)
                     {
-                        var bkm = await IsInTheBookmarks(t.Address);
+                        var bkm = IsInTheBookmarks(t.Address);
                         t.LoadBookmark(bkm.Item2);
                         if (first)
                         {
@@ -771,14 +796,15 @@ namespace VEDriversLite
         /// </summary>
         /// <param name="address"></param>
         /// <returns>true and string with serialized tabs list as json string</returns>
-        public async Task<(bool, string)> AddTab(string address)
+        public async Task<(bool, string)> AddTab(string address, int maxLoadItems = 40)
         {
             if (!Tabs.Any(t => t.Address == address))
             {
-                var bkm = await IsInTheBookmarks(address);
+                var bkm = IsInTheBookmarks(address);
                 var tab = new ActiveTab(address);
                 tab.BookmarkFromAccount = bkm.Item2;
                 tab.Selected = true;
+                tab.MaxLoadedNFTItems = maxLoadItems;
                 tab.NFTsChanged += T_NFTsChanged;
                 tab.NFTAddedToPayments += T_NFTAddedToPayments;
 
@@ -881,7 +907,7 @@ namespace VEDriversLite
                     foreach (var t in MessageTabs)
                     {
                         t.Selected = false;
-                        var bkm = await IsInTheBookmarks(t.Address);
+                        var bkm = IsInTheBookmarks(t.Address);
                         t.AccountSecret = Secret;
                         t.AccountAddress = Address;
                         t.LoadBookmark(bkm.Item2);
@@ -916,7 +942,7 @@ namespace VEDriversLite
         {
             if (!MessageTabs.Any(t => t.Address == address))
             {
-                var bkm = await IsInTheBookmarks(address);
+                var bkm = IsInTheBookmarks(address);
                 var tab = new MessageTab(address);
                 tab.BookmarkFromAccount = bkm.Item2;
                 tab.Selected = true;
@@ -1021,11 +1047,11 @@ namespace VEDriversLite
                             var res = await nsa.LoadFromBackupDto(Secret, a);
                             if (res.Item1)
                             {
-                                var bkm = await IsInTheBookmarks(a.Address);
+                                var bkm = IsInTheBookmarks(a.Address);
                                 if (!bkm.Item1)
                                 {
                                     await AddBookmark(a.Name, a.Address, "SubAccount");
-                                    bkm = await IsInTheBookmarks(a.Address);
+                                    bkm = IsInTheBookmarks(a.Address);
                                 }
                                 nsa.LoadBookmark(bkm.Item2);
                                 nsa.IsAutoRefreshActive = true;
@@ -1103,7 +1129,7 @@ namespace VEDriversLite
                     return (false, "Cannot create SubAccount Address." + r.Item2);
                 }
                 await AddBookmark(name, nsa.Address, "SubAccount");
-                var bkm = await IsInTheBookmarks(nsa.Address);
+                var bkm = IsInTheBookmarks(nsa.Address);
                 nsa.LoadBookmark(bkm.Item2);
                 nsa.IsAutoRefreshActive = true;
                 nsa.NewEventInfo += Nsa_NewEventInfo;
@@ -1303,6 +1329,32 @@ namespace VEDriversLite
             }
         }
 
+
+        /// <summary>
+        /// Return NFT Payment From SubAccount
+        /// </summary>
+        /// <param name="address">Neblio Address of SubAccount</param>
+        /// <param name="receiver">Receiver of the NFT</param>
+        /// <param name="NFT">NFT Payment on the SubAccount which should be return</param>
+        /// <returns>true and string with new TxId</returns>
+        public async Task<(bool, string)> ReturnNFTPaymentFromSubAccount(string address, string receiver, INFT NFT)
+        {
+            try
+            {
+                if (SubAccounts.TryGetValue(address, out var sacc))
+                {
+                    var res = await sacc.ReturnNFTPayment(receiver, NFT as PaymentNFT);
+                    return res;
+                }
+                else
+                    return (false, "SubAccount is not in the list.");
+            }
+            catch (Exception ex)
+            {
+                return (false, ex.Message);
+            }
+        }
+
         /// <summary>
         /// Change NFT on SubAccount
         /// </summary>
@@ -1360,13 +1412,43 @@ namespace VEDriversLite
         /// <param name="receiver">Receiver of the NFT</param>
         /// <param name="coppies"></param>
         /// <returns>true and string with new TxId</returns>
-        public async Task<(bool, string)> MultimintNFTLargeOnSubAccount(string address, INFT NFT, int coppies, string receiver = "")
+        public async Task<(bool, Dictionary<string,string>)> MultimintNFTLargeOnSubAccount(string address, INFT NFT, int coppies, string receiver = "")
         {
             try
             {
                 if (SubAccounts.TryGetValue(address, out var sacc))
                 {
                     var res = await sacc.MintMultiNFTLargeAmount(NFT, coppies, receiver);
+                    return res;
+                }
+                else
+                {
+                    Console.WriteLine("SubAccount is not in the list.");
+                    return (false, null);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Canont Multi Mint NFT on subaccount. " + ex.Message);
+                return (false, null);
+            }
+        }
+        
+        /// <summary>
+        /// Send Neblio Coin on SubAccount
+        /// </summary>
+        /// <param name="address">Neblio Address of SubAccount</param>
+        /// <param name="receiver">receiver Neblio address</param>
+        /// <param name="amount">amount of neblio</param>
+        /// <param name="message">optional message</param>
+        /// <returns>true and string with new TxId</returns>
+        public async Task<(bool, string)> SendNeblioOnSubAccount(string address, string receiver, double amount, string message = "")
+        {
+            try
+            {
+                if (SubAccounts.TryGetValue(address, out var sacc))
+                {
+                    var res = await sacc.SendNeblioPayment(receiver, amount, message);
                     return res;
                 }
                 else
@@ -1377,6 +1459,33 @@ namespace VEDriversLite
                 return (false, ex.Message);
             }
         }
+
+        /// <summary>
+        /// Send Neblio Tokens on SubAccount
+        /// </summary>
+        /// <param name="address">Neblio Address of SubAccount</param>
+        /// <param name="tokenId">Neblio NTP1 token Id</param>
+        /// <param name="meta">Metadata for transaction</param>
+        /// <param name="receiver">receiver Neblio address</param>
+        /// <param name="amount">amount of neblio</param>
+        /// <returns>true and string with new TxId</returns>
+        public async Task<(bool, string)> SendNeblioTokensOnSubAccount(string address, string tokenId, IDictionary<string,string> meta, string receiver, int amount)
+        {
+            try
+            {
+                if (SubAccounts.TryGetValue(address, out var sacc))
+                {
+                    var res = await sacc.SendNeblioTokenPayment(tokenId, meta, receiver, amount);
+                    return res;
+                }
+                else
+                    return (false, "SubAccount is not in the list.");
+            }
+            catch (Exception ex)
+            {
+                return (false, ex.Message);
+            }
+        }        
 
         /// <summary>
         /// Split Neblio Coin on SubAccount
@@ -1652,9 +1761,9 @@ namespace VEDriversLite
                             if (info != null && info.Transaction != null)
                             {
                                 var msg = DogeTransactionHelpers.ParseDogeMessage(info);
-                                if (msg.Item1)
+                                if (msg.Success)
                                 {
-                                    var split = msg.Item2.Split('-');
+                                    var split = msg.Value.ToString().Split('-');
                                     if (split != null && split.Length == 2 && !string.IsNullOrEmpty(split[1]) && split[1].Contains(":") && split[1].Length == 18)
                                     {
                                         var nft = NFTs.FirstOrDefault(n => n.ShortHash == split[1]);

@@ -1,0 +1,67 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+	  <PackageId>VEFramework.VEBlazor</PackageId>
+	  <Version>0.3.2</Version>
+	  <Authors>fyziktom</Authors>
+	  <Company>VEFramework</Company>
+	  <Description>.NET6 Blazor component and dApp template library. It contains lots of components related to blockchain, IPFS, NFTs and other web3 and Industry4.0 technologies.</Description>
+	  <PackageProjectUrl>https://veframework.com/</PackageProjectUrl>
+	  <RepositoryUrl>https://github.com/fyziktom/VirtualEconomyFramework</RepositoryUrl>
+	  <RepositoryType>Git</RepositoryType>
+	  <PackageTags>VEFramework, Blazor, MAUI, Cryptocurrencies, Crypto, NFT, NFTs, NFTTech, NFTIoT, Bitcoin, ReddCoin, Neblio, Nebl, Doge, Dogecoin, Blockchain, eCommerce, dApps, WooCommerce, WordPress</PackageTags>
+	  <Copyright>fyziktom</Copyright>
+	  <PackageReleaseNotes>
+		  - Added NFT Apps
+		  - Bugfix in the NFT Profile properties edit
+		  - Bugfix in display of NFT DataItems
+		  - remove lots of async deadlocks
+	  </PackageReleaseNotes>
+	  <PackageReadmeFile>Readme.md</PackageReadmeFile>
+	  <PackageLicenseExpression>BSD-2-Clause</PackageLicenseExpression>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="license.txt" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <SupportedPlatform Include="browser" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Blazored.LocalStorage" Version="4.2.0" />
+    <PackageReference Include="Blazorise" Version="1.0.4" />
+    <PackageReference Include="Blazorise.Bootstrap" Version="1.0.4" />
+    <PackageReference Include="Blazorise.Components" Version="1.0.4" />
+    <PackageReference Include="Blazorise.DataGrid" Version="1.0.4" />
+    <PackageReference Include="Blazorise.Icons.FontAwesome" Version="1.0.4" />
+    <PackageReference Include="Blazorise.Markdown" Version="1.0.4" />
+    <PackageReference Include="Blazorise.QRCode" Version="1.0.4" />
+    <PackageReference Include="Blazorise.Video" Version="1.0.4" />
+    <PackageReference Include="BlazorPanzoom" Version="0.2.1" />
+    <PackageReference Include="Markdig" Version="0.30.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.3" />
+    <PackageReference Include="Texnomic.Blazor.JsonViewer" Version="0.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\VEDriversLite\VEDriversLite.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="license.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Readme.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,29 @@
+﻿<Row>
+    <Column ColumnSize="ColumnSize.Is12">
+        <Div Class="page-title-wrapper">
+            <Div Float="Float.End">
+                @if ( BreadcrumbItems != null )
+                {
+                    <BreadcrumbList Items="@BreadcrumbItems" />
+                }
+                else if ( ChildContent != null )
+                {
+                    @ChildContent
+                }
+            </Div>
+            <Heading Display="Blazorise.Display.Block.OnMobile.None.OnTablet" Size="HeadingSize.Is6" Class="page-title">
+                @Title
+            </Heading>
+            <Heading Display="Blazorise.Display.None.OnMobile.Block.OnTablet" Size="HeadingSize.Is4" Class="page-title">
+                @Title
+            </Heading>
+        </Div>
+    </Column>
+</Row>
+@code{
+    [Parameter] public string Title { get; set; } = string.Empty;
+
+    [Parameter] public string[]? BreadcrumbItems { get; set; }
+
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

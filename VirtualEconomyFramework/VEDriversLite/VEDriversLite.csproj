@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <PackageId>VEFramework.VEDriversLite</PackageId>
-    <Version>0.2.0</Version>
+    <Version>0.3.2</Version>
     <Authors>fyziktom</Authors>
     <Company>VEFramework</Company>
     <Description>.NET drivers for Web3 and Industry40. Simple way how to start with blockchain in C#. Now supports Neblio and Doge blockchains.</Description>
@@ -11,20 +11,26 @@
     <PackageProjectUrl>https://veframework.com/</PackageProjectUrl>
     <RepositoryUrl>https://github.com/fyziktom/VirtualEconomyFramework</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
-    <PackageTags>VEFramework, Cryptocurrencies, Crypto, NFT, NFTs, Bitcoin, ReddCoin, Neblio, Nebl, Doge, Dogecoin, Blockchain, eCommerce, dApps, WooCommerce, WordPress</PackageTags>
+    <PackageTags>VEFramework, Cryptocurrencies, Crypto, NFT, NFTs, NFTTech, NFTIoT, Bitcoin, ReddCoin, Neblio, Nebl, Doge, Dogecoin, Blockchain, eCommerce, dApps, WooCommerce, WordPress</PackageTags>
     <Copyright>fyziktom</Copyright>
     <PackageReleaseNotes>
-		- Update to .NET Core 3.1
-		- Update NBitcoin package and related functions
-		- Possible to run in .NET 6.0 Blazor WebAssembly
-		- Added tests for encryption and sign/verify messages
-		- Refactoring of UnitTests in the NeblioTransactionHelpers
-		- Refactoring in NeblioTransactionHelpers
-		- Refactoring in DogeTransactionHelpers
-		- Change of sign/verify messages based on update of NBitcoin
+		- Main Change: Move some function from NeblioTransactionHelpers to NeblioAPIHelpers!!!
+		- Added basic tests for Dogecoin
+		- Added App NFTs
+		- Cleanup
 		- Added lots of XML comments to parameters and functions
 	</PackageReleaseNotes>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="WooCommerce\**" />
+    <EmbeddedResource Remove="WooCommerce\**" />
+    <None Remove="WooCommerce\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Neblio\NeblioAPIHelpersOLD.cs" />
+  </ItemGroup>
 
   <ItemGroup>
     <SupportedPlatform Include="browser" />
@@ -36,16 +42,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="docfx.console" Version="2.57.2">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="3.1.23" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Ipfs.Http.Client" Version="0.33.0" />
     <PackageReference Include="NBitcoin" Version="7.0.6" />
     <PackageReference Include="NBitcoin.Altcoins" Version="3.0.8" />
-    <PackageReference Include="WordPressPCL" Version="1.9.0" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
     <!--<PackageReference Include="QRCoder" Version="1.4.1" />-->
     <!--<PackageReference Include="ZXing.Net" Version="0.16.6" />-->
@@ -60,6 +61,10 @@
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\VEDriversLite.NeblioAPI\VEDriversLite.NeblioAPI.csproj" />
   </ItemGroup>
 
 </Project>

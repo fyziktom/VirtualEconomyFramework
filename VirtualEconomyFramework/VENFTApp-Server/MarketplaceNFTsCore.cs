@@ -18,7 +18,8 @@ using VEDriversLite.Dto;
 using VEDriversLite.NFT;
 using VEDriversLite.NFT.Dto;
 using VEDriversLite.Security;
-using VEDriversLite.WooCommerce;
+using VEDriversLite.Extensions.WooCommerce;
+using VEDriversLite.NeblioAPI;
 
 namespace VENFTApp_Server
 {
@@ -53,7 +54,7 @@ namespace VENFTApp_Server
                     {
                         try
                         {
-                            var tokenholders = await NeblioTransactionHelpers.GetTokenOwnersList(NFTHelpers.TokenId);
+                            var tokenholders = await NeblioAPIHelpers.GetTokenOwnersList(NFTHelpers.TokenId);
                             var i = 0;
 
                             foreach (var th in tokenholders)

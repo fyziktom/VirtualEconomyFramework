@@ -176,27 +176,6 @@
                 </div>
             </div>
         </div>
-        <div class="row" style="margin-bottom:20px;">
-            <div class="col">
-                <div class="card" style="margin-top:10px;">
-                    <div class="card-header" style="padding-top: 5px;padding-bottom: 5px;">
-                        <h5 class="text-center">Advanced Tools</h5>
-                    </div>
-                    <div class="card-body" style="padding: 5px;padding-left: 20px;padding-right: 20px;padding-bottom: 10px; min-height:600px;">
-                        <div class="row d-flex justify-content-center align-items-center">
-                            <div class="col d-flex justify-content-center align-items-center flex-wrap">
-                                <VENFTApp_Blazor.Components.Account.SignAndVerifyMessage />
-                                <VENFTApp_Blazor.Components.NFTs.Verification.NFTOwnerVerifier />
-                                <!--
-                                <VENFTApp_Blazor.Components.Crypto.NeblioPriceStats />
-                                <VENFTApp_Blazor.Components.Crypto.NeblioPriceConversion />
-                                -->
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
 
         <Modal Title="Your Private Key"
                Visible="@downloadBackupDataVisible"
@@ -229,31 +208,31 @@
     private string backupData = string.Empty;
     private string filename = string.Empty;
 
-    protected override Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
     {
         try
         {
             if (string.IsNullOrEmpty(AppData.Account.Address))
-                Redirect();
+                await Redirect();
             else
-                Load();
+                await Load();
         }
         catch (Exception ex)
         {
-            Redirect();
+            await Redirect();
         }
 
-        return base.OnInitializedAsync();
+        await base.OnInitializedAsync();
     }
 
-    private void RefreshedHandler(object sender, EventArgs e)
+    private async void RefreshedHandler(object sender, EventArgs e)
     {
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
     }
 
-    private void ProfileRefreshedHandler(object sender, INFT e)
+    private async void ProfileRefreshedHandler(object sender, INFT e)
     {
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
     }
 
 
@@ -321,9 +300,11 @@
         NavManager.NavigateTo("/");
     }
 
-    private async Task DownloadBackupDataCancel(MouseEventArgs e)
+    private Task DownloadBackupDataCancel(MouseEventArgs e)
     {
         downloadBackupDataVisible = false;
+
+        return Task.CompletedTask;
     }
 
     private async Task downloadBackupData(MouseEventArgs e)

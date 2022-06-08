@@ -17,7 +17,8 @@ using VEDriversLite.Dto;
 using VEDriversLite.NFT;
 using VEDriversLite.NFT.Dto;
 using VEDriversLite.Security;
-using VEDriversLite.WooCommerce;
+using VEDriversLite.Extensions.WooCommerce;
+using VEDriversLite.NeblioAPI;
 
 namespace VENFTApp_Server
 {
@@ -96,7 +97,7 @@ namespace VENFTApp_Server
                                     Console.WriteLine("=========Neblio Main Account========");
                                     Console.WriteLine($"Loading Neblio address {k.Address}...");
                                     if (string.IsNullOrEmpty(k.Name))
-                                        k.Name = NeblioTransactionHelpers.ShortenAddress(k.Address);
+                                        k.Name = NeblioAPIHelpers.ShortenAddress(k.Address);
 
                                     var account = new NeblioAccount();
                                     EncryptedBackupDto bckp = null;
@@ -166,7 +167,7 @@ namespace VENFTApp_Server
                             else
                             {
                                 var dadd = DogeTransactionHelpers.ValidateDogeAddress(k.Address);
-                                if (dadd.Item1)
+                                if (dadd.Success)
                                 {
                                     Console.WriteLine("");
                                     Console.WriteLine("========Dogecoin Main Account=======");

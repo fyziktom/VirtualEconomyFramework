@@ -1,4 +1,5 @@
 ﻿@using VEDriversLite
+@using VEDriversLite.NeblioAPI
 @inject AppData AppData 
 
 <div class="card" style="margin:10px; max-width:160px;min-width:160px;width:160px;">
@@ -42,7 +43,7 @@
                 {
                     <div class="row" style="margin-top:2px;">
                         <div class="col d-flex d-xl-flex justify-content-center align-items-center">
-                            <h5 class="card-title" style="font-size:13px;"><a href="https://explorer.nebl.io/address/@Address" target="_blank" style="font-size:13px;">@NeblioTransactionHelpers.ShortenAddress(Address)</a></h5>
+                            <h5 class="card-title" style="font-size:13px;"><a href="https://explorer.nebl.io/address/@Address" target="_blank" style="font-size:13px;">@NeblioAPIHelpers.ShortenAddress(Address)</a></h5>
                         </div>
                     </div>
                 }
@@ -119,7 +120,7 @@
     {
         if (firstRender)
         {
-            var bkm = AppData.Account.IsInTheBookmarks(Address).GetAwaiter().GetResult();
+            var bkm = AppData.Account.IsInTheBookmarks(Address);
             if (bkm.Item1)
                 BookmarkName = bkm.Item2.Name;
 

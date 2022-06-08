@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <RazorLangVersion>3.0</RazorLangVersion>
+	<BlazorCacheBootResources>false</BlazorCacheBootResources>
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,6 +21,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\VEDriversLite.Builders.Neblio\VEDriversLite.Builders.Neblio.csproj" />
+    <ProjectReference Include="..\VEDriversLite.Cryptocurrencies\VEDriversLite.Cryptocurrencies.csproj" />
+    <ProjectReference Include="..\VEDriversLite.Extensions.WooCommerce\VEDriversLite.Extensions.WooCommerce.csproj" />
     <ProjectReference Include="..\VEDriversLite\VEDriversLite.csproj" />
   </ItemGroup>
 

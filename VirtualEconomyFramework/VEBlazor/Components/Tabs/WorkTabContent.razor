@@ -1,0 +1,31 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@inherits AccountRelatedComponentBase 
+
+<Row>
+    <Column Flex="Flex.JustifyContent.Center">
+        <Heading Size="HeadingSize.Is4">WorkTab - @WorkTabName</Heading>
+    </Column>
+</Row>
+<Row Height="Height.Is100">
+    <Column Height="Height.Is100">
+            @foreach (var NFT in NFTs) 
+            {   
+                <XrayImageNFTEditor NFT="@NFT"
+                                Address="@Address" 
+                                IsSubAccount="@IsSubAccount"
+                                IsOwnNFT="@IsOwnNFT" 
+                                OpenNFTsInWorkTab="async (e) => await OpenNFTsInWorkTab.InvokeAsync(e)"/>
+            }      
+    </Column>
+</Row>
+
+
+@code {
+    [Parameter]
+    public List<INFT> NFTs { get; set; } = new List<INFT>();
+    [Parameter]
+    public EventCallback<List<INFT>> OpenNFTsInWorkTab { get; set; }    
+    [Parameter]
+    public string WorkTabName { get; set; } = "WorkTab";
+}

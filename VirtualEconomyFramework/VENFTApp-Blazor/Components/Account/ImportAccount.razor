@@ -180,7 +180,7 @@
         importKeyAlreadyEncrypted = !importKeyAlreadyEncrypted;
     }
 
-    private async Task QRTextReaded(string text)
+    private void QRTextReaded(string text)
     {
         if (!readingQROfKey)
             importAccountAddress = text;
@@ -188,12 +188,12 @@
             importAccountKey = text;
         StateHasChanged();
     }
-    private async Task QRReadAddressClick(MouseEventArgs e)
+    private void QRReadAddressClick(MouseEventArgs e)
     {
         readingQROfKey = false;
         StateHasChanged();
     }
-    private async Task QRReadKeyClick(MouseEventArgs e)
+    private void QRReadKeyClick(MouseEventArgs e)
     {
         readingQROfKey = true;
         StateHasChanged();
@@ -238,10 +238,9 @@
                 accountImportError = true;
             }
         }
-        catch (Exception ex)
+        catch
         {
             accountImportError = true;
-            // todo
         }
         finally
         {
@@ -273,7 +272,7 @@
                     if (res == null)
                         throw new Exception();
                 }
-                catch (Exception ex)
+                catch
                 {
                     await JSRuntime.InvokeVoidAsync("alertMessage", "Cannot Decrypt Imported key. Probably wrong password for this backup file.");
                     return false;
@@ -344,13 +343,13 @@
         else
         {
             var res = DogeTransactionHelpers.IsPrivateKeyValid(importDogeAccountKey);
-            if (!res.Item1)
+            if (!res.Success)
             {
                 try
                 {
                     dogekey = SymetricProvider.DecryptString(importAccountPass, importDogeAccountKey);
                 }
-                catch (Exception ex)
+                catch
                 {
                     await JSRuntime.InvokeVoidAsync("alertMessage", "Private Key is not valid.");
                     return;
@@ -362,9 +361,9 @@
             }
 
             var add = DogeTransactionHelpers.GetAddressFromPrivateKey(dogekey);
-            if (add.Item1)
+            if (add.Success)
             {
-                dogeaddress = add.Item2;
+                dogeaddress = add.Value as string;
                 dogekey = SymetricProvider.EncryptString(importAccountPass, dogekey);
                 var accountLoaded = await AppData.DogeAccount.LoadAccount(importAccountPass, dogekey, dogeaddress); // put here your password
 

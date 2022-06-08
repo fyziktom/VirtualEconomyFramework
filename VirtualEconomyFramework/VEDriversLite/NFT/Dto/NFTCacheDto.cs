@@ -9,10 +9,25 @@ namespace VEDriversLite.NFT.Dto
     /// </summary>
     public class NFTCacheDto
     {
+        /// <summary>
+        /// Address which owns NFT
+        /// </summary>
         public string Address { get; set; } = string.Empty;
+        /// <summary>
+        /// NFT Utxo
+        /// </summary>
         public string Utxo { get; set; } = string.Empty;
+        /// <summary>
+        /// NFT Utxo Index
+        /// </summary>
         public int UtxoIndex { get; set; } = 0;
+        /// <summary>
+        /// NFT type
+        /// </summary>
         public NFTTypes NFTType { get; set; } = NFTTypes.Image;
+        /// <summary>
+        /// Metadata of the NFT
+        /// </summary>
         public IDictionary<string, string> Metadata { get; set; } = new Dictionary<string, string>();
 
         /// <summary>
@@ -24,7 +39,9 @@ namespace VEDriversLite.NFT.Dto
         /// indicate when the NFT was saved in the cash first time
         /// </summary>
         public DateTime FirstSave { get; set; } = DateTime.UtcNow;
-
+        /// <summary>
+        /// Number of read of this NFT, good for check if it is used and remove if not
+        /// </summary>
         public int NumberOfReads { get; set; } = 0;
     }
 }

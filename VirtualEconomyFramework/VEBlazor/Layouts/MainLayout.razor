@@ -1,0 +1,19 @@
+﻿@inherits LayoutComponentBase
+
+<Layout Sider>
+    <LayoutSider Display="Display.Block.OnDesktop.Block.OnFullHD.Block.OnWidescreen.None.OnMobile.None.OnTablet">
+        <LayoutSiderContent Height="Height.Is100">
+            <SideMenu />
+        </LayoutSiderContent>
+    </LayoutSider>  
+    <Layout>
+        <LayoutHeader Display="Display.Block.OnTablet.None.OnDesktop.None.OnFullHD.None.OnWidescreen" Fixed="true">
+            <TopMenu/>
+        </LayoutHeader>
+        <LayoutContent>
+            <Container Fluid Padding="Padding.Is4" Height="Height.Is100">
+                @Body
+            </Container>
+        </LayoutContent>
+    </Layout>
+</Layout>

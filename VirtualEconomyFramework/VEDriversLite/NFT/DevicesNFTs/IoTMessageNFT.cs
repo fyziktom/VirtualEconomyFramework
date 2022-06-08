@@ -4,18 +4,30 @@ using System.Globalization;
 using System.Text;
 using System.Threading.Tasks;
 using VEDriversLite.Security;
+using VEDriversLite.NeblioAPI;
 
 namespace VEDriversLite.NFT.DevicesNFTs
 {
+    /// <summary>
+    /// IoT Messagee NFT - specific message NFT dedicated for IoT applications
+    /// </summary>
     public class IoTMessageNFT : CommonNFT
     {
+        /// <summary>
+        /// Constructor of the empty NFT IoT Message
+        /// </summary>
+        /// <param name="utxo"></param>
         public IoTMessageNFT(string utxo)
         {
             Utxo = utxo;
             Type = NFTTypes.IoTMessage;
             TypeText = "NFT IoTMessage";
         }
-
+        /// <summary>
+        /// Fill the data of the NFT
+        /// </summary>
+        /// <param name="NFT"></param>
+        /// <returns></returns>
         public override async Task Fill(INFT NFT) 
         {
             await FillCommon(NFT);
@@ -25,16 +37,28 @@ namespace VEDriversLite.NFT.DevicesNFTs
             Decrypted = (NFT as IoTMessageNFT).Decrypted;
             ImageData = (NFT as IoTMessageNFT).ImageData;
         }
-
+        /// <summary>
+        /// Encrypt the message before the send
+        /// </summary>
         public bool Encrypt { get; set; } = true;
+        /// <summary>
+        /// Has been message already decrypted?
+        /// </summary>
         public bool Decrypted { get; set; } = false;
+        /// <summary>
+        /// Communication partner
+        /// </summary>
         public string Partner { get; set; } = string.Empty;
-        public byte[] ImageData { get; set; }
-
+        /// <summary>
+        /// Was this message received or sent
+        /// </summary>
         public bool IsReceivedMessage { get; set; } = false;
 
         private bool runningDecryption = false;
-
+        /// <summary>
+        /// Parse specific parameters
+        /// </summary>
+        /// <param name="metadata"></param>
         public override void ParseSpecific(IDictionary<string, string> metadata)
         {
             GetPartnerAsync().GetAwaiter().GetResult();
@@ -44,7 +68,11 @@ namespace VEDriversLite.NFT.DevicesNFTs
         {
             await GetPartner();
         }
-
+        /// <summary>
+        /// Find and parse origin data
+        /// </summary>
+        /// <param name="lastmetadata"></param>
+        /// <returns></returns>
         public override async Task ParseOriginData(IDictionary<string, string> lastmetadata)
         {
             await GetPartner();
@@ -58,7 +86,10 @@ namespace VEDriversLite.NFT.DevicesNFTs
                 IsLoaded = true;
             }
         }
-
+        /// <summary>
+        /// Get last data of this NFT
+        /// </summary>
+        /// <returns></returns>
         public async Task GetLastData()
         {
             await GetPartner();
@@ -72,17 +103,23 @@ namespace VEDriversLite.NFT.DevicesNFTs
                 IsLoaded = true;
             }
         }
-
+        /// <summary>
+        /// Load communication partner info
+        /// </summary>
+        /// <returns></returns>
         public async Task GetPartner()
         {
-            var rec = await NeblioTransactionHelpers.GetTransactionSender(Utxo, TxDetails);
+            var rec = await NeblioAPIHelpers.GetTransactionSender(Utxo, TxDetails);
             if (!string.IsNullOrEmpty(rec))
                 Partner = rec;
         }
-
+        /// <summary>
+        /// Get receiver of this message
+        /// </summary>
+        /// <returns></returns>
         public async Task GetReceiver()
         {
-            var rec = await NeblioTransactionHelpers.GetTransactionReceiver(Utxo, TxDetails);
+            var rec = await NeblioAPIHelpers.GetTransactionReceiver(Utxo, TxDetails);
             if (!string.IsNullOrEmpty(rec))
                 Partner = rec;
         }
@@ -110,7 +147,7 @@ namespace VEDriversLite.NFT.DevicesNFTs
             if (Partner == add.ToString() && !decryptEvenOnSameAddress)
             {
                 IsReceivedMessage = false;
-                Partner = await NeblioTransactionHelpers.GetTransactionReceiver(Utxo);
+                Partner = await NeblioAPIHelpers.GetTransactionReceiver(Utxo);
                 if (string.IsNullOrEmpty(Partner))
                     return false;//throw new Exception("Cannot decrypt without loaded Partner address.");
             }
@@ -132,7 +169,13 @@ namespace VEDriversLite.NFT.DevicesNFTs
 
             return true;
         }
-        
+        /// <summary>
+        /// Get the NFT data for the NFT
+        /// </summary>
+        /// <param name="address">Address of the sender</param>
+        /// <param name="key">Private key of the sender for encryption</param>
+        /// <param name="receiver">receiver of the NFT</param>
+        /// <returns></returns>
         public override async Task<IDictionary<string, string>> GetMetadata(string address = "", string key = "", string receiver = "")
         {
             var metadata = await GetCommonMetadata();

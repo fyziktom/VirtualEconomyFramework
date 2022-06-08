@@ -14,9 +14,11 @@ using VEDriversLite.Neblio;
 using VEDriversLite.NFT;
 using VEDriversLite.NFT.Coruzant;
 using VEDriversLite.NFT.DevicesNFTs;
+using VEDriversLite.NFT.Imaging.Xray;
 using VEDriversLite.Security;
 using VEDriversLite.UnstoppableDomains;
-using VEDriversLite.WooCommerce;
+using VEDriversLite.Extensions.WooCommerce;
+using VEDriversLite.NeblioAPI;
 
 namespace TestVEDriversLite
 {
@@ -153,7 +155,7 @@ namespace TestVEDriversLite
 
             Console.WriteLine("Loading account NFTs...");
             var attempts = 100;
-            while(account.NFTs.Count == 0)
+            while (account.NFTs.Count == 0)
             {
                 await Task.Delay(1000);
                 if (attempts < 0)
@@ -234,7 +236,7 @@ namespace TestVEDriversLite
             var file = split[1];
             account.FirsLoadingStatus -= Account_FirsLoadingStatus;
             account.FirsLoadingStatus += Account_FirsLoadingStatus;
-            await account.LoadAccountFromVENFTBackup(pass,filename: file);
+            await account.LoadAccountFromVENFTBackup(pass, filename: file);
 
             //StartRefreshingData(null);
         }
@@ -409,9 +411,9 @@ namespace TestVEDriversLite
             foreach (var nft in nfts)
             {
                 Console.WriteLine($"Getting creator for NFT {nft.Utxo}:{nft.UtxoIndex}.");
-                var sender = await NeblioTransactionHelpers.GetTransactionSender(nft.NFTOriginTxId);
+                var sender = await NeblioAPIHelpers.GetTransactionSender(nft.NFTOriginTxId);
                 if (string.IsNullOrEmpty(sender))
-                    sender = await NeblioTransactionHelpers.GetTransactionSender(nft.Utxo, nft.TxDetails);
+                    sender = await NeblioAPIHelpers.GetTransactionSender(nft.Utxo, nft.TxDetails);
                 if (!string.IsNullOrEmpty(sender))
                 {
                     Console.WriteLine($"Creator of NFT {nft.Utxo}:{nft.UtxoIndex} is {sender}.");
@@ -825,8 +827,8 @@ namespace TestVEDriversLite
             Console.WriteLine("Start of minting tickets.");
             int lots = 0;
             int rest = 0;
-            rest += cps % NeblioTransactionHelpers.MaximumTokensOutpus;
-            lots += (int)((cps - rest) / NeblioTransactionHelpers.MaximumTokensOutpus);
+            rest += cps % NeblioAPIHelpers.MaximumTokensOutpus;
+            lots += (int)((cps - rest) / NeblioAPIHelpers.MaximumTokensOutpus);
             (bool, string) res = (false, string.Empty);
 
             if (lots > 1 || (lots == 1 && rest > 0))
@@ -839,7 +841,7 @@ namespace TestVEDriversLite
                     done = false;
                     while (!done)
                     {
-                        res = await account.MintMultiNFT(nft, NeblioTransactionHelpers.MaximumTokensOutpus);
+                        res = await account.MintMultiNFT(nft, NeblioAPIHelpers.MaximumTokensOutpus);
                         done = res.Item1;
                         if (!done)
                         {
@@ -907,7 +909,7 @@ namespace TestVEDriversLite
             }
             // create NFT object
             var nft = new TicketNFT("");
-            await nft.FillFromEventNFT(enft);
+            await nft.FillFromEvent(enft);
             nft.TicketClass = (ClassOfNFTTicket)Enum.Parse(typeof(ClassOfNFTTicket), ticketType);
 
             // count of the tickets
@@ -915,8 +917,8 @@ namespace TestVEDriversLite
             Console.WriteLine("Start of minting tickets.");
             int lots = 0;
             int rest = 0;
-            rest += cps % NeblioTransactionHelpers.MaximumTokensOutpus;
-            lots += (int)((cps - rest) / NeblioTransactionHelpers.MaximumTokensOutpus);
+            rest += cps % NeblioAPIHelpers.MaximumTokensOutpus;
+            lots += (int)((cps - rest) / NeblioAPIHelpers.MaximumTokensOutpus);
             (bool, string) res = (false, string.Empty);
 
             if (lots > 1 || (lots == 1 && rest > 0))
@@ -929,7 +931,7 @@ namespace TestVEDriversLite
                     done = false;
                     while (!done)
                     {
-                        res = await account.MintMultiNFT(nft, NeblioTransactionHelpers.MaximumTokensOutpus, receiver);
+                        res = await account.MintMultiNFT(nft, NeblioAPIHelpers.MaximumTokensOutpus, receiver);
                         done = res.Item1;
                         if (!done)
                         {
@@ -1002,7 +1004,7 @@ namespace TestVEDriversLite
             Console.WriteLine("Start of minting tickets.");
 
             var res = await account.MintNFT(nft);
-            
+
             Console.WriteLine("New TxId hash is: ");
             Console.WriteLine(res);
         }
@@ -1037,6 +1039,97 @@ namespace TestVEDriversLite
 
             Console.WriteLine("New TxId hash is: ");
             Console.WriteLine(res);
+        }
+
+        /// <summary>
+        /// Airdrop of the NFT Tickets based on the file with addresses and template ticket
+        /// </summary>
+        /// <param name="param"></param>
+        [TestEntry]
+        public static void CreateTestAirdropAddressesList(string param)
+        {
+            CreateTestAirdropAddressesListAsync(param);
+        }
+        public static async Task CreateTestAirdropAddressesListAsync(string param)
+        {
+            var count = 50;
+            var file = "test_addresses.txt";
+            var filekeys = "test_addresses_keys.txt";
+            
+            for (var i = 0; i < count; i++)
+            {
+                var key = new NBitcoin.Key();
+                var address = key.PubKey.GetAddress(NBitcoin.ScriptPubKeyType.Legacy, NeblioTransactionHelpers.Network);
+                Console.WriteLine("New Address: " + address);
+                await File.AppendAllTextAsync(file, address + "\n");
+                await File.AppendAllTextAsync(filekeys, address + ";" + key.GetBitcoinSecret(NeblioTransactionHelpers.Network) + "\n");
+            }
+        }
+        
+        /// <summary>
+        /// Airdrop of the NFT Tickets based on the file with addresses and template ticket
+        /// </summary>
+        /// <param name="param"></param>
+        [TestEntry]
+        public static void AirdropNFTTickets(string param)
+        {
+            AirdropNFTTicketsAsync(param);
+        }
+        public static async Task AirdropNFTTicketsAsync(string param)
+        {
+            var split = param.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            if (split.Length < 2)
+                throw new Exception("Please input filename,utxo");
+
+            Console.WriteLine("Input NFT Utxo: ");
+            var nftutxo = split[1];
+            Console.WriteLine("Input file with addresses: ");
+            var addressesFileInput =  FileHelpers.ReadTextFromFile(split[0]);
+            var addresses = new List<string>();
+            // load existing NFT object and wait for whole data synchronisation
+            var nft = await NFTFactory.GetNFT(NFTHelpers.TokenId, nftutxo, 0, 0, true);
+            // send NFT to receiver
+            if (nft == null)
+                throw new Exception("NFT does not exists!");
+
+            Console.WriteLine("----------------------------------------");
+            Console.WriteLine("Automatic VENFT Airdrop started");
+            Console.WriteLine("----------------------------------------");
+            using (var reader = new StringReader(addressesFileInput))
+            {
+                for (string line = reader.ReadLine(); line != null; line = reader.ReadLine())
+                {
+                    var address = NeblioTransactionHelpers.ValidateNeblioAddress(line);
+                    if (!string.IsNullOrEmpty(address))
+                        addresses.Add(address);
+                }
+            }
+
+            try
+            {
+                Console.WriteLine($"Airdrop started.");
+                account.NewMintingProcessInfo += Account_NewMintingProcessInfo;
+                var res = await account.MintMultiNFTLargeAmount(nft, addresses.Count, "", addresses);
+                account.NewMintingProcessInfo -= Account_NewMintingProcessInfo;
+                
+                FileHelpers.WriteTextToFile(Path.Combine(Environment.CurrentDirectory, "AirdropedAddresses.txt"), JsonConvert.SerializeObject(res.Item2, Formatting.Indented));
+                Console.WriteLine($"Airdrop result:");
+                Console.WriteLine(JsonConvert.SerializeObject(res.Item2, Formatting.Indented));
+                Console.WriteLine("----------------------------------------");
+            }
+            catch (Exception ex)
+            {
+                // probably just waiting for enought confirmation
+                Console.WriteLine("Waiting for confirmation. " + ex.Message);
+                await Task.Delay(5000);
+            }
+            
+            
+        }
+
+        private static void Account_NewMintingProcessInfo(object sender, string e)
+        {
+            Console.WriteLine("New multimint info: " + e);
         }
 
         /// <summary>
@@ -1484,7 +1577,7 @@ namespace TestVEDriversLite
                 throw new Exception("TxId must be filled.");
 
             Console.WriteLine("Input Tx Id Hash");
-            var txinfo = await NeblioTransactionHelpers.GetTransactionInfo(param); //get old tx info from neblio api
+            var txinfo = await NeblioAPIHelpers.GetTransactionInfo(param); //get old tx info from neblio api
 
             // sign it with loaded account
             Console.WriteLine("Timestamp");
@@ -1913,8 +2006,8 @@ namespace TestVEDriversLite
             Console.WriteLine("TxInfo:");
             Console.WriteLine(JsonConvert.SerializeObject(txinfo, Formatting.Indented));
             Console.WriteLine("-------------------------------------------------------");
-            if (msg.Item1)
-                Console.WriteLine("This Transaction contains message: " + msg.Item2);
+            if (msg.Success)
+                Console.WriteLine("This Transaction contains message: " + msg.Value.ToString());
         }
 
         [TestEntry]
@@ -2885,6 +2978,223 @@ namespace TestVEDriversLite
         #endregion
         //////////////////////////////////////////////////////////////////
 
+        //////////////////////////////////////////////////////////////////
+        #region XrayImages
+
+        private static string XrayNFTHash { get; set; } = string.Empty;
+        private static string XrayImageNFTHash { get; set; } = string.Empty;
+
+        [TestEntry]
+        public static void XrayCreateEmptyXrayNFTFile(string param)
+        {
+            XrayCreateEmptyXrayNFTFileAsync(param);
+        }
+        public static async Task XrayCreateEmptyXrayNFTFileAsync(string param)
+        {
+            if (string.IsNullOrEmpty(param))
+            {
+                Console.WriteLine("Please fill file name without type. It will be saved as json file.");
+                return;
+            }
+            Console.WriteLine("Creating File with template for Xray NFT.");
+            // create NFT object
+            var nft = new XrayNFT("");
+            // Example data
+            nft.Name = "EasyTom S - Laboratory";
+            nft.Description = "Version with 150kV X-ray source";
+            nft.DeviceName = "RXSolutions EasyTom S";
+            nft.SourceName = "HAMAMATSU 150kV L12161-07";
+            nft.DetectorParameters = new VEDriversLite.NFT.Imaging.Xray.Dto.DetectorDataDto()
+            {
+                Bits = 16,
+                W = 1920,
+                H = 1536,
+                Pw = 125,
+                Ph = 125
+            };
+            nft.Tags = "Xray technologies industry40 inspection NDT";
+
+            FileHelpers.WriteTextToFile(param + ".json", JsonConvert.SerializeObject(nft, Formatting.Indented));
+            Console.WriteLine("File created.");
+        }
+
+        [TestEntry]
+        public static void XrayCreateXrayNFTFormFile(string param)
+        {
+            XrayCreateXrayNFTFormFileAsync(param);
+        }
+        public static async Task XrayCreateXrayNFTFormFileAsync(string param)
+        {
+            if (string.IsNullOrEmpty(param))
+            {
+                Console.WriteLine("Please fill file name without type. Template must be json format with extension .json!");
+                return;
+            }
+
+            var filecontent = FileHelpers.ReadTextFromFile(param + ".json");
+            if (string.IsNullOrEmpty(filecontent))
+            {
+                Console.WriteLine("File is empty!");
+                return;
+            }
+
+            Console.WriteLine("Minting NFT");
+            // create NFT object
+            try
+            {
+                var inft = JsonConvert.DeserializeObject<PostNFT>(filecontent); // just to get type
+                if (inft.Type == NFTTypes.Xray)
+                {
+                    var nft = JsonConvert.DeserializeObject<XrayNFT>(filecontent);
+                    if (nft != null)
+                    {
+                        var res = await account.MintNFT(nft);
+
+                        Console.WriteLine("New TxId hash is: ");
+                        Console.WriteLine(res.Item2);
+                        if (res.Item1)
+                            XrayNFTHash = res.Item2;
+                    }
+                }
+                else
+                    Console.WriteLine("Input file is not template for Xray NFT.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Cannot deserialize template. Please chcek if it is correct." + ex.Message);
+            }
+        }
+
+        [TestEntry]
+        public static void XrayCreateEmptyXrayImageNFTFile(string param)
+        {
+            XrayCreateEmptyXrayImageNFTFileAsync(param);
+        }
+        public static async Task XrayCreateEmptyXrayImageNFTFileAsync(string param)
+        {
+            if (string.IsNullOrEmpty(param))
+            {
+                Console.WriteLine("Please fill file name without type. It will be saved as json file.");
+                return;
+            }
+            Console.WriteLine("Creating File with template for Xray Image NFT.");
+            // create NFT object
+            var nft = new XrayImageNFT("");
+            // Example data
+            nft.Name = "Part123";
+            nft.Description = "";
+            if (!string.IsNullOrEmpty(XrayNFTHash))
+                nft.XrayDeviceNFTHash = XrayNFTHash;
+
+            nft.ObjectPosition = new VEDriversLite.NFT.Imaging.Xray.Dto.ObjectPositionDto()
+            {
+                X = 150,
+                Y = 50,
+                Z = 120,
+                Dod = 150,
+                Dsd = 590
+            };
+
+            nft.DetectorParameters = new VEDriversLite.NFT.Imaging.Xray.Dto.DetectorDataDto()
+            {
+                Bits = 16,
+                W = 1920,
+                H = 1536,
+                Pw = 125,
+                Ph = 125
+            };
+            nft.Tags = "Xray technologies industry40 inspection NDT";
+
+            FileHelpers.WriteTextToFile(param + ".json", JsonConvert.SerializeObject(nft, Formatting.Indented));
+            Console.WriteLine("File created.");
+        }
+
+        [TestEntry]
+        public static void XrayCreateXrayImageNFTFormFile(string param)
+        {
+            XrayCreateXrayImageNFTFormFileAsync(param);
+        }
+        public static async Task XrayCreateXrayImageNFTFormFileAsync(string param)
+        {
+            if (string.IsNullOrEmpty(param))
+            {
+                Console.WriteLine("Please fill file name without type. Template must be json format with extension .json!");
+                return;
+            }
+
+            var filecontent = FileHelpers.ReadTextFromFile(param + ".json");
+            if (string.IsNullOrEmpty(filecontent))
+            {
+                Console.WriteLine("File is empty!");
+                return;
+            }
+
+            Console.WriteLine("Minting NFT");
+            // create NFT object
+            try
+            {
+                var inft = JsonConvert.DeserializeObject<PostNFT>(filecontent); // just to get type
+                if (inft.Type == NFTTypes.XrayImage)
+                {
+                    var nft = JsonConvert.DeserializeObject<XrayImageNFT>(filecontent);
+                    if (nft != null)
+                    {
+                        var res = await account.MintNFT(nft);
+
+                        Console.WriteLine("New TxId hash is: ");
+                        Console.WriteLine(res.Item2);
+                        if (res.Item1)
+                            XrayImageNFTHash = res.Item2;
+                    }
+                }
+                else
+                    Console.WriteLine("Input file is not template for Xray Image NFT.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Cannot deserialize template. Please chcek if it is correct." + ex.Message);
+            }
+        }
+
+        [TestEntry]
+        public static void XrayLoadXrayImageNFT(string param)
+        {
+            XrayLoadXrayImageNFTAsync(param);
+        }
+        public static async Task XrayLoadXrayImageNFTAsync(string param)
+        {
+            if (string.IsNullOrEmpty(param))
+            {
+                Console.WriteLine("Please fill the Xray Image hash.");
+                return;
+            }
+            Console.WriteLine("Loading the NFT.");
+            // Load NFT Object
+            try
+            {
+                
+                var nft = await NFTFactory.GetNFT("", param);
+
+                if (nft != null && nft.Type == NFTTypes.XrayImage)
+                {
+                    if (!string.IsNullOrEmpty((nft as XrayImageNFT).XrayDeviceNFTHash))
+                    {
+                        await (nft as XrayImageNFT).LoadXrayNFT();
+                        var res = await nft.DownloadPreviewData();
+                        var resi = await nft.DownloadImageData();
+                    }
+                }
+                Console.WriteLine("NFTs Loaded.");
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("Cannot load the NFTs."); 
+            }
+        }
+
+        #endregion
+        //////////////////////////////////////////////////////////////////
+
 
         //////////////////////////////////////////////////////////////////
         #region Tools
@@ -2938,7 +3248,7 @@ namespace TestVEDriversLite
         public static async Task GetAllIpfsLinksAsync(string param)
         {
 
-            var owners = await NeblioTransactionHelpers.GetTokenOwners(NFTHelpers.TokenId);
+            var owners = await NeblioAPIHelpers.GetTokenOwners(NFTHelpers.TokenId);
 
             var ipfsLinkNFTs = new Dictionary<string, IPFSLinksNFTsDto>();
             var ipfsCIDs = new List<string>();
@@ -3369,6 +3679,69 @@ namespace TestVEDriversLite
             Console.WriteLine("New Url is: ");
             Console.WriteLine(res.Item2);
         }
+        #endregion
+
+
+        #region Apps
+
+        /// <summary>
+        /// Pin file to infura
+        /// </summary>
+        /// <param name="param"></param>
+        [TestEntry]
+        public static void PinFileToInfura(string param)
+        {
+            PinFileToInfuraAsync(param);
+        }
+        public static async Task PinFileToInfuraAsync(string param)
+        {
+            Console.WriteLine("Pinning file to infura");
+            if (await NFTHelpers.PinToInfuraAsync(param))
+                Console.WriteLine("Success");
+            else
+                Console.WriteLine("Success");
+        }
+        /// <summary>
+        /// Mint Neblio NFT Producer Profile
+        /// </summary>
+        /// <param name="param"></param>
+        [TestEntry]
+        public static void MintNFTApp(string param)
+        {
+            MintNFTAppAsync(param);
+        }
+        public static async Task MintNFTAppAsync(string param)
+        {
+            Console.WriteLine("Minting NFT App");
+            // create NFT object
+            var nft = new AppNFT("");
+            
+            nft.Author = "fyziktom";
+            nft.Name = "Minesweeper";
+            nft.Description = "Minesweeper from BlazorGames Example";
+            nft.Link = "https://blazorgames.net/minesweeper";
+            nft.DataItems.Add(new VEDriversLite.NFT.Dto.NFTDataItem()
+            {
+                Type = VEDriversLite.NFT.Dto.DataItemType.Image,
+                IsMain = true,
+                Hash = "QmSEoP3wnunvPXcaEPxXARvhw7rrWnwjhgre3BQU43DbjC"
+            });
+            nft.DataItems.Add(new VEDriversLite.NFT.Dto.NFTDataItem()
+            {
+                Type = VEDriversLite.NFT.Dto.DataItemType.BlazorApp,
+                Storage = VEDriversLite.NFT.Dto.DataItemStorageType.Url,
+                Hash = param
+            });
+
+            Console.WriteLine("Start of minting NFT App.");
+
+            var res = await account.MintNFT(nft);
+
+            Console.WriteLine("New TxId hash is: ");
+
+            Console.WriteLine(res);
+        }        
+
         #endregion
     }
 }
