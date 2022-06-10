@@ -1,0 +1,106 @@
+﻿
+<Row>
+    <Column>
+        <Row Flex="Flex.AlignItems.Center">
+            <Column Flex="Flex.JustifyContent.Center">
+                <Heading Size="HeadingSize.Is3" Style="text-decoration: underline;">Trending</Heading>
+            </Column>
+        </Row>
+        <Row Margin="Margin.Is3.FromTop">
+            <Column Flex="Flex.JustifyContent.Center">
+                @if (Posts != null && Posts.Count > 0)
+                {
+                    <Carousel @bind-SelectedSlide="@selectedSlide" ShowControls>
+                    @foreach (var post in Posts)
+                    {
+                        var tag = post.Tags.FirstOrDefault();                        
+                        <CarouselSlide Name="@post.Utxo">
+                            <Button Color="Color.Light" Type="ButtonType.Link" Position="Position.Absolute.Top.Is0.Start.Is50.Translate.MiddleX">
+                                @(tag != null ? "#" + tag.ToUpper() : "#CoruzantFeature")
+                            </Button>                    
+                            <Div Position="Position.Absolute.Top.Is50.Start.Is50.Translate.Middle">
+                                <Row>
+                                    <Column Flex="Flex.JustifyContent.Center">
+                                        <Span Class="navtext">
+                                            @(post.Title.Length > 80 ? post.Title.Substring(0, 80) + "..." : post.Title)
+                                        </Span>
+                                    </Column>
+                                </Row>
+                                <Row Margin="Margin.Is4.FromTop">
+                                    <Column Flex="Flex.JustifyContent.Center">
+                                        <Button Class="readmoretrendingbutton" Type="ButtonType.Link">Read more</Button>
+                                    </Column>
+                                </Row>
+                            </Div>
+                            <Image Source="@post.Image" 
+                                   Text="@post.Title" 
+                                   Display="Display.Block" 
+                                   Style="max-height:500px;"
+                                   Width="Width.Auto" />
+                        </CarouselSlide>
+                    }               
+                </Carousel>
+                }
+            </Column>
+        </Row>
+        <Row Margin="Margin.Is4.FromTop">
+            <Column Flex="Flex.JustifyContent.Center">
+                <Button Class="viewalltrendingbutton" Type="ButtonType.Link">View All</Button>
+            </Column>
+        </Row>
+    </Column>
+</Row>
+
+
+    @code {
+
+    public class Post 
+    {
+        public string Utxo { get; set; } = "No Utxo";
+        public string Title { get; set; } = "No Title";
+        public string Image { get; set; } = "No Image";
+        public string Text { get; set; } = "No Text";
+        public List<string> Tags { get; set; } = new List<string>();
+    }
+
+    string selectedSlide = "555df2bc95e589c05053796fd3a31a09200e5a2f3eef20f9e6e250ad41bef736";
+
+    List<Post> Posts = new List<Post>();
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        Posts.Add(new Post() 
+        {
+            Title = "Part 2 - 5 Frontier Technologies to Improve Health in Emerging Economies",
+            Image = "https://bafybeicfyxvuge4cf5yjga2t5gq5sj6eysvezzvinv7ytufcdkwchkqc4q.ipfs.infura-ipfs.io/",
+            Text = "",
+            Tags = new List<string>() { "HealthTechnology" },
+            Utxo = "555df2bc95e589c05053796fd3a31a09200e5a2f3eef20f9e6e250ad41bef736",
+        });
+        Posts.Add(new Post() 
+        {
+            Title = "Part 1 - 6 Ideas to Invest and Empower Women Through Technology",
+            Image = "https://bafybeicvqds7cu47yocnoutxqdx2n7dfanr3vmlx6vk33xi3annniemdvu.ipfs.infura-ipfs.io/",
+            Text = "",
+            Tags = new List<string>() { "WomenInTechnology" },
+            Utxo = "a6dd222293a0e3a7d348e85a27d6ef35c00760f8e836b7d5d50ea6419644ac23",
+        });
+        Posts.Add(new Post() 
+        {
+            Title = "The Future of Data Storage is Decentralized",
+            Image = "https://ipfs.infura.io/ipfs/QmQ7njus52WAjnuCTZQ3hWMFR5A7qPWMtk5NvRZZfQwp39",
+            Text = "",
+            Tags = new List<string>() { "DecentralizedDataStorage" },
+            Utxo = "a80357c85ba1e5ceb9cdf8f0d09f338c0d6cb8b0f27f9b2262d1b8a5f6f638e2",
+        });
+        Posts.Add(new Post() 
+        {
+            Title = "Migrating to the Cloud the Right Way by Managing Complexities of IT",
+            Image = "https://ipfs.infura.io/ipfs/QmPnToGEKYyB8oC1ed2wJzHL7pw6pdcQeCd6GnPJhMi31G",
+            Text = "",
+            Tags = new List<string>() { "Migrate2Cloud" },
+            Utxo = "765edcc15c9082cc15a5d3d3baaff050784f5418d8870f1e4d4f925980bb2420",
+        });
+    }
+}

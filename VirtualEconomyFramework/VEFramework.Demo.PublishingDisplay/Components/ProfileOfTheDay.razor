@@ -1,0 +1,35 @@
+﻿@using VEFramework.Demo.PublishingDisplay.Models
+
+<Row Flex="Flex.AlignItems.Center">
+    <Column Flex="Flex.JustifyContent.Center">
+        <Heading Size="HeadingSize.Is3" Style="text-decoration: underline;">Profile Of the Day</Heading>
+    </Column>
+</Row>
+<Row Class="profileofthedaybox" Margin="Margin.Is2.FromTop">
+    <Column ColumnSize="ColumnSize.Is12.OnMobile.Is12.OnTablet.Is4.OnDesktop" Padding="Padding.Is2" Flex="Flex.JustifyContent.Center.AlignItems.Center">
+        <Image Source="https://bafybeifm7mvjvml25ki3k5x4fhphdcamsqfprmrswi2wfdkttc66q7er3m.ipfs.infura-ipfs.io/" />
+    </Column>
+    <Column ColumnSize="ColumnSize.Is12.OnMobile.Is12.OnTablet.Is8.OnDesktop" Flex="Flex.AlignItems.Center">
+        <Div>
+            <Row Margin="Margin.Is2.FromTop">
+                <Column>
+                        <Span Class="text-wrap">
+                            Leah Houston, MD is the founder of [HPEC](https://hpec.io/ "HPEC website"), and a board-certified Emergency Physician. While practicing emergency medicine across the US for nearly 10 years she recognized a common problem: uncompensated administrative burdens related to physician employment and credentialing are a leading cause of administrative waste and physician burnout.
+                        </Span>         
+                </Column>
+            </Row>
+            <Row Margin="Margin.Is3.FromTop.Is2.FromBottom">
+                <Column>
+                    <Badge Color="Color.Secondary" Margin="Margin.Is2.FromEnd">Blockchain</Badge>
+                    <Badge Color="Color.Secondary" Margin="Margin.Is2.FromEnd">HPEC</Badge>
+                    <Badge Color="Color.Secondary" Margin="Margin.Is2.FromEnd">Physician</Badge>
+                    <Badge Color="Color.Secondary" Margin="Margin.Is2.FromEnd">Technology</Badge>
+                </Column>
+            </Row>
+        </Div>
+    </Column>
+</Row>
+
+@code {
+
+}
