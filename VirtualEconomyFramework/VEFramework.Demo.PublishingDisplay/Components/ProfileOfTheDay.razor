@@ -1,4 +1,8 @@
 ﻿@using VEFramework.Demo.PublishingDisplay.Models
+@using VEFramework.Demo.PublishingDisplay.Services.NFTs
+@using VEFramework.Demo.PublishingDisplay.Services.NFTs.Coruzant
+@using Markdig
+@inject AppData AppData
 
 <Row Flex="Flex.AlignItems.Center">
     <Column Flex="Flex.JustifyContent.Center">
@@ -6,24 +10,38 @@
     </Column>
 </Row>
 <Row Class="profileofthedaybox" Margin="Margin.Is2.FromTop">
-    <Column ColumnSize="ColumnSize.Is12.OnMobile.Is12.OnTablet.Is4.OnDesktop" Padding="Padding.Is2" Flex="Flex.JustifyContent.Center.AlignItems.Center">
-        <Image Source="https://bafybeifm7mvjvml25ki3k5x4fhphdcamsqfprmrswi2wfdkttc66q7er3m.ipfs.infura-ipfs.io/" />
+    <Column ColumnSize="ColumnSize.Is12.OnMobile.Is12.OnTablet.Is4.OnDesktop" Padding="Padding.Is2">
+        <Row>
+            <Column Flex="Flex.JustifyContent.Center.AlignItems.Center">
+                <Image Source="@profile.ImageLink" />
+            </Column>
+        </Row>
+        <Row>
+            <Column Flex="Flex.JustifyContent.Center">
+                <Span TextColor="TextColor.Dark">@(profile.Name + " " + (profile as CoruzantProfileNFT).Surname)</Span>
+            </Column>
+        </Row>
+        <Row>
+            <Column Flex="Flex.JustifyContent.Center">
+                <Small TextColor="TextColor.Secondary">@((profile as CoruzantProfileNFT).WorkingPosition)</Small>
+            </Column>
+        </Row>
     </Column>
     <Column ColumnSize="ColumnSize.Is12.OnMobile.Is12.OnTablet.Is8.OnDesktop" Flex="Flex.AlignItems.Center">
         <Div>
             <Row Margin="Margin.Is2.FromTop">
                 <Column>
                         <Span Class="text-wrap">
-                            Leah Houston, MD is the founder of [HPEC](https://hpec.io/ "HPEC website"), and a board-certified Emergency Physician. While practicing emergency medicine across the US for nearly 10 years she recognized a common problem: uncompensated administrative burdens related to physician employment and credentialing are a leading cause of administrative waste and physician burnout.
+                            @((MarkupString)NFTTextMarkuptext)
                         </Span>         
                 </Column>
             </Row>
             <Row Margin="Margin.Is3.FromTop.Is2.FromBottom">
                 <Column>
-                    <Badge Color="Color.Secondary" Margin="Margin.Is2.FromEnd">Blockchain</Badge>
-                    <Badge Color="Color.Secondary" Margin="Margin.Is2.FromEnd">HPEC</Badge>
-                    <Badge Color="Color.Secondary" Margin="Margin.Is2.FromEnd">Physician</Badge>
-                    <Badge Color="Color.Secondary" Margin="Margin.Is2.FromEnd">Technology</Badge>
+                    @foreach(var tag in profile.TagsList)
+                    {                    
+                        <Badge Color="Color.Secondary" Margin="Margin.Is2.FromEnd">#@tag</Badge>
+                    }
                 </Column>
             </Row>
         </Div>
@@ -32,4 +50,22 @@
 
 @code {
 
+    public INFT profile = new CoruzantProfileNFT("");
+    public string NFTTextMarkuptext => Markdig.Markdown.ToHtml( profile.Text , new MarkdownPipelineBuilder().UseAdvancedExtensions().Build());
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        AppData.NFTsLoaded += NFTsLoadedHandler;
+    }
+
+    public void NFTsLoadedHandler(object sender, EventArgs e)
+    {
+        var prof = AppData.ProfilesNFTs.FirstOrDefault();
+        if (prof != null)
+            profile = prof;
+            
+        StateHasChanged();
+    }
+    
 }

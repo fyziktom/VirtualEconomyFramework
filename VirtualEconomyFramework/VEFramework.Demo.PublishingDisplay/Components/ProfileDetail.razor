@@ -1,4 +1,6 @@
 ﻿@using VEFramework.Demo.PublishingDisplay.Models
+@using VEFramework.Demo.PublishingDisplay.Services.NFTs
+@using VEFramework.Demo.PublishingDisplay.Services.NFTs.Coruzant
 @using Markdig
 
 @if (Profile != null)
@@ -7,7 +9,7 @@
     <Column ColumnSize="ColumnSize.Is12.OnMobile.Is12.OnTablet.Is4.OnDesktop" Padding="Padding.Is2">
         <Row>
             <Column Flex="Flex.JustifyContent.Center.AlignItems.Center">
-                <Image Source="@Profile.Image" />
+                <Image Source="@Profile.ImageLink" Style="max-width:350px;" />
             </Column>
         </Row>
         <Row>
@@ -17,7 +19,7 @@
         </Row>
         <Row>
             <Column Flex="Flex.JustifyContent.Center">
-                <Small TextColor="TextColor.Secondary">@Profile.Position</Small>
+                <Small TextColor="TextColor.Secondary">@((Profile as CoruzantProfileNFT).WorkingPosition)</Small>
             </Column>
         </Row>        
     </Column>
@@ -31,8 +33,8 @@
                 </Column>
             </Row>
             <Row Margin="Margin.Is3.FromTop.Is2.FromBottom">
-                <Column>
-                    @foreach(var tag in Profile.Tags)
+                <Column Flex="Flex.JustifyContent.Center">
+                    @foreach(var tag in Profile.TagsList)
                     {                    
                         <Badge Color="Color.Secondary" Margin="Margin.Is2.FromEnd">#@tag</Badge>
                     }
@@ -44,7 +46,7 @@
 }
 @code {
     [Parameter]
-    public Profile Profile { get; set; } = new VEFramework.Demo.PublishingDisplay.Models.Profile();
+    public INFT Profile { get; set; } = new CoruzantProfileNFT("");
     
     public string NFTTextMarkuptext => Markdig.Markdown.ToHtml( Profile.Text , new MarkdownPipelineBuilder().UseAdvancedExtensions().Build());
     

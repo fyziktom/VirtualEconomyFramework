@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using VEFramework.Demo.PublishingDisplay;
+using VEFramework.Demo.PublishingDisplay.Services;
 using Blazorise;
 using Blazorise.Bootstrap;
 using Blazorise.Icons.FontAwesome;
@@ -19,5 +20,6 @@ builder.Services
     .AddBootstrapProviders()
     .AddFontAwesomeIcons();
 
+builder.Services.AddScoped<AppData>();
 
 await builder.Build().RunAsync();

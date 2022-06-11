@@ -1,4 +1,8 @@
 ﻿@using VEFramework.Demo.PublishingDisplay.Models
+@using VEFramework.Demo.PublishingDisplay.Services.NFTs
+@using VEFramework.Demo.PublishingDisplay.Services.NFTs.Coruzant
+@inject AppData AppData
+
 <Row>
     <Column>
         <Row Flex="Flex.AlignItems.Center">
@@ -7,15 +11,15 @@
             </Column>
         </Row>
         <Row Margin="Margin.Is3.FromTop">
-            <Column Flex="Flex.JustifyContent.Center">
-                @if (Profiles != null && Profiles.Count > 0)
-                {
-                    <CardGroup>
-                    @foreach (var profile in Profiles)
+            <Column>
+                
+                    <CardGroup Flex="Flex.JustifyContent.Center">
+                    @foreach (var profile in AppData.ProfilesNFTs.Take(PerPage))
                     {
-                        var tag = profile.Tags.FirstOrDefault();                        
-                        <Card Style="max-width:350px;" Margin="Margin.Is3.FromEnd">
-                            <CardImage Source="@profile.Image" Alt="@profile.Name" ></CardImage>
+                        var p = profile as CoruzantProfileNFT;
+                        var tag = profile.TagsList.FirstOrDefault();                        
+                        <Card Style="min-width:300px;max-width:350px;" Margin="Margin.Is3.FromEnd">
+                            <CardImage Source="@profile.ImageLink" Alt="@profile.Name" ></CardImage>
                             <CardBody>
                                 <Row>
                                     <Column Flex="Flex.JustifyContent.Center">
@@ -49,12 +53,11 @@
                         </Card>
                     }               
                 </CardGroup>
-                }
             </Column>
         </Row>
         <Row Margin="Margin.Is4.FromTop">
             <Column Flex="Flex.JustifyContent.Center">
-                <Button Class="viewalltrendingbutton" Type="ButtonType.Link">View All</Button>
+                <Button Class="viewalltrendingbutton" Type="ButtonType.Link" To="profiles">View All</Button>
             </Column>
         </Row>
     </Column>
@@ -75,50 +78,26 @@
 @code {
     Modal? ProfileDetailsModal;
 
-    Profile ProfileInDetails = new Profile();
+    [Parameter]
+    public int PerPage {get;set;} = 5;
 
-    string selectedSlide = "555df2bc95e589c05053796fd3a31a09200e5a2f3eef20f9e6e250ad41bef736";
+    INFT ProfileInDetails = new CoruzantProfileNFT("");
 
-    List<Profile> Profiles = new List<Profile>();
+    string selectedSlide = "";
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        Profiles.Add(new Profile() 
-        {
-            Name = "Richard Alexander",
-            Image = "https://ipfs.infura.io/ipfs/QmQRhWytRgvVHmSikrWiWtirSCc4fitk2HwZEFF9MiPzcR",
-            Text = "In a 35-year career in executive leadership in Information Technology, Richard Alexander specialized in leading large-scale turn-arounds and transformation programs for large companies.Â  He was Vice President / Chief Information Officer at the Michelin Tire Company's North American subsidiary for eight years, then Director of IT Strategy managing the relationship between business units and IT for five of Groupe Michelin's global product lines at the company's headquarters in France.Â  In his last mission, he led the North American implementation of a major transformation of Michelin's supply chain across all its business units. Before Michelin, Richard was Vice President of Applications at MKI Inc. in Dallas, Texas, and Director of Systems Development for the SABRE Computing Group at American Airlines.Â  At both Michelin and MKI, he was recruited specifically to lead turn-arounds focused on transforming IT departments perceived as being \"low value\" into high-performance teams.Â  The capstones of this experience came in 2009, when Michelin's North American IT group was named at #18 inÂ ***Computerworld's***Â annual list ofÂ *100 Best Places to Work in IT*. Richard was a charter member of IBM's first global CIO Board of Advisors.Â  He earned an M.B.A. degree from Oklahoma City University and an M.A. in History from the University of Southern California. Richard is currently writingÂ ***Your Seat at the Table***, a guide for \"C\"-suite executives interested in building influence and credibility for their corporate internal-services groups.",
-            Tags = new List<string>() { "Leadership", "CIO", "Technology", "Profile" },
-            Utxo = "4ba014aec1bea6e9f0722e85b0559142f41f15df95f4c2b8057175322ff5f6cc",
-        });
-        Profiles.Add(new Profile() 
-        {
-            Name = "Dr. Jane Thomason",
-            Image = "https://coruzant.com/wp-content/uploads/2021/01/thomason-jane.jpg",
-            Text = "<Dr Jane Thomason is a successful entrepreneur having founded and built a $250 million revenue consulting company. She is a thought leader in technological innovation, fintech and blockchain for social impact. Recognised in Forbes Magazine (2018) as a leader in Blockchain for Social Impact, Dr Thomason authored the book <a href=\"https://www.amazon.com/Blockchain-Technology-Advances-Electrical-Engineering/dp/1522595783\" target=\"_blank\" rel=\"noopener\">Blockchain Technologies for GlobalÂ  Social Change</a>.</p><p>She has consulted to multiple international organisations on digital transformation, sustainability and ESG, including to the Commonwealth Secretariat on the preparation of a Fintech Toolkit for Central Banks, and prepared and presented a Technical Paper on Blockchain and Sovereign Bonds for Commonwealth Ministers of Finance meeting in 2019.</p><p>She is a Co-Founder of the British Blockchain and Frontier Technology Association, and Section Chief Editor Blockchain for Good: for the journal Frontiers in Blockchain.Â  In 2019-2020, she convened London Fintech Week, London Blockchain Week and London Digital Impact Week. She is a regular blockchain hackathon judge and mentor and mentors social impact startups.",
-            Tags = new List<string>() { "Blockchain", "EmergingTech", "Enterpreneur", "AI", "Technology" },
-            Utxo = "a6dd222293a0e3a7d348e85a27d6ef35c00760f8e836b7d5d50ea6419644ac23",
-        });
-        Profiles.Add(new Profile() 
-        {
-            Name = "Wayne Steidle",
-            Image = "https://coruzant.com/wp-content/uploads/2020/12/steidle-wayne.jpg",
-            Text = "Wayne Steidle is the Co-Founder and CEO of <a href=\"http://scanit.io/\" target=\"_blank\" rel=\"noopener\">Scanit</a>. Wayne began his successful entrepreneurial career over 30 years ago. His business ventures include real estate investing and development, health clubs and nutrition centers, franchising, licensing, hedge funds, as well as other business ventures.</p><p>In addition to his position at PNS Communications, LLC Mr. Steidle is a partner and director of real estate development at Riverwalk Park, LLC, a real estate development and management company. In this position, Mr. Steidle has successfully negotiated more than $65 million in land sales for Riverwalk Park, LLC. Mr. Steidle is currently managing the development of a $100 million mixed use shopping center, together with several hotels on one of Riverwalks properties.</p><p>Mr. Steidle has also long been interested in computer science. In 2012, he started experimenting with various methods of embedding readable code into video feeds and on LCD displays.</p><p>When he reached the limit of his skill set he recruited Dr. Yixin Chen PhD, one of the foremost experts in the world in the area of âComputer Visionâ and âPattern Recognition.â He then recruited Mark Lass, a business partner and expert in the Broadcasting Industry. In 2014, Mr. Steidle, Mr. Lass, and Dr. Chen, founded PNS Communications, LLC. Mr. Steidle currently holds two Patents in the US, and one Patent in Japan.</p><p>Mr. Steidle resides in Lake Mary, Florida. Outside of his professional activities, he enjoys stock trading, computer science, sports, working out, jogging, Formula One racing, boating, and travel",
-            Tags = new List<string>() { "Entrepreneur", "MachineLearning", "QRReader", "Scanning", "Technology" },
-            Utxo = "3b7f20a612dda557059a20e35fd9e0e5eac8dffd00994e27ac36a0b3992a6569",
-        });
-        Profiles.Add(new Profile() 
-        {
-            Name = "Clara Angotti",
-            Image = "https://coruzant.com/wp-content/uploads/2020/12/angotti-clara.jpg",
-            Text = "Clara Angotti is the Co-founder and President for <a href=\"https://www.nextpathway.com/\" target=\"_blank\" rel=\"noopener\">Next Pathway</a>, and has over 25 years of technology management experience. As President, Ms. Angotti is focused on <a href=\"https://www.nextpathway.com/\" target=\"_blank\" rel=\"noopener\">Next Pathwayâs</a> mission of helping customers automate the end-to-end challenges their experience when migrating applications to the cloud.</p><p>From 1993 to 2000 she was the VP of Sales/Marketing for Sage Information Consultants, a technology consulting firm focused on providing services based on the Microsoft platform. After her management contract was completed with the acquiring company, Ms. Angotti co-founded M Systems Group (M) in February 2002. In 2005 M Systems Groupâs success caught the attention of several multi-national firms and was acquired by Bell Canada in July 2006.</p><p>Among her accomplishments, Ms. Angotti has been a three-time finalist for the Ernst &amp; Young Entrepreneur of the Year Award. Ms. Angotti is also a two-time recipient (2011 and 2018) of the prestigious Canadaâs Most Powerful Women: Top 100â¢ Award by the Womenâs Executive Network.</p><p>At the 2012 RBC Canadian Women Entrepreneur Awards, Ms. Angotti was awarded the prestigious PROFIT Award for Excellence in Entrepreneurship, which is awarded to an individual who has launched one or more successful companies, has a proven track record of growth and profitability, and who is a role model to other entrepreneurs.</p><p>Ms. Angotti received her Honours Bachelor of Science degree from the University of Toronto in 1988. She is active in several charities and art organizations in Toronto, and currently sits on the Board of Trustees for the Hospital for Sick Children, and the Board of Governors for Branksome Hall",
-            Tags = new List<string>() { "ClaraAgnotti" },
-            Utxo = "6fd8397c89cbc61ad85228b37da795cacf894d9fd6f73cbd52400d733c76b982",
-        });
+        
+        AppData.NFTsLoaded += NFTsLoadedHandler;
     }
-
-    async Task ReadMoreProfile(Profile profile)
+    
+        public void NFTsLoadedHandler(object sender, EventArgs e)
+    {
+        StateHasChanged();
+    }
+    
+    async Task ReadMoreProfile(INFT profile)
     {
         ProfileInDetails = profile;
         await InvokeAsync(StateHasChanged);

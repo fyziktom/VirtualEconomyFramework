@@ -250,3 +250,10 @@ a, .btn-link {
     border: 1px solid #C9C9C9;
     border-radius: 15px;
 }
+
+@media (min-width: 641px) {
+     .article {
+        padding-left: 2rem !important;
+        padding-right: 1.5rem !important;
+    }
+}

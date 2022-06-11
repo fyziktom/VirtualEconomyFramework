@@ -1,28 +1,58 @@
 ﻿@using VEFramework.Demo.PublishingDisplay.Components
+@inject AppData AppData
+
 @page "/"
 
 <PageTitle>Coruzant Home</PageTitle>
 
-<Container Fluid>
-    <Row Margin="Margin.Is3.FromTop">
-        <Column>
-            <Trending />
-        </Column>
-    </Row>
+<MainHeader />
+
+<Container Class="content px-4 article" Fluid>
+    @if (!AppData.Loading)
+    {
+        <Row Margin="Margin.Is3.FromTop">
+            <Column>
+                <Trending />
+            </Column>
+        </Row>
+    }
+    else
+    {
+        <Row Margin="Margin.Is3.FromTop">
+            <Column>
+                <Heading Size="HeadingSize.Is4">Loading Data...</Heading>
+            </Column>
+        </Row>
+    }
+
     <Row Margin="Margin.Is5.FromTop">
         <Column>
             <ProfileOfTheDay />
         </Column>
     </Row>
-    <Row Margin="Margin.Is5.FromTop.Is2.FromBottom">
-        <Column>
-            <FeaturedProfiles />
-        </Column>
-    </Row>
+    @if (!AppData.Loading)
+    {
+        <Row Margin="Margin.Is5.FromTop.Is2.FromBottom">
+            <Column>
+                <FeaturedProfiles />
+            </Column>
+        </Row>
+    }
 </Container>
 
 @code {
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        AppData.NFTsLoaded += NFTsLoadedHandler;
+        if (!AppData.LoadedBase)
+            await AppData.LoadNFTs();
+    }
 
+    public void NFTsLoadedHandler(object sender, EventArgs e)
+    {
+        StateHasChanged();
+    }
 }
 
 
