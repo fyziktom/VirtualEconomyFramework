@@ -12,7 +12,7 @@
     </Row>
     <Row Margin="Margin.Is3.FromTop">
         <Column>
-                <CardGroup Flex="Flex.JustifyContent.Center">
+                <CardGroup>
                 @foreach (var post in AppData.ArticleNFTs.Take(9))
                 {
                     var p = post as CoruzantArticleNFT;
@@ -68,14 +68,9 @@
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        AppData.NFTsLoaded += NFTsLoadedHandler;
+        AppData.NFTsLoaded += (s,e) => StateHasChanged();;
         if (!AppData.LoadedBase)
             await AppData.LoadNFTs();
-    }
-
-    public void NFTsLoadedHandler(object sender, EventArgs e)
-    {
-        StateHasChanged();
     }
 
     public void OpenPost(string postutxo)

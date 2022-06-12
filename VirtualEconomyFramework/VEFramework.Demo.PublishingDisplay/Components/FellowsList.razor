@@ -10,11 +10,13 @@
                 <Heading Size="HeadingSize.Is3" Style="text-decoration: underline;">Featured Profiles</Heading>
             </Column>
         </Row>
+        @if (AppData.LoadedFellows)
+        {
         <Row Margin="Margin.Is3.FromTop">
             <Column>
                 
                     <CardGroup>
-                    @foreach (var profile in AppData.ProfilesNFTs.Take(PerPage))
+                    @foreach (var profile in AppData.FoundingFellowsNFTs)
                     {
                         var p = profile as CoruzantProfileNFT;
                         @if (p != null)
@@ -58,11 +60,15 @@
                 </CardGroup>
             </Column>
         </Row>
-        <Row Margin="Margin.Is4.FromTop">
-            <Column Flex="Flex.JustifyContent.Center">
-                <Button Class="viewalltrendingbutton" Type="ButtonType.Link" To="profiles">View All</Button>
-            </Column>
-        </Row>
+        }
+        else
+        {
+            <Row Margin="Margin.Is3.FromTop">
+                <Column>
+                    <Span>Loading Fellows profiles...</Span>
+                </Column>
+            </Row>
+        }
     </Column>
 </Row>
 
@@ -91,8 +97,9 @@
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        AppData.NFTsLoaded  += (s,e) => StateHasChanged();
+        AppData.NFTsFellowsLoaded += (s,e) => StateHasChanged();
     }
+
     private string GetName(CoruzantProfileNFT pnft)
     {
         var name = pnft.Name + " " + pnft.Surname;

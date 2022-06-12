@@ -58,6 +58,13 @@
         base.OnInitialized();
         AppData.NFTsLoaded += NFTsLoadedHandler;
     }
+    protected override void OnAfterRender(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
+        if (profile != null && string.IsNullOrEmpty(profile.Utxo))
+            NFTsLoadedHandler(null, null);
+          
+    }
 
     public void NFTsLoadedHandler(object sender, EventArgs e)
     {

@@ -1,0 +1,158 @@
+﻿@using VEFramework.Demo.PublishingDisplay.Models
+@using VEFramework.Demo.PublishingDisplay.Services.NFTs
+@using VEFramework.Demo.PublishingDisplay.Services.NFTs.Coruzant
+@inject AppData AppData
+@using Newtonsoft.Json
+@inject HttpClient _client
+@inject IJSRuntime JSRuntime
+
+<Row>
+    <Column>
+        <Row Flex="Flex.AlignItems.Center">
+            <Column Flex="Flex.JustifyContent.Center">
+                <Heading Size="HeadingSize.Is3" Style="text-decoration: underline;">Featured Podcasts</Heading>
+            </Column>
+        </Row>
+        @if(CurrentPodcast != null){
+            <Row Margin="Margin.Is3.FromTop.Is3.FromBottom">
+                <Column>
+                    <div class="podcast-player z-depth-2">
+                        <div id="buzzsprout-player-@CurrentPodcast.PodcastId">
+                            <div class="row">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <span>Loading Podcast...</span>
+                            </div>
+                        </div>
+                        </div>
+                        <div id="close-player" @onclick="ClosePlayer"><i class="fas fa-times"></i></div>
+                    </div>
+                </Column>
+            </Row>
+        }
+        <Row Margin="Margin.Is3.FromTop">
+            <Column>
+                
+                    <CardGroup>
+                    @foreach (var profile in AppData.PodcastsNFTs.Take(PerPage))
+                    {
+                        var p = profile as CoruzantProfileNFT;
+                        @if (p != null)
+                        {
+                            var tag = profile.TagsList.FirstOrDefault();
+                            <Card Style="min-width:300px;max-width:350px;" Margin="Margin.Is3.FromEnd">
+                                <CardImage Source="@profile.ImageLink" Alt="@profile.Name" ></CardImage>
+                                <CardBody>
+                                    <Row>
+                                        <Column Flex="Flex.JustifyContent.Center">
+                                            <Span Style="font-family: 'Inter';font-size: 20px;" Display="Display.None.OnMobile.None.OnTablet.Inline.OnDesktop">
+                                                @GetName(p)
+                                            </Span>
+                                            <Span Style="font-family: 'Inter';font-size: 20px;" Display="Display.Inline.OnMobile.Inline.OnTablet.None.OnDesktop">
+                                                @GetName(p)
+                                            </Span>
+                                        </Column>
+                                    </Row>
+                                    <Row>
+                                        <Column Flex="Flex.JustifyContent.Center">
+                                            <Span Style="font-family: 'Inter';font-size: 12px;" Display="Display.None.OnMobile.None.OnTablet.Inline.OnDesktop">
+                                                @(profile.Text.Length > 100 ? profile.Text.Substring(0, 100) + "..." : profile.Text)
+                                            </Span>
+                                            <Span Style="font-family: 'Inter';font-size: 12px;" Display="Display.Inline.OnMobile.Inline.OnTablet.None.OnDesktop">
+                                                @(profile.Text.Length > 100 ? profile.Text.Substring(0, 100) + "..." : profile.Text)
+                                            </Span>
+                                        </Column>
+                                    </Row>
+                                    <Row Margin="Margin.Is4.FromTop">
+                                        <Column Flex="Flex.JustifyContent.Center">
+                                            <Button Class="readmoreprofilebutton" Clicked="@(() => LoadBuzzproudPodcastLink(p))">
+                                                <Span Style="font-size:14px;" Display="Display.None.OnMobile.None.OnTablet.Inline.OnDesktop">Listen Podcast</Span>
+                                                <Span Style="font-size:8px;" Display="Display.Inline.OnMobile.Inline.OnTablet.None.OnDesktop">Listen Podcast</Span>
+                                                </Button>
+                                        </Column>
+                                    </Row>                            
+                                </CardBody>
+                            </Card>
+                        }
+                    }               
+                </CardGroup>
+            </Column>
+        </Row>
+        <Row Margin="Margin.Is4.FromTop">
+            <Column Flex="Flex.JustifyContent.Center">
+                <Button Class="viewalltrendingbutton" Type="ButtonType.Link" To="profiles">View All</Button>
+            </Column>
+        </Row>
+        
+    </Column>
+</Row>
+
+@code {
+
+    [Parameter]
+    public int PerPage {get;set;} = 3;
+
+    INFT ProfileInDetails = new CoruzantProfileNFT("");
+
+    private string buzzsproudLink = string.Empty;
+    public CoruzantProfileNFT CurrentPodcast { get; set; }
+    void ClosePlayer() => CurrentPodcast = null;
+
+    protected override void OnInitialized()
+    {
+        AppData.NFTsLoaded += (s,e) => StateHasChanged();
+        base.OnInitialized();
+    }
+
+    async Task ReadMoreProfile(INFT profile)
+    {
+        ProfileInDetails = profile;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private string GetName(CoruzantProfileNFT pnft)
+    {
+        var name = pnft.Name + " " + pnft.Surname;
+        return name.Length > 50 ? name.Substring(0, 50) + "..." : name;
+    }
+
+    private async Task LoadBuzzproudPodcastLink( CoruzantProfileNFT pnft)
+    {
+        CurrentPodcast = pnft;
+        try
+        {
+            if (!string.IsNullOrEmpty(pnft.PodcastId))
+            {
+                var filename = string.Empty;
+                var req = new HttpRequestMessage(HttpMethod.Get, $"https://nftticketverifierapp.azurewebsites.net/api/GetBuzzsproutData/866092/{pnft.PodcastId}");
+                req.Headers.Add("Accept", "application/json");
+                req.Headers.Add("User-Agent", "VENFT-App");
+
+                var resp = await _client.SendAsync(req);
+                var respmsg = await resp.Content.ReadAsStringAsync();
+                if (string.IsNullOrEmpty(respmsg))
+                    return;
+                var podcastData = JsonConvert.DeserializeObject<List<BuzzsproutEpisodeDto>>(respmsg);
+                if (podcastData != null && podcastData.Count > 0)
+                {
+                    var pddto = podcastData.FirstOrDefault();
+                    if (!string.IsNullOrEmpty(pddto.audio_url))
+                    {
+                        filename = pddto.audio_url.Replace("https://www.buzzsprout.com/866092/", string.Empty).Replace(".mp3", string.Empty);
+                        var link = $"https://www.buzzsprout.com/866092/{filename}.js?container_id=buzzsprout-player-{pnft.PodcastId}&player=small";
+                        buzzsproudLink = link;
+                        StateHasChanged();
+                        await Task.Delay(200);
+                        await JSRuntime.InvokeVoidAsync("jsFunctions.buzzsproutPodcast", buzzsproudLink);
+                        await Task.Delay(200);
+                        //await JSRuntime.InvokeVoidAsync("setCoruzantPodcastInfo", pnft.Name + " " + pnft.Surname, pddto.artist, pddto.title);
+                        StateHasChanged();
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Cannot load Buzzsprout podcast." + ex.Message);
+        }
+    }
+}
