@@ -36,7 +36,7 @@
                         </Span>         
                 </Column>
             </Row>
-            <Row Margin="Margin.Is3.FromTop">
+            <Row Margin="Margin.Is3.FromTop.Is2.FromBottom">
                 <Column Flex="Flex.JustifyContent.Center">
                     @foreach(var tag in Profile.TagsList)
                     {                    
@@ -44,7 +44,8 @@
                     }
                 </Column>
             </Row>
-            @if(CurrentPodcast != null){
+            @if(CurrentPodcast != null && !string.IsNullOrEmpty((Profile as CoruzantProfileNFT).PodcastId))
+            {
             <Row Margin="Margin.Is3.FromTop.Is2.FromBottom">
                 <Column>
                     <div class="podcast-player z-depth-2">
@@ -59,11 +60,12 @@
                     </div>
                 </Column>
             </Row>
-        }
+            }
         </Div>
     </Column>
 </Row>
 }
+
 @code {
     [Parameter]
     public INFT Profile { get; set; } = new CoruzantProfileNFT("");
@@ -74,11 +76,13 @@
     public CoruzantProfileNFT CurrentPodcast { get; set; }
     void ClosePlayer() => CurrentPodcast = null;
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    public async Task Load(INFT profile)
     {
-        await base.OnAfterRenderAsync( firstRender );
         if (Profile != null && Profile.Type == NFTTypes.CoruzantProfile)
+        {
+            Profile = profile;
             await LoadBuzzproudPodcastLink( Profile as CoruzantProfileNFT );
+        }            
     }
 
     private async Task LoadBuzzproudPodcastLink( CoruzantProfileNFT pnft)

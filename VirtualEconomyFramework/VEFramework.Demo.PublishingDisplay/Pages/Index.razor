@@ -1,4 +1,6 @@
 ﻿@using VEFramework.Demo.PublishingDisplay.Components
+@using VEFramework.Demo.PublishingDisplay.Services.NFTs
+@using VEFramework.Demo.PublishingDisplay.Services.NFTs.Coruzant
 @inject AppData AppData
 
 @page "/"
@@ -27,7 +29,7 @@
 
     <Row Margin="Margin.Is5.FromTop">
         <Column>
-            <ProfileOfTheDay />
+            <ProfileOfTheDay Profile="@Profile" />
         </Column>
     </Row>
     @if (!AppData.Loading)
@@ -41,18 +43,27 @@
 </Container>
 
 @code {
+    
+    public INFT Profile
+    {
+        get
+        {
+            var prof = AppData.ProfilesNFTs.FirstOrDefault();
+            if (prof != null)
+                return prof;
+            else
+                return new CoruzantProfileNFT("");
+        }
+    }
+
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        AppData.NFTsLoaded += NFTsLoadedHandler;
+        AppData.NFTsLoaded += (s,e) => StateHasChanged();
         if (!AppData.LoadedBase)
             await AppData.LoadNFTs();
     }
-
-    public void NFTsLoadedHandler(object sender, EventArgs e)
-    {
-        StateHasChanged();
-    }
+    
 }
 
 

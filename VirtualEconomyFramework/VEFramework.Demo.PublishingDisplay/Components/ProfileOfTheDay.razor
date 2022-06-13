@@ -4,6 +4,8 @@
 @using Markdig
 @inject AppData AppData
 
+@if (Profile != null)
+{
 <Row Flex="Flex.AlignItems.Center">
     <Column Flex="Flex.JustifyContent.Center">
         <Heading Size="HeadingSize.Is3" Style="text-decoration: underline;">Profile Of the Day</Heading>
@@ -13,17 +15,17 @@
     <Column ColumnSize="ColumnSize.Is12.OnMobile.Is12.OnTablet.Is4.OnDesktop" Padding="Padding.Is2">
         <Row>
             <Column Flex="Flex.JustifyContent.Center.AlignItems.Center">
-                <Image Source="@profile.ImageLink" />
+                <Image Source="@Profile.ImageLink" />
             </Column>
         </Row>
         <Row>
             <Column Flex="Flex.JustifyContent.Center">
-                <Span TextColor="TextColor.Dark">@(profile.Name + " " + (profile as CoruzantProfileNFT).Surname)</Span>
+                <Span TextColor="TextColor.Dark">@(Profile.Name + " " + (Profile as CoruzantProfileNFT).Surname)</Span>
             </Column>
         </Row>
         <Row>
             <Column Flex="Flex.JustifyContent.Center">
-                <Small TextColor="TextColor.Secondary">@((profile as CoruzantProfileNFT).WorkingPosition)</Small>
+                <Small TextColor="TextColor.Secondary">@((Profile as CoruzantProfileNFT).WorkingPosition)</Small>
             </Column>
         </Row>
     </Column>
@@ -38,7 +40,7 @@
             </Row>
             <Row Margin="Margin.Is3.FromTop.Is2.FromBottom">
                 <Column>
-                    @foreach(var tag in profile.TagsList)
+                    @foreach(var tag in Profile.TagsList)
                     {                    
                         <Badge Color="Color.Secondary" Margin="Margin.Is2.FromEnd">#@tag</Badge>
                     }
@@ -47,32 +49,27 @@
         </Div>
     </Column>
 </Row>
+}
 
 @code {
+    [Parameter]
+    public INFT Profile {get;set;} = new CoruzantProfileNFT("");
+    
+    public string NFTTextMarkuptext => Markdig.Markdown.ToHtml( Profile.Text , new MarkdownPipelineBuilder().UseAdvancedExtensions().Build());
 
-    public INFT profile = new CoruzantProfileNFT("");
-    public string NFTTextMarkuptext => Markdig.Markdown.ToHtml( profile.Text , new MarkdownPipelineBuilder().UseAdvancedExtensions().Build());
+    //protected override void OnInitialized()
+    //{
+    //    base.OnInitialized();
+    //    AppData.NFTsLoaded += NFTsLoadedHandler;
+    //}
 
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-        AppData.NFTsLoaded += NFTsLoadedHandler;
-    }
-    protected override void OnAfterRender(bool firstRender)
-    {
-        base.OnAfterRender(firstRender);
-        if (profile != null && string.IsNullOrEmpty(profile.Utxo))
-            NFTsLoadedHandler(null, null);
-          
-    }
-
-    public void NFTsLoadedHandler(object sender, EventArgs e)
-    {
-        var prof = AppData.ProfilesNFTs.FirstOrDefault();
-        if (prof != null)
-            profile = prof;
+    //public void NFTsLoadedHandler(object sender, EventArgs e)
+    //{
+    //    var prof = AppData.ProfilesNFTs.FirstOrDefault();
+    //    if (prof != null)
+    //        Profile = prof;
             
-        StateHasChanged();
-    }
+    //    StateHasChanged();
+    //}
     
 }

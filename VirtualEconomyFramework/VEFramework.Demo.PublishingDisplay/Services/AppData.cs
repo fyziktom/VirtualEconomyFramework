@@ -90,7 +90,7 @@ namespace VEFramework.Demo.PublishingDisplay.Services
                     var nft = await NFTFactory.GetNFT(NFTHelpers.CoruzantTokenId, u.Txid, (int)u.Index, (double)u.Blocktime, address: Address);
                     if (nft != null)
                         NFTsDict.TryAdd($"{u.Txid}:{u.Index}", nft);
-                }, maxDegreeOfParallelism: 10);
+                }, maxDegreeOfParallelism: 4);
             }
             lock (_lock)
             {
@@ -123,7 +123,7 @@ namespace VEFramework.Demo.PublishingDisplay.Services
                 var nft = await NFTFactory.GetNFT(NFTHelpers.CoruzantTokenId, u.Txid, (int)u.Index, (double)u.Blocktime, address: Address);
                 if (nft != null)
                     FoundingFellowsNFTsDict.TryAdd($"{u.Txid}:{u.Index}", nft);
-            }, maxDegreeOfParallelism: 10);
+            }, maxDegreeOfParallelism: 4);
             
             lock (_lock)
             {
@@ -131,7 +131,7 @@ namespace VEFramework.Demo.PublishingDisplay.Services
                 LoadedFellows = true;
                 LoadingFellows = false;
             }
-
+            
             Console.WriteLine("All NFTs Fellows loaded.");
             Console.WriteLine("Total Fellows loaded." + FoundingFellowsNFTs.Count.ToString());
             NFTsFellowsLoaded?.Invoke(this, new EventArgs());

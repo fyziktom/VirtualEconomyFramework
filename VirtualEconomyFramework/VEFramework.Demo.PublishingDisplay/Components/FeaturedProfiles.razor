@@ -73,13 +73,14 @@
                 <CloseButton />
             </ModalHeader>
             <ModalBody>
-                <ProfileDetail Profile="@ProfileInDetails" />
+                <ProfileDetail @ref="@ProfileDetailRef" Profile="@ProfileInDetails" />
             </ModalBody>
     </ModalContent>
 </Modal>
 
 @code {
     Modal? ProfileDetailsModal;
+    ProfileDetail? ProfileDetailRef;
 
     [Parameter]
     public int PerPage {get;set;} = 5;
@@ -102,8 +103,9 @@
     async Task ReadMoreProfile(INFT profile)
     {
         ProfileInDetails = profile;
-        await InvokeAsync(StateHasChanged);
         if (ProfileDetailsModal != null)
             await ProfileDetailsModal.Show();
+        if (ProfileDetailRef != null)
+            await ProfileDetailRef.Load(ProfileInDetails);
     }
 }
