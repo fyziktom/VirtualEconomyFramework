@@ -137,21 +137,21 @@ namespace VEDriversLite.NeblioAPI
         /// <param name="tokenid">token id hash</param>
         /// <param name="txid">tx id hash</param>
         /// <returns></returns>
-        public static async Task<Dictionary<string, string>> GetTransactionMetadata(string tokenid, string txid)
+        public static async Task<Dictionary<string, object>> GetTransactionMetadata(string tokenid, string txid)
         {
             if (string.IsNullOrEmpty(txid))
             {
-                return new Dictionary<string, string>();
+                return new Dictionary<string, object>();
             }
 
-            var resp = new Dictionary<string, string>();
+            var resp = new Dictionary<string, object>();
             var info = await GetTokenMetadataOfUtxoCache(tokenid, txid, 0);
 
             if (info.MetadataOfUtxo != null && info.MetadataOfUtxo.UserData.Meta.Count > 0)
             {
                 foreach (var o in info.MetadataOfUtxo.UserData.Meta)
                 {
-                    var od = JsonConvert.DeserializeObject<IDictionary<string, string>>(o.ToString());
+                    var od = JsonConvert.DeserializeObject<IDictionary<string, object>>(o.ToString());
                     if (od != null && od.Count > 0)
                     {
                         var of = od.First();

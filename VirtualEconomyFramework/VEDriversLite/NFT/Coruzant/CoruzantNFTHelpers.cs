@@ -67,7 +67,7 @@ namespace VEDriversLite.NFT.Coruzant
         {
             var cnft = NFT as CoruzantArticleNFT;
             // create token metadata
-            var metadata = new Dictionary<string, string>();
+            var metadata = new Dictionary<string, object>();
             metadata.Add("NFT", "true");
             metadata.Add("Type", "NFT CoruzantPost");
             metadata.Add("Name", NFT.Name);

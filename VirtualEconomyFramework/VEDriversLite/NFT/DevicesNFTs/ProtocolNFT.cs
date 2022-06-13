@@ -51,21 +51,21 @@ namespace VEDriversLite.NFT.DevicesNFTs
         /// Parse specific data for the NFT
         /// </summary>
         /// <param name="metadata"></param>
-        public override void ParseSpecific(IDictionary<string, string> metadata)
+        public override void ParseSpecific(IDictionary<string, object> metadata)
         {
             if (metadata.TryGetValue("Version", out var version))
-                Version = version;
+                Version = version as string;
             if (metadata.TryGetValue("Rules", out var rules))
-                Rules = rules;
+                Rules = rules as string;
             if (metadata.TryGetValue("RulesFile", out var rulesfile))
-                RulesFile = rulesfile;
+                RulesFile = rulesfile as string;
         }
         /// <summary>
         /// Parse origin data of the NFT
         /// </summary>
         /// <param name="lastmetadata"></param>
         /// <returns></returns>
-        public override async Task ParseOriginData(IDictionary<string, string> lastmetadata)
+        public override async Task ParseOriginData(IDictionary<string, object> lastmetadata)
         {
             var nftData = await NFTHelpers.LoadNFTOriginData(Utxo);
             if (nftData != null)
@@ -107,7 +107,7 @@ namespace VEDriversLite.NFT.DevicesNFTs
         /// <param name="key"></param>
         /// <param name="receiver"></param>
         /// <returns></returns>
-        public override async Task<IDictionary<string, string>> GetMetadata(string address = "", string key = "", string receiver = "")
+        public override async Task<IDictionary<string, object>> GetMetadata(string address = "", string key = "", string receiver = "")
         {
             // create token metadata
             var metadata = await GetCommonMetadata();

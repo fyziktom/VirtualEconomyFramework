@@ -51,16 +51,16 @@ namespace VEDriversLite.NFT
         /// Parse specific parameters
         /// </summary>
         /// <param name="metadata"></param>
-        public override void ParseSpecific(IDictionary<string, string> metadata)
+        public override void ParseSpecific(IDictionary<string, object> metadata)
         {
             if (metadata.TryGetValue("Producer", out var producer))
-                ProducerProfileNFT = producer;
+                ProducerProfileNFT = producer as string;
             if (metadata.TryGetValue("Datasheet", out var datasheet))
-                Datasheet = datasheet;
+                Datasheet = datasheet as string;
 
             if (metadata.TryGetValue("UnitPrice", out var unitPrice))
-                if (!string.IsNullOrEmpty(unitPrice))
-                    UnitPrice = Convert.ToDouble(unitPrice, CultureInfo.InvariantCulture);
+                if (!string.IsNullOrEmpty(unitPrice as string))
+                    UnitPrice = Convert.ToDouble(unitPrice as string, CultureInfo.InvariantCulture);
 
         }
         /// <summary>
@@ -68,7 +68,7 @@ namespace VEDriversLite.NFT
         /// </summary>
         /// <param name="lastmetadata"></param>
         /// <returns></returns>
-        public override Task ParseOriginData(IDictionary<string, string> lastmetadata)
+        public override Task ParseOriginData(IDictionary<string, object> lastmetadata)
         {
             return Task.CompletedTask;
         }
@@ -79,7 +79,7 @@ namespace VEDriversLite.NFT
         /// <param name="key">Private key of the sender for encryption</param>
         /// <param name="receiver">receiver of the NFT</param>
         /// <returns></returns>
-        public override async Task<IDictionary<string, string>> GetMetadata(string address = "", string key = "", string receiver = "")
+        public override async Task<IDictionary<string, object>> GetMetadata(string address = "", string key = "", string receiver = "")
         {
             // create token metadata
             var metadata = await GetCommonMetadata();

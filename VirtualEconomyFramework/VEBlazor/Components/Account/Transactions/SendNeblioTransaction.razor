@@ -417,9 +417,9 @@
         else
         {
             if (!IsSubAccount)
-                SendResult = await AppData.Account.SplitTokens(TokenId, new Dictionary<string,string> { { "Message", Message } }, new List<string>() { Receiver }, (int)numberOfLots, (int)Value);
+                SendResult = await AppData.Account.SplitTokens(TokenId, new Dictionary<string,object> { { "Message", Message } }, new List<string>() { Receiver }, (int)numberOfLots, (int)Value);
             else
-                SendResult = await AppData.Account.SplitNeblioTokensOnSubAccount(Address, TokenId, new Dictionary<string,string> { { "Message", Message } }, new List<string>() { Receiver }, (int)numberOfLots, (int)Value);
+                SendResult = await AppData.Account.SplitNeblioTokensOnSubAccount(Address, TokenId, new Dictionary<string,object> { { "Message", Message } }, new List<string>() { Receiver }, (int)numberOfLots, (int)Value);
         }
 
         return SendResult;     
@@ -469,9 +469,9 @@
         else
         {
             if (!IsSubAccount)
-                SendResult = await AppData.Account.SendNeblioTokenPayment(TokenId, new Dictionary<string,string> { { "Message", Message } }, Receiver, (int)Value);
+                SendResult = await AppData.Account.SendNeblioTokenPayment(TokenId, new Dictionary<string,object> { { "Message", Message } }, Receiver, (int)Value);
             else
-                SendResult = await AppData.Account.SendNeblioTokensOnSubAccount(Address, TokenId, new Dictionary<string,string> { { "Message", Message } }, Receiver, (int)Value);
+                SendResult = await AppData.Account.SendNeblioTokensOnSubAccount(Address, TokenId, new Dictionary<string,object> { { "Message", Message } }, Receiver, (int)Value);
         }
 
         return SendResult;

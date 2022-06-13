@@ -16,7 +16,7 @@ namespace VEDriversLite
         /// </summary>
         public SendTokenTxData()
         {
-            Metadata = new Dictionary<string, string>();
+            Metadata = new Dictionary<string, object>();
         }
         /// <summary>
         /// Address from where token will be send
@@ -46,7 +46,7 @@ namespace VEDriversLite
         /// <summary>
         /// Metadata dictionary, key-value pairs
         /// </summary>
-        public IDictionary<string, string> Metadata { get; set; } = new Dictionary<string, string>();
+        public IDictionary<string, object> Metadata { get; set; } = new Dictionary<string, object>();
         /// <summary>
         /// Initial Utxo for sending transaction from if you want to specify them
         /// </summary>

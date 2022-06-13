@@ -311,41 +311,41 @@ namespace VEDriversLite.NFT
         /// </summary>
         /// <param name="metadata"></param>
         /// <returns></returns>
-        Task LoadLastData(IDictionary<string, string> metadata);
+        Task LoadLastData(IDictionary<string, object> metadata);
         /// <summary>
         /// Parse the origin data of the NFT.
         /// It will track the NFT to its origin and use the data from the origin
         /// </summary>
         /// <param name="lastmetadata"></param>
         /// <returns></returns>
-        Task ParseOriginData(IDictionary<string,string> lastmetadata);
+        Task ParseOriginData(IDictionary<string, object> lastmetadata);
         /// <summary>
         /// Parse info about the sellfrom the metadata of the NFT
         /// </summary>
         /// <param name="meta"></param>
-        void ParseSoldInfo(IDictionary<string, string> meta);
+        void ParseSoldInfo(IDictionary<string, object> meta);
         /// <summary>
         /// Parse Common Properties from Metadata
         /// </summary>
         /// <param name="meta"></param>
-        void ParseCommon(IDictionary<string, string> meta);
+        void ParseCommon(IDictionary<string, object> meta);
         /// <summary>
         /// Parse price from the metadata of the NFT
         /// </summary>
         /// <param name="meta"></param>
-        void ParsePrice(IDictionary<string, string> meta);
+        void ParsePrice(IDictionary<string, object> meta);
         /// <summary>
         /// Parse specific information related to the specific kind of the NFT. 
         /// This function must be overwritte in specific NFT class
         /// </summary>
         /// <param name="meta"></param>
-        void ParseSpecific(IDictionary<string, string> meta);
+        void ParseSpecific(IDictionary<string, object> meta);
         /// <summary>
         /// Parse dogeft info from the metadata
         /// </summary>
         /// <param name="meta"></param>
         /// <returns></returns>
-        Task ParseDogeftInfo(IDictionary<string, string> meta);
+        Task ParseDogeftInfo(IDictionary<string, object> meta);
         /// <summary>
         /// Clear the object with SoldInfo of NFT
         /// </summary>
@@ -386,12 +386,12 @@ namespace VEDriversLite.NFT
         /// <param name="key">Private key of the sender of the NFT</param>
         /// <param name="receiver">Receiver of the NFT</param>
         /// <returns></returns>
-        Task<IDictionary<string, string>> GetMetadata(string address = "", string key = "", string receiver = "");
+        Task<IDictionary<string, object>> GetMetadata(string address = "", string key = "", string receiver = "");
         /// <summary>
         /// Get Common Metadata of the Actual NFT
         /// </summary>
         /// <returns></returns>
-        Task<IDictionary<string, string>> GetCommonMetadata();
+        Task<IDictionary<string, object>> GetCommonMetadata();
         /// <summary>
         /// Download preview data if there are some
         /// </summary>

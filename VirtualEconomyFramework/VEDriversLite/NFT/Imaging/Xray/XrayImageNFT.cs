@@ -98,44 +98,44 @@ namespace VEDriversLite.NFT.Imaging.Xray
         /// Parse specific parameters
         /// </summary>
         /// <param name="metadata"></param>
-        public override void ParseSpecific(IDictionary<string, string> metadata)
+        public override void ParseSpecific(IDictionary<string, object> metadata)
         {
             if (metadata.TryGetValue("ExpPar", out var exposure))
             {
-                if (!string.IsNullOrEmpty(exposure))
+                if (exposure != null)//(!string.IsNullOrEmpty(exposure))
                 {
                     try
                     {
-                        XrayParams = JsonConvert.DeserializeObject<XrayExposureParameters>(exposure);
+                        XrayParams = exposure as XrayExposureParameters;//JsonConvert.DeserializeObject<XrayExposureParameters>(exposure);
                     }
                     catch { Console.WriteLine("Cannot parse exposure parameters in the NFT"); }
                 }
             }
             if (metadata.TryGetValue("ObjPos", out var objectposition))
             {
-                if (!string.IsNullOrEmpty(objectposition))
+                if (objectposition != null)//(!string.IsNullOrEmpty(objectposition))
                 {
                     try
                     {
-                        ObjectPosition = JsonConvert.DeserializeObject<ObjectPositionDto>(objectposition);
+                        ObjectPosition = objectposition as ObjectPositionDto;//JsonConvert.DeserializeObject<ObjectPositionDto>(objectposition);
                     }
                     catch { Console.WriteLine("Cannot parse object position parameters in the NFT"); }
                 }
             }
             if (metadata.TryGetValue("DetPar", out var detectoreparameters))
             {
-                if (!string.IsNullOrEmpty(detectoreparameters))
+                if (detectoreparameters != null) //(!string.IsNullOrEmpty(detectoreparameters))
                 {
                     try
                     {
-                        DetectorParameters = JsonConvert.DeserializeObject<DetectorDataDto>(detectoreparameters);
+                        DetectorParameters = detectoreparameters as DetectorDataDto; // JsonConvert.DeserializeObject<DetectorDataDto>(detectoreparameters);
                     }
                     catch { Console.WriteLine("Cannot parse detector parameters in the NFT"); }
                 }
             }
             if (metadata.TryGetValue("IsOrig", out var isorig))
             {
-                if (bool.TryParse(isorig, out bool bisorig))
+                if (bool.TryParse(isorig as string, out bool bisorig))
                     IsOriginal = bisorig;
                 else
                     IsOriginal = false;
@@ -146,7 +146,7 @@ namespace VEDriversLite.NFT.Imaging.Xray
             }
             if (metadata.TryGetValue("IsRaw", out var israw))
             {
-                if (bool.TryParse(israw, out bool bisraw))
+                if (bool.TryParse(israw as string, out bool bisraw))
                     IsRaw = bisraw;
                 else
                     IsRaw = false;
@@ -157,7 +157,7 @@ namespace VEDriversLite.NFT.Imaging.Xray
             }
             if (metadata.TryGetValue("IsAvg", out var isavg))
             {
-                if (bool.TryParse(isavg, out bool bisavg))
+                if (bool.TryParse(isavg as string, out bool bisavg))
                     IsAveraged = bisavg;
                 else
                     IsAveraged = false;
@@ -168,7 +168,7 @@ namespace VEDriversLite.NFT.Imaging.Xray
             }
             if (metadata.TryGetValue("CoF", out var countofframes))
             {
-                CountOfFrames = Int32.Parse(countofframes, CultureInfo.InvariantCulture);
+                CountOfFrames = Int32.Parse(countofframes as string, CultureInfo.InvariantCulture);
             }
             else
             {
@@ -176,14 +176,14 @@ namespace VEDriversLite.NFT.Imaging.Xray
             }
 
             if (metadata.TryGetValue("XrayDeviceNFT", out var dh))
-                XrayDeviceNFTHash = dh;
+                XrayDeviceNFTHash = dh as string;
         }
         /// <summary>
         /// Find and parse origin data
         /// </summary>
         /// <param name="lastmetadata"></param>
         /// <returns></returns>
-        public override async Task ParseOriginData(IDictionary<string, string> lastmetadata)
+        public override async Task ParseOriginData(IDictionary<string, object> lastmetadata)
         {
             var nftData = await NFTHelpers.LoadNFTOriginData(Utxo);
             if (nftData != null)
@@ -225,7 +225,7 @@ namespace VEDriversLite.NFT.Imaging.Xray
         /// <param name="key">Private key of the sender for encryption</param>
         /// <param name="receiver">receiver of the NFT</param>
         /// <returns></returns>
-        public override async Task<IDictionary<string, string>> GetMetadata(string address = "", string key = "", string receiver = "")
+        public override async Task<IDictionary<string, object>> GetMetadata(string address = "", string key = "", string receiver = "")
         {
             // create token metadata
             var metadata = await GetCommonMetadata();

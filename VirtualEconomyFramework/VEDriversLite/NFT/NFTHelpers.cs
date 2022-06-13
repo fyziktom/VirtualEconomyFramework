@@ -67,7 +67,7 @@ namespace VEDriversLite.NFT
         /// <summary>
         /// Metadata from the NFT history moment
         /// </summary>
-        public Dictionary<string, string> NFTMetadata { get; set; } = new Dictionary<string, string>();
+        public Dictionary<string, object> NFTMetadata { get; set; } = new Dictionary<string, object>();
     }
 
     /// <summary>
@@ -572,11 +572,11 @@ namespace VEDriversLite.NFT
             {
                 var meta = await NeblioAPIHelpers.GetTransactionMetadata(TokenId, utxo);
                 if (meta.TryGetValue("NFT", out var value))
-                    if (!string.IsNullOrEmpty(value) && value == "true")
+                    if (!string.IsNullOrEmpty(value as string) && value == "true")
                     {
                         result.NFTMetadata = meta;
                         if (meta.TryGetValue("SourceUtxo", out var sourceTxId))
-                            result.NFTOriginTxId = sourceTxId;
+                            result.NFTOriginTxId = sourceTxId as string;
 
                         return result;
                     }
@@ -594,12 +594,12 @@ namespace VEDriversLite.NFT
         /// </summary>
         /// <param name="utxo"></param>
         /// <returns></returns>
-        public static async Task<Dictionary<string, string>> CheckIfContainsNFTData(string utxo)
+        public static async Task<Dictionary<string, object>> CheckIfContainsNFTData(string utxo)
         {
             var meta = await NeblioAPIHelpers.GetTransactionMetadata(TokenId, utxo);
 
             if (meta.TryGetValue("NFT", out var value))
-                if (!string.IsNullOrEmpty(value) && value == "true")
+                if (!string.IsNullOrEmpty(value as string) && value == "true")
                     return meta;
 
             return null;
@@ -1256,7 +1256,7 @@ namespace VEDriversLite.NFT
             if (nfts.Count > 10)
                 throw new Exception("Limit for one NFT destroy transaction is 10 of inputs.");
 
-            var metadata = new Dictionary<string,string>();
+            var metadata = new Dictionary<string, object>();
             metadata.Add("NFT", "false");
             metadata.Add("Action", "Destroy of NFTs");
 

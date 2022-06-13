@@ -61,16 +61,16 @@ namespace VEDriversLite.NFT
         /// Parse specific parameters
         /// </summary>
         /// <param name="metadata"></param>
-        public override void ParseSpecific(IDictionary<string, string> metadata)
+        public override void ParseSpecific(IDictionary<string, object> metadata)
         {
             if (metadata.TryGetValue("Surname", out var surname))
-                Surname = surname;
+                Surname = surname as string;
             if (metadata.TryGetValue("Nickname", out var nickname))
-                Nickname = nickname;
+                Nickname = nickname as string;
             if (metadata.TryGetValue("ID", out var id))
-                ID = id;
+                ID = id as string;
             if (metadata.TryGetValue("RelationshipStatus", out var relationshipStatus))
-                RelationshipStatus = relationshipStatus;
+                RelationshipStatus = relationshipStatus as string;
             if (metadata.TryGetValue("Age", out var age))
                 Age = Convert.ToInt32(age);
         }
@@ -79,7 +79,7 @@ namespace VEDriversLite.NFT
         /// </summary>
         /// <param name="lastmetadata"></param>
         /// <returns></returns>
-        public override async Task ParseOriginData(IDictionary<string, string> lastmetadata)
+        public override async Task ParseOriginData(IDictionary<string, object> lastmetadata)
         {
             var nftData = await NFTHelpers.LoadNFTOriginData(Utxo);
             if (nftData != null)
@@ -119,7 +119,7 @@ namespace VEDriversLite.NFT
         /// <param name="key">Private key of the sender for encryption</param>
         /// <param name="receiver">receiver of the NFT</param>
         /// <returns></returns>
-        public override async Task<IDictionary<string, string>> GetMetadata(string address = "", string key = "", string receiver = "")
+        public override async Task<IDictionary<string, object>> GetMetadata(string address = "", string key = "", string receiver = "")
         {
             var metadata = await GetCommonMetadata();
             metadata.Add("Surname", Surname);

@@ -72,31 +72,31 @@ namespace VEDriversLite.NFT
         /// Parse specific parameters
         /// </summary>
         /// <param name="metadata"></param>
-        public override void ParseSpecific(IDictionary<string, string> metadata)
+        public override void ParseSpecific(IDictionary<string, object> metadata)
         {
             if (metadata.TryGetValue("NFTUtxoTxId", out var nfttxid))
             {
-                NFTUtxoTxId = nfttxid;
-                NFTOriginTxId = nfttxid;
+                NFTUtxoTxId = nfttxid as string;
+                NFTOriginTxId = nfttxid as string;
             }
             if (metadata.TryGetValue("Sender", out var sender))
-                Sender = sender;
+                Sender = sender as string;
             if (metadata.TryGetValue("NFTUtxoIndex", out var index))
-                if (!string.IsNullOrEmpty(index))
+                if (!string.IsNullOrEmpty(index as string))
                     NFTUtxoIndex = Convert.ToInt32(index);
             if (metadata.TryGetValue("SoldPrice", out var soldprice))
             {
-                if (!string.IsNullOrEmpty(soldprice))
+                if (!string.IsNullOrEmpty(soldprice as string))
                 {
-                    var prc = soldprice.Replace(',', '.');
+                    var prc = (soldprice as string).Replace(',', '.');
                     SoldPrice = Convert.ToDouble(prc, CultureInfo.InvariantCulture);
                 }
             }
 
             if (metadata.TryGetValue("ReceiptFromPaymentUtxo", out var rfp))
-                ReceiptFromPaymentUtxo = rfp;
+                ReceiptFromPaymentUtxo = rfp as string;
             if (metadata.TryGetValue("OriginalPaymentTxId", out var optxid))
-                OriginalPaymentTxId = optxid;
+                OriginalPaymentTxId = optxid as string;
 
             Buyer = NeblioAPIHelpers.GetTransactionReceiver(Utxo, TxDetails).GetAwaiter().GetResult();
         }
@@ -105,7 +105,7 @@ namespace VEDriversLite.NFT
         /// </summary>
         /// <param name="lastmetadata"></param>
         /// <returns></returns>
-        public override Task ParseOriginData(IDictionary<string, string> lastmetadata)
+        public override Task ParseOriginData(IDictionary<string, object> lastmetadata)
         {
             return Task.CompletedTask;
         }
@@ -116,7 +116,7 @@ namespace VEDriversLite.NFT
         /// <param name="key">Private key of the sender for encryption</param>
         /// <param name="receiver">receiver of the NFT</param>
         /// <returns></returns>
-        public override async Task<IDictionary<string, string>> GetMetadata(string address = "", string key = "", string receiver = "")
+        public override async Task<IDictionary<string, object>> GetMetadata(string address = "", string key = "", string receiver = "")
         {
             // create token metadata
             var metadata = await GetCommonMetadata();

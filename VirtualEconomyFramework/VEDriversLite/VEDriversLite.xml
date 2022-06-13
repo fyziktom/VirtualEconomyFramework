@@ -3441,7 +3441,7 @@
             <param name="message">optional message</param>
             <returns>true and string with new TxId</returns>
         </member>
-        <member name="M:VEDriversLite.NeblioAccount.SendNeblioTokensOnSubAccount(System.String,System.String,System.Collections.Generic.IDictionary{System.String,System.String},System.String,System.Int32)">
+        <member name="M:VEDriversLite.NeblioAccount.SendNeblioTokensOnSubAccount(System.String,System.String,System.Collections.Generic.IDictionary{System.String,System.Object},System.String,System.Int32)">
             <summary>
             Send Neblio Tokens on SubAccount
             </summary>
@@ -3462,7 +3462,7 @@
             <param name="amount"></param>
             <returns>true and string with new TxId</returns>
         </member>
-        <member name="M:VEDriversLite.NeblioAccount.SplitNeblioTokensOnSubAccount(System.String,System.String,System.Collections.Generic.IDictionary{System.String,System.String},System.Collections.Generic.List{System.String},System.Int32,System.Int32)">
+        <member name="M:VEDriversLite.NeblioAccount.SplitNeblioTokensOnSubAccount(System.String,System.String,System.Collections.Generic.IDictionary{System.String,System.Object},System.Collections.Generic.List{System.String},System.Int32,System.Int32)">
             <summary>
             Split Neblio Tokens on SubAccount
             </summary>
@@ -3976,7 +3976,7 @@
             <param name="amount">Amount of new splited couns</param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.Neblio.NeblioAccountBase.SendNeblioTokenPayment(System.String,System.Collections.Generic.IDictionary{System.String,System.String},System.String,System.Int32)">
+        <member name="M:VEDriversLite.Neblio.NeblioAccountBase.SendNeblioTokenPayment(System.String,System.Collections.Generic.IDictionary{System.String,System.Object},System.String,System.Int32)">
             <summary>
             Send classic token payment. It must match same requirements as minting. It cannot use 1 token inputs (NFTs).
             </summary>
@@ -3986,7 +3986,7 @@
             <param name="amount">Amount of the tokens</param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.Neblio.NeblioAccountBase.SplitTokens(System.String,System.Collections.Generic.IDictionary{System.String,System.String},System.Collections.Generic.List{System.String},System.Int32,System.Int32)">
+        <member name="M:VEDriversLite.Neblio.NeblioAccountBase.SplitTokens(System.String,System.Collections.Generic.IDictionary{System.String,System.Object},System.Collections.Generic.List{System.String},System.Int32,System.Int32)">
             <summary>
             Send split token payment. It will create multiple outputs with lots of tokens.
             It must match same requirements as minting. It cannot use 1 token inputs (NFTs).
@@ -4357,7 +4357,7 @@
             <param name="key"></param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.NeblioTransactionHelpers.SplitNTP1TokensAsync(System.Collections.Generic.List{System.String},System.Int32,System.Int32,System.String,System.Collections.Generic.IDictionary{System.String,System.String},VEDriversLite.Security.EncryptionKey,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})">
+        <member name="M:VEDriversLite.NeblioTransactionHelpers.SplitNTP1TokensAsync(System.Collections.Generic.List{System.String},System.Int32,System.Int32,System.String,System.Collections.Generic.IDictionary{System.String,System.Object},VEDriversLite.Security.EncryptionKey,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})">
             <summary>
             Function will Split NTP1 tokens to smaller lots
             receiver list - If you input 0, split will be done to sender address, if you input 1 receiver split will be done to receiver (all inputs)
@@ -4531,13 +4531,13 @@
             <param name="NFT"></param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.NFT.AppNFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:VEDriversLite.NFT.AppNFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.Object})">
             <summary>
             Parse specific parameters
             </summary>
             <param name="metadata"></param>
         </member>
-        <member name="M:VEDriversLite.NFT.AppNFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:VEDriversLite.NFT.AppNFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.Object})">
             <summary>
             Find and parse origin data
             </summary>
@@ -4742,7 +4742,7 @@
             This event is fired when the transaction info is refreshed
             </summary>
         </member>
-        <member name="M:VEDriversLite.NFT.CommonNFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:VEDriversLite.NFT.CommonNFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.Object})">
             <summary>
             Parse the origin data of the NFT.
             It will track the NFT to its origin and use the data from the origin
@@ -4768,7 +4768,7 @@
             <param name="NFT"></param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.NFT.CommonNFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:VEDriversLite.NFT.CommonNFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.Object})">
             <summary>
             Parse specific information related to the specific kind of the NFT. 
             This function must be overwritte in specific NFT class
@@ -4812,7 +4812,7 @@
             Function will parse tags to the list of the tags
             </summary>
         </member>
-        <member name="M:VEDriversLite.NFT.CommonNFT.LoadLastData(System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:VEDriversLite.NFT.CommonNFT.LoadLastData(System.Collections.Generic.IDictionary{System.String,System.Object})">
             <summary>
             Load last data of the NFT.
             It means that it will take just the last data and not tracking the origin for the orign data
@@ -4820,25 +4820,25 @@
             <param name="metadata"></param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.NFT.CommonNFT.ParsePrice(System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:VEDriversLite.NFT.CommonNFT.ParsePrice(System.Collections.Generic.IDictionary{System.String,System.Object})">
             <summary>
             Parse price from the metadata of the NFT
             </summary>
             <param name="meta"></param>
         </member>
-        <member name="M:VEDriversLite.NFT.CommonNFT.ParseSoldInfo(System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:VEDriversLite.NFT.CommonNFT.ParseSoldInfo(System.Collections.Generic.IDictionary{System.String,System.Object})">
             <summary>
             Parse info about the sellfrom the metadata of the NFT
             </summary>
             <param name="meta"></param>
         </member>
-        <member name="M:VEDriversLite.NFT.CommonNFT.ParseCommon(System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:VEDriversLite.NFT.CommonNFT.ParseCommon(System.Collections.Generic.IDictionary{System.String,System.Object})">
             <summary>
             Parse common properties from the dictionary of metadata
             </summary>
             <param name="meta"></param>
         </member>
-        <member name="M:VEDriversLite.NFT.CommonNFT.ParseDogeftInfo(System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:VEDriversLite.NFT.CommonNFT.ParseDogeftInfo(System.Collections.Generic.IDictionary{System.String,System.Object})">
             <summary>
             Parse dogeft info from the metadata
             </summary>
@@ -4946,13 +4946,13 @@
             Last comment was added by address or NFT Profile hash
             </summary>
         </member>
-        <member name="M:VEDriversLite.NFT.Coruzant.CoruzantArticleNFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:VEDriversLite.NFT.Coruzant.CoruzantArticleNFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.Object})">
             <summary>
             Parse specific properties
             </summary>
             <param name="metadata"></param>
         </member>
-        <member name="M:VEDriversLite.NFT.Coruzant.CoruzantArticleNFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:VEDriversLite.NFT.Coruzant.CoruzantArticleNFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.Object})">
             <summary>
             Parse origin data
             </summary>
@@ -5187,13 +5187,13 @@
             <param name="NFT"></param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.NFT.Coruzant.CoruzantProfileNFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:VEDriversLite.NFT.Coruzant.CoruzantProfileNFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.Object})">
             <summary>
             Parse specific parameters
             </summary>
             <param name="metadata"></param>
         </member>
-        <member name="M:VEDriversLite.NFT.Coruzant.CoruzantProfileNFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:VEDriversLite.NFT.Coruzant.CoruzantProfileNFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.Object})">
             <summary>
             Parse origin data of the NFT
             </summary>
@@ -5399,13 +5399,13 @@
             <param name="NFT"></param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.NFT.DevicesNFTs.DeviceNFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:VEDriversLite.NFT.DevicesNFTs.DeviceNFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.Object})">
             <summary>
             Parse specific properties
             </summary>
             <param name="metadata"></param>
         </member>
-        <member name="M:VEDriversLite.NFT.DevicesNFTs.DeviceNFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:VEDriversLite.NFT.DevicesNFTs.DeviceNFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.Object})">
             <summary>
             Parse origin properties
             </summary>
@@ -5471,13 +5471,13 @@
             <param name="NFT"></param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.NFT.DevicesNFTs.FWSrcNFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:VEDriversLite.NFT.DevicesNFTs.FWSrcNFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.Object})">
             <summary>
             Parse specific data for the NFT
             </summary>
             <param name="metadata"></param>
         </member>
-        <member name="M:VEDriversLite.NFT.DevicesNFTs.FWSrcNFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:VEDriversLite.NFT.DevicesNFTs.FWSrcNFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.Object})">
             <summary>
             Parse origin data of the NFT
             </summary>
@@ -5554,13 +5554,13 @@
             <param name="NFT"></param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.NFT.DevicesNFTs.HWSrcNFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:VEDriversLite.NFT.DevicesNFTs.HWSrcNFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.Object})">
             <summary>
             Parse specific data for the NFT
             </summary>
             <param name="metadata"></param>
         </member>
-        <member name="M:VEDriversLite.NFT.DevicesNFTs.HWSrcNFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:VEDriversLite.NFT.DevicesNFTs.HWSrcNFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.Object})">
             <summary>
             Parse origin data of the NFT
             </summary>
@@ -5720,13 +5720,13 @@
             <param name="NFT"></param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.NFT.DevicesNFTs.IoTDeviceNFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:VEDriversLite.NFT.DevicesNFTs.IoTDeviceNFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.Object})">
             <summary>
             Parse specific data for the NFT
             </summary>
             <param name="metadata"></param>
         </member>
-        <member name="M:VEDriversLite.NFT.DevicesNFTs.IoTDeviceNFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:VEDriversLite.NFT.DevicesNFTs.IoTDeviceNFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.Object})">
             <summary>
             Parse origin data of the NFT
             </summary>
@@ -5819,13 +5819,13 @@
             Was this message received or sent
             </summary>
         </member>
-        <member name="M:VEDriversLite.NFT.DevicesNFTs.IoTMessageNFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:VEDriversLite.NFT.DevicesNFTs.IoTMessageNFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.Object})">
             <summary>
             Parse specific parameters
             </summary>
             <param name="metadata"></param>
         </member>
-        <member name="M:VEDriversLite.NFT.DevicesNFTs.IoTMessageNFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:VEDriversLite.NFT.DevicesNFTs.IoTMessageNFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.Object})">
             <summary>
             Find and parse origin data
             </summary>
@@ -5906,13 +5906,13 @@
             <param name="NFT"></param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.NFT.DevicesNFTs.MechSrcNFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:VEDriversLite.NFT.DevicesNFTs.MechSrcNFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.Object})">
             <summary>
             Parse specific data for the NFT
             </summary>
             <param name="metadata"></param>
         </member>
-        <member name="M:VEDriversLite.NFT.DevicesNFTs.MechSrcNFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:VEDriversLite.NFT.DevicesNFTs.MechSrcNFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.Object})">
             <summary>
             Parse origin data of the NFT
             </summary>
@@ -5967,13 +5967,13 @@
             <param name="NFT"></param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.NFT.DevicesNFTs.ProtocolNFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:VEDriversLite.NFT.DevicesNFTs.ProtocolNFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.Object})">
             <summary>
             Parse specific data for the NFT
             </summary>
             <param name="metadata"></param>
         </member>
-        <member name="M:VEDriversLite.NFT.DevicesNFTs.ProtocolNFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:VEDriversLite.NFT.DevicesNFTs.ProtocolNFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.Object})">
             <summary>
             Parse origin data of the NFT
             </summary>
@@ -6033,13 +6033,13 @@
             <param name="NFT"></param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.NFT.DevicesNFTs.SWSrcNFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:VEDriversLite.NFT.DevicesNFTs.SWSrcNFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.Object})">
             <summary>
             Parse specific data for the NFT
             </summary>
             <param name="metadata"></param>        
         </member>
-        <member name="M:VEDriversLite.NFT.DevicesNFTs.SWSrcNFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:VEDriversLite.NFT.DevicesNFTs.SWSrcNFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.Object})">
             <summary>
             Parse origin data of the NFT
             </summary>
@@ -6606,13 +6606,13 @@
             Class of the Event
             </summary>
         </member>
-        <member name="M:VEDriversLite.NFT.EventNFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:VEDriversLite.NFT.EventNFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.Object})">
             <summary>
             Parse specific parameters
             </summary>
             <param name="metadata"></param>
         </member>
-        <member name="M:VEDriversLite.NFT.EventNFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:VEDriversLite.NFT.EventNFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.Object})">
             <summary>
             Find and parse origin data
             </summary>
@@ -6651,13 +6651,13 @@
             <param name="NFT"></param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.NFT.ImageNFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:VEDriversLite.NFT.ImageNFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.Object})">
             <summary>
             Parse specific parameters
             </summary>
             <param name="metadata"></param>
         </member>
-        <member name="M:VEDriversLite.NFT.ImageNFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:VEDriversLite.NFT.ImageNFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.Object})">
             <summary>
             Find and parse origin data
             </summary>
@@ -7041,13 +7041,13 @@
             <param name="NFT"></param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.NFT.Imaging.Xray.XrayImageNFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:VEDriversLite.NFT.Imaging.Xray.XrayImageNFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.Object})">
             <summary>
             Parse specific parameters
             </summary>
             <param name="metadata"></param>
         </member>
-        <member name="M:VEDriversLite.NFT.Imaging.Xray.XrayImageNFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:VEDriversLite.NFT.Imaging.Xray.XrayImageNFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.Object})">
             <summary>
             Find and parse origin data
             </summary>
@@ -7133,13 +7133,13 @@
             Positioner parameters. Informations about the axes
             </summary>
         </member>
-        <member name="M:VEDriversLite.NFT.Imaging.Xray.XrayNFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:VEDriversLite.NFT.Imaging.Xray.XrayNFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.Object})">
             <summary>
             Parse specific parameters
             </summary>
             <param name="metadata"></param>
         </member>
-        <member name="M:VEDriversLite.NFT.Imaging.Xray.XrayNFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:VEDriversLite.NFT.Imaging.Xray.XrayNFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.Object})">
             <summary>
             Find and parse origin data
             </summary>
@@ -7519,7 +7519,7 @@
             <param name="NFT"></param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.NFT.INFT.LoadLastData(System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:VEDriversLite.NFT.INFT.LoadLastData(System.Collections.Generic.IDictionary{System.String,System.Object})">
             <summary>
             Load last data of the NFT.
             It means that it will take just the last data and not tracking the origin for the orign data
@@ -7527,7 +7527,7 @@
             <param name="metadata"></param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.NFT.INFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:VEDriversLite.NFT.INFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.Object})">
             <summary>
             Parse the origin data of the NFT.
             It will track the NFT to its origin and use the data from the origin
@@ -7535,32 +7535,32 @@
             <param name="lastmetadata"></param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.NFT.INFT.ParseSoldInfo(System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:VEDriversLite.NFT.INFT.ParseSoldInfo(System.Collections.Generic.IDictionary{System.String,System.Object})">
             <summary>
             Parse info about the sellfrom the metadata of the NFT
             </summary>
             <param name="meta"></param>
         </member>
-        <member name="M:VEDriversLite.NFT.INFT.ParseCommon(System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:VEDriversLite.NFT.INFT.ParseCommon(System.Collections.Generic.IDictionary{System.String,System.Object})">
             <summary>
             Parse Common Properties from Metadata
             </summary>
             <param name="meta"></param>
         </member>
-        <member name="M:VEDriversLite.NFT.INFT.ParsePrice(System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:VEDriversLite.NFT.INFT.ParsePrice(System.Collections.Generic.IDictionary{System.String,System.Object})">
             <summary>
             Parse price from the metadata of the NFT
             </summary>
             <param name="meta"></param>
         </member>
-        <member name="M:VEDriversLite.NFT.INFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:VEDriversLite.NFT.INFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.Object})">
             <summary>
             Parse specific information related to the specific kind of the NFT. 
             This function must be overwritte in specific NFT class
             </summary>
             <param name="meta"></param>
         </member>
-        <member name="M:VEDriversLite.NFT.INFT.ParseDogeftInfo(System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:VEDriversLite.NFT.INFT.ParseDogeftInfo(System.Collections.Generic.IDictionary{System.String,System.Object})">
             <summary>
             Parse dogeft info from the metadata
             </summary>
@@ -7757,13 +7757,13 @@
             <param name="NFT"></param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.NFT.InvoiceNFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:VEDriversLite.NFT.InvoiceNFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.Object})">
             <summary>
             Parse specific parameters
             </summary>
             <param name="metadata"></param>
         </member>
-        <member name="M:VEDriversLite.NFT.InvoiceNFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:VEDriversLite.NFT.InvoiceNFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.Object})">
             <summary>
             Find and parse origin data
             </summary>
@@ -7821,13 +7821,13 @@
             Was this message received or sent
             </summary>
         </member>
-        <member name="M:VEDriversLite.NFT.MessageNFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:VEDriversLite.NFT.MessageNFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.Object})">
             <summary>
             Parse specific parameters
             </summary>
             <param name="metadata"></param>
         </member>
-        <member name="M:VEDriversLite.NFT.MessageNFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:VEDriversLite.NFT.MessageNFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.Object})">
             <summary>
             Find and parse origin data
             </summary>
@@ -7887,13 +7887,13 @@
             <param name="NFT"></param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.NFT.MusicNFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:VEDriversLite.NFT.MusicNFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.Object})">
             <summary>
             Parse specific parameters
             </summary>
             <param name="metadata"></param>
         </member>
-        <member name="M:VEDriversLite.NFT.MusicNFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:VEDriversLite.NFT.MusicNFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.Object})">
             <summary>
             Find and parse origin data
             </summary>
@@ -7930,7 +7930,7 @@
             Main factory for creating the NFTs from hash of the transaction
             </summary>
         </member>
-        <member name="M:VEDriversLite.NFT.NFTFactory.ParseNFTType(System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:VEDriversLite.NFT.NFTFactory.ParseNFTType(System.Collections.Generic.IDictionary{System.String,System.Object})">
             <summary>
             Parse the type of the NFT from the transaction metadata
             </summary>
@@ -7964,7 +7964,7 @@
             <param name="type">specify the type - you must turn on asType flag</param>
             <returns>INFT compatible object cloned from source</returns>
         </member>
-        <member name="M:VEDriversLite.NFT.NFTFactory.GetNFTFromCacheMetadata(System.Collections.Generic.IDictionary{System.String,System.String},System.String,System.Int32,VEDriversLite.NeblioAPI.GetTransactionInfoResponse,System.Boolean,VEDriversLite.NFT.NFTTypes)">
+        <member name="M:VEDriversLite.NFT.NFTFactory.GetNFTFromCacheMetadata(System.Collections.Generic.IDictionary{System.String,System.Object},System.String,System.Int32,VEDriversLite.NeblioAPI.GetTransactionInfoResponse,System.Boolean,VEDriversLite.NFT.NFTTypes)">
             <summary>
             Load the NFT based on the data from the cache
             </summary>
@@ -8548,13 +8548,13 @@
             <param name="NFT"></param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.NFT.OrderNFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:VEDriversLite.NFT.OrderNFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.Object})">
             <summary>
             Parse specific parameters
             </summary>
             <param name="metadata"></param>
         </member>
-        <member name="M:VEDriversLite.NFT.OrderNFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:VEDriversLite.NFT.OrderNFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.Object})">
             <summary>
             Find and parse origin data
             </summary>
@@ -8746,13 +8746,13 @@
             <param name="NFT"></param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.NFT.PaymentNFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:VEDriversLite.NFT.PaymentNFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.Object})">
             <summary>
             Parse specific parameters
             </summary>
             <param name="metadata"></param>
         </member>
-        <member name="M:VEDriversLite.NFT.PaymentNFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:VEDriversLite.NFT.PaymentNFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.Object})">
             <summary>
             Find and parse origin data
             </summary>
@@ -8785,13 +8785,13 @@
             <param name="NFT"></param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.NFT.PostNFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:VEDriversLite.NFT.PostNFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.Object})">
             <summary>
             Parse specific parameters
             </summary>
             <param name="metadata"></param>
         </member>
-        <member name="M:VEDriversLite.NFT.PostNFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:VEDriversLite.NFT.PostNFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.Object})">
             <summary>
             Find and parse origin data
             </summary>
@@ -8845,13 +8845,13 @@
             <param name="NFT"></param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.NFT.ProductNFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:VEDriversLite.NFT.ProductNFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.Object})">
             <summary>
             Parse specific parameters
             </summary>
             <param name="metadata"></param>
         </member>
-        <member name="M:VEDriversLite.NFT.ProductNFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:VEDriversLite.NFT.ProductNFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.Object})">
             <summary>
             Find and parse origin data
             </summary>
@@ -8909,13 +8909,13 @@
             <param name="NFT"></param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.NFT.ProfileNFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:VEDriversLite.NFT.ProfileNFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.Object})">
             <summary>
             Parse specific parameters
             </summary>
             <param name="metadata"></param>
         </member>
-        <member name="M:VEDriversLite.NFT.ProfileNFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:VEDriversLite.NFT.ProfileNFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.Object})">
             <summary>
             Find and parse origin data
             </summary>
@@ -8990,13 +8990,13 @@
             <param name="NFT"></param>
             <returns></returns>
         </member>
-        <member name="M:VEDriversLite.NFT.ReceiptNFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:VEDriversLite.NFT.ReceiptNFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.Object})">
             <summary>
             Parse specific parameters
             </summary>
             <param name="metadata"></param>
         </member>
-        <member name="M:VEDriversLite.NFT.ReceiptNFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:VEDriversLite.NFT.ReceiptNFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.Object})">
             <summary>
             Find and parse origin data
             </summary>
@@ -9271,13 +9271,13 @@
             Evenf NFT for the ticket
             </summary>
         </member>
-        <member name="M:VEDriversLite.NFT.TicketNFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:VEDriversLite.NFT.TicketNFT.ParseSpecific(System.Collections.Generic.IDictionary{System.String,System.Object})">
             <summary>
             Parse specific parameters
             </summary>
             <param name="metadata"></param>
         </member>
-        <member name="M:VEDriversLite.NFT.TicketNFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.String})">
+        <member name="M:VEDriversLite.NFT.TicketNFT.ParseOriginData(System.Collections.Generic.IDictionary{System.String,System.Object})">
             <summary>
             Find and parse origin data
             </summary>

@@ -28,7 +28,7 @@ namespace VEDriversLite.NFT.Dto
         /// <summary>
         /// Metadata of the NFT
         /// </summary>
-        public IDictionary<string, string> Metadata { get; set; } = new Dictionary<string, string>();
+        public IDictionary<string, object> Metadata { get; set; } = new Dictionary<string, object>();
 
         /// <summary>
         /// Last time when the NFT was loaded from the cash

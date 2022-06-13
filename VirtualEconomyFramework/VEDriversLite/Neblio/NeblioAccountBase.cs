@@ -1152,7 +1152,7 @@ namespace VEDriversLite.Neblio
         /// <param name="receiver">Receiver Neblio address</param>
         /// <param name="amount">Amount of the tokens</param>
         /// <returns></returns>
-        public async Task<(bool, string)> SendNeblioTokenPayment(string tokenId, IDictionary<string, string> metadata, string receiver, int amount)
+        public async Task<(bool, string)> SendNeblioTokenPayment(string tokenId, IDictionary<string, object> metadata, string receiver, int amount)
         {
             if (IsLocked())
             {
@@ -1214,7 +1214,7 @@ namespace VEDriversLite.Neblio
         /// <param name="lots">Amount of the tokens</param>
         /// <param name="amount">Amount of the tokens</param>
         /// <returns></returns>
-        public async Task<(bool, string)> SplitTokens(string tokenId, IDictionary<string, string> metadata, List<string> receivers, int lots, int amount)
+        public async Task<(bool, string)> SplitTokens(string tokenId, IDictionary<string, object> metadata, List<string> receivers, int lots, int amount)
         {
             if (lots > NeblioAPIHelpers.MaximumTokensOutpus)
                 return (false, $"Cannot create more than {NeblioAPIHelpers.MaximumTokensOutpus} lots.");
@@ -2105,7 +2105,7 @@ namespace VEDriversLite.Neblio
                 return (false, tres.Item1);
             }
 
-            var metadata = new Dictionary<string, string>();
+            var metadata = new Dictionary<string, object>();
             metadata.Add("Message", "Thank you for using VENFT. https://about.ve-nft.com/");
 
             // fill input data for sending tx

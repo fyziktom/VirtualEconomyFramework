@@ -148,30 +148,30 @@ namespace VEDriversLite.NFT
         /// Parse specific parameters
         /// </summary>
         /// <param name="metadata"></param>
-        public override void ParseSpecific(IDictionary<string,string> metadata)
+        public override void ParseSpecific(IDictionary<string,object> metadata)
         {
             if (metadata.TryGetValue("EventId", out var ei))
-                EventId = ei;
+                EventId = ei as string;
             if (metadata.TryGetValue("Used", out var used))
             {
-                if (used == "true")
+                if (used as string == "true")
                     Used = true;
                 else
                     Used = false;
             }
             if (metadata.TryGetValue("MusicInLink", out var mil))
             {
-                if (mil == "true")
+                if (mil as string == "true")
                     MusicInLink = true;
                 else
                     MusicInLink = false;
             }
             if (metadata.TryGetValue("Location", out var location))
-                Location = location;
+                Location = location as string;
             if (metadata.TryGetValue("LocationC", out var loc))
             {
-                LocationCoordinates = loc;
-                var split = loc.Split(',');
+                LocationCoordinates = loc as string;
+                var split = (loc as string).Split(',');
                 if (split.Length > 1)
                 {
                     try
@@ -186,14 +186,14 @@ namespace VEDriversLite.NFT
                 }
             }
             if (metadata.TryGetValue("VideoLink", out var video))
-                VideoLink = video;
+                VideoLink = video as string;
             if (metadata.TryGetValue("AuthorLink", out var alink))
-                AuthorLink = alink;
+                AuthorLink = alink as string;
             if (metadata.TryGetValue("EventDate", out var date))
             {
                 try
                 {
-                    EventDate = DateTime.Parse(date);
+                    EventDate = DateTime.Parse(date as string);
                 }
                 catch(Exception ex)
                 {
@@ -213,10 +213,10 @@ namespace VEDriversLite.NFT
             }
             if (metadata.TryGetValue("PriceInDoge", out var priced))
             {
-                if (!string.IsNullOrEmpty(priced))
+                if (!string.IsNullOrEmpty(priced as string))
                 {
-                    priced = priced.Replace(',', '.');
-                    PriceInDoge = double.Parse(priced, CultureInfo.InvariantCulture);
+                    priced = (priced as string).Replace(',', '.');
+                    PriceInDoge = double.Parse(priced as string, CultureInfo.InvariantCulture);
                     PriceInDogeActive = true;
                 }
                 else
@@ -234,7 +234,7 @@ namespace VEDriversLite.NFT
         /// </summary>
         /// <param name="lastmetadata"></param>
         /// <returns></returns>
-        public override async Task ParseOriginData(IDictionary<string, string> lastmetadata)
+        public override async Task ParseOriginData(IDictionary<string, object> lastmetadata)
         {
             var nftData = await NFTHelpers.LoadNFTOriginData(Utxo, true);
             if (nftData != null)
@@ -282,7 +282,7 @@ namespace VEDriversLite.NFT
         /// <param name="key">Private key of the sender for encryption</param>
         /// <param name="receiver">receiver of the NFT</param>
         /// <returns></returns>
-        public override async Task<IDictionary<string,string>> GetMetadata(string address = "", string key = "", string receiver = "")
+        public override async Task<IDictionary<string, object>> GetMetadata(string address = "", string key = "", string receiver = "")
         {
             // create token metadata
             var metadata = await GetCommonMetadata();

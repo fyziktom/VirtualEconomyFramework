@@ -178,11 +178,11 @@ namespace VEDriversLite.NFT.DevicesNFTs
         /// Parse specific data for the NFT
         /// </summary>
         /// <param name="metadata"></param>
-        public override void ParseSpecific(IDictionary<string, string> metadata)
+        public override void ParseSpecific(IDictionary<string, object> metadata)
         {
             if (metadata.TryGetValue("EncryptSetting", out var encs))
             {
-                if (bool.TryParse(encs, out bool bencs))
+                if (bool.TryParse(encs as string, out bool bencs))
                     EncryptSetting = bencs;
                 else
                     EncryptSetting = false;
@@ -192,28 +192,28 @@ namespace VEDriversLite.NFT.DevicesNFTs
                 EncryptSetting = false;
             }
             if (metadata.TryGetValue("RcvMsgAdd", out var rmsg))
-                ReceivingMessageAddress = rmsg;
+                ReceivingMessageAddress = rmsg as string;
             if (metadata.TryGetValue("DeviceNFT", out var dh))
-                DeviceNFTHash = dh;
+                DeviceNFTHash = dh as string;
             if (metadata.TryGetValue("Address", out var add))
-                Address = add;
+                Address = add as string;
             if (metadata.TryGetValue("Location", out var location))
             {
                 if (!EncryptSetting)
                 {
-                    Location = location;
+                    Location = location as string;
                 }
                 else
                 {
-                    EncryptedLocationString = location;
+                    EncryptedLocationString = location as string;
                 }
             }
             if (metadata.TryGetValue("LocationC", out var loc))
             {
                 if (!EncryptSetting)
                 {
-                    LocationCoordinates = loc;
-                    var split = loc.Split(',');
+                    LocationCoordinates = loc as string;
+                    var split = (loc as string).Split(',');
                     if (split.Length > 1)
                     {
                         try
@@ -229,15 +229,15 @@ namespace VEDriversLite.NFT.DevicesNFTs
                 }
                 else
                 {
-                    EncryptedLocationCoordinatesString = loc;
+                    EncryptedLocationCoordinatesString = loc as string;
                 }
             }
             if (metadata.TryGetValue("IoTDataDriverType", out var iotddt))
             {
-                IoTDataDriverTypeText = iotddt;
+                IoTDataDriverTypeText = iotddt as string;
                 try
                 {
-                    IoTDDType = (IoTDataDriverType)Enum.Parse(typeof(IoTDataDriverType), iotddt);
+                    IoTDDType = (IoTDataDriverType)Enum.Parse(typeof(IoTDataDriverType), iotddt as string);
                 }
                 catch(Exception ex)
                 {
@@ -252,13 +252,13 @@ namespace VEDriversLite.NFT.DevicesNFTs
 
             if (metadata.TryGetValue("IDDSettings", out var idd))
             {
-                if(!string.IsNullOrEmpty(idd))
+                if (idd != null) //(!string.IsNullOrEmpty(idd))
                 {
                     if (!EncryptSetting)
                     {
                         try
                         {
-                            IDDSettings = JsonConvert.DeserializeObject<IoTDataDriverSettings>(idd);
+                            IDDSettings = idd as IoTDataDriverSettings;//JsonConvert.DeserializeObject<IoTDataDriverSettings>(idd);
                         }
                         catch (Exception ex)
                         {
@@ -268,7 +268,7 @@ namespace VEDriversLite.NFT.DevicesNFTs
                     }
                     else
                     {
-                        EncryptedSettingString = idd;
+                        EncryptedSettingString = idd as string;
                     }
                 }
                 else
@@ -278,7 +278,7 @@ namespace VEDriversLite.NFT.DevicesNFTs
             }
             if (metadata.TryGetValue("AutoActivation", out var aa))
             {
-                if (bool.TryParse(aa, out bool baa))
+                if (bool.TryParse(aa as string, out bool baa))
                     AutoActivation = baa;
                 else
                     AutoActivation = false;
@@ -289,7 +289,7 @@ namespace VEDriversLite.NFT.DevicesNFTs
             }
             if (metadata.TryGetValue("EncryptMessages", out var enc))
             {
-                if (bool.TryParse(enc, out bool benc))
+                if (bool.TryParse(enc as string, out bool benc))
                     EncryptMessages = benc;
                 else
                     EncryptMessages = false;
@@ -304,7 +304,7 @@ namespace VEDriversLite.NFT.DevicesNFTs
         /// </summary>
         /// <param name="lastmetadata"></param>
         /// <returns></returns>
-        public override async Task ParseOriginData(IDictionary<string, string> lastmetadata)
+        public override async Task ParseOriginData(IDictionary<string, object> lastmetadata)
         {
             var nftData = await NFTHelpers.LoadNFTOriginData(Utxo);
             if (nftData != null)
@@ -345,7 +345,7 @@ namespace VEDriversLite.NFT.DevicesNFTs
         /// <param name="key"></param>
         /// <param name="receiver"></param>
         /// <returns></returns>
-        public override async Task<IDictionary<string, string>> GetMetadata(string address = "", string key = "", string receiver = "")
+        public override async Task<IDictionary<string, object>> GetMetadata(string address = "", string key = "", string receiver = "")
         {
             // create token metadata
             var metadata = await GetCommonMetadata();

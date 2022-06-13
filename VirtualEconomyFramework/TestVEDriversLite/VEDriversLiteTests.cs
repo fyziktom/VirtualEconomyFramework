@@ -693,7 +693,7 @@ namespace TestVEDriversLite
 
             var amount = Convert.ToInt32(am);
             // create metadata
-            var metadata = new Dictionary<string, string>();
+            var metadata = new Dictionary<string, object>();
             if (!string.IsNullOrEmpty(data))
                 metadata.Add("Data", data);
             else
@@ -1349,7 +1349,7 @@ namespace TestVEDriversLite
             if (dto == null)
                 throw new Exception("Cannot deserialize file content.");
 
-            var meta = new Dictionary<string, string>();
+            var meta = new Dictionary<string, object>();
             meta.Add("Data", "Thank you.");
             var res = await account.SplitTokens(dto.tokenId, meta, dto.receivers, dto.lots, dto.amount);
             Console.WriteLine("New TxId hash is: ");
@@ -2829,7 +2829,7 @@ namespace TestVEDriversLite
             Console.WriteLine("Readed messages from IoT Device NFT:");
             await nft.DeInitCommunication();
             //var msgs = new Dictionary<string, INFT>(nft.MessageNFTs);
-            var metaforTest = new Dictionary<string, string>();
+            var metaforTest = new Dictionary<string, object>();
             var testname = string.Empty;
             var testdescription = string.Empty;
             Console.WriteLine($"Total Number of loaded messages: {nft.MessageNFTs.Count}");
@@ -2843,7 +2843,7 @@ namespace TestVEDriversLite
                         var meta = await msg.Value.GetMetadata(account.Address, account.Secret.ToString(), account.Address);
                         if (metaforTest.Count == 0)
                         {
-                            metaforTest = new Dictionary<string, string>(meta);
+                            metaforTest = new Dictionary<string, object>(meta);
                             testname = msg.Value.Name;
                             testdescription = msg.Value.Description;
                         }

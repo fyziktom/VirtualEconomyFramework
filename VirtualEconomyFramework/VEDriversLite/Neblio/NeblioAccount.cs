@@ -1152,7 +1152,7 @@ namespace VEDriversLite
                 }
                 else if (!sendNeblioToAccount && sendTokenToAccount)
                 {
-                    var meta = new Dictionary<string, string>();
+                    var meta = new Dictionary<string, object>();
                     meta.Add("Data", "Init token load.");
                     res = await SendNeblioTokenPayment(tokenId, meta, nsa.Address, (int)tokenAmountToSend);
                 }
@@ -1469,7 +1469,7 @@ namespace VEDriversLite
         /// <param name="receiver">receiver Neblio address</param>
         /// <param name="amount">amount of neblio</param>
         /// <returns>true and string with new TxId</returns>
-        public async Task<(bool, string)> SendNeblioTokensOnSubAccount(string address, string tokenId, IDictionary<string,string> meta, string receiver, int amount)
+        public async Task<(bool, string)> SendNeblioTokensOnSubAccount(string address, string tokenId, IDictionary<string,object> meta, string receiver, int amount)
         {
             try
             {
@@ -1523,7 +1523,7 @@ namespace VEDriversLite
         /// <param name="lots">Number of lots on the Output of tx.</param>
         /// <param name="amount">Amount of the tokens in one lot.</param>
         /// <returns>true and string with new TxId</returns>
-        public async Task<(bool, string)> SplitNeblioTokensOnSubAccount(string address, string tokenId, IDictionary<string, string> metadata, List<string> receivers, int lots, int amount)
+        public async Task<(bool, string)> SplitNeblioTokensOnSubAccount(string address, string tokenId, IDictionary<string, object> metadata, List<string> receivers, int lots, int amount)
         {
             try
             {

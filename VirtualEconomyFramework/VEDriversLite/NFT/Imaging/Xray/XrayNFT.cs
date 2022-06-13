@@ -86,57 +86,57 @@ namespace VEDriversLite.NFT.Imaging.Xray
         /// Parse specific parameters
         /// </summary>
         /// <param name="metadata"></param>
-        public override void ParseSpecific(IDictionary<string, string> metadata)
+        public override void ParseSpecific(IDictionary<string, object> metadata)
         {
             if (metadata.TryGetValue("DetPar", out var detparam))
             {
-                if (!string.IsNullOrEmpty(detparam))
+                if (detparam != null)//(!string.IsNullOrEmpty(detparam))
                 {
                     try
                     {
-                        DetectorParameters = JsonConvert.DeserializeObject<DetectorDataDto>(detparam);
+                        DetectorParameters = detparam as DetectorDataDto;//JsonConvert.DeserializeObject<DetectorDataDto>(detparam);
                     }
                     catch { Console.WriteLine("Cannot parse detector parameters in the NFT"); }
                 }
             }
             if (metadata.TryGetValue("SrcPar", out var srcparam))
             {
-                if (!string.IsNullOrEmpty(srcparam))
+                if (srcparam != null)//(!string.IsNullOrEmpty(srcparam))
                 {
                     try
                     {
-                        SourceParameters = JsonConvert.DeserializeObject<SourceParametersDto>(srcparam);
+                        SourceParameters = srcparam as SourceParametersDto;//JsonConvert.DeserializeObject<SourceParametersDto>(srcparam);
                     }
                     catch { Console.WriteLine("Cannot parse source parameters in the NFT"); }
                 }
             }
             if (metadata.TryGetValue("PosPar", out var posparam))
             {
-                if (!string.IsNullOrEmpty(posparam))
+                if (posparam != null)//(!string.IsNullOrEmpty(posparam))
                 {
                     try
                     {
-                        PositionerParameters = JsonConvert.DeserializeObject<PositionerParametersDto>(posparam);
+                        PositionerParameters = posparam as PositionerParametersDto;//JsonConvert.DeserializeObject<PositionerParametersDto>(posparam);
                     }
                     catch { Console.WriteLine("Cannot parse detector parameters in the NFT"); }
                 }
             }
 
             if (metadata.TryGetValue("DeviceName", out var dn))
-                DeviceName = dn;
+                DeviceName = dn as string;
             if (metadata.TryGetValue("DetectorName", out var detn))
-                DetectorName = detn;            
+                DetectorName = detn as string;            
             if (metadata.TryGetValue("SourceName", out var sn))
-                SourceName = sn;
+                SourceName = sn as string;
             if (metadata.TryGetValue("PositionerName", out var posn))
-                PositionerName = posn;
+                PositionerName = posn as string;
         }
         /// <summary>
         /// Find and parse origin data
         /// </summary>
         /// <param name="lastmetadata"></param>
         /// <returns></returns>
-        public override async Task ParseOriginData(IDictionary<string, string> lastmetadata)
+        public override async Task ParseOriginData(IDictionary<string, object> lastmetadata)
         {
             var nftData = await NFTHelpers.LoadNFTOriginData(Utxo);
             if (nftData != null)
@@ -178,7 +178,7 @@ namespace VEDriversLite.NFT.Imaging.Xray
         /// <param name="key">Private key of the sender for encryption</param>
         /// <param name="receiver">receiver of the NFT</param>
         /// <returns></returns>
-        public override async Task<IDictionary<string, string>> GetMetadata(string address = "", string key = "", string receiver = "")
+        public override async Task<IDictionary<string, object>> GetMetadata(string address = "", string key = "", string receiver = "")
         {
             // create token metadata
             var metadata = await GetCommonMetadata();

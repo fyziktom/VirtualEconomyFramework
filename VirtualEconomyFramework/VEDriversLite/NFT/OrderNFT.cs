@@ -102,23 +102,23 @@ namespace VEDriversLite.NFT
         /// Parse specific parameters
         /// </summary>
         /// <param name="metadata"></param>
-        public override void ParseSpecific(IDictionary<string, string> metadata)
+        public override void ParseSpecific(IDictionary<string, object> metadata)
         {
             if (metadata.TryGetValue("Seller", out var seller))
-                SellerProfileNFT = seller;
+                SellerProfileNFT = seller as string;
             if (metadata.TryGetValue("Buyer", out var buyer))
-                BuyerProfileNFT = buyer;
+                BuyerProfileNFT = buyer as string;
             if (metadata.TryGetValue("FileLink", out var filelink))
-                FileLink = filelink;
+                FileLink = filelink as string;
             if (metadata.TryGetValue("ApprovedByProfile", out var appby))
-                ApprovedByProfile = appby;
+                ApprovedByProfile = appby as string;
             if (metadata.TryGetValue("ApprovedNote", out var appnote))
-                ApprovedNote = appnote;
+                ApprovedNote = appnote as string;
             if (metadata.TryGetValue("ExposeDay", out var date))
             {
                 try
                 {
-                    ExposeDate = DateTime.Parse(date);
+                    ExposeDate = DateTime.Parse(date as string);
                 }
                 catch
                 {
@@ -127,11 +127,11 @@ namespace VEDriversLite.NFT
             }
             if (metadata.TryGetValue("Items", out var items))
             {
-                if (!string.IsNullOrEmpty(items))
+                if (items != null) //(!string.IsNullOrEmpty(items))
                 {
                     try
                     {
-                        var itms = JsonConvert.DeserializeObject<List<InvoiceItem>>(items);
+                        var itms = items as List<InvoiceItem>; // JsonConvert.DeserializeObject<List<InvoiceItem>>(items);
                         if (itms != null)
                             InvoiceItems = itms;
                     }
@@ -147,18 +147,18 @@ namespace VEDriversLite.NFT
                 }
             }
             if (metadata.TryGetValue("TotalPrice", out var totalPrice))
-                if (!string.IsNullOrEmpty(totalPrice))
-                    TotalPrice = Convert.ToDouble(totalPrice, CultureInfo.InvariantCulture);
+                if (!string.IsNullOrEmpty(totalPrice as string))
+                    TotalPrice = Convert.ToDouble(totalPrice as string, CultureInfo.InvariantCulture);
             if (metadata.TryGetValue("MaxCountOfDaysFromExposeToPayment", out var maxCountOfDaysFromExposeToPayment))
-                if (!string.IsNullOrEmpty(maxCountOfDaysFromExposeToPayment))
+                if (!string.IsNullOrEmpty(maxCountOfDaysFromExposeToPayment as string))
                     TotalPrice = Convert.ToInt32(maxCountOfDaysFromExposeToPayment, CultureInfo.InvariantCulture);
 
             if (metadata.TryGetValue("MaxCountOfDaysAfterPaymentDate", out var maxCountOfDaysAfterPaymentDate))
-                if (!string.IsNullOrEmpty(maxCountOfDaysAfterPaymentDate))
-                    TotalPrice = Convert.ToDouble(MaxCountOfDaysAfterPaymentDate, CultureInfo.InvariantCulture);
+                if (!string.IsNullOrEmpty(maxCountOfDaysAfterPaymentDate as string))
+                    MaxCountOfDaysAfterPaymentDate = Convert.ToInt32(maxCountOfDaysAfterPaymentDate as string, CultureInfo.InvariantCulture);
 
             if (metadata.TryGetValue("OriginalPaymentTxId", out var optxid))
-                OriginalPaymentTxId = optxid;
+                OriginalPaymentTxId = optxid as string;
 
             if (!string.IsNullOrEmpty(OriginalPaymentTxId))
                 AlreadyPaid = true;
@@ -169,7 +169,7 @@ namespace VEDriversLite.NFT
         /// </summary>
         /// <param name="lastmetadata"></param>
         /// <returns></returns>
-        public override Task ParseOriginData(IDictionary<string, string> lastmetadata)
+        public override Task ParseOriginData(IDictionary<string, object> lastmetadata)
         {
             return Task.CompletedTask;
         }
@@ -180,7 +180,7 @@ namespace VEDriversLite.NFT
         /// <param name="key">Private key of the sender for encryption</param>
         /// <param name="receiver">receiver of the NFT</param>
         /// <returns></returns>
-        public override async Task<IDictionary<string, string>> GetMetadata(string address = "", string key = "", string receiver = "")
+        public override async Task<IDictionary<string, object>> GetMetadata(string address = "", string key = "", string receiver = "")
         {
             // create token metadata
             var metadata = await GetCommonMetadata();

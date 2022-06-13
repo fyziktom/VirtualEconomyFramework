@@ -22,13 +22,13 @@ namespace VEDriversLite.NFT
         /// <param name="metadata"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public static NFTTypes ParseNFTType(IDictionary<string,string> metadata)
+        public static NFTTypes ParseNFTType(IDictionary<string, object> metadata)
         {
             NFTTypes type = NFTTypes.Image;
 
             if (metadata.TryGetValue("Type", out var t))
             {
-                if (!string.IsNullOrEmpty(t))
+                if (!string.IsNullOrEmpty(t as string))
                 {
                     switch (t)
                     {
@@ -219,7 +219,7 @@ namespace VEDriversLite.NFT
                 if (!meta.TryGetValue("NFT", out var nftt))
                     return null;
                 else
-                    if (nftt != "true") return null;
+                    if (nftt as string != "true") return null;
 
                 type = ParseNFTType(meta);
             }
@@ -233,7 +233,7 @@ namespace VEDriversLite.NFT
             }
 
             if (utxoindex == 1 && meta.TryGetValue("ReceiptFromPaymentUtxo", out var rfp))
-                if (!string.IsNullOrEmpty(rfp))
+                if (!string.IsNullOrEmpty(rfp as string))
                     type = NFTTypes.Receipt;
 
             if (loadJustType)
@@ -656,7 +656,7 @@ namespace VEDriversLite.NFT
         /// <param name="asType">Force the output type</param>
         /// <param name="type">Specify the output type - you must set asType flag</param>
         /// <returns>INFT compatible object</returns>
-        public static async Task<INFT> GetNFTFromCacheMetadata(IDictionary<string,string> metadata, string utxo, int utxoindex, NeblioAPI.GetTransactionInfoResponse txinfo = null, bool asType = false, NFTTypes type = NFTTypes.Image)
+        public static async Task<INFT> GetNFTFromCacheMetadata(IDictionary<string, object> metadata, string utxo, int utxoindex, NeblioAPI.GetTransactionInfoResponse txinfo = null, bool asType = false, NFTTypes type = NFTTypes.Image)
         {
             if (!asType)
             {
@@ -674,7 +674,7 @@ namespace VEDriversLite.NFT
             if (type == NFTTypes.IoTDevice) return null;
 
             if (utxoindex == 1 && metadata.TryGetValue("ReceiptFromPaymentUtxo", out var rfp))
-                if (!string.IsNullOrEmpty(rfp))
+                if (!string.IsNullOrEmpty(rfp as string))
                     type = NFTTypes.Receipt;
 
             if (txinfo == null)

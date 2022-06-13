@@ -65,18 +65,18 @@ namespace VEDriversLite.NFT.Coruzant
         /// Parse specific properties
         /// </summary>
         /// <param name="metadata"></param>
-        public override void ParseSpecific(IDictionary<string, string> metadata)
+        public override void ParseSpecific(IDictionary<string, object> metadata)
         {
             if (metadata.TryGetValue("AuthorProfileUtxo", out var pu))
-                AuthorProfileUtxo = pu;
+                AuthorProfileUtxo = pu as string;
             if (metadata.TryGetValue("LastComment", out var lc))
-                LastComment = lc;
+                LastComment = lc as string;
             if (metadata.TryGetValue("LastCommentBy", out var lcb))
-                LastCommentBy = lcb;
+                LastCommentBy = lcb as string;
             if (metadata.TryGetValue("FullPostLink", out var fpl))
-                FullPostLink = fpl;
+                FullPostLink = fpl as string;
             if (metadata.TryGetValue("PodcastLink", out var pdl))
-                PodcastLink = pdl;
+                PodcastLink = pdl as string;
         }
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace VEDriversLite.NFT.Coruzant
         /// </summary>
         /// <param name="lastmetadata"></param>
         /// <returns></returns>
-        public override async Task ParseOriginData(IDictionary<string, string> lastmetadata)
+        public override async Task ParseOriginData(IDictionary<string, object> lastmetadata)
         {
             var nftData = await NFTHelpers.LoadNFTOriginData(Utxo);
             if (nftData != null)
@@ -126,7 +126,7 @@ namespace VEDriversLite.NFT.Coruzant
         /// <param name="receiver"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public override async Task<IDictionary<string, string>> GetMetadata(string address = "", string key = "", string receiver = "")
+        public override async Task<IDictionary<string, object>> GetMetadata(string address = "", string key = "", string receiver = "")
         {
             if (string.IsNullOrEmpty(ImageLink))
                 throw new Exception("Cannot create NFT CoruzantPost without image link.");

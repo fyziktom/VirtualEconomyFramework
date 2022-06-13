@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -183,7 +184,7 @@ namespace VEDriversLite.NFT
         /// </summary>
         /// <param name="lastmetadata"></param>
         /// <returns></returns>
-        public abstract Task ParseOriginData(IDictionary<string, string> lastmetadata);
+        public abstract Task ParseOriginData(IDictionary<string, object> lastmetadata);
         /// <summary>
         /// Retrive the Metadata of the actual NFT. 
         /// It will take the correct properties and translate them to the dictionary which can be add to the token transaction metdata
@@ -193,7 +194,7 @@ namespace VEDriversLite.NFT
         /// <param name="key">Private key of the sender of the NFT</param>
         /// <param name="receiver">Receiver of the NFT</param>
         /// <returns></returns>
-        public abstract Task<IDictionary<string, string>> GetMetadata(string address = "", string key = "", string receiver = "");
+        public abstract Task<IDictionary<string, object>> GetMetadata(string address = "", string key = "", string receiver = "");
         /// <summary>
         /// Fill common and specific properties of the NFT
         /// </summary>
@@ -205,7 +206,7 @@ namespace VEDriversLite.NFT
         /// This function must be overwritte in specific NFT class
         /// </summary>
         /// <param name="meta"></param>
-        public abstract void ParseSpecific(IDictionary<string, string> meta);
+        public abstract void ParseSpecific(IDictionary<string, object> meta);
         /// <summary>
         /// Return info if the transaction is spendable
         /// </summary>
@@ -310,7 +311,7 @@ namespace VEDriversLite.NFT
         /// </summary>
         /// <param name="metadata"></param>
         /// <returns></returns>
-        public async Task LoadLastData(IDictionary<string, string> metadata)
+        public async Task LoadLastData(IDictionary<string, object> metadata)
         {
             if (metadata != null)
             {
@@ -332,12 +333,12 @@ namespace VEDriversLite.NFT
         /// Parse price from the metadata of the NFT
         /// </summary>
         /// <param name="meta"></param>
-        public void ParsePrice(IDictionary<string, string> meta)
+        public void ParsePrice(IDictionary<string, object> meta)
         {
             if (meta.TryGetValue("Price", out var price))
             {
-                price = price.Replace(',', '.');
-                Price = double.Parse(price, CultureInfo.InvariantCulture);
+                var pr = (price as string).Replace(',', '.');
+                Price = double.Parse(pr, CultureInfo.InvariantCulture);
             }
 
             if (Price > 0)
@@ -347,8 +348,8 @@ namespace VEDriversLite.NFT
 
             if (meta.TryGetValue("DogePrice", out var dprice))
             {
-                dprice = dprice.Replace(',', '.');
-                DogePrice = double.Parse(dprice, CultureInfo.InvariantCulture);
+                var dp = (dprice as string).Replace(',', '.');
+                DogePrice = double.Parse(dp, CultureInfo.InvariantCulture);
             }
 
             if (DogePrice > 0)
@@ -358,7 +359,7 @@ namespace VEDriversLite.NFT
 
             if (meta.TryGetValue("SellJustCopy", out var sjc))
             {
-                if (bool.TryParse(sjc, out bool bsjc))
+                if (bool.TryParse(sjc as string, out bool bsjc))
                     SellJustCopy = bsjc;
                 else
                     SellJustCopy = false;
@@ -372,13 +373,13 @@ namespace VEDriversLite.NFT
         /// Parse info about the sellfrom the metadata of the NFT
         /// </summary>
         /// <param name="meta"></param>
-        public void ParseSoldInfo(IDictionary<string, string> meta)
+        public void ParseSoldInfo(IDictionary<string, object> meta)
         {
             if (meta.TryGetValue("SoldInfo", out var sinf))
             {
                 try
                 {
-                    SoldInfo = JsonConvert.DeserializeObject<NFTSoldInfo>(sinf);
+                    SoldInfo = sinf as NFTSoldInfo;// JsonConvert.DeserializeObject<NFTSoldInfo>(sinf);
                 }
                 catch { Console.WriteLine("Cannot parse sold info in the NFT"); }
             }
@@ -387,19 +388,19 @@ namespace VEDriversLite.NFT
         /// Parse common properties from the dictionary of metadata
         /// </summary>
         /// <param name="meta"></param>
-        public void ParseCommon(IDictionary<string,string> meta)
+        public void ParseCommon(IDictionary<string,object> meta)
         {
             if (meta.TryGetValue("Name", out var name))
-                Name = name;
+                Name = name as string;
             if (meta.TryGetValue("Description", out var description))
-                Description = description;
+                Description = description as string;
             if (meta.TryGetValue("Author", out var author))
-                Author = author;
+                Author = author as string;
             if (meta.TryGetValue("Link", out var link))
-                Link = link;
+                Link = link as string;
             if (meta.TryGetValue("Image", out var imagelink))
             {
-                ImageLink = imagelink;
+                ImageLink = imagelink as string;
                 if (!string.IsNullOrEmpty(ImageLink))
                 {
                     if (ImageLink.Contains("https://gateway.ipfs.io"))
@@ -408,32 +409,33 @@ namespace VEDriversLite.NFT
             }
             if (meta.TryGetValue("Preview", out var preview))
             {
-                if (!string.IsNullOrEmpty(preview))
+                if (!string.IsNullOrEmpty(preview as string))
                 {
-                    Preview = preview;
+                    Preview = preview as string;
                     if (Preview.Contains("https://gateway.ipfs.io"))
                         Preview = Preview.Replace("https://gateway.ipfs.io", "https://ipfs.infura.io");
                 }
             }
             if (meta.TryGetValue("IconLink", out var iconlink))
-                IconLink = iconlink;
+                IconLink = iconlink as string;
             if (meta.TryGetValue("Type", out var type))
-                TypeText = type;
+                TypeText = type as string;
             if (meta.TryGetValue("Text", out var text))
-                Text = text;
+                Text = text as string;
             if (meta.TryGetValue("DogeAddress", out var dadd))
-                DogeAddress = dadd;
+                DogeAddress = dadd as string;
             
             if (meta.TryGetValue("DogeftInfo", out var dfti))
             {
                 try
                 {
-                    DogeftInfo = JsonConvert.DeserializeObject<DogeftInfo>(dfti);
+                    DogeftInfo = dfti as DogeftInfo;//JsonConvert.DeserializeObject<DogeftInfo>(dfti);
                 }
                 catch { Console.WriteLine("Cannot parse dogeft info in the NFT"); }
             }
-            if (meta.TryGetValue("Tags", out var tags))
+            if (meta.TryGetValue("Tags", out var tgs))
             {
+                var tags = tgs as string;
                 tags = tags.Replace("#", string.Empty);
                 tags = tags.Replace(",", string.Empty);
                 tags = tags.Replace(";", string.Empty);
@@ -442,19 +444,19 @@ namespace VEDriversLite.NFT
             }
 
             if (meta.TryGetValue("SourceUtxo", out var su))
-                SourceTxId = su;
+                SourceTxId = su as string;
             if (meta.TryGetValue("NFTOriginTxId", out var nfttxid))
-                NFTOriginTxId = nfttxid;
+                NFTOriginTxId = nfttxid as string;
 
             if (UtxoIndex == 1 && meta.TryGetValue("ReceiptFromPaymentUtxo", out var rfp))
-                if (!string.IsNullOrEmpty(rfp))
+                if (!string.IsNullOrEmpty(rfp as string))
                     TypeText = "NFT Receipt";
 
             if (meta.TryGetValue("DataItems", out var dis))
             {
                 try
                 {
-                    DataItems = JsonConvert.DeserializeObject<List<NFTDataItem>>(dis);
+                    DataItems = dis as List<NFTDataItem>;//JsonConvert.DeserializeObject<List<NFTDataItem>>(dis);
                 }
                 catch { Console.WriteLine("Cannot parse data items in the NFT"); }
             }
@@ -464,15 +466,15 @@ namespace VEDriversLite.NFT
         /// </summary>
         /// <param name="meta"></param>
         /// <returns></returns>
-        public async Task ParseDogeftInfo(IDictionary<string,string> meta)
+        public async Task ParseDogeftInfo(IDictionary<string,object> meta)
         {
             if (meta.TryGetValue("DogeAddress", out var dadd))
-                DogeAddress = dadd;
+                DogeAddress = dadd as string;
             if (meta.TryGetValue("DogeftInfo", out var dfti))
             {
                 try
                 {
-                    DogeftInfo = JsonConvert.DeserializeObject<DogeftInfo>(dfti);
+                    DogeftInfo = dfti as DogeftInfo;//JsonConvert.DeserializeObject<DogeftInfo>(dfti);
                 }
                 catch { Console.WriteLine("Cannot parse dogeft info in the NFT"); }
             }
@@ -481,9 +483,9 @@ namespace VEDriversLite.NFT
         /// Get common metadata of the NFT as dictionary
         /// </summary>
         /// <returns>Dicrionary with preapred common metadata for the NFT transaction</returns>
-        public async Task<IDictionary<string,string>> GetCommonMetadata()
+        public async Task<IDictionary<string,object>> GetCommonMetadata()
         {
-            var metadata = new Dictionary<string, string>();
+            var metadata = new Dictionary<string, object>();
 
             metadata.Add("NFT", "true");
             if (string.IsNullOrEmpty(TypeText))
@@ -500,7 +502,7 @@ namespace VEDriversLite.NFT
             if (!string.IsNullOrEmpty(Preview))
                 metadata.Add("Preview", Preview);
             if (DataItems != null && DataItems.Count > 0)
-                metadata.Add("DataItems", JsonConvert.SerializeObject(DataItems));
+                metadata.Add("DataItems", DataItems);// JsonConvert.SerializeObject(DataItems));
             Tags = Tags.Replace("#", string.Empty);
             Tags = Tags.Replace(",", string.Empty);
             Tags = Tags.Replace(";", string.Empty);
@@ -519,9 +521,9 @@ namespace VEDriversLite.NFT
             if (SellJustCopy)
                 metadata.Add("SellJustCopy", "true");
             if (!DogeftInfo.IsEmpty)
-                metadata.Add("DogeftInfo", JsonConvert.SerializeObject(DogeftInfo));
+                metadata.Add("DogeftInfo", DogeftInfo);// JsonConvert.SerializeObject(DogeftInfo));
             if (!SoldInfo.IsEmpty)
-                metadata.Add("SoldInfo", JsonConvert.SerializeObject(SoldInfo));
+                metadata.Add("SoldInfo", SoldInfo);// JsonConvert.SerializeObject(SoldInfo));
             if (!string.IsNullOrEmpty(SourceTxId))
                 metadata.Add("SourceTxId", SourceTxId);
             if (!string.IsNullOrEmpty(NFTOriginTxId))

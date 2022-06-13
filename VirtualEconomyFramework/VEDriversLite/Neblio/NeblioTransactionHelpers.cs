@@ -310,8 +310,8 @@ namespace VEDriversLite
                 throw new Exception("Cannot send transaction, cannot load sender nebl utxo!");
             }
 
-            data.Metadata.Add(new KeyValuePair<string, string>("SourceUtxo", tutxo.Txid));
-            data.Metadata.Add(new KeyValuePair<string, string>("NFT FirstTx", "true"));
+            data.Metadata.Add(new KeyValuePair<string, object>("SourceUtxo", tutxo.Txid));
+            data.Metadata.Add(new KeyValuePair<string, object>("NFT FirstTx", "true"));
 
             var fee = CalcFee(2, 1 + coppies, JsonConvert.SerializeObject(data.Metadata), true);
 
@@ -331,10 +331,21 @@ namespace VEDriversLite
             {
                 foreach (var d in data.Metadata)
                 {
-                    var obj = new JObject
+                    
+                    //var obj = new JObject(new JProperty(d.Key, d.Value));
+                    JObject obj = null;                    
+                    if (d.Key == "DataItems")
                     {
-                        [d.Key] = d.Value
-                    };
+                        obj = new JObject
+                        {
+                            [d.Key] = JArray.FromObject(d.Value)
+                        };
+                    }
+                    else
+                    {
+                        obj = new JObject(new JProperty(d.Key, d.Value));
+                    }
+                    
                     dto.Metadata.UserData.Meta.Add(obj);
                 }
             }
@@ -483,7 +494,7 @@ namespace VEDriversLite
         /// <param name="tutxos">Optional input token utxo</param>
         /// <returns>New Transaction Hash - TxId</returns>
         public static async Task<Transaction> SplitNTP1TokensAsync(List<string> receiver, int lots, int amount, string tokenId,
-                                                              IDictionary<string, string> metadata,
+                                                              IDictionary<string, object> metadata,
                                                               EncryptionKey ekey,
                                                               ICollection<Utxos> nutxos,
                                                               ICollection<Utxos> tutxos)
@@ -572,7 +583,7 @@ namespace VEDriversLite
                 {
                     var obj = new JObject
                     {
-                        [d.Key] = d.Value
+                        [d.Key] = (JToken)d.Value
                     };
                     dto.Metadata.UserData.Meta.Add(obj);
                 }
@@ -753,7 +764,7 @@ namespace VEDriversLite
                 {
                     var obj = new JObject
                     {
-                        [d.Key] = d.Value
+                        [d.Key] = (JToken)d.Value
                     };
                     dto.Metadata.UserData.Meta.Add(obj);
                 }
@@ -847,7 +858,7 @@ namespace VEDriversLite
                 {
                     var obj = new JObject
                     {
-                        [d.Key] = d.Value
+                        [d.Key] = (JToken)d.Value
                     };
                     dto.Metadata.UserData.Meta.Add(obj);
                 }
@@ -1185,7 +1196,7 @@ namespace VEDriversLite
                 {
                     var obj = new JObject
                     {
-                        [d.Key] = d.Value
+                        [d.Key] = (JToken)d.Value
                     };
                     dto.Metadata.UserData.Meta.Add(obj);
                 }
@@ -1359,7 +1370,7 @@ namespace VEDriversLite
                 {
                     var obj = new JObject
                     {
-                        [d.Key] = d.Value
+                        [d.Key] = (JToken)d.Value
                     };
                     dto.Metadata.UserData.Meta.Add(obj);
                 }
@@ -1614,7 +1625,7 @@ namespace VEDriversLite
                 {
                     var obj = new JObject
                     {
-                        [d.Key] = d.Value
+                        [d.Key] = (JToken)d.Value
                     };
 
                     dto.Metadata.UserData.Meta.Add(obj);
@@ -1766,7 +1777,7 @@ namespace VEDriversLite
                 {
                     var obj = new JObject
                     {
-                        [d.Key] = d.Value
+                        [d.Key] = (JToken)d.Value
                     };
 
                     dto.Metadata.UserData.Meta.Add(obj);
