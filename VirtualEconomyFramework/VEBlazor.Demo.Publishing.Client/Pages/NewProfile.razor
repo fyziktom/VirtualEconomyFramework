@@ -1,6 +1,10 @@
 ﻿@using VEDriversLite.NFT
+@using VEDriversLite.NFT.Coruzant
 @using VEFramework.VEBlazor.Components.Minting
 @inject AppData AppData
+@using Newtonsoft.Json
+@inject HttpClient _client
+@inject IJSRuntime JSRuntime
 
 @page "/addnewprofile"
 
@@ -13,15 +17,172 @@
                                    NFTType="@NFTTypes.CoruzantProfile" 
                                    MintingPageName="@formName"         
                                    @bind-ConsoleOutFromMinting="@AppData.GetMintingNFTTab(formName).ConsoleOutFromMinting" 
-                                   Address="@AppData.Account.Address" />
+                                   Address="@AppData.Account.Address" >
+    <SpecificParamsStepHeader>
+        Details
+    </SpecificParamsStepHeader>
+    <SpecificParamsStepContent>
+    @if (AppData.GetMintingNFTTabNFT(formName).Type == NFTTypes.CoruzantProfile)
+    {
+        <Row>
+            <Column>    
+                <Field Horizontal>
+                    <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">Name</FieldLabel>
+                    <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                        <TextEdit Placeholder="Enter Name" @bind-Text="@((AppData.GetMintingNFTTab(formName).NFT as CoruzantProfileNFT).Name)"/>
+                    </FieldBody>
+                </Field>
+            </Column>
+        </Row>
+        <Row>
+            <Column>    
+                <Field Horizontal>
+                    <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">Surname</FieldLabel>
+                    <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                        <TextEdit Placeholder="Enter Surname" @bind-Text="@((AppData.GetMintingNFTTab(formName).NFT as CoruzantProfileNFT).Surname)"/>
+                    </FieldBody>
+                </Field>
+            </Column>
+        </Row>
+         <Row>
+            <Column>    
+                <Field Horizontal>
+                    <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">Company Name</FieldLabel>
+                    <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                        <TextEdit Placeholder="Enter Company Name" @bind-Text="@((AppData.GetMintingNFTTab(formName).NFT as CoruzantProfileNFT).CompanyName)"/>
+                    </FieldBody>
+                </Field>
+            </Column>
+        </Row>
+         <Row>
+            <Column>    
+                <Field Horizontal>
+                    <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">Company Link</FieldLabel>
+                    <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                        <TextEdit Placeholder="Enter Company Link" @bind-Text="@((AppData.GetMintingNFTTab(formName).NFT as CoruzantProfileNFT).CompanyLink)"/>
+                    </FieldBody>
+                </Field>
+            </Column>
+        </Row>
+        <Row>
+            <Column>    
+                <Field Horizontal>
+                    <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">Work Position</FieldLabel>
+                    <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                        <TextEdit Placeholder="Enter Work Position" @bind-Text="@((AppData.GetMintingNFTTab(formName).NFT as CoruzantProfileNFT).WorkingPosition)"/>
+                    </FieldBody>
+                </Field>
+            </Column>
+        </Row>
+        <Row>
+            <Column>    
+                <Field Horizontal>
+                    <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">LinkedIn</FieldLabel>
+                    <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                        <TextEdit Placeholder="Enter LinkedIn nickname" @bind-Text="@((AppData.GetMintingNFTTab(formName).NFT as CoruzantProfileNFT).Linkedin)"/>
+                    </FieldBody>
+                </Field>
+            </Column>
+        </Row>
+        <Row>
+            <Column>    
+                <Field Horizontal>
+                    <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">Twitter</FieldLabel>
+                    <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                        <TextEdit Placeholder="Enter Twitter nickname" @bind-Text="@((AppData.GetMintingNFTTab(formName).NFT as CoruzantProfileNFT).Twitter)"/>
+                    </FieldBody>
+                </Field>
+            </Column>
+        </Row>
+         <Row>
+            <Column>    
+                <Field Horizontal>
+                    <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">Podcast Id</FieldLabel>
+                    <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                        <TextEdit Placeholder="Enter Podcast Id" @bind-Text="@((AppData.GetMintingNFTTab(formName).NFT as CoruzantProfileNFT).PodcastId)"/>
+                    </FieldBody>
+                </Field>
+            </Column>
+        </Row>
+        <Row Margin="Margin.Is3.FromTop.Is2.FromBottom">
+            <Column Flex="Flex.JustifyContent.Center">
+                <Button Clicked="@LoadBuzzproudPodcastLink">Test Podcast Id</Button>
+            </Column>
+        </Row>
+        @if(CurrentPodcast != null){
+            <Row Margin="Margin.Is3.FromTop.Is3.FromBottom">
+                <Column>
+                    <div class="podcast-player z-depth-2">
+                        <div id="buzzsprout-player-@CurrentPodcast.PodcastId">
+                            <div class="row">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <span>Loading Podcast...</span>
+                            </div>
+                        </div>
+                        </div>
+                        <div id="close-player" @onclick="ClosePlayer"><i class="fas fa-times"></i></div>
+                    </div>
+                </Column>
+            </Row>
+        }
+        
+    }
+    </SpecificParamsStepContent>
+ </VEFramework.VEBlazor.Pages.AddNew>
                        
 @code {
     string formName = "default";
     string headerLabel = "Add New";
 
+    private string buzzsproudLink = string.Empty;
+    public CoruzantProfileNFT CurrentPodcast { get; set; }
+    void ClosePlayer() => CurrentPodcast = null;
+
     protected override void OnInitialized()
     {
         headerLabel = AppData.GetMintingNFTTab(formName).HeaderLabel;
         base.OnInitialized();
+    }
+
+    private async Task LoadBuzzproudPodcastLink()
+    {
+        CurrentPodcast = AppData.GetMintingNFTTab(formName).NFT as CoruzantProfileNFT;
+        var id = (AppData.GetMintingNFTTab(formName).NFT as CoruzantProfileNFT).PodcastId;
+        try
+        {
+            if (!string.IsNullOrEmpty(id))
+            {
+                var filename = string.Empty;
+                var req = new HttpRequestMessage(HttpMethod.Get, $"https://nftticketverifierapp.azurewebsites.net/api/GetBuzzsproutData/866092/{id}");
+                req.Headers.Add("Accept", "application/json");
+                req.Headers.Add("User-Agent", "VENFT-App");
+
+                var resp = await _client.SendAsync(req);
+                var respmsg = await resp.Content.ReadAsStringAsync();
+                if (string.IsNullOrEmpty(respmsg))
+                    return;
+                var podcastData = JsonConvert.DeserializeObject<List<BuzzsproutEpisodeDto>>(respmsg);
+                if (podcastData != null && podcastData.Count > 0)
+                {
+                    var pddto = podcastData.FirstOrDefault();
+                    if (!string.IsNullOrEmpty(pddto.audio_url))
+                    {
+                        filename = pddto.audio_url.Replace("https://www.buzzsprout.com/866092/", string.Empty).Replace(".mp3", string.Empty);
+                        var link = $"https://www.buzzsprout.com/866092/{filename}.js?container_id=buzzsprout-player-{id}&player=small";
+                        buzzsproudLink = link;
+                        StateHasChanged();
+                        await Task.Delay(200);
+                        await JSRuntime.InvokeVoidAsync("jsFunctions.buzzsproutPodcast", buzzsproudLink);
+                        await Task.Delay(200);
+                        //await JSRuntime.InvokeVoidAsync("setCoruzantPodcastInfo", pnft.Name + " " + pnft.Surname, pddto.artist, pddto.title);
+                        StateHasChanged();
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Cannot load Buzzsprout podcast." + ex.Message);
+        }
     }
 }

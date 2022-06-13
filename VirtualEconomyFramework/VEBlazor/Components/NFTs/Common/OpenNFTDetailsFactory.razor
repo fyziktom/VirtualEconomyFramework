@@ -1,6 +1,7 @@
 ﻿@using VEDriversLite
 @using VEDriversLite.NFT
 @using VEDriversLite.Bookmarks
+@using VEFramework.VEBlazor.Components.NFTs.Coruzant
 @inject AppData AppData
 @inherits NFTComponentBase
 
@@ -59,7 +60,30 @@ else if(NFT.Type == NFTTypes.Receipt)
                    NFTSent="@NFTSentHandler"
                    OpenNFTsInWorkTab="async (e) => await OpenNFTsInWorkTab.InvokeAsync(e)" />                              
 }
+else if(NFT.Type == NFTTypes.CoruzantArticle)
+{
+    <CoruzantArticleDetails @ref=CoruzantArticleDetailsModalComponent
+                            NFT="@NFT"
+                            Address="@Address"
+                            IsOwnNFT="@IsOwnNFT"
+                            IsSubAccount="@IsSubAccount"
+                            HideOpenInWorkTabButton="@HideOpenInWorkTabButton"
+                            NFTSent="@NFTSentHandler"
+                            OpenNFTsInWorkTab="async (e) => await OpenNFTsInWorkTab.InvokeAsync(e)" />                              
+}
+else if(NFT.Type == NFTTypes.CoruzantProfile)
+{
+    <CoruzantProfileDetails @ref=CoruzantProfileDetailsModalComponent
+                            NFT="@NFT"
+                            Address="@Address"
+                            IsOwnNFT="@IsOwnNFT"
+                            IsSubAccount="@IsSubAccount"
+                            HideOpenInWorkTabButton="@HideOpenInWorkTabButton"
+                            NFTSent="@NFTSentHandler"
+                            OpenNFTsInWorkTab="async (e) => await OpenNFTsInWorkTab.InvokeAsync(e)" />                              
+}
 else if (NFT.Type == NFTTypes.Image || 
+         NFT.Type == NFTTypes.Post || 
          NFT.Type == NFTTypes.Post || 
          NFT.Type == NFTTypes.App || 
          NFT.Type == NFTTypes.Music)
@@ -83,6 +107,8 @@ else if (NFT.Type == NFTTypes.Image ||
     private NFTDetails? NFTDetailsModalComponent;
     private NFTPaymentDetails? NFTPaymentDetailsModalComponent;
     private NFTReceiptDetails? NFTReceiptDetailsModalComponent;
+    private CoruzantArticleDetails? CoruzantArticleDetailsModalComponent;
+    private CoruzantProfileDetails? CoruzantProfileDetailsModalComponent;
 
     public async Task OpenNFTDetails(INFT nft)
     {
@@ -117,6 +143,12 @@ else if (NFT.Type == NFTTypes.Image ||
             case NFTTypes.Receipt:
                 NFTReceiptDetailsModalComponent?.ShowNFTDetails(nft);
                 break;  
+            case NFTTypes.CoruzantArticle:
+                CoruzantArticleDetailsModalComponent?.ShowNFTDetails(nft);
+                break;
+            case NFTTypes.CoruzantProfile:
+                CoruzantProfileDetailsModalComponent?.ShowNFTDetails(nft);
+                break;
         }
         return;
     }
@@ -148,6 +180,12 @@ else if (NFT.Type == NFTTypes.Image ||
                 break;
             case NFTTypes.Receipt:
                 NFTReceiptDetailsModalComponent?.HideNFTDetails();
+                break;
+            case NFTTypes.CoruzantArticle:
+                CoruzantArticleDetailsModalComponent?.HideNFTDetails();
+                break;
+            case NFTTypes.CoruzantProfile:
+                CoruzantProfileDetailsModalComponent?.HideNFTDetails();
                 break;
         }
         return;

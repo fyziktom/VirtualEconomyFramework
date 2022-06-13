@@ -138,11 +138,7 @@ namespace VEDriversLite.NFT.Coruzant
                 throw new Exception("Cannot create NFT CoruzantPost without author.");
             if (string.IsNullOrEmpty(AuthorProfileUtxo))
                 throw new Exception("Cannot create NFT CoruzantPost without Author Profile Utxo.");
-            if (LastComment.Length > 250)
-                throw new Exception("Cannot create NFT CoruzantPost. Comment must be shorter than 250 characters.");
-            if (Description.Length > 250)
-                throw new Exception("Cannot create NFT CoruzantPost. Description must be shorter than 250 characters.");
-
+            
             var metadata = await GetCommonMetadata();
             if (!string.IsNullOrEmpty(FullPostLink))
                 metadata.Add("FullPostLink", FullPostLink);
