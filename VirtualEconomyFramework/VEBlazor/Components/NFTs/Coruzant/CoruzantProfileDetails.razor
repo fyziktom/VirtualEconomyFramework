@@ -19,27 +19,27 @@
                 HideOpenInWorkTabButton="@HideOpenInWorkTabButton"
                 SpecificInfoHeading="Coruzant Profile Details">
         <Field>
-            <FieldLabel>Name and Surname</FieldLabel>
+            <FieldLabel>Name and Surname: </FieldLabel>
             <Text>@(nft.Name + " " + nft.Surname)</Text>
         </Field>
         <Field>
-            <FieldLabel>Company Name</FieldLabel>
+            <FieldLabel>Company Name: </FieldLabel>
             <Text>@nft.CompanyName</Text>
         </Field>
         <Field>
-            <FieldLabel>Link</FieldLabel>
+            <FieldLabel>Link: </FieldLabel>
             <a href="@nft.CompanyLink" target="_blank">@nft.CompanyLink</a>
         </Field>
         <Field>
-            <FieldLabel>WorkingPosition</FieldLabel>
+            <FieldLabel>WorkingPosition: </FieldLabel>
             <Text>@nft.WorkingPosition</Text>
         </Field>
         <Field>
-            <FieldLabel>LinkedIn</FieldLabel>
+            <FieldLabel>LinkedIn: </FieldLabel>
             <a href="@("https://linkedin.com/in/" + nft.Linkedin)" target="_blank">@nft.Linkedin</a>
         </Field>
         <Field>
-            <FieldLabel>Twitter</FieldLabel>
+            <FieldLabel>Twitter: </FieldLabel>
             <a href="@("https://twitter.com/" + nft.Twitter)" target="_blank">@nft.Twitter</a>
         </Field>
     </NFTDetails>
