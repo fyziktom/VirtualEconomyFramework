@@ -13,7 +13,7 @@
     <Row Margin="Margin.Is3.FromTop">
         <Column>
                 <CardGroup>
-                @foreach (var post in AppData.ArticleNFTs.Take(9))
+                @foreach (var post in AppData.ArticleNFTs.Take(PerPage))
                 {
                     var p = post as CoruzantArticleNFT;
                     var tag = post.TagsList.FirstOrDefault();                        
@@ -33,10 +33,10 @@
                             <Row>
                                 <Column Flex="Flex.JustifyContent.Center">
                                     <Span Style="font-family: 'Inter';font-size: 12px;" Display="Display.None.OnMobile.None.OnTablet.Inline.OnDesktop">
-                                        @(post.Text.Length > 100 ? post.Text.Substring(0, 100) + "..." : post.Text)
+                                        @(post.Text.Length > 100 ? post.Text.Substring(0, 100) + "..." : post.Description)
                                     </Span>
                                     <Span Style="font-family: 'Inter';font-size: 12px;" Display="Display.Inline.OnMobile.Inline.OnTablet.None.OnDesktop">
-                                        @(post.Text.Length > 100 ? post.Text.Substring(0, 100) + "..." : post.Text)
+                                        @(post.Text.Length > 100 ? post.Text.Substring(0, 100) + "..." : post.Description)
                                     </Span>
                                 </Column>
                             </Row>
@@ -56,25 +56,39 @@
     </Row>
     <Row Margin="Margin.Is4.FromTop">
         <Column Flex="Flex.JustifyContent.Center">
-            <Button Class="viewalltrendingbutton" Type="ButtonType.Link" To="blog">View All</Button>
+            <Button Class="viewalltrendingbutton" Clicked="@LoadMore" Loading="@loadingMore">Load More</Button>
         </Column>
     </Row>
 </Div>
 
 @code {
+    [Parameter]
+    public int PerPage { get; set; } = 10;
 
     string selectedSlide = "";
+    bool loadingMore = false;
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        AppData.NFTsLoaded += (s,e) => StateHasChanged();
+        AppData.NFTsLoaded += (s, e) =>
+        {
+            loadingMore = false;
+            StateHasChanged();
+        };
         if (!AppData.LoadedBase)
             await AppData.LoadNFTs();
     }
 
     public void OpenPost(string postutxo)
     {
-         NavigationManager.NavigateTo($"post?utxo={postutxo}");
+        NavigationManager.NavigateTo($"post?utxo={postutxo}");
+    }
+
+    public async Task LoadMore()
+    {
+        PerPage += 10;
+        loadingMore = true;
+        await AppData.LoadMoreNFTs();
     }
 }

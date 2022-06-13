@@ -18,7 +18,7 @@
             </Column>
         </Row>       
         <Row Margin="Margin.Is3.FromTop.Is2.FromBottom">
-            <Column Flex="Flex.JustifyContent.Center">
+            <Column>
                 @foreach(var tag in Post.TagsList)
                 {                    
                     <Badge Color="Color.Secondary" Margin="Margin.Is2.FromEnd">#@tag</Badge>
@@ -35,7 +35,7 @@
     <Column ColumnSize="ColumnSize.Is12.OnMobile.Is12.OnTablet.Is12.OnDesktop" Flex="Flex.AlignItems.Center">
         <Div>
             <Row Margin="Margin.Is2.FromTop">
-                <Column>
+                <Column Padding="Padding.Is2">
                     @((MarkupString)NFTTextMarkuptext)
                 </Column>
             </Row>

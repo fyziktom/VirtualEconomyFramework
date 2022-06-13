@@ -30,14 +30,17 @@
     <Column ColumnSize="ColumnSize.Is12.OnMobile.Is12.OnTablet.Is8.OnDesktop" Flex="Flex.AlignItems.Center">
         <Div>
             <Row Margin="Margin.Is2.FromTop">
-                <Column>
-                        <Span Class="text-wrap">
-                            @((MarkupString)NFTTextMarkuptext)
-                        </Span>         
+                <Column Padding="Padding.Is2">
+                    <Div>
+                        @((MarkupString)NFTTextMarkuptext)
+                    </Div>
+                    @*<Span Class="text-wrap">
+                        @((MarkupString)NFTTextMarkuptext)
+                    </Span> *@        
                 </Column>
             </Row>
             <Row Margin="Margin.Is3.FromTop.Is2.FromBottom">
-                <Column Flex="Flex.JustifyContent.Center">
+                <Column>
                     @foreach(var tag in Profile.TagsList)
                     {                    
                         <Badge Color="Color.Secondary" Margin="Margin.Is2.FromEnd">#@tag</Badge>

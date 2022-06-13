@@ -21,23 +21,28 @@ namespace VEFramework.Demo.PublishingDisplay.Services
         public static List<INFT> FoundingFellowsNFTs { get; set; } = new List<INFT>();
         public static string Address { get; } = "NfzBf8eeqJ71zHf29npwYwEPkiWYZZtabJ"; // main coruzat publishing address
         public static string FoundingFellowsAddress { get; } = "NXRX9YA8sgfhaqASPd9Dv7eG9CEk4RqtZj"; // fellows nfts coruzat publishing address
-        public static int MaxLoaded { get; } = 12;
+        public static int MaxLoaded { get; set; } = 20;
         public static bool Loading { get; set; } = false;
         public static bool LoadingFellows { get; set; } = false;
         public static bool LoadedBase { get; set; } = false;
         public static bool Loaded { get; set; } = false;
         public static bool LoadedFellows { get; set; } = false;
-
-        public List<INFT> ArticleNFTs {
-            get => NFTs.Where(n => n.Type == NFTTypes.CoruzantArticle).ToList();
+        
+        public IEnumerable<INFT> ArticleNFTs {
+            get => NFTs.Where(n => n.Type == NFTTypes.CoruzantArticle);
         }
-        public List<INFT> ProfilesNFTs
-        {
-            get => NFTs.Where(n => n.Type == NFTTypes.CoruzantProfile).ToList();
+        
+        private static Random rnd = new Random();
+        public IEnumerable<INFT> RandArticleNFTs {
+            get => NFTs.Where(n => n.Type == NFTTypes.CoruzantArticle).OrderBy(n => rnd.Next());
         }
-        public List<INFT> PodcastsNFTs
+        public IEnumerable<INFT> ProfilesNFTs
         {
-            get => NFTs.Where(n => n.Type == NFTTypes.CoruzantProfile).Where(n => !string.IsNullOrEmpty((n as CoruzantProfileNFT).PodcastId)).ToList();
+            get => NFTs.Where(n => n.Type == NFTTypes.CoruzantProfile);
+        }
+        public IEnumerable<INFT> PodcastsNFTs
+        {
+            get => NFTs.Where(n => n.Type == NFTTypes.CoruzantProfile).Where(n => !string.IsNullOrEmpty((n as CoruzantProfileNFT).PodcastId));
         }
 
         public event EventHandler? NFTsLoaded;
@@ -135,6 +140,51 @@ namespace VEFramework.Demo.PublishingDisplay.Services
             Console.WriteLine("All NFTs Fellows loaded.");
             Console.WriteLine("Total Fellows loaded." + FoundingFellowsNFTs.Count.ToString());
             NFTsFellowsLoaded?.Invoke(this, new EventArgs());
+        }
+
+        public async Task LoadMoreNFTs(int moreCount = 10)
+        {
+            lock (_lock)
+            {
+                Loading = true;
+            }
+            Console.WriteLine("Start loading additional NFTs.");
+            var utxosin = await NeblioAPIHelpers.GetAddressNFTsUtxos(Address, new List<string>() { NFTHelpers.CoruzantTokenId });
+            MaxLoaded += moreCount;
+            
+            if (MaxLoaded >= utxosin.Count)
+                MaxLoaded = utxosin.Count;
+
+            var utxos = new List<Utxos>();
+            foreach (var u in utxosin)
+            {
+                if (NFTsDict.ContainsKey($"{u.Txid}:{u.Index}"))
+                    continue;
+                else
+                    utxos.Add(u);
+                if (utxos.Count >= moreCount)
+                    break;
+            }
+                        
+            await new ArraySegment<Utxos>(utxos.ToArray(), 0, utxos.Count).ParallelForEachAsync(async u =>
+            {
+                var nft = await NFTFactory.GetNFT(NFTHelpers.CoruzantTokenId, u.Txid, (int)u.Index, (double)u.Blocktime, address: Address);
+                if (nft != null)
+                    NFTsDict.TryAdd($"{u.Txid}:{u.Index}", nft);
+            }, maxDegreeOfParallelism: 4);
+            
+            lock (_lock)
+            {
+                NFTs = NFTsDict.Values.OrderBy(n => n.Time).Reverse().ToList();
+            }
+
+            Console.WriteLine("All additional NFTs loaded.");
+            Console.WriteLine("Total loaded." + NFTs.Count.ToString());
+            lock (_lock)
+            {
+                Loading = false;
+            }
+            NFTsLoaded?.Invoke(this, new EventArgs());
         }
     }
 }

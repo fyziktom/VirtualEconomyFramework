@@ -10,7 +10,7 @@
     </Column>
 </Row>
 <CardGroup Margin="Margin.Is3.FromTop">
-    @foreach (var post in AppData.ArticleNFTs.Take(3))
+    @foreach (var post in AppData.RandArticleNFTs.Take(3))
     {
         var p = post as CoruzantArticleNFT;
         var tag = post.TagsList.FirstOrDefault();                        
@@ -30,10 +30,10 @@
                 <Row>
                     <Column Flex="Flex.JustifyContent.Center">
                         <Span Style="font-family: 'Inter';font-size: 12px;" Display="Display.None.OnMobile.None.OnTablet.Inline.OnDesktop">
-                            @(post.Text.Length > 100 ? post.Text.Substring(0, 100) + "..." : post.Text)
+                            @(post.Text.Length > 100 ? post.Text.Substring(0, 100) + "..." : post.Description)
                         </Span>
                         <Span Style="font-family: 'Inter';font-size: 12px;" Display="Display.Inline.OnMobile.Inline.OnTablet.None.OnDesktop">
-                            @(post.Text.Length > 100 ? post.Text.Substring(0, 100) + "..." : post.Text)
+                            @(post.Text.Length > 100 ? post.Text.Substring(0, 100) + "..." : post.Description)
                         </Span>
                     </Column>
                 </Row>

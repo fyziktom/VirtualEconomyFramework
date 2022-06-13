@@ -79,7 +79,7 @@
         </Row>
         <Row Margin="Margin.Is4.FromTop">
             <Column Flex="Flex.JustifyContent.Center">
-                <Button Class="viewalltrendingbutton" Type="ButtonType.Link" To="profiles">View All</Button>
+                <Button Class="viewalltrendingbutton" Clicked="@LoadMore">Load More</Button>
             </Column>
         </Row>
         
@@ -113,6 +113,11 @@
     {
         var name = pnft.Name + " " + pnft.Surname;
         return name.Length > 50 ? name.Substring(0, 50) + "..." : name;
+    }
+
+    public async Task LoadMore()
+    {
+        await AppData.LoadMoreNFTs();
     }
 
     private async Task LoadBuzzproudPodcastLink( CoruzantProfileNFT pnft)
