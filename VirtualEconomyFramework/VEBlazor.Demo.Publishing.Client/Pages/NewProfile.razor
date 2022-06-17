@@ -27,6 +27,16 @@
         <Row>
             <Column>    
                 <Field Horizontal>
+                    <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">Author</FieldLabel>
+                    <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                        <TextEdit Placeholder="Enter Name of Author" @bind-Text="@((AppData.GetMintingNFTTab(formName).NFT as CoruzantProfileNFT).Author)"/>
+                    </FieldBody>
+                </Field>
+            </Column>
+        </Row>
+        <Row>
+            <Column>    
+                <Field Horizontal>
                     <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">Name</FieldLabel>
                     <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
                         <TextEdit Placeholder="Enter Name" @bind-Text="@((AppData.GetMintingNFTTab(formName).NFT as CoruzantProfileNFT).Name)"/>
@@ -90,6 +100,16 @@
                     <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">Twitter</FieldLabel>
                     <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
                         <TextEdit Placeholder="Enter Twitter nickname" @bind-Text="@((AppData.GetMintingNFTTab(formName).NFT as CoruzantProfileNFT).Twitter)"/>
+                    </FieldBody>
+                </Field>
+            </Column>
+        </Row>
+        <Row>
+            <Column>    
+                <Field Horizontal>
+                    <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">Personal Page Link</FieldLabel>
+                    <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                        <TextEdit Placeholder="Enter Personal Page Link" @bind-Text="@((AppData.GetMintingNFTTab(formName).NFT as CoruzantProfileNFT).PersonalPageLink)"/>
                     </FieldBody>
                 </Field>
             </Column>

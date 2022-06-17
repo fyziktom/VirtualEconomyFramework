@@ -128,6 +128,7 @@ namespace VEDriversLite.NFT.Coruzant
         /// <exception cref="Exception"></exception>
         public override async Task<IDictionary<string, string>> GetMetadata(string address = "", string key = "", string receiver = "")
         {
+            /*
             if (string.IsNullOrEmpty(ImageLink))
                 throw new Exception("Cannot create NFT CoruzantPost without image link.");
             if (string.IsNullOrEmpty(Name))
@@ -138,6 +139,7 @@ namespace VEDriversLite.NFT.Coruzant
                 throw new Exception("Cannot create NFT CoruzantPost without author.");
             if (string.IsNullOrEmpty(AuthorProfileUtxo))
                 throw new Exception("Cannot create NFT CoruzantPost without Author Profile Utxo.");
+            */
             
             var metadata = await GetCommonMetadata();
             if (!string.IsNullOrEmpty(FullPostLink))
