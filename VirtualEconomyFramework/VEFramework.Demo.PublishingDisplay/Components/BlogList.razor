@@ -20,26 +20,10 @@
                     <Card Style="min-width:300px;max-width:350px;" Margin="Margin.Is3.FromEnd">
                         <CardImage Source="@post.ImageLink" Alt="@post.Name" ></CardImage>
                         <CardBody>
-                            <Row>
-                                <Column Flex="Flex.JustifyContent.Center">
-                                    <Span Style="font-family: 'Inter';font-size: 20px;" Display="Display.None.OnMobile.None.OnTablet.Inline.OnDesktop">
-                                        @(post.Name.Length > 50 ? post.Name.Substring(0, 50) + "..." : post.Name)
-                                    </Span>
-                                    <Span Style="font-family: 'Inter';font-size: 20px;" Display="Display.Inline.OnMobile.Inline.OnTablet.None.OnDesktop">
-                                        @(post.Name.Length > 50 ? post.Name.Substring(0, 50) + "..." : post.Name)
-                                    </Span>
-                                </Column>
-                            </Row>
-                            <Row>
-                                <Column Flex="Flex.JustifyContent.Center">
-                                    <Span Style="font-family: 'Inter';font-size: 12px;" Display="Display.None.OnMobile.None.OnTablet.Inline.OnDesktop">
-                                        @(post.Text.Length > 100 ? post.Text.Substring(0, 100) + "..." : post.Description)
-                                    </Span>
-                                    <Span Style="font-family: 'Inter';font-size: 12px;" Display="Display.Inline.OnMobile.Inline.OnTablet.None.OnDesktop">
-                                        @(post.Text.Length > 100 ? post.Text.Substring(0, 100) + "..." : post.Description)
-                                    </Span>
-                                </Column>
-                            </Row>
+                            <NameOnCard NFT="@post" />
+                            
+                            <DescriptionOnCard Text="@post.Description" />
+
                             <Row Margin="Margin.Is4.FromTop">
                                 <Column Flex="Flex.JustifyContent.Center">
                                     <Button Class="readmoreprofilebutton" Clicked="@(() => OpenPost(post.Utxo))">

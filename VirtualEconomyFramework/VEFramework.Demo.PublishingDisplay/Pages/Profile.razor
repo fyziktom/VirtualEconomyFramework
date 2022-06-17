@@ -4,17 +4,17 @@
 @inject AppData AppData
 @inherits NFTDetailPage
 
-@page "/post"
+@page "/profile"
 
-<PageTitle>Coruzant Post</PageTitle>
+<PageTitle>Coruzant Profile</PageTitle>
 
 <Container Fluid>
     <Row Margin="Margin.Is3.FromTop">
         <Column ColumnSize="ColumnSize.Is12.OnMobile.Is12.OnTablet.Is8.OnDesktop">
-            <PostDetails @ref="@postDetails" />
+            <ProfileDetail @ref="@profileDetails" />
         </Column>
         <Column ColumnSize="ColumnSize.IsAuto.OnMobile.IsAuto.OnTablet.Is4.OnDesktop">
-           <ArticlesSideList />
+           <ProfilesSideList />
         </Column>
     </Row>
     <Row Margin="Margin.Is5.FromTop.Is2.FromBottom">
@@ -24,19 +24,19 @@
 </Container>
 
 @code {
-    PostDetails? postDetails;
+    ProfileDetail? profileDetails;
 
     protected override async Task OnAfterRenderAsync( bool firstRender )
     {
-        await base.OnAfterRenderAsync( firstRender );
-        if ( postDetails == null )
+        if ( profileDetails == null )
             return;
+
         if ( !string.IsNullOrEmpty(Utxo) && Utxo.Length > 0 )
         {
             var post = await SearchOrLoad();
 
             if (post != null)
-                await postDetails.Load( post );
+                await profileDetails.Load( post );
         }
 
         if (firstRender)

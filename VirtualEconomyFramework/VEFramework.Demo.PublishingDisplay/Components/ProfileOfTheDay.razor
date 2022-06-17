@@ -3,8 +3,9 @@
 @using VEFramework.Demo.PublishingDisplay.Services.NFTs.Coruzant
 @using Markdig
 @inject AppData AppData
+@inherits CoruzantProfileComponentBase
 
-@if (Profile != null)
+@if (NFT != null)
 {
 <Row Flex="Flex.AlignItems.Center">
     <Column Flex="Flex.JustifyContent.Center">
@@ -15,17 +16,17 @@
     <Column ColumnSize="ColumnSize.Is12.OnMobile.Is12.OnTablet.Is4.OnDesktop" Padding="Padding.Is2">
         <Row>
             <Column Flex="Flex.JustifyContent.Center.AlignItems.Center">
-                <Image Source="@Profile.ImageLink" />
+                <Image Source="@NFT.ImageLink" />
             </Column>
         </Row>
         <Row>
             <Column Flex="Flex.JustifyContent.Center">
-                <Span TextColor="TextColor.Dark">@(Profile.Name + " " + (Profile as CoruzantProfileNFT).Surname)</Span>
+                <Span TextColor="TextColor.Dark">@(GetName(NFT as CoruzantProfileNFT))</Span>
             </Column>
         </Row>
         <Row>
             <Column Flex="Flex.JustifyContent.Center">
-                <Small TextColor="TextColor.Secondary">@((Profile as CoruzantProfileNFT).WorkingPosition)</Small>
+                <Small TextColor="TextColor.Secondary">@((NFT as CoruzantProfileNFT).WorkingPosition)</Small>
             </Column>
         </Row>
     </Column>
@@ -40,7 +41,7 @@
             </Row>
             <Row Margin="Margin.Is3.FromTop.Is2.FromBottom">
                 <Column>
-                    @foreach(var tag in Profile.TagsList)
+                    @foreach(var tag in NFT.TagsList)
                     {                    
                         <Badge Color="Color.Secondary" Margin="Margin.Is2.FromEnd">#@tag</Badge>
                     }
@@ -52,24 +53,5 @@
 }
 
 @code {
-    [Parameter]
-    public INFT Profile {get;set;} = new CoruzantProfileNFT("");
-    
-    public string NFTTextMarkuptext => Markdig.Markdown.ToHtml( Profile.Text , new MarkdownPipelineBuilder().UseAdvancedExtensions().Build());
 
-    //protected override void OnInitialized()
-    //{
-    //    base.OnInitialized();
-    //    AppData.NFTsLoaded += NFTsLoadedHandler;
-    //}
-
-    //public void NFTsLoadedHandler(object sender, EventArgs e)
-    //{
-    //    var prof = AppData.ProfilesNFTs.FirstOrDefault();
-    //    if (prof != null)
-    //        Profile = prof;
-            
-    //    StateHasChanged();
-    //}
-    
 }

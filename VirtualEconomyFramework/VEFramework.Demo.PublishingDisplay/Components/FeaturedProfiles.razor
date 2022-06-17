@@ -2,6 +2,7 @@
 @using VEFramework.Demo.PublishingDisplay.Services.NFTs
 @using VEFramework.Demo.PublishingDisplay.Services.NFTs.Coruzant
 @inject AppData AppData
+@inject NavigationManager NavigationManager
 
 <Row>
     <Column>
@@ -23,26 +24,10 @@
                             <Card Style="min-width:300px;max-width:350px;" Margin="Margin.Is3.FromEnd">
                                 <CardImage Source="@profile.ImageLink" Alt="@profile.Name" ></CardImage>
                                 <CardBody>
-                                    <Row>
-                                        <Column Flex="Flex.JustifyContent.Center">
-                                            <Span Style="font-family: 'Inter';font-size: 20px;" Display="Display.None.OnMobile.None.OnTablet.Inline.OnDesktop">
-                                                @GetName(p)
-                                            </Span>
-                                            <Span Style="font-family: 'Inter';font-size: 20px;" Display="Display.Inline.OnMobile.Inline.OnTablet.None.OnDesktop">
-                                                @GetName(p)
-                                            </Span>
-                                        </Column>
-                                    </Row>
-                                    <Row>
-                                        <Column Flex="Flex.JustifyContent.Center">
-                                            <Span Style="font-family: 'Inter';font-size: 12px;" Display="Display.None.OnMobile.None.OnTablet.Inline.OnDesktop">
-                                                @(profile.Text.Length > 100 ? profile.Text.Substring(0, 100) + "..." : profile.Description)
-                                            </Span>
-                                            <Span Style="font-family: 'Inter';font-size: 12px;" Display="Display.Inline.OnMobile.Inline.OnTablet.None.OnDesktop">
-                                                @(profile.Text.Length > 100 ? profile.Text.Substring(0, 100) + "..." : profile.Description)
-                                            </Span>
-                                        </Column>
-                                    </Row>
+                                    <NameOnCard NFT="@profile" />
+
+                                    <DescriptionOnCard Text="@profile.Description" />
+
                                     <Row Margin="Margin.Is4.FromTop">
                                         <Column Flex="Flex.JustifyContent.Center">
                                             <Button Class="readmoreprofilebutton" Clicked="@(() => ReadMoreProfile(profile))">
@@ -84,7 +69,7 @@
                 <CloseButton />
             </ModalHeader>
             <ModalBody>
-                <ProfileDetail @ref="@ProfileDetailRef" Profile="@ProfileInDetails" />
+                <ProfileDetail @ref="@ProfileDetailRef" NFT="@ProfileInDetails" />
             </ModalBody>
     </ModalContent>
 </Modal>
@@ -134,10 +119,17 @@
     async Task ReadMoreProfile(INFT profile)
     {
         ProfileInDetails = profile;
+        if (OnMainPage)
+        {
         if (ProfileDetailsModal != null)
             await ProfileDetailsModal.Show();
         if (ProfileDetailRef != null)
             await ProfileDetailRef.Load(ProfileInDetails);
+        }
+        else
+        {
+            NavigationManager.NavigateTo($"profile?utxo={profile.Utxo}");
+        }
     }
 
     public async Task LoadMore()

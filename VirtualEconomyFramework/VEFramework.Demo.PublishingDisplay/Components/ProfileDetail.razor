@@ -6,26 +6,32 @@
 @inject AppData AppData
 @inject HttpClient _client
 @inject IJSRuntime JSRuntime
+@inherits CoruzantProfileComponentBase
 
-@if (Profile != null)
+@if (NFT != null)
 {
 <Row Class="profileofthedaybox" Margin="Margin.Is2.FromTop">
     <Column ColumnSize="ColumnSize.Is12.OnMobile.Is12.OnTablet.Is4.OnDesktop" Padding="Padding.Is2">
         <Row>
             <Column Flex="Flex.JustifyContent.Center.AlignItems.Center">
-                <Image Source="@Profile.ImageLink" Style="max-width:350px;" />
+                <Image Source="@NFT.ImageLink" Style="max-width:350px;" />
             </Column>
         </Row>
         <Row>
             <Column Flex="Flex.JustifyContent.Center">
-                <Span TextColor="TextColor.Dark">@Profile.Name</Span>
+                <Span TextColor="TextColor.Dark">@(GetName(NFT as CoruzantProfileNFT))</Span>
             </Column>
         </Row>
         <Row>
             <Column Flex="Flex.JustifyContent.Center">
-                <Small TextColor="TextColor.Secondary">@((Profile as CoruzantProfileNFT).WorkingPosition)</Small>
+                <Small TextColor="TextColor.Secondary">@((NFT as CoruzantProfileNFT).WorkingPosition)</Small>
             </Column>
-        </Row>        
+        </Row>
+        <Row Margin="Margin.Is4.FromTop">
+            <Column Flex="Flex.JustifyContent.Center">
+                <Button Color="Color.Light" Type="ButtonType.Link" To="@(AppData.AppShareNFTUrl.Trim('/') + $"/profile?utxo={NFT.Utxo}")" Target="Target.Blank">Open Share Link</Button>
+            </Column>
+        </Row>
     </Column>
     <Column ColumnSize="ColumnSize.Is12.OnMobile.Is12.OnTablet.Is8.OnDesktop" Flex="Flex.AlignItems.Center">
         <Div>
@@ -33,21 +39,18 @@
                 <Column Padding="Padding.Is2">
                     <Div>
                         @((MarkupString)NFTTextMarkuptext)
-                    </Div>
-                    @*<Span Class="text-wrap">
-                        @((MarkupString)NFTTextMarkuptext)
-                    </Span> *@        
+                    </Div>  
                 </Column>
             </Row>
             <Row Margin="Margin.Is3.FromTop.Is2.FromBottom">
                 <Column>
-                    @foreach(var tag in Profile.TagsList)
+                    @foreach(var tag in NFT.TagsList)
                     {                    
                         <Badge Color="Color.Secondary" Margin="Margin.Is2.FromEnd">#@tag</Badge>
                     }
                 </Column>
             </Row>
-            @if(CurrentPodcast != null && !string.IsNullOrEmpty((Profile as CoruzantProfileNFT).PodcastId))
+            @if(CurrentPodcast != null && !string.IsNullOrEmpty((NFT as CoruzantProfileNFT).PodcastId))
             {
             <Row Margin="Margin.Is3.FromTop.Is2.FromBottom">
                 <Column>
@@ -70,62 +73,13 @@
 }
 
 @code {
-    [Parameter]
-    public INFT Profile { get; set; } = new CoruzantProfileNFT("");
-
-    public string NFTTextMarkuptext => Markdig.Markdown.ToHtml( Profile.Text , new MarkdownPipelineBuilder().UseAdvancedExtensions().Build());
-
-    private string buzzsproudLink = string.Empty;
-    public CoruzantProfileNFT CurrentPodcast { get; set; }
-    void ClosePlayer() => CurrentPodcast = null;
-
+        
     public async Task Load(INFT profile)
     {
-        if (Profile != null && Profile.Type == NFTTypes.CoruzantProfile)
+        if (NFT != null && NFT.Type == NFTTypes.CoruzantProfile)
         {
-            Profile = profile;
-            await LoadBuzzproudPodcastLink( Profile as CoruzantProfileNFT );
+            NFT = profile;
+            await LoadBuzzproudPodcastLink( NFT as CoruzantProfileNFT );
         }            
-    }
-
-    private async Task LoadBuzzproudPodcastLink( CoruzantProfileNFT pnft)
-    {
-        CurrentPodcast = pnft;
-        try
-        {
-            if (!string.IsNullOrEmpty(pnft.PodcastId))
-            {
-                var filename = string.Empty;
-                var req = new HttpRequestMessage(HttpMethod.Get, $"https://nftticketverifierapp.azurewebsites.net/api/GetBuzzsproutData/866092/{pnft.PodcastId}");
-                req.Headers.Add("Accept", "application/json");
-                req.Headers.Add("User-Agent", "VENFT-App");
-
-                var resp = await _client.SendAsync(req);
-                var respmsg = await resp.Content.ReadAsStringAsync();
-                if (string.IsNullOrEmpty(respmsg))
-                    return;
-                var podcastData = JsonConvert.DeserializeObject<List<BuzzsproutEpisodeDto>>(respmsg);
-                if (podcastData != null && podcastData.Count > 0)
-                {
-                    var pddto = podcastData.FirstOrDefault();
-                    if (!string.IsNullOrEmpty(pddto.audio_url))
-                    {
-                        filename = pddto.audio_url.Replace("https://www.buzzsprout.com/866092/", string.Empty).Replace(".mp3", string.Empty);
-                        var link = $"https://www.buzzsprout.com/866092/{filename}.js?container_id=buzzsprout-player-{pnft.PodcastId}&player=small";
-                        buzzsproudLink = link;
-                        StateHasChanged();
-                        await Task.Delay(200);
-                        await JSRuntime.InvokeVoidAsync("jsFunctions.buzzsproutPodcast", buzzsproudLink);
-                        await Task.Delay(200);
-                        //await JSRuntime.InvokeVoidAsync("setCoruzantPodcastInfo", pnft.Name + " " + pnft.Surname, pddto.artist, pddto.title);
-                        StateHasChanged();
-                    }
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine("Cannot load Buzzsprout podcast." + ex.Message);
-        }
     }
 }

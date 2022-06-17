@@ -2,24 +2,24 @@
 @using VEFramework.Demo.PublishingDisplay.Services.NFTs.Coruzant
 @using Markdig
 
-@if (Post != null)
+@if (NFT != null)
 {
 <Row Class="profileofthedaybox" Margin="Margin.Is2.FromTop.Is4.FromBottom">
     <Column ColumnSize="ColumnSize.Is12.OnMobile.Is12.OnTablet.Is12.OnDesktop" Padding="Padding.Is2">
         
         <Row Margin="Margin.Is2.FromTop">
             <Column Flex="Flex.JustifyContent.Center">
-                <Span TextColor="TextColor.Dark">@Post.Name</Span>
+                <Span TextColor="TextColor.Dark">@NFT.Name</Span>
             </Column>
         </Row>
         <Row Margin="Margin.Is2.FromTop">
             <Column Flex="Flex.JustifyContent.Center">
-                <Small TextColor="TextColor.Secondary">@Post.Author</Small>
+                <Small TextColor="TextColor.Secondary">@NFT.Author</Small>
             </Column>
         </Row>       
         <Row Margin="Margin.Is3.FromTop.Is2.FromBottom">
             <Column>
-                @foreach(var tag in Post.TagsList)
+                @foreach(var tag in NFT.TagsList)
                 {                    
                     <Badge Color="Color.Secondary" Margin="Margin.Is2.FromEnd">#@tag</Badge>
                 }
@@ -28,7 +28,7 @@
 
         <Row Margin="Margin.Is3.FromTop">
             <Column Flex="Flex.JustifyContent.Center.AlignItems.Center">
-                <Image Source="@Post.ImageLink" Style="max-width:350px;" />
+                <Image Source="@NFT.ImageLink" Style="max-width:350px;" />
             </Column>
         </Row>
     </Column>
@@ -41,7 +41,7 @@
             </Row>
             <Row Margin="Margin.Is3.FromTop.Is2.FromBottom">
                 <Column Flex="Flex.JustifyContent.Center">
-                    @foreach(var tag in Post.TagsList)
+                    @foreach(var tag in NFT.TagsList)
                     {                    
                         <Badge Color="Color.Secondary" Margin="Margin.Is2.FromEnd">#@tag</Badge>
                     }
@@ -53,16 +53,16 @@
 }
 @code {
     [Parameter]
-    public INFT Post { get; set; } = new CoruzantArticleNFT("");
+    public INFT NFT { get; set; } = new CoruzantArticleNFT("");
 
-    public string NFTTextMarkuptext => Markdig.Markdown.ToHtml( Post.Text , new MarkdownPipelineBuilder().UseAdvancedExtensions().Build());
+    public string NFTTextMarkuptext => Markdig.Markdown.ToHtml( NFT.Text , new MarkdownPipelineBuilder().UseAdvancedExtensions().Build());
 
     public async Task Load (INFT post)
     {
         if (post != null)
         {
-            Post = post;
-            await InvokeAsync(StateHasChanged);
+            NFT = post;
+            await InvokeAsync( StateHasChanged );
         }
     }
 }

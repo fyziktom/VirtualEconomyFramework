@@ -63,7 +63,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VEBlazor.Demo.ArtApp", "VEB
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VEFramework.Demo.PublishingDisplay", "VEFramework.Demo.PublishingDisplay\VEFramework.Demo.PublishingDisplay.csproj", "{1FBACB0C-C4F7-481A-BA43-BAAEADBE80D8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VEBlazor.Demo.Publishing.Client", "VEBlazor.Demo.Publishing.Client\VEBlazor.Demo.Publishing.Client.csproj", "{1C2D1169-5504-4910-B112-A8B5F47F297B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VEBlazor.Demo.Publishing.Client", "VEBlazor.Demo.Publishing.Client\VEBlazor.Demo.Publishing.Client.csproj", "{1C2D1169-5504-4910-B112-A8B5F47F297B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

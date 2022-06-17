@@ -29,14 +29,19 @@
 
     <Row Margin="Margin.Is5.FromTop">
         <Column>
-            <ProfileOfTheDay Profile="@Profile" />
+            <ProfileOfTheDay NFT="@Profile" />
         </Column>
     </Row>
     @if (!AppData.Loading)
     {
         <Row Margin="Margin.Is5.FromTop.Is2.FromBottom">
             <Column>
-                <FeaturedProfiles OnMainPage="true" PerPage="3" />
+                <Div Display="Display.Inline.OnMobile.Inline.OnTablet.None.OnDesktop">
+                    <FeaturedProfiles OnMainPage="true" PerPage="3" />
+                </Div>
+                <Div Display="Display.None.OnMobile.None.OnTablet.Inline.OnDesktop">
+                    <FeaturedProfiles OnMainPage="true" PerPage="5" />
+                </Div>
             </Column>
         </Row>
     }

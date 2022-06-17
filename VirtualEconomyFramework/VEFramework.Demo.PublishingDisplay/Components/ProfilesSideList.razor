@@ -2,39 +2,19 @@
 @using VEFramework.Demo.PublishingDisplay.Services.NFTs
 @using VEFramework.Demo.PublishingDisplay.Services.NFTs.Coruzant
 @inject AppData AppData
-@using Newtonsoft.Json
-@inject HttpClient _client
-@inject IJSRuntime JSRuntime
-@inherits CoruzantProfileComponentBase
 
 <Row>
     <Column>
         <Row Flex="Flex.AlignItems.Center">
             <Column Flex="Flex.JustifyContent.Center">
-                <Heading Size="HeadingSize.Is3" Style="text-decoration: underline;">Featured Podcasts</Heading>
+                <Heading Size="HeadingSize.Is3" Style="text-decoration: underline;">Featured Profiles</Heading>
             </Column>
         </Row>
-        @if(CurrentPodcast != null){
-            <Row Margin="Margin.Is3.FromTop.Is3.FromBottom">
-                <Column>
-                    <div class="podcast-player z-depth-2">
-                        <div id="buzzsprout-player-@CurrentPodcast.PodcastId">
-                            <div class="row">
-                            <div class="col d-flex justify-content-center align-items-center">
-                                <span>Loading Podcast...</span>
-                            </div>
-                        </div>
-                        </div>
-                        <div id="close-player" @onclick="ClosePlayer"><i class="fas fa-times"></i></div>
-                    </div>
-                </Column>
-            </Row>
-        }
         <Row Margin="Margin.Is3.FromTop">
             <Column>
                 
                     <CardGroup>
-                    @foreach (var profile in AppData.PodcastsNFTs.Take(PerPage))
+                    @foreach (var profile in AppData.RandProfilesNFTs.Take(PerPage))
                     {
                         var p = profile as CoruzantProfileNFT;
                         @if (p != null)
@@ -44,14 +24,14 @@
                                 <CardImage Source="@profile.ImageLink" Alt="@profile.Name" ></CardImage>
                                 <CardBody>
                                     <NameOnCard NFT="@profile" />
-
+                                    
                                     <DescriptionOnCard Text="@profile.Description" />
 
                                     <Row Margin="Margin.Is4.FromTop">
                                         <Column Flex="Flex.JustifyContent.Center">
-                                            <Button Class="readmoreprofilebutton" Clicked="@(() => LoadBuzzproudPodcastLink(p))">
-                                                <Span Style="font-size:14px;" Display="Display.None.OnMobile.None.OnTablet.Inline.OnDesktop">Listen Podcast</Span>
-                                                <Span Style="font-size:8px;" Display="Display.Inline.OnMobile.Inline.OnTablet.None.OnDesktop">Listen Podcast</Span>
+                                            <Button Class="readmoreprofilebutton" Clicked="@(() => ReadMoreProfile(profile))">
+                                                <Span Style="font-size:14px;" Display="Display.None.OnMobile.None.OnTablet.Inline.OnDesktop">Read more</Span>
+                                                <Span Style="font-size:8px;" Display="Display.Inline.OnMobile.Inline.OnTablet.None.OnDesktop">Read more</Span>
                                                 </Button>
                                         </Column>
                                     </Row>                            
@@ -64,34 +44,54 @@
         </Row>
         <Row Margin="Margin.Is4.FromTop">
             <Column Flex="Flex.JustifyContent.Center">
-                <Button Class="viewalltrendingbutton" Clicked="@LoadMore">Load More</Button>
+                <Button Class="viewalltrendingbutton" Type="ButtonType.Link" To="profiles">View All</Button>
             </Column>
         </Row>
-        
     </Column>
 </Row>
 
+<Modal @ref="ProfileDetailsModal">
+    <ModalContent Centered Size="ModalSize.ExtraLarge">
+            <ModalHeader>
+                <ModalTitle>@(GetName(ProfileInDetails as CoruzantProfileNFT))</ModalTitle>
+                <CloseButton />
+            </ModalHeader>
+            <ModalBody>
+                <ProfileDetail @ref="@ProfileDetailRef" NFT="@ProfileInDetails" />
+            </ModalBody>
+    </ModalContent>
+</Modal>
+
 @code {
+    Modal? ProfileDetailsModal;
+    ProfileDetail? ProfileDetailRef;
 
     [Parameter]
     public int PerPage {get;set;} = 3;
 
     INFT ProfileInDetails = new CoruzantProfileNFT("");
 
+    string selectedSlide = "";
+
     protected override void OnInitialized()
     {
-        AppData.NFTsLoaded += (s,e) => StateHasChanged();
         base.OnInitialized();
+        AppData.NFTsLoaded += (s, e) =>  StateHasChanged();
+    }
+
+    private string GetName(CoruzantProfileNFT pnft)
+    {
+        var name = pnft.Name + " " + pnft.Surname;
+        return name.Length > 50 ? name.Substring(0, 50) + "..." : name;
     }
 
     async Task ReadMoreProfile(INFT profile)
     {
         ProfileInDetails = profile;
-        await InvokeAsync(StateHasChanged);
+        if (ProfileDetailsModal != null)
+            await ProfileDetailsModal.Show();
+        if (ProfileDetailRef != null)
+            await ProfileDetailRef.Load(ProfileInDetails);
     }
 
-    public async Task LoadMore()
-    {
-        await AppData.LoadMoreNFTs();
-    }
 }
