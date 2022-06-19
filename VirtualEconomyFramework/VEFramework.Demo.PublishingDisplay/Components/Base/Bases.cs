@@ -109,7 +109,7 @@ namespace VEFramework.Demo.PublishingDisplay.Components.Base
                 if (!string.IsNullOrEmpty(pnft.PodcastId))
                 {
                     var filename = string.Empty;
-                    var req = new HttpRequestMessage(HttpMethod.Get, $"https://nftticketverifierapp.azurewebsites.net/api/GetBuzzsproutData/866092/{pnft.PodcastId}");
+                    var req = new HttpRequestMessage(HttpMethod.Get, $"https://coruzantpublishingserver.azurewebsites.net/GetBuzzsproutData/866092/{pnft.PodcastId}");
                     req.Headers.Add("Accept", "application/json");
                     req.Headers.Add("User-Agent", "VENFT-App");
 

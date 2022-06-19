@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
+using Newtonsoft.Json;
 using VEBlazor.Demo.Publishing.Server.Services;
 using VEDriversLite.NFT;
 using VEDriversLite.NFT.Coruzant;
@@ -7,6 +9,23 @@ using VEDriversLite.NFT.Tags;
 
 namespace VEBlazor.Demo.Publishing.Server.Controllers
 {
+    public class AllowCrossSiteJsonAttribute : ActionFilterAttribute
+    {
+        public override void OnActionExecuting(ActionExecutingContext filterContext)
+        {
+            // We'd normally just use "*" for the allow-origin header, 
+            // but Chrome (and perhaps others) won't allow you to use authentication if
+            // the header is set to "*".
+            // TODO: Check elsewhere to see if the origin is actually on the list of trusted domains.
+            var ctx = filterContext.HttpContext;
+            //var origin = ctx.Request.Headers["Origin"];
+            //var allowOrigin = !string.IsNullOrWhiteSpace(origin) ? origin : "*";
+            ctx.Response.Headers.Add("Access-Control-Allow-Origin", "*");
+            ctx.Response.Headers.Add("Access-Control-Allow-Headers", "*");
+            ctx.Response.Headers.Add("Access-Control-Allow-Credentials", "true");
+            base.OnActionExecuting(filterContext);
+        }
+    }
     public class NFTController : Controller
     {
         // GET: NFTController/GetNFT/{Utxo}
@@ -172,6 +191,46 @@ namespace VEBlazor.Demo.Publishing.Server.Controllers
             }
 
             return dict;
+        }
+
+
+        [AllowCrossSiteJsonAttribute]
+        [HttpGet("GetBuzzsproutData/{profile}/{podcast}")]
+        public async Task<List<BuzzsproutEpisodeDto>> GetBuzzsproutData(string profile, string podcast)
+        {
+            if (string.IsNullOrEmpty(profile))
+                return null;
+
+            try
+            {
+                var apiToken = "3ede6be154859d46dbbc11b9e3f3094f";
+
+                using (var client = new HttpClient())
+                {
+                    var url = $"https://www.buzzsprout.com/api/{profile}/episodes.json";
+
+                    using (var content = new MultipartFormDataContent())
+                    {
+                        client.DefaultRequestHeaders.Add("Authorization", $"Token token={apiToken}");
+                        var response = await client.GetAsync(url);
+                        var jsonresponse = await response.Content.ReadAsStringAsync();
+                        var res = JsonConvert.DeserializeObject<List<BuzzsproutEpisodeDto>>(jsonresponse);
+                        if (res != null)
+                        {
+                            var pod = res.FirstOrDefault(p => p.id == Convert.ToInt32(podcast));
+                            if (pod != null)
+                                return new List<BuzzsproutEpisodeDto>() { pod };
+                            else
+                                return res;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error during uploading the image to the IPFS." + ex.Message);
+            }
+            return null;
         }
 
     }
