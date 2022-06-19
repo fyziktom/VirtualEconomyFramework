@@ -36,56 +36,56 @@ namespace VEBlazor.Demo.Publishing.Server.Controllers
         }
 
         [HttpGet("GetNFTArticles")]
-        public async Task<Dictionary<string, INFT>> GetNFTArticles()
+        public async Task<Dictionary<string, CoruzantArticleNFT>> GetNFTArticles()
         {
             return await GetNFTArticles(0);
         }        
         [HttpGet("GetNFTArticles/{settings}/{skip}/{take}")]
-        public async Task<Dictionary<string, INFT>> GetNFTArticles(int settings = 0, int skip = 0, int take = 25)
+        public async Task<Dictionary<string, CoruzantArticleNFT>> GetNFTArticles(int settings = 0, int skip = 0, int take = 25)
         {
-            var dict = new Dictionary<string, INFT>();
+            var dict = new Dictionary<string, CoruzantArticleNFT>();
                            
             if (MainDataContext.ObservedAccountsTabs.TryGetValue(MainDataContext.MainCoruzantPublishingAddress, out var tab))
             {
                 foreach (var nft in tab.NFTs.Where(n => n.Type == NFTTypes.CoruzantArticle).Skip(skip).Take(take))
                 {
                     nft.TxDetails = null;
-                    dict.Add($"{nft.Utxo}:{nft.UtxoIndex}", nft);
+                    dict.Add($"{nft.Utxo}:{nft.UtxoIndex}", nft as CoruzantArticleNFT);
                 }
             }
             return dict;
         }
 
         [HttpGet("GetNFTProfiles")]
-        public async Task<Dictionary<string, INFT>> GetNFTProfiles()
+        public async Task<Dictionary<string, CoruzantProfileNFT>> GetNFTProfiles()
         {
             return await GetNFTProfiles(0);
         }        
         [HttpGet("GetNFTProfiles/{settings}/{skip}/{take}")]        
-        public async Task<Dictionary<string, INFT>> GetNFTProfiles(int settings = 0, int skip = 0, int take = 25)
+        public async Task<Dictionary<string, CoruzantProfileNFT>> GetNFTProfiles(int settings = 0, int skip = 0, int take = 25)
         {
-            var dict = new Dictionary<string, INFT>();
+            var dict = new Dictionary<string, CoruzantProfileNFT>();
 
             if (MainDataContext.ObservedAccountsTabs.TryGetValue(MainDataContext.MainCoruzantPublishingAddress, out var tab))
             {
                 foreach (var nft in tab.NFTs.Where(n => n.Type == NFTTypes.CoruzantProfile).Skip(skip).Take(take))
                 {
                     nft.TxDetails = null;
-                    dict.Add($"{nft.Utxo}:{nft.UtxoIndex}", nft);
+                    dict.Add($"{nft.Utxo}:{nft.UtxoIndex}", nft as CoruzantProfileNFT);
                 }
             }
             return dict;
         }
 
         [HttpGet("GetNFTPodcasts")]
-        public async Task<Dictionary<string, INFT>> GetNFTPodcasts()
+        public async Task<Dictionary<string, CoruzantProfileNFT>> GetNFTPodcasts()
         {
             return await GetNFTPodcasts(0);
         }
         [HttpGet("GetNFTPodcasts/{settings}/{skip}/{take}")]
-        public async Task<Dictionary<string, INFT>> GetNFTPodcasts(int settings = 0, int skip = 0, int take = 25)
+        public async Task<Dictionary<string, CoruzantProfileNFT>> GetNFTPodcasts(int settings = 0, int skip = 0, int take = 25)
         {
-            var dict = new Dictionary<string, INFT>();
+            var dict = new Dictionary<string, CoruzantProfileNFT>();
 
             if (MainDataContext.ObservedAccountsTabs.TryGetValue(MainDataContext.MainCoruzantPublishingAddress, out var tab))
             {
@@ -94,7 +94,7 @@ namespace VEBlazor.Demo.Publishing.Server.Controllers
                     if (!string.IsNullOrEmpty((nft as CoruzantProfileNFT)?.PodcastId))
                     {
                         nft.TxDetails = null;
-                        dict.Add($"{nft.Utxo}:{nft.UtxoIndex}", nft);
+                        dict.Add($"{nft.Utxo}:{nft.UtxoIndex}", nft as CoruzantProfileNFT);
                     }
                 }
             }
@@ -125,21 +125,21 @@ namespace VEBlazor.Demo.Publishing.Server.Controllers
         }
 
         [HttpGet("GetNFTArticlesByTags/{tagName}")]
-        public async Task<Dictionary<string, INFT>> GetNFTArticlesByTags(string tagName)
+        public async Task<Dictionary<string, CoruzantArticleNFT>> GetNFTArticlesByTags(string tagName)
         {
             return await GetNFTArticlesByTags(tagName, 0);
         }
         [HttpGet("GetNFTArticlesByTags/{tagName}/{settings}/{skip}/{take}")]
-        public async Task<Dictionary<string, INFT>> GetNFTArticlesByTags(string tagName, int settings = 0, int skip = 0, int take = 25)
+        public async Task<Dictionary<string, CoruzantArticleNFT>> GetNFTArticlesByTags(string tagName, int settings = 0, int skip = 0, int take = 25)
         {
-            var dict = new Dictionary<string, INFT>();
+            var dict = new Dictionary<string, CoruzantArticleNFT>();
 
             if (MainDataContext.ObservedAccountsTabs.TryGetValue(MainDataContext.MainCoruzantPublishingAddress, out var tab))
             {
                 foreach (var nft in tab.NFTs.Where(n => n.Type == NFTTypes.CoruzantArticle).Where(n => n.TagsList.Contains(tagName)).Skip(skip).Take(take))
                 {
                     nft.TxDetails = null;
-                    dict.Add($"{nft.Utxo}:{nft.UtxoIndex}", nft);
+                    dict.Add($"{nft.Utxo}:{nft.UtxoIndex}", nft as CoruzantArticleNFT);
                 }                    
             }            
 
@@ -147,21 +147,21 @@ namespace VEBlazor.Demo.Publishing.Server.Controllers
         }
 
         [HttpGet("GetNFTProfilessByTags/{tagName}")]
-        public async Task<Dictionary<string, INFT>> GetNFTProfilesByTags(string tagName)
+        public async Task<Dictionary<string, CoruzantProfileNFT>> GetNFTProfilesByTags(string tagName)
         {
             return await GetNFTProfilesByTags(tagName, 0);
         }
         [HttpGet("GetNFTProfilessByTags/{tagName}/{settings}/{skip}/{take}")]
-        public async Task<Dictionary<string, INFT>> GetNFTProfilesByTags(string tagName, int settings = 0, int skip = 0, int take = 25)
+        public async Task<Dictionary<string, CoruzantProfileNFT>> GetNFTProfilesByTags(string tagName, int settings = 0, int skip = 0, int take = 25)
         {
-            var dict = new Dictionary<string, INFT>();
+            var dict = new Dictionary<string, CoruzantProfileNFT>();
 
             if (MainDataContext.ObservedAccountsTabs.TryGetValue(MainDataContext.MainCoruzantPublishingAddress, out var tab))
             {
                 foreach (var nft in tab.NFTs.Where(n => n.Type == NFTTypes.CoruzantProfile).Where(n => n.TagsList.Contains(tagName)).Skip(skip).Take(take))
                 {
                     nft.TxDetails = null;
-                    dict.Add($"{nft.Utxo}:{nft.UtxoIndex}", nft);
+                    dict.Add($"{nft.Utxo}:{nft.UtxoIndex}", nft as CoruzantProfileNFT);
                 }                    
             }
 
@@ -169,14 +169,14 @@ namespace VEBlazor.Demo.Publishing.Server.Controllers
         }
 
         [HttpGet("GetNFTPodcastsByTags/{tagName}")]
-        public async Task<Dictionary<string, INFT>> GetNFTPodcastsByTags(string tagName)
+        public async Task<Dictionary<string, CoruzantProfileNFT>> GetNFTPodcastsByTags(string tagName)
         {
             return await GetNFTPodcastsByTags(tagName, 0);
         }
         [HttpGet("GetNFTPodcastsByTags/{tagName}/{settings}/{skip}/{take}")]
-        public async Task<Dictionary<string, INFT>> GetNFTPodcastsByTags(string tagName, int settings = 0, int skip = 0, int take = 25)
+        public async Task<Dictionary<string, CoruzantProfileNFT>> GetNFTPodcastsByTags(string tagName, int settings = 0, int skip = 0, int take = 25)
         {
-            var dict = new Dictionary<string, INFT>();
+            var dict = new Dictionary<string, CoruzantProfileNFT>();
 
             if (MainDataContext.ObservedAccountsTabs.TryGetValue(MainDataContext.MainCoruzantPublishingAddress, out var tab))
             {
@@ -185,7 +185,7 @@ namespace VEBlazor.Demo.Publishing.Server.Controllers
                     if (!string.IsNullOrEmpty((nft as CoruzantProfileNFT).PodcastId))
                     {
                         nft.TxDetails = null;
-                        dict.Add($"{nft.Utxo}:{nft.UtxoIndex}", nft);
+                        dict.Add($"{nft.Utxo}:{nft.UtxoIndex}", nft as CoruzantProfileNFT);
                     }
                 }
             }
