@@ -1,4 +1,7 @@
-﻿<Row class="footerbackground" Flex="Flex.AlignContent.Center" Margin="Margin.Is5.FromTop">
+﻿@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+
+<Row class="footerbackground" Flex="Flex.AlignContent.Center" Margin="Margin.Is5.FromTop">
     <Column Height="Height.Is100">
         <Row Flex="Flex.AlignItems.Center">
             <Column ColumnSize="ColumnSize.Is12.OnMobile.Is12.OnTablet.Is6.OnDesktop">
@@ -8,8 +11,8 @@
                          <Image Source="images/smalllogo.png" class="img-responsive" Display="Display.Inline.OnMobile.Inline.OnTablet.None.OnDesktop" Style="max-height:30px; min-height:30px;" />
                     </Column>
                     <Column ColumnSize="ColumnSize.Is12.OnMobile.Is12.OnTablet.Is8.OnDesktop" Flex="Flex.AlignItems.Center">
-                         <Small Display="Display.None.OnMobile.None.OnTablet.Inline.OnDesktop" class="text-wrap text-light">Coruzant provides high quality content from technology professionals around the world</Small>
-                         <Small Display="Display.Inline.OnMobile.Inline.OnTablet.None.OnDesktop" class="text-wrap text-light text-center">Coruzant provides high quality content from technology professionals around the world</Small>
+                        <Small Display="Display.None.OnMobile.None.OnTablet.Inline.OnDesktop" class="text-wrap text-light">@Configuration["Footer:Text:Main:Desktop"]</Small>
+                        <Small Display="Display.Inline.OnMobile.Inline.OnTablet.None.OnDesktop" class="text-wrap text-light text-center">@Configuration["Footer:Text:Main:Mobile"]</Small>
                     </Column>
                 </Row>
                 @*
@@ -54,6 +57,12 @@
                         </Row>
                         <Row Margin="Margin.Is2.FromTop">
                             <Column Flex="Flex.JustifyContent.Center">
+                                 <Link Class="footertextitem" Display="Display.None.OnMobile.None.OnTablet.Inline.OnDesktop" To="articles">Articles</Link>
+                                 <Link Class="footersmalltext" Display="Display.Inline.OnMobile.Inline.OnTablet.None.OnDesktop" To="articles">Articles</Link>
+                            </Column>
+                        </Row>
+                        <Row Margin="Margin.Is2.FromTop">
+                            <Column Flex="Flex.JustifyContent.Center">
                                  <Link Class="footertextitem" Display="Display.None.OnMobile.None.OnTablet.Inline.OnDesktop" To="blog">Blog</Link>
                                  <Link Class="footersmalltext" Display="Display.Inline.OnMobile.Inline.OnTablet.None.OnDesktop" To="blog">Blog</Link>
                             </Column>
@@ -72,14 +81,14 @@
                         </Row>
                         <Row Margin="Margin.Is2.FromTop">
                             <Column Flex="Flex.JustifyContent.Center">
-                                 <Link Class="footertextitem" Display="Display.None.OnMobile.None.OnTablet.Inline.OnDesktop" To="about">About Us</Link>
-                                 <Link Class="footersmalltext" Display="Display.Inline.OnMobile.Inline.OnTablet.None.OnDesktop" To="about">About Us</Link>
+                                 <Link Class="footertextitem" Display="Display.None.OnMobile.None.OnTablet.Inline.OnDesktop" To="about">About</Link>
+                                 <Link Class="footersmalltext" Display="Display.Inline.OnMobile.Inline.OnTablet.None.OnDesktop" To="about">About</Link>
                             </Column>
                         </Row>
                         <Row Margin="Margin.Is2.FromTop">
                             <Column Flex="Flex.JustifyContent.Center">
-                                <Link Class="footertextitem" Display="Display.None.OnMobile.None.OnTablet.Inline.OnDesktop" To="mailto:nft@coruzant.com" Target="Target.Blank">Contact Us</Link>
-                                <Link Class="footersmalltext" Display="Display.Inline.OnMobile.Inline.OnTablet.None.OnDesktop" To="mailto:nft@coruzant.com" Target="Target.Blank">Contact Us</Link>
+                                <Link Class="footertextitem" Display="Display.None.OnMobile.None.OnTablet.Inline.OnDesktop" To="mailto:nft@coruzant.com" Target="Target.Blank">Contact</Link>
+                                <Link Class="footersmalltext" Display="Display.Inline.OnMobile.Inline.OnTablet.None.OnDesktop" To="mailto:nft@coruzant.com" Target="Target.Blank">Contact</Link>
                             </Column>
                         </Row>
                     </Column>

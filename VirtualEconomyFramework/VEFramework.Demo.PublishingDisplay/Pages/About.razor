@@ -1,19 +1,28 @@
 ﻿@using VEFramework.Demo.PublishingDisplay.Components
 @using VEFramework.Demo.PublishingDisplay.Services.NFTs
 @using VEFramework.Demo.PublishingDisplay.Services.NFTs.Coruzant
+@using Markdig
+@inject HttpClient httpClient
 @inject AppData AppData
 
 @page "/about"
 
-<PageTitle>Coruzant About Us</PageTitle>
+<PageTitle>Coruzant About</PageTitle>
 
 <Container Fluid>
     <Row Margin="Margin.Is3.FromTop" Flex="Flex.AlignItems.Center">
         <Column Flex="Flex.JustifyContent.Center">
-            <Heading Size="HeadingSize.Is3" Style="text-decoration: underline;">About Us</Heading>
+            <Heading Size="HeadingSize.Is3" Style="text-decoration: underline;">About</Heading>
         </Column>
     </Row>
-    <Row Margin="Margin.Is3.FromTop" Flex="Flex.AlignItems.Center">
+    <Row Margin="Margin.Is2.FromTop">
+        <Column Flex="Flex.JustifyContent.Center">
+            <Span>
+                @((MarkupString)Text)
+            </Span>
+        </Column>
+    </Row>
+@*    <Row Margin="Margin.Is3.FromTop" Flex="Flex.AlignItems.Center">
         <Column Flex="Flex.JustifyContent.Center">
             <Image Source="../images/coruzant-logo.png"Style="max-width:250px;" />
         </Column>
@@ -45,7 +54,7 @@
                 We are built on the <Link To="https://nebl.io/" Target="Target.Blank">NEBLIO</Link> Blockchain using the <Link To="https://veframework.com/" Target="Target.Blank">VEFramework</Link> framework in conjunction with <Link To="https://technicinsider.com/" Target="Target.Blank">TechnicInsider</Link>.
             </Span>
         </Column>
-    </Row>
+    </Row>*@
     <Row Margin="Margin.Is4.FromTop">
         <Column>            
             <FellowsList />
@@ -61,13 +70,25 @@
 @code {
     PostDetails? postDetails;
 
-    protected override void OnInitialized()
+
+    public string Text { get; set; } = string.Empty;
+
+    protected override async Task OnInitializedAsync()
     {
-        base.OnInitialized();
+        var s = await httpClient.GetStringAsync("about.md");
+        if (s != null)
+        {
+            var markdown = Markdig.Markdown.ToHtml(s, new MarkdownPipelineBuilder().UseAdvancedExtensions().Build());
+            Text = markdown ?? string.Empty;
+        }
+
+        await base.OnInitializedAsync();
+        
         AppData.NFTsFellowsLoaded += (s,e) => StateHasChanged();
         if (!AppData.LoadedFellows)
             AppData.LoadFoundingFellows();
     }
+
 }
 
 

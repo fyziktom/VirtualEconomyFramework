@@ -9,12 +9,14 @@ using Newtonsoft.Json;
 using VEDriversLite.NeblioAPI;
 using System.Collections.Concurrent;
 using Dasync.Collections;
+using VEFramework.Demo.PublishingDisplay.Services.NFTs.Tags;
 
 namespace VEFramework.Demo.PublishingDisplay.Services
 {
     public class AppData
     {
         private static object _lock { get; set; } = new object();
+        public static Dictionary<string, Tag> Tags { get; set; } = new Dictionary<string, Tag>();
         public static ConcurrentDictionary<string,INFT> NFTsDict { get; set; } = new ConcurrentDictionary<string, INFT>();
         public static ConcurrentDictionary<string,INFT> FoundingFellowsNFTsDict { get; set; } = new ConcurrentDictionary<string, INFT>();
         public static List<INFT> NFTs { get; set; } = new List<INFT>();

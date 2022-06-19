@@ -47,6 +47,10 @@ namespace VEFramework.Demo.PublishingDisplay.Services.NFTs.Dtos
         /// </summary>
         Model3dSTL,
         /// <summary>
+        /// Another NFT
+        /// </summary>
+        NFT,
+        /// <summary>
         /// Blazor WASM App
         /// </summary>
         BlazorApp = 5000,
@@ -71,7 +75,11 @@ namespace VEFramework.Demo.PublishingDisplay.Services.NFTs.Dtos
         /// <summary>
         /// Local storage
         /// </summary>
-        Local
+        Local,
+        /// <summary>
+        /// Neblio blockchain NTP1
+        /// </summary>
+        NeblioNTP1
     }
     /// <summary>
     /// Item in the NFT gallery. It is usually some image with tags

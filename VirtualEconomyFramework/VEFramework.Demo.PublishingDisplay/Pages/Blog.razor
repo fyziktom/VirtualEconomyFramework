@@ -20,7 +20,11 @@
 </Container>
 
 @code {
-
+    
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "tag")]
+    public string? Tag { get; set; }
+    
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
