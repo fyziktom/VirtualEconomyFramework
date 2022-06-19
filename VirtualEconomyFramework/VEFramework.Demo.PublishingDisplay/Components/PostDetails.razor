@@ -30,6 +30,11 @@
             <Column Flex="Flex.JustifyContent.Center.AlignItems.Center">
                 <Image Source="@NFT.ImageLink" Style="max-width:350px;" />
             </Column>
+        </Row>       
+        <Row Margin="Margin.Is4.FromTop">
+            <Column Flex="Flex.JustifyContent.Center">
+                <CopyButton TextToCopy="@(AppData.AppShareNFTUrl.Trim('/') + $"/profile?utxo={NFT.Utxo}")" ButtonText="Copy Share Link" ColorOfButton="Color.Light" />
+            </Column>
         </Row>
     </Column>
     <Column ColumnSize="ColumnSize.Is12.OnMobile.Is12.OnTablet.Is12.OnDesktop" Flex="Flex.AlignItems.Center">

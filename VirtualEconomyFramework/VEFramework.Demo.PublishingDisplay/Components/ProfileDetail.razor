@@ -29,7 +29,7 @@
         </Row>
         <Row Margin="Margin.Is4.FromTop">
             <Column Flex="Flex.JustifyContent.Center">
-                <Button Color="Color.Light" Type="ButtonType.Link" To="@(AppData.AppShareNFTUrl.Trim('/') + $"/profile?utxo={NFT.Utxo}")" Target="Target.Blank">Open Share Link</Button>
+                <CopyButton TextToCopy="@(AppData.AppShareNFTUrl.Trim('/') + $"/profile?utxo={NFT.Utxo}")" ButtonText="Copy Share Link" ColorOfButton="Color.Light" />
             </Column>
         </Row>
     </Column>
@@ -73,12 +73,14 @@
 }
 
 @code {
-        
+
     public async Task Load(INFT profile)
     {
         if (NFT != null && NFT.Type == NFTTypes.CoruzantProfile)
         {
             NFT = profile;
+            await InvokeAsync(StateHasChanged);
+            await Task.Delay(1);
             await LoadBuzzproudPodcastLink( NFT as CoruzantProfileNFT );
         }            
     }
