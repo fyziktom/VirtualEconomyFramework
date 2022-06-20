@@ -29,18 +29,21 @@ namespace VEBlazor.Demo.Publishing.Server.Controllers
     public class NFTController : Controller
     {
         // GET: NFTController/GetNFT/{Utxo}
-        [HttpGet("GetNFT/{utxo}")]        
+        [HttpGet("GetNFT/{utxo}")]
+        [AllowCrossSiteJsonAttribute]
         public async Task<INFT> GetNFT(string utxo)
         {
             return await Services.DataCoreService.GetNFT(utxo);
         }
 
         [HttpGet("GetNFTArticles")]
+        [AllowCrossSiteJsonAttribute]
         public async Task<Dictionary<string, CoruzantArticleNFT>> GetNFTArticles()
         {
             return await GetNFTArticles(0);
         }        
         [HttpGet("GetNFTArticles/{settings}/{skip}/{take}")]
+        [AllowCrossSiteJsonAttribute]
         public async Task<Dictionary<string, CoruzantArticleNFT>> GetNFTArticles(int settings = 0, int skip = 0, int take = 25)
         {
             var dict = new Dictionary<string, CoruzantArticleNFT>();
@@ -57,11 +60,13 @@ namespace VEBlazor.Demo.Publishing.Server.Controllers
         }
 
         [HttpGet("GetNFTProfiles")]
+        [AllowCrossSiteJsonAttribute]
         public async Task<Dictionary<string, CoruzantProfileNFT>> GetNFTProfiles()
         {
             return await GetNFTProfiles(0);
         }        
-        [HttpGet("GetNFTProfiles/{settings}/{skip}/{take}")]        
+        [HttpGet("GetNFTProfiles/{settings}/{skip}/{take}")]
+        [AllowCrossSiteJsonAttribute]
         public async Task<Dictionary<string, CoruzantProfileNFT>> GetNFTProfiles(int settings = 0, int skip = 0, int take = 25)
         {
             var dict = new Dictionary<string, CoruzantProfileNFT>();
@@ -78,11 +83,13 @@ namespace VEBlazor.Demo.Publishing.Server.Controllers
         }
 
         [HttpGet("GetNFTPodcasts")]
+        [AllowCrossSiteJsonAttribute]
         public async Task<Dictionary<string, CoruzantProfileNFT>> GetNFTPodcasts()
         {
             return await GetNFTPodcasts(0);
         }
         [HttpGet("GetNFTPodcasts/{settings}/{skip}/{take}")]
+        [AllowCrossSiteJsonAttribute]
         public async Task<Dictionary<string, CoruzantProfileNFT>> GetNFTPodcasts(int settings = 0, int skip = 0, int take = 25)
         {
             var dict = new Dictionary<string, CoruzantProfileNFT>();
@@ -102,6 +109,7 @@ namespace VEBlazor.Demo.Publishing.Server.Controllers
         }        
 
         [HttpGet("GetNFTTags")]
+        [AllowCrossSiteJsonAttribute]
         public async Task<Dictionary<string, Tag>> GetNFTTags()
         {
             var dict = new Dictionary<string, Tag>();
@@ -113,6 +121,7 @@ namespace VEBlazor.Demo.Publishing.Server.Controllers
             return dict;      
         }
         [HttpGet("GetNFTTags/{skip}/{take}")]
+        [AllowCrossSiteJsonAttribute]
         public async Task<Dictionary<string, Tag>> GetNFTTags(int skip = 0, int take = 25)
         {
             var dict = new Dictionary<string, Tag>();
@@ -125,11 +134,13 @@ namespace VEBlazor.Demo.Publishing.Server.Controllers
         }
 
         [HttpGet("GetNFTArticlesByTags/{tagName}")]
+        [AllowCrossSiteJsonAttribute]
         public async Task<Dictionary<string, CoruzantArticleNFT>> GetNFTArticlesByTags(string tagName)
         {
             return await GetNFTArticlesByTags(tagName, 0);
         }
         [HttpGet("GetNFTArticlesByTags/{tagName}/{settings}/{skip}/{take}")]
+        [AllowCrossSiteJsonAttribute]
         public async Task<Dictionary<string, CoruzantArticleNFT>> GetNFTArticlesByTags(string tagName, int settings = 0, int skip = 0, int take = 25)
         {
             var dict = new Dictionary<string, CoruzantArticleNFT>();
@@ -147,11 +158,13 @@ namespace VEBlazor.Demo.Publishing.Server.Controllers
         }
 
         [HttpGet("GetNFTProfilessByTags/{tagName}")]
+        [AllowCrossSiteJsonAttribute]
         public async Task<Dictionary<string, CoruzantProfileNFT>> GetNFTProfilesByTags(string tagName)
         {
             return await GetNFTProfilesByTags(tagName, 0);
         }
         [HttpGet("GetNFTProfilessByTags/{tagName}/{settings}/{skip}/{take}")]
+        [AllowCrossSiteJsonAttribute]
         public async Task<Dictionary<string, CoruzantProfileNFT>> GetNFTProfilesByTags(string tagName, int settings = 0, int skip = 0, int take = 25)
         {
             var dict = new Dictionary<string, CoruzantProfileNFT>();
@@ -169,11 +182,13 @@ namespace VEBlazor.Demo.Publishing.Server.Controllers
         }
 
         [HttpGet("GetNFTPodcastsByTags/{tagName}")]
+        [AllowCrossSiteJsonAttribute]
         public async Task<Dictionary<string, CoruzantProfileNFT>> GetNFTPodcastsByTags(string tagName)
         {
             return await GetNFTPodcastsByTags(tagName, 0);
         }
         [HttpGet("GetNFTPodcastsByTags/{tagName}/{settings}/{skip}/{take}")]
+        [AllowCrossSiteJsonAttribute]
         public async Task<Dictionary<string, CoruzantProfileNFT>> GetNFTPodcastsByTags(string tagName, int settings = 0, int skip = 0, int take = 25)
         {
             var dict = new Dictionary<string, CoruzantProfileNFT>();
