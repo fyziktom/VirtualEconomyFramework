@@ -6581,11 +6581,6 @@
             Location coordinate Longitude
             </summary>
         </member>
-        <member name="P:VEDriversLite.NFT.EventNFT.Seat">
-            <summary>
-            Seat on the event
-            </summary>
-        </member>
         <member name="P:VEDriversLite.NFT.EventNFT.Used">
             <summary>
             Indicate if the ticket was used. It goes through all history during load
