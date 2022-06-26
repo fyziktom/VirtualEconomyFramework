@@ -1,0 +1,87 @@
+﻿@using VEFramework.Demo.PublishingDisplay.Models
+@using VEFramework.Demo.PublishingDisplay.Services.NFTs
+@using VEFramework.Demo.PublishingDisplay.Services.NFTs.Coruzant
+@using Markdig
+@using Newtonsoft.Json
+@inject AppData AppData
+@inject HttpClient _client
+@inject IJSRuntime JSRuntime
+@inherits CoruzantProfileComponentBase
+
+@if (NFT != null)
+{
+<Row Class="profileofthedaybox" Margin="Margin.Is2.FromTop">
+    <Column ColumnSize="ColumnSize.Is12.OnMobile.Is12.OnTablet.Is4.OnDesktop" Padding="Padding.Is2">
+        <Row>
+            <Column Flex="Flex.JustifyContent.Center.AlignItems.Center">
+                <Image Source="@NFT.ImageLink" Style="max-width:350px;" />
+            </Column>
+        </Row>
+        <Row>
+            <Column Flex="Flex.JustifyContent.Center">
+                <Span TextColor="TextColor.Dark">@(GetName(NFT as CoruzantProfileNFT))</Span>
+            </Column>
+        </Row>
+        <Row>
+            <Column Flex="Flex.JustifyContent.Center">
+                <Small TextColor="TextColor.Secondary">@((NFT as CoruzantProfileNFT).WorkingPosition)</Small>
+            </Column>
+        </Row>
+        <Row Margin="Margin.Is4.FromTop">
+            <Column Flex="Flex.JustifyContent.Center">
+                <CopyButton TextToCopy="@(AppData.AppShareNFTUrl.Trim('/') + $"/profile?utxo={NFT.Utxo}")" ButtonText="Copy Share Link" ColorOfButton="Color.Light" />
+            </Column>
+        </Row>
+    </Column>
+    <Column ColumnSize="ColumnSize.Is12.OnMobile.Is12.OnTablet.Is8.OnDesktop" Flex="Flex.AlignItems.Center">
+        <Div>
+            <Row Margin="Margin.Is2.FromTop">
+                <Column Padding="Padding.Is2">
+                    <Div>
+                        @((MarkupString)NFTTextMarkuptext)
+                    </Div>  
+                </Column>
+            </Row>
+            <Row Margin="Margin.Is3.FromTop.Is2.FromBottom">
+                <Column>
+                    @foreach(var tag in NFT.TagsList)
+                    {                    
+                        <Badge Color="Color.Secondary" Margin="Margin.Is2.FromEnd">#@tag</Badge>
+                    }
+                </Column>
+            </Row>
+            @if(CurrentPodcast != null && !string.IsNullOrEmpty((NFT as CoruzantProfileNFT).PodcastId))
+            {
+            <Row Margin="Margin.Is3.FromTop.Is2.FromBottom">
+                <Column>
+                    <div class="podcast-player z-depth-2">
+                        <div id="buzzsprout-player-@CurrentPodcast.PodcastId">
+                            <div class="row">
+                            <div class="col d-flex justify-content-center align-items-center">
+                                <span>Loading Podcast...</span>
+                            </div>
+                        </div>
+                        </div>
+                        <div id="close-player" @onclick="ClosePlayer"><i class="fas fa-times"></i></div>
+                    </div>
+                </Column>
+            </Row>
+            }
+        </Div>
+    </Column>
+</Row>
+}
+
+@code {
+
+    public async Task Load(INFT profile)
+    {
+        if (NFT != null && NFT.Type == NFTTypes.CoruzantProfile)
+        {
+            NFT = profile;
+            await InvokeAsync(StateHasChanged);
+            await Task.Delay(1);
+            await LoadBuzzproudPodcastLink( NFT as CoruzantProfileNFT );
+        }            
+    }
+}

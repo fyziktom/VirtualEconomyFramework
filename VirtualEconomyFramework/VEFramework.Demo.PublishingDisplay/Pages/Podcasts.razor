@@ -1,0 +1,38 @@
+﻿@using VEFramework.Demo.PublishingDisplay.Components
+@using VEFramework.Demo.PublishingDisplay.Services.NFTs
+@using VEFramework.Demo.PublishingDisplay.Services.NFTs.Coruzant
+@inject AppData AppData
+
+@page "/podcasts"
+
+<PageTitle>Coruzant Podcasts</PageTitle>
+
+<Container Fluid>
+    <Row Margin="Margin.Is3.FromTop">
+        <Column Flex="Flex.JustifyContent.Center">
+           <PodcastsList PerPage="9" />
+        </Column>
+    </Row>
+    <Row Margin="Margin.Is5.FromTop.Is2.FromBottom">
+        <Column>
+        </Column>
+    </Row>
+</Container>
+
+@code {
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        AppData.NFTsLoaded += NFTsLoadedHandler;
+        if (!AppData.LoadedBase)
+            await AppData.LoadNFTs();
+    }
+
+    public void NFTsLoadedHandler(object sender, EventArgs e)
+    {
+        StateHasChanged();
+    }
+}
+
+

@@ -116,10 +116,6 @@ namespace VEDriversLite.NFT
         /// </summary>
         public double LocationCoordinatesLen { get; set; } = 0.0;
         /// <summary>
-        /// Seat on the event
-        /// </summary>
-        public string Seat { get; set; } = string.Empty;
-        /// <summary>
         /// Indicate if the ticket was used. It goes through all history during load
         /// </summary>
         public bool Used { get; set; } = false;

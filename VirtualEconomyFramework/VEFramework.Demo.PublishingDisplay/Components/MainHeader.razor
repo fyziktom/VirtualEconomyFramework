@@ -1,0 +1,27 @@
+﻿@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+
+<Row class="headerbackground" Flex="Flex.AlignContent.Center">
+    <Column>
+        <Row>
+            <Column>
+                <Heading Class="headertext" Size="HeadingSize.Is3">@Configuration["Header:Text:Line:1"]</Heading>
+            </Column>
+        </Row>
+        <Row>
+            <Column>
+                <Heading Class="headertext" Size="HeadingSize.Is2">@Configuration["Header:Text:Line:2"]</Heading>
+            </Column>
+        </Row>        
+        <Row>
+            <Column>
+                <Heading Class="headertext" Size="HeadingSize.Is3">@Configuration["Header:Text:Line:3"]</Heading>
+            </Column>
+        </Row>
+@*        <Row Margin="Margin.Is5.FromTop">
+            <Column Flex="Flex.AlignContent.Center.JustifyContent.Center">
+               <Button Class="explorebutton" Type="ButtonType.Link" To="blog">Explore More</Button>
+            </Column>
+        </Row>*@
+    </Column>
+</Row>

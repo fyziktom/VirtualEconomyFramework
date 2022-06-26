@@ -1,0 +1,47 @@
+﻿@using VEFramework.Demo.PublishingDisplay.Components
+@using VEFramework.Demo.PublishingDisplay.Services.NFTs
+@using VEFramework.Demo.PublishingDisplay.Services.NFTs.Coruzant
+@inject AppData AppData
+@inherits NFTDetailPage
+
+@page "/post"
+
+<PageTitle>Coruzant Post</PageTitle>
+
+<Container Fluid>
+    <Row Margin="Margin.Is3.FromTop">
+        <Column ColumnSize="ColumnSize.Is12.OnMobile.Is12.OnTablet.Is8.OnDesktop">
+            <PostDetails @ref="@postDetails" />
+        </Column>
+        <Column ColumnSize="ColumnSize.IsAuto.OnMobile.IsAuto.OnTablet.Is4.OnDesktop">
+           <ArticlesSideList />
+        </Column>
+    </Row>
+    <Row Margin="Margin.Is5.FromTop.Is2.FromBottom">
+        <Column>
+        </Column>
+    </Row>
+</Container>
+
+@code {
+    PostDetails? postDetails;
+
+    protected override async Task OnAfterRenderAsync( bool firstRender )
+    {
+        await base.OnAfterRenderAsync( firstRender );
+        if ( postDetails == null )
+            return;
+        if ( !string.IsNullOrEmpty(Utxo) && Utxo.Length > 0 )
+        {
+            var post = await SearchOrLoad();
+
+            if (post != null)
+                await postDetails.Load( post );
+        }
+
+        if (firstRender)
+            await FirstLoad();
+    }
+}
+
+

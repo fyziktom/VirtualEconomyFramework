@@ -93,10 +93,12 @@ namespace VEDriversLite
             }
 
             double size_m = ((double)expectedSize / 1024);
-            if (size_m > 4)
+            if (size_m > 3.9)
             {
                 throw new Exception(exceptionMessage);
             }
+
+            size_m = Math.Ceiling(size_m);
 
             var fee = basicFee + (int)(size_m) * basicFee;
 
@@ -107,7 +109,6 @@ namespace VEDriversLite
 
             return fee;
         }
-
 
         private static (BitcoinAddress, BitcoinSecret) GetAddressAndKeyInternal(EncryptionKey ekey, string password)
         {

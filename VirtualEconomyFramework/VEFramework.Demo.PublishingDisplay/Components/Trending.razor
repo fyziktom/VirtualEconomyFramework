@@ -1,0 +1,74 @@
+﻿@using VEFramework.Demo.PublishingDisplay.Models
+@inject NavigationManager NavigationManager
+@inject AppData AppData
+
+<Row>
+    <Column>
+        <Row Flex="Flex.AlignItems.Center">
+            <Column Flex="Flex.JustifyContent.Center">
+                <Heading Size="HeadingSize.Is3" Style="text-decoration: underline;">Trending</Heading>
+            </Column>
+        </Row>
+        <Row Margin="Margin.Is3.FromTop">
+            <Column Flex="Flex.JustifyContent.Center">
+                    <Carousel @bind-SelectedSlide="@selectedSlide" ShowControls>
+                    @foreach (var post in AppData.ArticleNFTs.Take(5))
+                    {
+                        var tag = post.TagsList.FirstOrDefault();                        
+                        <CarouselSlide Name="@post.Utxo">
+                            <Button Color="Color.Light" Type="ButtonType.Link" Position="Position.Absolute.Top.Is0.Start.Is50.Translate.MiddleX">
+                                @(tag != null ? "#" + tag.ToUpper() : "#CoruzantFeature")
+                            </Button>                    
+                            <Div Position="Position.Absolute.Top.Is50.Start.Is50.Translate.Middle">
+                                <Row>
+                                    <Column Flex="Flex.JustifyContent.Center">
+                                        <Span Class="navtext">
+                                            @(post.Name.Length > 80 ? post.Name.Substring(0, 80) + "..." : post.Name)
+                                        </Span>
+                                    </Column>
+                                </Row>
+                                <Row Margin="Margin.Is4.FromTop">
+                                    <Column Flex="Flex.JustifyContent.Center">
+                                        <Button Class="readmoretrendingbutton" Clicked="@(() => OpenPost(post.Utxo))">Read more</Button>
+                                    </Column>
+                                </Row>
+                            </Div>
+                            <Image Source="@post.ImageLink" 
+                                   Text="@post.Name" 
+                                   Display="Display.Block" 
+                                   Style="max-height:500px;"
+                                   Width="Width.Auto" />
+                        </CarouselSlide>
+                    }               
+                </Carousel>
+            </Column>
+        </Row>
+        <Row Margin="Margin.Is4.FromTop">
+            <Column Flex="Flex.JustifyContent.Center">
+                <Button Class="viewalltrendingbutton" Type="ButtonType.Link">View All</Button>
+            </Column>
+        </Row>
+    </Column>
+</Row>
+
+
+    @code {
+
+    string selectedSlide = "";
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        AppData.NFTsLoaded += NFTsLoadedHandler;
+    }
+
+        public void NFTsLoadedHandler(object sender, EventArgs e)
+    {
+        StateHasChanged();
+    }
+
+    public void OpenPost(string postutxo)
+    {
+         NavigationManager.NavigateTo($"post?utxo={postutxo}");
+    }
+}

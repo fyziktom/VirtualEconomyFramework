@@ -1,0 +1,57 @@
+﻿@using VEFramework.Demo.PublishingDisplay.Models
+@using VEFramework.Demo.PublishingDisplay.Services.NFTs
+@using VEFramework.Demo.PublishingDisplay.Services.NFTs.Coruzant
+@using Markdig
+@inject AppData AppData
+@inherits CoruzantProfileComponentBase
+
+@if (NFT != null)
+{
+<Row Flex="Flex.AlignItems.Center">
+    <Column Flex="Flex.JustifyContent.Center">
+        <Heading Size="HeadingSize.Is3" Style="text-decoration: underline;">Profile Of the Day</Heading>
+    </Column>
+</Row>
+<Row Class="profileofthedaybox" Margin="Margin.Is2.FromTop">
+    <Column ColumnSize="ColumnSize.Is12.OnMobile.Is12.OnTablet.Is4.OnDesktop" Padding="Padding.Is2">
+        <Row>
+            <Column Flex="Flex.JustifyContent.Center.AlignItems.Center">
+                <Image Source="@NFT.ImageLink" />
+            </Column>
+        </Row>
+        <Row>
+            <Column Flex="Flex.JustifyContent.Center">
+                <Span TextColor="TextColor.Dark">@(GetName(NFT as CoruzantProfileNFT))</Span>
+            </Column>
+        </Row>
+        <Row>
+            <Column Flex="Flex.JustifyContent.Center">
+                <Small TextColor="TextColor.Secondary">@((NFT as CoruzantProfileNFT).WorkingPosition)</Small>
+            </Column>
+        </Row>
+    </Column>
+    <Column ColumnSize="ColumnSize.Is12.OnMobile.Is12.OnTablet.Is8.OnDesktop" Flex="Flex.AlignItems.Center">
+        <Div>
+            <Row Margin="Margin.Is2.FromTop">
+                <Column>
+                        <Span Class="text-wrap">
+                            @((MarkupString)NFTTextMarkuptext)
+                        </Span>         
+                </Column>
+            </Row>
+            <Row Margin="Margin.Is3.FromTop.Is2.FromBottom">
+                <Column>
+                    @foreach(var tag in NFT.TagsList)
+                    {                    
+                        <Badge Color="Color.Secondary" Margin="Margin.Is2.FromEnd">#@tag</Badge>
+                    }
+                </Column>
+            </Row>
+        </Div>
+    </Column>
+</Row>
+}
+
+@code {
+
+}
