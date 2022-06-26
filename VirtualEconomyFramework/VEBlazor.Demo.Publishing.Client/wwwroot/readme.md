@@ -13,7 +13,7 @@ Coruzant App is built using <a href="https://nebl.io" target="_blank">Neblio Blo
 
 # Creating a Profile
 
-You can create an NFT Profile by navigating to Home and clicking Edit. In order to mint an NFT Profile, tokens are required. You can request free tokens for minting from VENFT App <a href="https://about.ve-nft.com/index.html#airdrop" target="_blank">here.</a> Or please contact us by <a href="mailto:nfts@coruzant.com" target="_blank">email for original Coruzant CORZT tokens.</a>
+You can create an NFT Profile by navigating to Home and clicking Edit. In order to mint an NFT Profile, tokens are required. You can request free tokens for minting from VENFT App <a href="https://about.ve-nft.com/index.html#airdrop" target="_blank">here.</a> Or please contact us by <a href="mailto:nft@coruzant.com" target="_blank">email for original Coruzant CORZT tokens.</a>
 
 <img src="https://ipfs.infura.io/ipfs/QmSKoXSwPvLqEUgZr7nk53nLCpUwudjwS9Y6sGpm14DCYN" style="max-width:400px;" class="img-fluid" alt="Creating Profile">
 
