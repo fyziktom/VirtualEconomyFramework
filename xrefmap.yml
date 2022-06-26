@@ -25218,6 +25218,12 @@ references:
   commentId: F:VEDriversLite.NFT.Dto.DataItemStorageType.Local
   fullName: VEDriversLite.NFT.Dto.DataItemStorageType.Local
   nameWithType: DataItemStorageType.Local
+- uid: VEDriversLite.NFT.Dto.DataItemStorageType.NeblioNTP1
+  name: NeblioNTP1
+  href: api/VEDriversLite.NFT.Dto.DataItemStorageType.html#VEDriversLite_NFT_Dto_DataItemStorageType_NeblioNTP1
+  commentId: F:VEDriversLite.NFT.Dto.DataItemStorageType.NeblioNTP1
+  fullName: VEDriversLite.NFT.Dto.DataItemStorageType.NeblioNTP1
+  nameWithType: DataItemStorageType.NeblioNTP1
 - uid: VEDriversLite.NFT.Dto.DataItemStorageType.Url
   name: Url
   href: api/VEDriversLite.NFT.Dto.DataItemStorageType.html#VEDriversLite_NFT_Dto_DataItemStorageType_Url
@@ -25284,6 +25290,12 @@ references:
   commentId: F:VEDriversLite.NFT.Dto.DataItemType.Model3dSTL
   fullName: VEDriversLite.NFT.Dto.DataItemType.Model3dSTL
   nameWithType: DataItemType.Model3dSTL
+- uid: VEDriversLite.NFT.Dto.DataItemType.NFT
+  name: NFT
+  href: api/VEDriversLite.NFT.Dto.DataItemType.html#VEDriversLite_NFT_Dto_DataItemType_NFT
+  commentId: F:VEDriversLite.NFT.Dto.DataItemType.NFT
+  fullName: VEDriversLite.NFT.Dto.DataItemType.NFT
+  nameWithType: DataItemType.NFT
 - uid: VEDriversLite.NFT.Dto.DataItemType.PDF
   name: PDF
   href: api/VEDriversLite.NFT.Dto.DataItemType.html#VEDriversLite_NFT_Dto_DataItemType_PDF
@@ -26397,19 +26409,6 @@ references:
   isSpec: "True"
   fullName: VEDriversLite.NFT.EventNFT.PriceInDogeActive
   nameWithType: EventNFT.PriceInDogeActive
-- uid: VEDriversLite.NFT.EventNFT.Seat
-  name: Seat
-  href: api/VEDriversLite.NFT.EventNFT.html#VEDriversLite_NFT_EventNFT_Seat
-  commentId: P:VEDriversLite.NFT.EventNFT.Seat
-  fullName: VEDriversLite.NFT.EventNFT.Seat
-  nameWithType: EventNFT.Seat
-- uid: VEDriversLite.NFT.EventNFT.Seat*
-  name: Seat
-  href: api/VEDriversLite.NFT.EventNFT.html#VEDriversLite_NFT_EventNFT_Seat_
-  commentId: Overload:VEDriversLite.NFT.EventNFT.Seat
-  isSpec: "True"
-  fullName: VEDriversLite.NFT.EventNFT.Seat
-  nameWithType: EventNFT.Seat
 - uid: VEDriversLite.NFT.EventNFT.Used
   name: Used
   href: api/VEDriversLite.NFT.EventNFT.html#VEDriversLite_NFT_EventNFT_Used
@@ -31184,6 +31183,19 @@ references:
   isSpec: "True"
   fullName: VEDriversLite.NFT.Tags.Tag.Name
   nameWithType: Tag.Name
+- uid: VEDriversLite.NFT.Tags.Tag.RelatedItems
+  name: RelatedItems
+  href: api/VEDriversLite.NFT.Tags.Tag.html#VEDriversLite_NFT_Tags_Tag_RelatedItems
+  commentId: P:VEDriversLite.NFT.Tags.Tag.RelatedItems
+  fullName: VEDriversLite.NFT.Tags.Tag.RelatedItems
+  nameWithType: Tag.RelatedItems
+- uid: VEDriversLite.NFT.Tags.Tag.RelatedItems*
+  name: RelatedItems
+  href: api/VEDriversLite.NFT.Tags.Tag.html#VEDriversLite_NFT_Tags_Tag_RelatedItems_
+  commentId: Overload:VEDriversLite.NFT.Tags.Tag.RelatedItems
+  isSpec: "True"
+  fullName: VEDriversLite.NFT.Tags.Tag.RelatedItems
+  nameWithType: Tag.RelatedItems
 - uid: VEDriversLite.NFT.Tags.Tag.RelatedTags
   name: RelatedTags
   href: api/VEDriversLite.NFT.Tags.Tag.html#VEDriversLite_NFT_Tags_Tag_RelatedTags
