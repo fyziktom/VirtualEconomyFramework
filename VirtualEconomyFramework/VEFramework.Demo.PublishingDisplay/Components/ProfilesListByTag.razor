@@ -1,0 +1,109 @@
+﻿@using VEFramework.Demo.PublishingDisplay.Models
+@using VEFramework.Demo.PublishingDisplay.Services.NFTs
+@using VEFramework.Demo.PublishingDisplay.Services.NFTs.Coruzant
+@using Newtonsoft.Json
+@inject IConfiguration Configuration
+@inject NavigationManager NavigationManager
+@inject HttpClient httpClient
+@inject AppData AppData
+
+<Div>
+    <Row Flex="Flex.AlignItems.Center">
+        <Column Flex="Flex.JustifyContent.Center">
+            <Heading Size="HeadingSize.Is3" Style="text-decoration: underline;">Podcasts by Tag - @Tag</Heading>
+        </Column>
+    </Row>
+    <Row Margin="Margin.Is3.FromTop">
+        <Column>
+                <CardGroup>
+                @foreach (var profile in NFTs.Values.Take(PerPage))
+                {
+                    var tag = profile.TagsList.FirstOrDefault();
+                    <Card Style="min-width:300px;max-width:350px;" Margin="Margin.Is3.FromEnd">
+                        <CardImage Source="@profile.ImageLink" Alt="@profile.Name"></CardImage>
+                        <CardBody>
+                            <NameOnCard NFT="@profile" />
+                            
+                            <DescriptionOnCard Text="@profile.Description" />
+
+                            <Row Margin="Margin.Is4.FromTop">
+                                <Column Flex="Flex.JustifyContent.Center">
+                                    <Button Class="readmoreprofilebutton" Clicked="@(() => OpenProfile(profile.Utxo))">
+                                        <Span Style="font-size:14px;" Display="Display.None.OnMobile.None.OnTablet.Inline.OnDesktop">Read more</Span>
+                                        <Span Style="font-size:8px;" Display="Display.Inline.OnMobile.Inline.OnTablet.None.OnDesktop">Read more</Span>
+                                        </Button>
+                                </Column>
+                            </Row>                            
+                        </CardBody>
+                    </Card>
+                }               
+            </CardGroup>
+        </Column>
+    </Row>
+    <Row Margin="Margin.Is4.FromTop">
+        <Column Flex="Flex.JustifyContent.Center">
+            <Button Class="viewalltrendingbutton" Clicked="@LoadMore" Loading="@loadingMore">Load More</Button>
+        </Column>
+    </Row>
+</Div>
+
+@code {
+    [Parameter]
+    public int Skip { get; set; } = 0;
+    [Parameter]
+    public int PerPage { get; set; } = 10;
+    [Parameter]
+    public EventCallback<int> PerPageChanged { get; set; }
+
+    [Parameter]
+    public string Tag { get; set; } = string.Empty;
+
+    string selectedSlide = "";
+    bool loading = false;
+    bool loadingMore = false;
+
+    public Dictionary<string, CoruzantProfileNFT> NFTs { get; set; } = new Dictionary<string, CoruzantProfileNFT>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        await LoadNFTs("Healthcare");
+    }
+
+    public async Task LoadNFTs(string tag, int skip = -1, int perpage = -1)
+    {
+        if (string.IsNullOrEmpty(tag)) return;
+
+        Tag = tag;
+        
+        if (skip >= 0) Skip = skip;
+        if (perpage >= 0) PerPage = perpage;
+        
+        try
+        {
+            loading = true;
+            loadingMore = true;
+            var s = await httpClient.GetStringAsync(Configuration["Server:API:NFTs"].Trim('/') + $"/GetNFTPodcastsByTags/{tag}/0/{Skip}/{PerPage}");
+            var nfts = JsonConvert.DeserializeObject<Dictionary<string, CoruzantProfileNFT>>(s);
+            NFTs = nfts;
+        }
+        finally
+        {
+            loading = false;
+            loadingMore = false;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    public void OpenProfile(string profileutxo)
+    {
+        NavigationManager.NavigateTo($"profile?utxo={profileutxo}");
+    }
+
+    public async Task LoadMore()
+    {
+        PerPage += 10;
+        await PerPageChanged.InvokeAsync(PerPage);
+        await LoadNFTs(Tag, Skip, PerPage);
+    }
+}

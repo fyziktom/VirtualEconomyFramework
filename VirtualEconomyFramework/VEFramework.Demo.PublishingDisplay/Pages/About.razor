@@ -1,0 +1,94 @@
+﻿@using VEFramework.Demo.PublishingDisplay.Components
+@using VEFramework.Demo.PublishingDisplay.Services.NFTs
+@using VEFramework.Demo.PublishingDisplay.Services.NFTs.Coruzant
+@using Markdig
+@inject HttpClient httpClient
+@inject AppData AppData
+
+@page "/about"
+
+<PageTitle>Coruzant About</PageTitle>
+
+<Container Fluid>
+    <Row Margin="Margin.Is3.FromTop" Flex="Flex.AlignItems.Center">
+        <Column Flex="Flex.JustifyContent.Center">
+            <Heading Size="HeadingSize.Is3" Style="text-decoration: underline;">About</Heading>
+        </Column>
+    </Row>
+    <Row Margin="Margin.Is2.FromTop">
+        <Column Flex="Flex.JustifyContent.Center">
+            <Span>
+                @((MarkupString)Text)
+            </Span>
+        </Column>
+    </Row>
+@*    <Row Margin="Margin.Is3.FromTop" Flex="Flex.AlignItems.Center">
+        <Column Flex="Flex.JustifyContent.Center">
+            <Image Source="../images/coruzant-logo.png"Style="max-width:250px;" />
+        </Column>
+    </Row>
+    <Row Margin="Margin.Is3.FromTop">
+        <Column>
+            <Span>
+                Welcome to Coruzant Technologies, the future of emerging technology. We are the premiere and largest crowdsourced, digital, technology publication in the world built on <b>Blockchain</b>. 
+                Our advisors and contributors come from all over the globe, from Fortune 100 companies, Silicon Valley, and tech startups, just to name a few.
+            </Span>
+        </Column>
+    </Row>
+    <Row Margin="Margin.Is3.FromTop" Flex="Flex.AlignItems.Center">
+        <Column Flex="Flex.JustifyContent.Center">
+            <Image Source="../images/image42.png"Style="max-width:150px;" />
+        </Column>
+    </Row>
+    <Row Margin="Margin.Is3.FromTop">
+        <Column Flex="Flex.JustifyContent.Center">
+            <Span>
+                Coruzant is first and largest digital publication built on <Link To="https://nebl.io/" Target="Target.Blank">Blockchain</Link>.
+                Every piece of content, article, photo, podcast, video has an associated Coruzant Token or "NFT" uniquely tied to it.
+            </Span>
+        </Column>
+    </Row>
+    <Row Margin="Margin.Is2.FromTop">
+        <Column Flex="Flex.JustifyContent.Center">
+            <Span>
+                We are built on the <Link To="https://nebl.io/" Target="Target.Blank">NEBLIO</Link> Blockchain using the <Link To="https://veframework.com/" Target="Target.Blank">VEFramework</Link> framework in conjunction with <Link To="https://technicinsider.com/" Target="Target.Blank">TechnicInsider</Link>.
+            </Span>
+        </Column>
+    </Row>*@
+    <Row Margin="Margin.Is4.FromTop">
+        <Column>            
+            <FellowsList />
+        </Column>
+    </Row>
+    <Row Margin="Margin.Is5.FromTop.Is2.FromBottom">
+        <Column>
+        </Column>
+    </Row>
+</Container>
+
+
+@code {
+    PostDetails? postDetails;
+
+
+    public string Text { get; set; } = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var s = await httpClient.GetStringAsync("about.md");
+        if (s != null)
+        {
+            var markdown = Markdig.Markdown.ToHtml(s, new MarkdownPipelineBuilder().UseAdvancedExtensions().Build());
+            Text = markdown ?? string.Empty;
+        }
+
+        await base.OnInitializedAsync();
+        
+        AppData.NFTsFellowsLoaded += (s,e) => StateHasChanged();
+        if (!AppData.LoadedFellows)
+            AppData.LoadFoundingFellows();
+    }
+
+}
+
+

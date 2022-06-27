@@ -1,0 +1,4 @@
+﻿Contact: mailto:tomas.svoboda@technicinsider.com
+Expires: 2023-01-01T00:00:00.000Z
+Preferred-Languages: cs, en
+Hiring: https://veframework.com

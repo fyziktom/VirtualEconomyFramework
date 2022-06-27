@@ -1,0 +1,15 @@
+﻿<Row>
+    <Column Flex="Flex.JustifyContent.Center">
+        <Span Style="font-family: 'Inter';font-size: 12px;" Display="Display.None.OnMobile.None.OnTablet.Inline.OnDesktop">
+            @(Text.Length > 100 ? Text.Substring(0, 100) + "..." : Text)
+        </Span>
+        <Span Style="font-family: 'Inter';font-size: 12px;" Display="Display.Inline.OnMobile.Inline.OnTablet.None.OnDesktop">
+            @(Text.Length > 100 ? Text.Substring(0, 100) + "..." : Text)
+        </Span>
+    </Column>
+</Row>
+
+@code {
+    [Parameter]
+    public string Text { get; set; } = string.Empty;
+}

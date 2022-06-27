@@ -1,0 +1,36 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@using VEDriversLite.NFT.Coruzant
+@inject AppData AppData
+@inherits NFTDetailsBase;
+
+@if ( NFT != null && NFT.Type == NFTTypes.CoruzantArticle )
+{
+    var nft = NFT as CoruzantArticleNFT;
+    if (nft != null)
+    {
+        <NFTDetails @ref="NFTDetailsComponent"
+                Address="@Address" 
+                IsSubAccount="@IsSubAccount" 
+                IsOwnNFT="IsOwnNFT" 
+                NFT="@NFT" 
+                NFTSent="@NFTSentHandler" 
+                OpenNFTsInWorkTab="@OpenNFTInWorkTabHandler"
+                HideOpenInWorkTabButton="@HideOpenInWorkTabButton"
+                SpecificInfoHeading="Coruzant Article Details">
+        <Field>
+            <FieldLabel>Author: </FieldLabel>
+            <Text>@(nft.Author)</Text>
+        </Field>
+        <Field>
+            <FieldLabel>Author Profile NFT: </FieldLabel>
+            <LoadAndDisplayNFTModal Utxo="@nft.AuthorProfileUtxo" />
+        </Field>
+    </NFTDetails>
+    }
+}
+
+@code {
+
+
+}

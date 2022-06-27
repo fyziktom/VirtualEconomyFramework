@@ -5,7 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
 	  <PackageId>VEFramework.VEBlazor</PackageId>
-	  <Version>0.3.2</Version>
+	  <Version>0.3.21</Version>
 	  <Authors>fyziktom</Authors>
 	  <Company>VEFramework</Company>
 	  <Description>.NET6 Blazor component and dApp template library. It contains lots of components related to blockchain, IPFS, NFTs and other web3 and Industry4.0 technologies.</Description>
@@ -15,10 +15,8 @@
 	  <PackageTags>VEFramework, Blazor, MAUI, Cryptocurrencies, Crypto, NFT, NFTs, NFTTech, NFTIoT, Bitcoin, ReddCoin, Neblio, Nebl, Doge, Dogecoin, Blockchain, eCommerce, dApps, WooCommerce, WordPress</PackageTags>
 	  <Copyright>fyziktom</Copyright>
 	  <PackageReleaseNotes>
-		  - Added NFT Apps
-		  - Bugfix in the NFT Profile properties edit
-		  - Bugfix in display of NFT DataItems
-		  - remove lots of async deadlocks
+		  - Added Coruzant NFTs
+		  - Typo fix
 	  </PackageReleaseNotes>
 	  <PackageReadmeFile>Readme.md</PackageReadmeFile>
 	  <PackageLicenseExpression>BSD-2-Clause</PackageLicenseExpression>

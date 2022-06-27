@@ -1,0 +1,104 @@
+﻿@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+
+<Row class="footerbackground" Flex="Flex.AlignContent.Center" Margin="Margin.Is5.FromTop">
+    <Column Height="Height.Is100">
+        <Row Flex="Flex.AlignItems.Center">
+            <Column ColumnSize="ColumnSize.Is12.OnMobile.Is12.OnTablet.Is6.OnDesktop">
+                <Row Flex="Flex.JustifyContent.Center" Margin="Margin.Is5.FromTop">
+                    <Column ColumnSize="ColumnSize.Is12.OnMobile.Is12.OnTablet.Is4.OnDesktop" Flex="Flex.JustifyContent.Center.AlignItems.Center">
+                         <Image Source="images/smalllogo.png" class="img-responsive" Display="Display.None.OnMobile.None.OnTablet.Inline.OnDesktop" Style="max-height:100px; min-height:100px;" />
+                         <Image Source="images/smalllogo.png" class="img-responsive" Display="Display.Inline.OnMobile.Inline.OnTablet.None.OnDesktop" Style="max-height:30px; min-height:30px;" />
+                    </Column>
+                    <Column ColumnSize="ColumnSize.Is12.OnMobile.Is12.OnTablet.Is8.OnDesktop" Flex="Flex.AlignItems.Center">
+                        <Small Display="Display.None.OnMobile.None.OnTablet.Inline.OnDesktop" class="text-wrap text-light">@Configuration["Footer:Text:Main:Desktop"]</Small>
+                        <Small Display="Display.Inline.OnMobile.Inline.OnTablet.None.OnDesktop" class="text-wrap text-light text-center">@Configuration["Footer:Text:Main:Mobile"]</Small>
+                    </Column>
+                </Row>
+                @*
+                <Row Margin="Margin.Is3.FromTop">
+                    <Column Flex="Flex.JustifyContent.Center">
+                        <Field>
+                            <FieldLabel TextColor="TextColor.Light">Enter your email to receive latest updates</FieldLabel>
+                        <Addons>
+                            <Addon AddonType="AddonType.Body">
+                                <TextEdit Placeholder="Enter email" Style="max-width:400px; min-widht:300px;" />
+                            </Addon>
+                            <Addon AddonType="AddonType.End">
+                                <Button Color="Color.Light">Sign up</Button>
+                            </Addon>
+                        </Addons>
+                        </Field>
+                    </Column>
+                </Row>
+                *@
+                <Row Margin="Margin.Is5.FromTop" Class="text-center">
+                    <Column Flex="Flex.JustifyContent.Center">
+                        <Social />
+                    </Column>
+                </Row>
+            </Column>
+            <Column Height="Height.Is75" ColumnSize="ColumnSize.Is1" Display="Display.None.OnMobile.None.OnTablet.Inline.OnDesktop">
+                <Div Class="vl"></Div>
+            </Column>
+            <Column ColumnSize="ColumnSize.Is12.OnMobile.Is12.OnTablet.Is4.OnDesktop">
+                <Row Margin="Margin.Is5.FromTop">
+                    <Column>
+                        <Heading Class="footertext" Size="HeadingSize.Is4">Coruzant</Heading>
+                    </Column>
+                </Row>
+                <Row Margin="Margin.Is4.FromTop">
+                    <Column>
+                        <Row>
+                            <Column Flex="Flex.JustifyContent.Center">
+                                 <Link Class="footertextitem" Display="Display.None.OnMobile.None.OnTablet.Inline.OnDesktop" To="profiles">Profile</Link>
+                                 <Link Class="footersmalltext" Display="Display.Inline.OnMobile.Inline.OnTablet.None.OnDesktop" To="profiles">Profile</Link>
+                            </Column>
+                        </Row>
+                        <Row Margin="Margin.Is2.FromTop">
+                            <Column Flex="Flex.JustifyContent.Center">
+                                 <Link Class="footertextitem" Display="Display.None.OnMobile.None.OnTablet.Inline.OnDesktop" To="tags">Tags</Link>
+                                 <Link Class="footersmalltext" Display="Display.Inline.OnMobile.Inline.OnTablet.None.OnDesktop" To="tags">Tags</Link>
+                            </Column>
+                        </Row>
+                        <Row Margin="Margin.Is2.FromTop">
+                            <Column Flex="Flex.JustifyContent.Center">
+                                 <Link Class="footertextitem" Display="Display.None.OnMobile.None.OnTablet.Inline.OnDesktop" To="blog">Blog</Link>
+                                 <Link Class="footersmalltext" Display="Display.Inline.OnMobile.Inline.OnTablet.None.OnDesktop" To="blog">Blog</Link>
+                            </Column>
+                        </Row>
+                        <Row Margin="Margin.Is2.FromTop">
+                            <Column Flex="Flex.JustifyContent.Center">
+                                <Link Class="footertextitem" Display="Display.None.OnMobile.None.OnTablet.Inline.OnDesktop" To="profiles">Profiles</Link>
+                                <Link Class="footersmalltext" Display="Display.Inline.OnMobile.Inline.OnTablet.None.OnDesktop" To="profiles">Profiles</Link>
+                            </Column>
+                        </Row>
+                        <Row Margin="Margin.Is2.FromTop">
+                            <Column Flex="Flex.JustifyContent.Center">
+                                 <Link Class="footertextitem" Display="Display.None.OnMobile.None.OnTablet.Inline.OnDesktop" To="podcasts">Podcast</Link>
+                                 <Link Class="footersmalltext" Display="Display.Inline.OnMobile.Inline.OnTablet.None.OnDesktop" To="podcasts">Podcast</Link>
+                            </Column>
+                        </Row>
+                        <Row Margin="Margin.Is2.FromTop">
+                            <Column Flex="Flex.JustifyContent.Center">
+                                 <Link Class="footertextitem" Display="Display.None.OnMobile.None.OnTablet.Inline.OnDesktop" To="about">About</Link>
+                                 <Link Class="footersmalltext" Display="Display.Inline.OnMobile.Inline.OnTablet.None.OnDesktop" To="about">About</Link>
+                            </Column>
+                        </Row>
+                        <Row Margin="Margin.Is2.FromTop">
+                            <Column Flex="Flex.JustifyContent.Center">
+                                <Link Class="footertextitem" Display="Display.None.OnMobile.None.OnTablet.Inline.OnDesktop" To="mailto:nft@coruzant.com" Target="Target.Blank">Contact</Link>
+                                <Link Class="footersmalltext" Display="Display.Inline.OnMobile.Inline.OnTablet.None.OnDesktop" To="mailto:nft@coruzant.com" Target="Target.Blank">Contact</Link>
+                            </Column>
+                        </Row>
+                    </Column>
+                </Row>
+            </Column>
+        </Row>
+        
+        <Div Position="Position.Absolute.Bottom.Is0.Start.Is50.Translate.MiddleX">
+            <Span Class="footersmalltext" Display="Display.None.OnMobile.None.OnTablet.Inline.OnDesktop">© 2019-2022 by Coruzant. All rights reserved</Span>
+            <Span Class="footersmalltextmini" Display="Display.Inline.OnMobile.Inline.OnTablet.None.OnDesktop">© 2019-2022 by Coruzant. All rights reserved</Span>
+        </Div>
+    </Column>
+</Row>

@@ -6279,6 +6279,11 @@
             3d model in STL, file .stl
             </summary>
         </member>
+        <member name="F:VEDriversLite.NFT.Dto.DataItemType.NFT">
+            <summary>
+            Another NFT
+            </summary>
+        </member>
         <member name="F:VEDriversLite.NFT.Dto.DataItemType.BlazorApp">
             <summary>
             Blazor WASM App
@@ -6307,6 +6312,11 @@
         <member name="F:VEDriversLite.NFT.Dto.DataItemStorageType.Local">
             <summary>
             Local storage
+            </summary>
+        </member>
+        <member name="F:VEDriversLite.NFT.Dto.DataItemStorageType.NeblioNTP1">
+            <summary>
+            Neblio blockchain NTP1
             </summary>
         </member>
         <member name="T:VEDriversLite.NFT.Dto.NFTDataItem">
@@ -6569,11 +6579,6 @@
         <member name="P:VEDriversLite.NFT.EventNFT.LocationCoordinatesLen">
             <summary>
             Location coordinate Longitude
-            </summary>
-        </member>
-        <member name="P:VEDriversLite.NFT.EventNFT.Seat">
-            <summary>
-            Seat on the event
             </summary>
         </member>
         <member name="P:VEDriversLite.NFT.EventNFT.Used">
@@ -9060,6 +9065,11 @@
         <member name="P:VEDriversLite.NFT.Tags.Tag.RelatedTags">
             <summary>
             Related tags hashes list
+            </summary>
+        </member>
+        <member name="P:VEDriversLite.NFT.Tags.Tag.RelatedItems">
+            <summary>
+            Related Data Items to this tag
             </summary>
         </member>
         <member name="T:VEDriversLite.NFT.ClassOfNFTTicket">

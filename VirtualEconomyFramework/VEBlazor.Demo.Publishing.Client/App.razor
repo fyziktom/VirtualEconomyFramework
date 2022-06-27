@@ -1,0 +1,113 @@
+﻿@using VEDriversLite.NFT
+@using VEDriversLite.NFT.Dto
+@using VEDriversLite.NFT.Coruzant
+@inject AppData AppData
+
+<ThemeProvider Theme="@theme">
+    <Router AppAssembly="@typeof(App).Assembly">
+        <Found Context="routeData">
+            <RouteView RouteData="@routeData" DefaultLayout="@typeof(VEFramework.VEBlazor.Layouts.MainLayout)" />
+            <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+        </Found>
+        <NotFound>
+            <PageTitle>Not found</PageTitle>
+            <LayoutView Layout="@typeof(VEFramework.VEBlazor.Layouts.MainLayout)">
+                <p role="alert">Sorry, there's nothing at this address.</p>
+            </LayoutView>
+        </NotFound>
+    </Router>
+    
+<VEFramework.VEBlazor.Components.VEBlazorServicesComponents />
+</ThemeProvider>
+@code {
+    Theme theme = VEFramework.VEBlazor.Models.Themes.DefaultTheme.GetDefaultTheme();
+
+    protected override async Task OnInitializedAsync()
+    {
+        AppData.AppName = "Coruzant";
+        AppData.AppNick = "CORZT";
+        AppData.AppHomeWebsiteUrl = "https://nft.coruzant.com/about";
+        AppData.AppShareNFTUrl = "https://nft.coruzant.com/";
+        AppData.AllowWorkTabs = false;
+        AppData.AllowSend = true;
+        AppData.AllowDestroy = true;
+        AppData.DisplayGettingStartedMenuItem = true;
+        AppData.GettingStartedPageName = "gettingstarted";
+        AppData.AppTokenId = VEDriversLite.NFT.Coruzant.CoruzantNFTHelpers.CoruzantTokenId;
+        
+        if ( AppData.MintingTabsData.TryGetValue( "default", out var tab ) )
+        {
+            tab.MintingNFTType = NFTTypes.CoruzantProfile;
+            tab.HeaderLabel = "Add New Profile";
+            tab.MenuButonLabel = "New Profile";
+            tab.TabPageLocationName = "addnewprofile";
+            tab.NFT = new CoruzantProfileNFT( "" );
+        }
+        AppData.MintingTabsData.TryAdd( "postminting", new MintingTabData()
+        {
+            MintingNFTType = NFTTypes.CoruzantArticle,
+            HeaderLabel = "Add New Post",
+            MenuButonLabel = "New Post",
+            TabPageLocationName = "addnewpost",
+            NFT = new CoruzantArticleNFT( "" )
+        });
+
+        AppData.AllowedNFTTypes = new List<VEDriversLite.NFT.NFTTypes>()
+        { 
+            VEDriversLite.NFT.NFTTypes.Profile, 
+            VEDriversLite.NFT.NFTTypes.Image, 
+            VEDriversLite.NFT.NFTTypes.Post,
+            VEDriversLite.NFT.NFTTypes.CoruzantProfile,
+            VEDriversLite.NFT.NFTTypes.CoruzantArticle,
+            VEDriversLite.NFT.NFTTypes.Ticket, 
+            VEDriversLite.NFT.NFTTypes.Event, 
+            VEDriversLite.NFT.NFTTypes.Music,
+            VEDriversLite.NFT.NFTTypes.App
+        };
+
+        AppData.DefaultTags.Add("AI", new VEDriversLite.NFT.Tags.Tag()
+        {
+            Name = "AI",
+            Color = "success",
+            UseAsFastButton = true
+        });
+        AppData.DefaultTags.Add("Blockchain", new VEDriversLite.NFT.Tags.Tag()
+        {
+            Name = "Blockchain",
+            Color = "info",
+            UseAsFastButton = true
+        });
+        AppData.DefaultTags.Add("Tech", new VEDriversLite.NFT.Tags.Tag()
+        {
+            Name = "Tech",
+            Color = "success",
+            UseAsFastButton = true
+        });
+        AppData.DefaultTags.Add("ToList", new VEDriversLite.NFT.Tags.Tag()
+        {
+            Name = "Web3",
+            Color = "info",
+            UseAsFastButton = true
+        });
+        AppData.DefaultTags.Add("OpenSource", new VEDriversLite.NFT.Tags.Tag()
+        {
+            Name = "OpenSource",
+            Color = "success",
+            UseAsFastButton = true
+        });
+        AppData.DefaultTags.Add("Industry40", new VEDriversLite.NFT.Tags.Tag()
+        {
+            Name = "Industry40",
+            Color = "success",
+            UseAsFastButton = true
+        });
+        AppData.DefaultTags.Add("Medical", new VEDriversLite.NFT.Tags.Tag()
+        {
+            Name = "Medical",
+            Color = "success",
+            UseAsFastButton = true
+        });        
+      
+        await base.OnInitializedAsync();
+    }
+}
