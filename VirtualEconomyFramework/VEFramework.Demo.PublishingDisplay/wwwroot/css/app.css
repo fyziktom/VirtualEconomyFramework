@@ -1,7 +1,9 @@
-﻿@import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
+@import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
 
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    width:100%;
+    overflow-x:hidden;
 }
 
 h1:focus {
@@ -68,7 +70,7 @@ a, .btn-link {
     font-family: 'Inter';
     font-style: normal;
     font-weight: 500;
-    font-size: 20px;
+    font-size: 18px;
     line-height: 24px;
     /* or 44px */
     text-align: center;
@@ -128,7 +130,8 @@ a, .btn-link {
 .footerbackground {
     position: relative;
     width: 100%;
-    height: 600px;
+    height: auto;
+    padding:4vh 2vw;
     left: 0px;
     top: 0px;
     margin:0px;
@@ -165,8 +168,8 @@ a, .btn-link {
     font-family: 'Inter';
     font-style: normal;
     font-weight: 500;
-    font-size: 20px;
-    line-height: 32.1px;
+    font-size: 17px;
+    line-height: 28px;
     /* or 44px */
     text-align: center;
     letter-spacing: 0.04em;
@@ -257,3 +260,139 @@ a, .btn-link {
         padding-right: 1.5rem !important;
     }
 }
+.profile {
+    margin-top: 2rem;
+}
+.card-group {
+    width: 100% !important;
+} 
+
+
+.fellows .card-body {
+    -ms-flex: 1 1 auto;
+    flex: 1 1 auto;
+    min-height: 1px;
+    padding: 1.25rem;
+    border: 1px solid #c6bcbc;
+    border-top: none;
+}
+.fellows {
+    margin: 1rem 0 !important;
+    padding: 0 .4rem;
+    border: none;
+}
+@media(min-width:2560px) {
+    .fellows {
+        min-width: 10% !important;
+        max-width: 10% !important;
+        margin: 1rem 0 !important;
+        padding: 0 .4rem;
+        border: none;
+    }
+}
+
+@media(max-width:2560px) {
+    .fellows {
+        min-width: 14.25% !important;
+        max-width: 14.25% !important;
+    }
+}
+@media(max-width:1500px) {
+    .fellows {
+        min-width: 16.65% !important;
+        max-width: 16.65% !important;
+    }
+}
+
+@media(max-width:1293px){
+    .fellows {
+        min-width: 20% !important;
+        max-width: 20% !important;
+    }
+    .profile {
+        min-width: 25% !important;
+        max-width: 25% !important;
+        margin: 0;
+        padding: 0;
+        display: inline-block;
+        flex: none !important;
+        margin: 2rem 0 !important;
+        padding: 0 0.5rem;
+        border: none !important;
+    }
+    .card-body {
+        -ms-flex: 1 1 auto;
+        flex: 1 1 auto;
+        min-height: 1px;
+        padding: 1.25rem;
+        border: 1px solid #c6bcbc;
+        border-top: none;
+    }
+    img.card-img-top {
+        border: 1px solid #c6bcbc;
+        border-bottom: none;
+    }
+}
+
+@media(max-width:991px) {
+    .profile, .fellows {
+        min-width: 33% !important;
+        max-width: 33% !important;
+    }
+}
+
+
+@media(max-width:767px) {
+    .profile{
+        min-width: 50% !important;
+        max-width: 50% !important;
+        display: inline-block;
+    }
+    .profile-sidelist .card, .fellows {
+        min-width: 46% !important;
+        max-width: 46% !important;
+        display: inline-block;
+    }
+}
+@media(max-width:480px) {
+    .profile, .profile-sidelist .card, .fellows {
+        min-width: 80% !important;
+        max-width: 80% !important;
+        margin-left: 10% !important;
+    }
+}
+
+
+@media(min-width:767px){
+    .profile-sidelist {
+        /*-ms-overflow-style: none;*/ /* Internet Explorer 10+ */
+        /*scrollbar-width: none;*/ /* Firefox */
+        overflow-y: scroll;
+        margin-right:1rem;
+    }
+
+        /*.profile-sidelist::-webkit-scrollbar {
+    display: none;*/ /* Safari and Chrome */
+        /*}*/
+        .profile-sidelist::-webkit-scrollbar {
+            width: .5rem;
+        }
+
+        /*.profile-sidelist::-webkit-scrollbar-track {*/
+            /*box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);*/
+            /*box-shadow: none;
+        }*/
+
+        .profile-sidelist::-webkit-scrollbar-thumb {
+            background-color: #a5cffa;
+            outline: 0px solid slategrey;
+        } 
+     
+}
+.profile-sidelist .card {
+    margin-top: 1.5rem;
+}
+.navbar-light .navbar-toggler {
+    background: #45444475;
+}
+ 
