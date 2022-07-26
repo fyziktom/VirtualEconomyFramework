@@ -19,7 +19,7 @@
                 @foreach (var profile in NFTs.Values.Take(PerPage))
                 {
                     var tag = profile.TagsList.FirstOrDefault();
-                    <Card Style="min-width:300px;max-width:350px;" Margin="Margin.Is3.FromEnd">
+                    <Card class="profile" Style="min-width:300px;max-width:350px;" Margin="Margin.Is3.FromEnd">
                         <CardImage Source="@profile.ImageLink" Alt="@profile.Name"></CardImage>
                         <CardBody>
                             <NameOnCard NFT="@profile" />
