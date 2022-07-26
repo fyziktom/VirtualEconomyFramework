@@ -17,7 +17,7 @@
                 {
                     var p = post as CoruzantArticleNFT;
                     var tag = post.TagsList.FirstOrDefault();                        
-                    <Card Style="min-width:300px;max-width:350px;" Margin="Margin.Is3.FromEnd">
+                    <Card class="profile" Style="min-width:300px;max-width:350px;" Margin="Margin.Is3.FromEnd">
                         <CardImage Source="@post.ImageLink" Alt="@post.Name" ></CardImage>
                         <CardBody>
                             <NameOnCard NFT="@post" />
