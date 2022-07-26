@@ -49,6 +49,16 @@
         <a class="dismiss">🗙</a>
     </div>
     <script src="_framework/blazor.webassembly.js"></script>
+    <script>
+   
+    $(window).scroll(function () {
+        if ($(window).width() > 480) {
+            $(".profile-sidelist").height($(".profileofthedaybox").height());
+        } else if($(window).scrollTop() > 100)
+            $(".navbar-collapse").removeClass("show");
+    });
+
+</script>
 </body>
 
 </html>
