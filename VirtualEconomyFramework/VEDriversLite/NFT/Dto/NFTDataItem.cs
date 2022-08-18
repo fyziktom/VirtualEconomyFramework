@@ -109,6 +109,11 @@ namespace VEDriversLite.NFT.Dto
         [JsonIgnore]
         public byte[] Data { get; set; } = new byte[0];
         /// <summary>
+        /// Loaded data as Base64 string 
+        /// </summary>
+        [JsonIgnore]
+        public string Base64Data { get; set; } = string.Empty;
+        /// <summary>
         /// Display flag for UI
         /// </summary>
         public bool IsMain { get; set; } = false;

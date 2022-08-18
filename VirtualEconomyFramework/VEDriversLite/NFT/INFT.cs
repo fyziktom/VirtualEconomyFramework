@@ -185,6 +185,12 @@ namespace VEDriversLite.NFT
         [JsonIgnore]
         byte[] ImageData { get; set; }
         /// <summary>
+        /// Loaded Image data as base64 string
+        /// </summary>
+        [JsonIgnore]
+        string Base64Data { get; set; }
+
+        /// <summary>
         /// Preview data of image or music
         /// </summary>
         string Preview { get; set; }

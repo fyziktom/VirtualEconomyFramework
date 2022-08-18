@@ -2,6 +2,7 @@
 using VEFramework.VEBlazor.Components.NFTs.Common;
 using VEDriversLite.NFT;
 using VEDriversLite.NFT.Dto;
+using VEDriversLite.NeblioAPI;
 
 namespace VEFramework.VEBlazor.Components.Base
 {
@@ -257,6 +258,33 @@ namespace VEFramework.VEBlazor.Components.Base
                 }
             }
             
+            return EmptyImage;
+        }
+
+        /// <summary>
+        /// Check if the DataItem contains the Image Data in bytes. 
+        /// If not, it will download it from IPFS and then convert as image base64 string
+        /// </summary>
+        /// <returns></returns>
+        public async Task<string> GetImageFromHash(string hash)
+        {
+            if (NFT == null)
+                return EmptyImage;
+            var di = NFT.DataItems.FirstOrDefault(x => x.Hash == hash);
+            
+            if (di != null && di.Data.Length > 0)
+                return "data:image;base64," + Convert.ToBase64String(di.Data);
+            else if (di != null && !string.IsNullOrEmpty(di.Hash))
+            {
+                var imd = await NFTHelpers.IPFSDownloadFromInfuraAsync(di.Hash);
+                if (imd != null)
+                {
+                    di.Data = imd;
+                    di.Base64Data = Convert.ToBase64String(imd);
+                    return "data:image;base64," + di.Base64Data;
+                }
+            }
+
             return EmptyImage;
         }
         /// <summary>

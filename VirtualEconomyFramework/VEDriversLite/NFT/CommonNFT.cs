@@ -58,6 +58,11 @@ namespace VEDriversLite.NFT
         [JsonIgnore]
         public byte[] ImageData { get; set; } = null;
         /// <summary>
+        /// Loaded Image data as base64 string
+        /// </summary>
+        [JsonIgnore]
+        public string Base64Data { get; set; }
+        /// <summary>
         /// Preview data of image or music
         /// </summary>
         public string Preview { get; set; } = string.Empty;
@@ -402,8 +407,13 @@ namespace VEDriversLite.NFT
                 ImageLink = imagelink;
                 if (!string.IsNullOrEmpty(ImageLink))
                 {
-                    if (ImageLink.Contains("https://gateway.ipfs.io"))
-                        ImageLink = ImageLink.Replace("https://gateway.ipfs.io", "https://ipfs.infura.io");
+                    var ipfslink = NFTHelpers.GetHashFromIPFSLink(ImageLink);
+                    if (!string.IsNullOrEmpty(ipfslink))
+                    {
+                        var il = NFTHelpers.GetIPFSLinkFromHash(ipfslink);
+                        if (!string.IsNullOrEmpty(il))
+                            ImageLink = il;
+                    }
                 }
             }
             if (meta.TryGetValue("Preview", out var preview))
@@ -411,8 +421,16 @@ namespace VEDriversLite.NFT
                 if (!string.IsNullOrEmpty(preview))
                 {
                     Preview = preview;
-                    if (Preview.Contains("https://gateway.ipfs.io"))
-                        Preview = Preview.Replace("https://gateway.ipfs.io", "https://ipfs.infura.io");
+                    if (!string.IsNullOrEmpty(ImageLink))
+                    {
+                        var ipfslink = NFTHelpers.GetHashFromIPFSLink(ImageLink);
+                        if (!string.IsNullOrEmpty(ipfslink))
+                        {
+                            var il = NFTHelpers.GetIPFSLinkFromHash(ipfslink);
+                            if (!string.IsNullOrEmpty(il))
+                                ImageLink = il;
+                        }
+                    }
                 }
             }
             if (meta.TryGetValue("IconLink", out var iconlink))
@@ -568,6 +586,7 @@ namespace VEDriversLite.NFT
                     if (data != null)
                     {
                         ImageData = data;
+                        Base64Data = Convert.ToBase64String(data);
                         return true;
                     }
                 }
@@ -593,7 +612,17 @@ namespace VEDriversLite.NFT
             if (!string.IsNullOrEmpty(imageLink) && (imageLink.Contains("https://gateway.ipfs.io/ipfs/") || imageLink.Contains("https://ipfs.infura.io/ipfs/")))
             {
                 byte[] ImageData;
-                var hash = imageLink.Replace("https://gateway.ipfs.io/ipfs/", string.Empty).Replace("https://ipfs.infura.io/ipfs/", string.Empty);
+                string hash = string.Empty;
+                if (!string.IsNullOrEmpty(imageLink))
+                {
+                    var ipfslink = NFTHelpers.GetHashFromIPFSLink(imageLink);
+                    if (!string.IsNullOrEmpty(ipfslink))
+                    {
+                        var il = NFTHelpers.GetIPFSLinkFromHash(ipfslink);
+                        if (!string.IsNullOrEmpty(il))
+                            ImageLink = il;
+                    }
+                }
                 try
                 {
                     var bytes = await NFTHelpers.IPFSDownloadFromInfuraAsync(hash);
