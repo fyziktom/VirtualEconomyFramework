@@ -216,11 +216,11 @@
         {
             try
             {
-                if (!string.IsNullOrEmpty(imageLink) && imageLink.Contains("https://ipfs.infura.io/ipfs/"))
+                if (!string.IsNullOrEmpty(imageLink) && imageLink.Contains("/ipfs/"))
                 {
                     if (EncryptedContent)
                     {
-                        var res = await NFTHelpers.IPFSDownloadFromInfuraAsync(imageLink.Replace("https://ipfs.infura.io/ipfs/", string.Empty));
+                        var res = await NFTHelpers.IPFSDownloadFromInfuraAsync(NFTHelpers.GetHashFromIPFSLink(imageLink));
                         if (res != null && res.Length > 0.5 * uploadedFileLength)
                         {
                             ImageLink = imageLink;
@@ -315,7 +315,8 @@
                         var link = string.Empty;
                         if (!EncryptedContent)
                         {
-                            link = await NFTHelpers.UploadInfura(stream, fileinfo.Name);
+                            //link = await NFTHelpers.UploadInfura(stream, fileinfo.Name);
+                            link = await NFTHelpers.UploadToIPFS(stream, fileinfo.Name);
                         }
                         else
                         {
@@ -335,7 +336,8 @@
                                     Console.WriteLine($"Bytes length after encryption: {rbl}");
                                     using (MemoryStream ms = new MemoryStream(rbytes.Item2))
                                     {
-                                        link = await NFTHelpers.UploadInfura(ms, fileinfo.Name);
+                                        //link = await NFTHelpers.UploadInfura(ms, fileinfo.Name);
+                                        link = await NFTHelpers.UploadToIPFS(ms, fileinfo.Name);
                                     }
                                 }
                             }

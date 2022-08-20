@@ -3229,6 +3229,160 @@ namespace TestVEDriversLite
 
         }
 
+        [TestEntry]
+        public static void IPFSAzureFileUpload(string param)
+        {
+            IPFSAzureFileUploadAsync(param);
+        }
+        public static async Task IPFSAzureFileUploadAsync(string param)
+        {
+            //var split = param.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            //if (split.Length < 3)
+            //    throw new Exception("Please input filename");
+            //var fileName = split[0];
+            var url = "http://20.225.145.84:5001";
+            NFTHelpers.InfuraAPIURL = url;
+            var filebytes = File.ReadAllBytes(param);
+            var link = string.Empty;
+            try
+            {
+                using (Stream stream = new MemoryStream(filebytes))
+                {
+                    var imageLink = await NFTHelpers.UploadInfura(stream, param);
+                    Console.WriteLine("Image Link: " + imageLink);
+                    //var imageLink = await NFTHelpers.ipfs.FileSystem.AddAsync(stream, fileName);
+                    //link = "https://gateway.ipfs.io/ipfs/" + imageLink.ToLink().Id.ToString();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error during uploading the image to the IPFS." + ex.Message);
+            }
+
+        }
+
+        [TestEntry]
+        public static void IPFSTransferBetweenNodes(string param)
+        {
+            IPFSTransferBetweenNodesAsync(param);
+        }
+        public static async Task IPFSTransferBetweenNodesAsync(string param)
+        {
+            var split = param.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            if (split.Length < 3)
+                throw new Exception("Please input tokenId");
+            var tokenId = split[0];
+
+
+            var owners = await NeblioAPIHelpers.GetTokenOwners("La9ADonmDwxsNKJGvnRWy8gmWmeo72AEeg8cK7");
+
+            var ipfsCIDs = new List<string>();
+            Console.WriteLine("Starting searching the owners:");
+            Console.WriteLine("--------------------------------");
+            foreach (var own in owners)
+            {
+                Console.WriteLine("--------------------------------");
+                Console.WriteLine($"Owner {own.Address}. Loading NFTS...");
+                var addnfts = await NFTHelpers.LoadAddressNFTs(own.Address);
+                Console.WriteLine("--------------------------------");
+                Console.WriteLine($"----------{addnfts.Count} NFT Loaded------------");
+                foreach (var nft in addnfts)
+                {
+                    if (!string.IsNullOrEmpty(nft.ImageLink) || nft.DataItems.Count > 0)
+                    {
+                        var lnk = NFTHelpers.GetHashFromIPFSLink(nft.Link);
+                        if (!string.IsNullOrEmpty(lnk))
+                            if (!ipfsCIDs.Contains(lnk))
+                                ipfsCIDs.Add(lnk);
+                        var imagelink = NFTHelpers.GetHashFromIPFSLink(nft.ImageLink);
+                        if (!string.IsNullOrEmpty(imagelink))
+                            if (!ipfsCIDs.Contains(imagelink))
+                                ipfsCIDs.Add(imagelink);
+
+                        foreach (var item in nft.DataItems)
+                        {
+                            if (item.Storage == VEDriversLite.NFT.Dto.DataItemStorageType.IPFS && !string.IsNullOrEmpty(item.Hash))
+                                if (!ipfsCIDs.Contains(item.Hash))
+                                    ipfsCIDs.Add(item.Hash);
+                        }
+
+                    }
+
+                }
+                Console.WriteLine("---------------------------------------------------------");
+                Console.WriteLine($"-------Processing of address {own.Address} done---------");
+            }
+
+            foreach (var cid in ipfsCIDs)
+            {
+                Console.WriteLine("---------------------------------------------------------");
+                Console.WriteLine($"-------Processing of CID {cid} done---------");
+
+                NFTHelpers.InfuraAPIURL = "https://ipfs.infura.io:5001";
+                NFTHelpers.GatewayURL = "https://bdp.infura-ipfs.io/ipfs/";
+
+                var downloadedbytes = await NFTHelpers.IPFSDownloadFromInfuraAsync(cid);
+
+                
+                NFTHelpers.InfuraAPIURL = "http://20.225.145.84:5001";
+                NFTHelpers.GatewayURL = "https://ipfs.io/ipfs/";
+
+                //var filebytes = File.ReadAllBytes(param);
+                var link = string.Empty;
+                try
+                {
+                    using (Stream stream = new MemoryStream(downloadedbytes))
+                    {
+                        var imageLink = await NFTHelpers.UploadInfura(stream, "");
+                        Console.WriteLine("Image Link: " + imageLink);
+                        //var imageLink = await NFTHelpers.ipfs.FileSystem.AddAsync(stream, fileName);
+                        //link = "https://gateway.ipfs.io/ipfs/" + imageLink.ToLink().Id.ToString();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error during uploading the image to the IPFS." + ex.Message);
+                }
+            }
+        }
+
+        [TestEntry]
+        public static void IPFSTransferFileBetweenNodes(string param)
+        {
+            IPFSTransferFileBetweenNodesAsync(param);
+        }
+        public static async Task IPFSTransferFileBetweenNodesAsync(string param)
+        {
+
+            Console.WriteLine("---------------------------------------------------------");
+            Console.WriteLine($"-------Processing of CID {param} done---------");
+
+            NFTHelpers.InfuraAPIURL = "https://ipfs.infura.io:5001";
+            NFTHelpers.GatewayURL = "https://bdp.infura-ipfs.io/ipfs/";
+            
+            var downloadedbytes = await NFTHelpers.IPFSDownloadFromInfuraAsync(param);
+            
+            NFTHelpers.InfuraAPIURL = "http://20.225.145.84:5001";
+            NFTHelpers.GatewayURL = "https://ipfs.io/ipfs/";
+
+            //var filebytes = File.ReadAllBytes(param);
+            var link = string.Empty;
+            try
+            {
+                using (Stream stream = new MemoryStream(downloadedbytes))
+                {
+                    var imageLink = await NFTHelpers.UploadInfura(stream, "");
+                    Console.WriteLine("Image Link: " + imageLink);
+                    //var imageLink = await NFTHelpers.ipfs.FileSystem.AddAsync(stream, fileName);
+                    //link = "https://gateway.ipfs.io/ipfs/" + imageLink.ToLink().Id.ToString();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error during uploading the image to the IPFS." + ex.Message);
+            }
+        }
+
         public class IPFSLinksNFTsDto
         {
             public string Address { get; set; } = string.Empty;

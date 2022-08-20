@@ -395,8 +395,13 @@ namespace VEFramework.Demo.PublishingDisplay.Services.NFTs
                 ImageLink = imagelink;
                 if (!string.IsNullOrEmpty(ImageLink))
                 {
-                    if (ImageLink.Contains("https://gateway.ipfs.io"))
-                        ImageLink = ImageLink.Replace("https://gateway.ipfs.io", "https://ipfs.infura.io");
+                    var ipfslink = NFTHelpers.GetHashFromIPFSLink(ImageLink);
+                    if (!string.IsNullOrEmpty(ipfslink))
+                    {
+                        var il = NFTHelpers.GetIPFSLinkFromHash(ipfslink);
+                        if (!string.IsNullOrEmpty(il))
+                            ImageLink = il;
+                    }
                 }
             }
             if (meta.TryGetValue("Preview", out var preview))
@@ -404,8 +409,16 @@ namespace VEFramework.Demo.PublishingDisplay.Services.NFTs
                 if (!string.IsNullOrEmpty(preview))
                 {
                     Preview = preview;
-                    if (Preview.Contains("https://gateway.ipfs.io"))
-                        Preview = Preview.Replace("https://gateway.ipfs.io", "https://ipfs.infura.io");
+                    if (!string.IsNullOrEmpty(ImageLink))
+                    {
+                        var ipfslink = NFTHelpers.GetHashFromIPFSLink(ImageLink);
+                        if (!string.IsNullOrEmpty(ipfslink))
+                        {
+                            var il = NFTHelpers.GetIPFSLinkFromHash(ipfslink);
+                            if (!string.IsNullOrEmpty(il))
+                                ImageLink = il;
+                        }
+                    }
                 }
             }
             if (meta.TryGetValue("IconLink", out var iconlink))

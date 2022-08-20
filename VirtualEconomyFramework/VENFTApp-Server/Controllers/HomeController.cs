@@ -97,6 +97,30 @@ namespace VENFTApp_Server.Controllers
             return string.Empty;
         }
 
+        [HttpPost]
+        [AllowCrossSiteJsonAttribute]
+        [Route("uploadtoipfs")]
+        public async Task<string> UploadToIPFS(IFormFile file)
+        {
+            if (file == null)
+                return "Error. Provided null file.";
+
+            using var stream = file.OpenReadStream();
+            try
+            {
+                var url = "http://20.225.145.84:5001";
+                NFTHelpers.InfuraAPIURL = url;
+                
+                var imageLink = await NFTHelpers.UploadInfura(stream, file.FileName);
+                return imageLink;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error during uploading the image to the IPFS." + ex.Message);
+            }
+            return string.Empty;
+        }
+
         /*
         [HttpPost]
         [AllowCrossSiteJsonAttribute]

@@ -1,4 +1,5 @@
-﻿using Ipfs.Http;
+﻿using Ipfs;
+using Ipfs.Http;
 using NBitcoin;
 using Newtonsoft.Json;
 using System;
@@ -114,11 +115,11 @@ namespace VEDriversLite.NFT
         /// <summary>
         /// Infura Url for the access to the IPFS API
         /// </summary>
-        public static string InfuraAPIURL = "https://ipfs.infura.io:5001";
+        public static string InfuraAPIURL = "https://venftappserver.azurewebsites.net/api/uploadtoipfs";//"http://20.225.145.84:5001";//"https://ipfs.infura.io:5001";
         /// <summary>
         /// IPFS Gateway address
         /// </summary>
-        public static string GatewayURL = "https://bdp.infura-ipfs.io/ipfs/";
+        public static string GatewayURL = "https://ipfs.io/ipfs/";//"https://bdp.infura-ipfs.io/ipfs/";
         /// <summary>
         /// Main default tokens in VEFramework - VENFT
         /// </summary>
@@ -210,7 +211,7 @@ namespace VEDriversLite.NFT
         public static string GetHashFromIPFSLink(string link)
         {
             if (string.IsNullOrEmpty(link)) return string.Empty;
-            var hash = link.Replace("https://gateway.ipfs.io/ipfs/", string.Empty).Replace("https://ipfs.infura.io/ipfs/", string.Empty).Replace(GatewayURL, string.Empty);
+            var hash = link.Replace("https://gateway.ipfs.io/ipfs/", string.Empty).Replace("https://ipfs.io/ipfs/", string.Empty).Replace("https://ipfs.infura.io/ipfs/", string.Empty).Replace(GatewayURL, string.Empty);
             return hash;
         }
         /// <summary>
@@ -354,6 +355,56 @@ namespace VEDriversLite.NFT
             }
             
             return c;
+        }
+
+
+        /// <summary>
+        /// Upload file to the Infura IPFS
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="fileName"></param>
+        /// <param name="fileContentType"></param>
+        /// <returns></returns>
+        public static async Task<string> UploadToIPFS(Stream stream, string fileName, string fileContentType = "multipart/form-data")
+        {
+            if (stream == null)
+                return "Error. Provided null file.";
+            try
+            {
+                if (stream.Length <= 0)
+                    return string.Empty;
+                var link = string.Empty;
+                HttpResponseMessage result;
+                using (var client = new HttpClient())
+                {
+                    using (var content = new MultipartFormDataContent())
+                    {
+                        content.Add(new StreamContent(stream), "file", fileName);
+
+                        var requestUri = InfuraAPIURL;
+                        var request = new HttpRequestMessage(HttpMethod.Post, requestUri) { Content = content };
+                        result = await client.SendAsync(request);
+
+                    }
+                }
+
+                string rlink = await result.Content.ReadAsStringAsync();
+                var reslink = GetHashFromIPFSLink(rlink);
+                //var reslinks = await ipfs.FileSystem.AddAsync(stream, fileName);
+
+                if (reslink != null)
+                {
+                    var hash = reslink;
+                    link = GatewayURL + hash;
+                                        
+                }
+                return link;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error during uploading the image to the IPFS." + ex.Message);
+            }
+            return string.Empty;
         }
 
         /// <summary>
