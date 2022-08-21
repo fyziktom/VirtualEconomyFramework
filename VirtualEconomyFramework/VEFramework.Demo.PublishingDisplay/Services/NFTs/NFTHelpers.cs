@@ -220,7 +220,7 @@ namespace VEFramework.Demo.PublishingDisplay.Services.NFTs
                     {
                         try
                         {
-                            var respb = await IPFSDownloadFromInfuraAsync(link.Replace("https://gateway.ipfs.io/ipfs/", string.Empty).Replace("https://ipfs.infura.io/ipfs/",string.Empty));
+                            var respb = await IPFSDownloadFromInfuraAsync(GetHashFromIPFSLink(link));
                             if (respb != null)
                             {
                                 var resp = new MemoryStream(respb);

@@ -221,7 +221,10 @@ namespace VEDriversLite.NFT
         /// <returns></returns>
         public static string GetIPFSLinkFromHash(string? hash)
         {
-            return !string.IsNullOrEmpty(hash) ? string.Concat(GatewayURL, hash) : string.Empty;
+            if (hash.Contains("http"))
+                return hash;
+            else
+                return !string.IsNullOrEmpty(hash) ? string.Concat(GatewayURL, hash) : string.Empty;
         }
         /// <summary>
         /// Obsolete function - just example how to redirect upload through different server
@@ -258,7 +261,7 @@ namespace VEDriversLite.NFT
                     {
                         try
                         {
-                            var respb = await IPFSDownloadFromInfuraAsync(link.Replace("https://gateway.ipfs.io/ipfs/", string.Empty).Replace("https://ipfs.infura.io/ipfs/",string.Empty));
+                            var respb = await IPFSDownloadFromInfuraAsync(GetHashFromIPFSLink(link));
                             if (respb != null)
                             {
                                 var resp = new MemoryStream(respb);
