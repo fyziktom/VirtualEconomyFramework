@@ -61,7 +61,7 @@ namespace VEFramework.Demo.PublishingDisplay.Components.Base
         [Parameter]
         public INFT NFT { get; set; } = new CoruzantProfileNFT("");
 
-        public string NFTTextMarkuptext => Markdig.Markdown.ToHtml(NFT.Text, new MarkdownPipelineBuilder().UseAdvancedExtensions().Build());
+        public string NFTTextMarkuptext => Markdig.Markdown.ToHtml(NFT.Text.Trim(' '), new MarkdownPipelineBuilder().UseAdvancedExtensions().Build());
 
         public string GetName(INFT pnft)
         {
