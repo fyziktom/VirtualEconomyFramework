@@ -17,7 +17,7 @@ If you need to build dApp with the VEDriversLite we recommend you to explore **N
 ## Online Demo VENFT App
 
 <p align="center">
-  <img width="200" src="https://ipfs.infura.io/ipfs/QmT8wYFsDR55wCKKUwRwXYfxu67uGWpbVCKfg4kxiCM7pJ">
+  <img width="200" src="https://ve-framework.com/ipfs/QmT8wYFsDR55wCKKUwRwXYfxu67uGWpbVCKfg4kxiCM7pJ">
 <p>
 
 
@@ -38,13 +38,13 @@ If you need more tokens or Neblio plese contact the author of the project on [em
 
 The VEFramework offers lots of different libraries, drivers, components which will reduce code in your application a lot.
 
-![VEFramewoents](https://ipfs.infura.io/ipfs/QmNrjnNjk7dQKikCo8qZjsKK5J9bw7m8BrJuFXojhwBFJA)
+![VEFramewoents](https://ve-framework.com/ipfs/QmNrjnNjk7dQKikCo8qZjsKK5J9bw7m8BrJuFXojhwBFJA)
 
 ## Development with VEFramework
 
 The most compatible languages are C#, VisualBasic or F#. For lots of applications you can use also different languages and connect backend with use of API or MQTT. This allows to use this framework with more languages such as JavaScript, HTML, Python and others.
 
-![Development with VEFramework](https://ipfs.infura.io/ipfs/QmVYGi34Qpt69GMDjLLoAQtF48GUs6yN5uabE9nPkw3GLX)
+![Development with VEFramework](https://ve-framework.com/ipfs/QmVYGi34Qpt69GMDjLLoAQtF48GUs6yN5uabE9nPkw3GLX)
 
 ## Hello World with VEDriversLite
 
@@ -110,7 +110,7 @@ dotnet run
   
 Here is the output from this program:
 
-![VEDriversLite example code output](https://ipfs.infura.io/ipfs/QmRS7oY66FCawfuBJpy2sM51tGzQ1GmXgc3ArExEdmSijE)
+![VEDriversLite example code output](https://ve-framework.com/ipfs/QmRS7oY66FCawfuBJpy2sM51tGzQ1GmXgc3ArExEdmSijE)
   
 Here you can see the details of the transaction in the [Neblio Blockchain Explorer](https://explorer.nebl.io/tx/e28dcb54c5ec1d3e889a19c75d58eea5e684db6968fd2478a98e78415996760c).
 
