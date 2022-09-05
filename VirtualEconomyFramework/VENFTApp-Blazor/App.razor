@@ -11,3 +11,28 @@
 </Router>
 
 <AntContainer />
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        VEDriversLite.StorageDriver.Helpers.IPFSHelpers.GatewayURL = "https://ve-framework.com/ipfs/"; //veframework public gateway
+                                                                                                      
+        var res = await VEDriversLite.VEDLDataContext.Storage.AddDriver(new VEDriversLite.StorageDriver.StorageDrivers.Dto.StorageDriverConfigDto()
+            {
+                Type = "IPFS",
+                Name = "BDP",
+                Location = "Cloud",
+                ID = "BDP",
+                IsPublicGateway = true,
+                IsLocal = false,
+                ConnectionParams = new VEDriversLite.StorageDriver.StorageDrivers.StorageDriverConnectionParams()
+                {
+                    APIUrl = "https://ve-framework.com/",
+                    APIPort = 443,
+                    Secured = false,
+                    GatewayURL = "https://ve-framework.com/ipfs/",
+                    GatewayPort = 443,
+                }
+            });
+    }
+}

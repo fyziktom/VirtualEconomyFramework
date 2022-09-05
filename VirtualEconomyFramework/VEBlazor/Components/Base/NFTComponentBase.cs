@@ -3,6 +3,7 @@ using VEFramework.VEBlazor.Components.NFTs.Common;
 using VEDriversLite.NFT;
 using VEDriversLite.NFT.Dto;
 using VEDriversLite.NeblioAPI;
+using VEDriversLite;
 
 namespace VEFramework.VEBlazor.Components.Base
 {
@@ -111,14 +112,14 @@ namespace VEFramework.VEBlazor.Components.Base
                         if (item.IsMain)
                         {
                             if (item.Storage == DataItemStorageType.IPFS)
-                                return NFTHelpers.GetIPFSLinkFromHash(item.Hash);
+                                return VEDriversLite.StorageDriver.Helpers.IPFSHelpers.GetIPFSLinkFromHash(item.Hash);
                             else if (item.Storage == DataItemStorageType.Url)
                                 return item.Hash;
                         }                            
                     }
                     if (NFT.DataItems.Count > 0)
                     {
-                        var il = NFTHelpers.GetIPFSLinkFromHash(NFT.DataItems.FirstOrDefault()?.Hash);
+                        var il = VEDriversLite.StorageDriver.Helpers.IPFSHelpers.GetIPFSLinkFromHash(NFT.DataItems.FirstOrDefault()?.Hash);
                         return !string.IsNullOrEmpty(il) ? il : GetImageUrl();
                     }
                 }
@@ -151,14 +152,14 @@ namespace VEFramework.VEBlazor.Components.Base
                     if (item.IsMain)
                     {
                         if (item.Storage == DataItemStorageType.IPFS)
-                            return NFTHelpers.GetIPFSLinkFromHash(item.Hash);
+                            return VEDriversLite.StorageDriver.Helpers.IPFSHelpers.GetIPFSLinkFromHash(item.Hash);
                         else if (item.Storage == DataItemStorageType.Url)
                             return item.Hash;
                     }
                 }
                 if (nft.DataItems.Count > 0)
                 {
-                    var il = NFTHelpers.GetIPFSLinkFromHash(nft.DataItems.FirstOrDefault()?.Hash);
+                    var il = VEDriversLite.StorageDriver.Helpers.IPFSHelpers.GetIPFSLinkFromHash(nft.DataItems.FirstOrDefault()?.Hash);
                     return !string.IsNullOrEmpty(il) ? il : GetImageUrl();
                 }                    
             }
@@ -250,11 +251,16 @@ namespace VEFramework.VEBlazor.Components.Base
                 return "data:image;base64," + Convert.ToBase64String(NFT.ImageData);
             else if (NFT.ImageData == null && !string.IsNullOrEmpty(NFT.ImageLink))
             {
-                var imd = await NFTHelpers.IPFSDownloadFromInfuraAsync(NFTHelpers.GetHashFromIPFSLink(NFT.ImageLink));
-                if (imd != null)
+                //var imd = await NFTHelpers.IPFSDownloadFromInfuraAsync(VEDriversLite.StorageDriver.Helpers.IPFSHelpers.GetHashFromIPFSLink(NFT.ImageLink));
+                var result = await VEDriversLite.VEDLDataContext.Storage.GetFileFromIPFS(new VEDriversLite.StorageDriver.StorageDrivers.Dto.ReadFileRequestDto()
+                    {
+                        DriverType = VEDriversLite.StorageDriver.StorageDrivers.StorageDriverType.IPFS,
+                        Hash = VEDriversLite.StorageDriver.Helpers.IPFSHelpers.GetHashFromIPFSLink(NFT.ImageLink),
+                    });
+                if (result.Item1)
                 {
-                    NFT.ImageData = imd;
-                    return "data:image;base64," + Convert.ToBase64String(imd);
+                    NFT.ImageData = result.Item2;
+                    return "data:image;base64," + Convert.ToBase64String(result.Item2);
                 }
             }
             
@@ -276,11 +282,16 @@ namespace VEFramework.VEBlazor.Components.Base
                 return "data:image;base64," + Convert.ToBase64String(di.Data);
             else if (di != null && !string.IsNullOrEmpty(di.Hash))
             {
-                var imd = await NFTHelpers.IPFSDownloadFromInfuraAsync(di.Hash);
-                if (imd != null)
+                //var imd = await NFTHelpers.IPFSDownloadFromInfuraAsync(di.Hash);
+                var result = await VEDriversLite.VEDLDataContext.Storage.GetFileFromIPFS(new VEDriversLite.StorageDriver.StorageDrivers.Dto.ReadFileRequestDto()
                 {
-                    di.Data = imd;
-                    di.Base64Data = Convert.ToBase64String(imd);
+                    DriverType = VEDriversLite.StorageDriver.StorageDrivers.StorageDriverType.IPFS,
+                    Hash = di.Hash,
+                });
+                if (result.Item1)
+                {
+                    di.Data = result.Item2;
+                    di.Base64Data = Convert.ToBase64String(result.Item2);
                     return "data:image;base64," + di.Base64Data;
                 }
             }
@@ -322,7 +333,7 @@ namespace VEFramework.VEBlazor.Components.Base
             if (item != null)
             {
                     if (item.Storage == VEDriversLite.NFT.Dto.DataItemStorageType.IPFS)
-                        return NFTHelpers.GetIPFSLinkFromHash(item.Hash);
+                        return VEDriversLite.StorageDriver.Helpers.IPFSHelpers.GetIPFSLinkFromHash(item.Hash);
                     else if (item.Storage == VEDriversLite.NFT.Dto.DataItemStorageType.Url)
                         return item.Hash;
             }

@@ -18,7 +18,7 @@
                                 @if (item.Type == DataItemType.Image)
                                 {                            
                                 <CardImage Border="@(item.IsMain ? Border.Is2.Success : Border.Is0)" 
-                                            Source="@(NFTHelpers.GetIPFSLinkFromHash(item.Hash))" 
+                                            Source="@(VEDriversLite.StorageDriver.Helpers.IPFSHelpers.GetIPFSLinkFromHash(item.Hash))" 
                                             @onclick="() => DisplayItem(item)" 
                                             Style="max-width:40px; min-width:25px; min-height:25px; max-height:80px;"/> 
                                 }
@@ -178,7 +178,7 @@
         await Task.Delay(1);        
         await InvokeAsync( StateHasChanged );
         
-        NFT.ImageLink = NFTHelpers.GetIPFSLinkFromHash(item.Hash); 
+        NFT.ImageLink = VEDriversLite.StorageDriver.Helpers.IPFSHelpers.GetIPFSLinkFromHash(item.Hash); 
         if (displayedItem.Type == DataItemType.JSON)
         {
             var data = await Http.GetStringAsync(NFT.ImageLink);
