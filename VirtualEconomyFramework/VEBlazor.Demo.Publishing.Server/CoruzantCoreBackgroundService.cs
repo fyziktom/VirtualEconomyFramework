@@ -19,10 +19,25 @@ public sealed class CoruzantCoreBackgroundService : BackgroundService
         
         try
         {
-            MainDataContext.IpfsSecret = _settings.GetValue<string>("IpfsSecret", string.Empty);
-            MainDataContext.IpfsProjectID = _settings.GetValue<string>("IpfsProjectID", string.Empty);
-            if (!string.IsNullOrEmpty(MainDataContext.IpfsSecret) && !string.IsNullOrEmpty(MainDataContext.IpfsProjectID))
-                NFTHelpers.LoadConnectionInfo(MainDataContext.IpfsProjectID, MainDataContext.IpfsSecret);
+            VEDriversLite.StorageDriver.Helpers.IPFSHelpers.GatewayURL = "https://ve-framework.com/ipfs/"; //veframework public gateway
+
+            var res = await VEDriversLite.VEDLDataContext.Storage.AddDriver(new VEDriversLite.StorageDriver.StorageDrivers.Dto.StorageDriverConfigDto()
+            {
+                Type = "IPFS",
+                Name = "BDP",
+                Location = "Cloud",
+                ID = "BDP",
+                IsPublicGateway = true,
+                IsLocal = false,
+                ConnectionParams = new VEDriversLite.StorageDriver.StorageDrivers.StorageDriverConnectionParams()
+                {
+                    APIUrl = "https://ve-framework.com/",
+                    APIPort = 443,
+                    Secured = false,
+                    GatewayURL = "https://ve-framework.com/ipfs/",
+                    GatewayPort = 443,
+                }
+            });
 
             var acc = new List<string>();
             _settings.GetSection("ObservedAccounts").Bind(acc);
