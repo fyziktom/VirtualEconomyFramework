@@ -165,10 +165,10 @@ namespace VEDriversLite.StorageDriver.StorageDrivers
                     {
                         var byteArray = Encoding.ASCII.GetBytes(ConnectionParams.Username + ":" + ConnectionParams.Password);
                         client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
-                        
+                        client.DefaultRequestHeaders.Add("Origin", "https://ve-nft.com");
                     }
                     //client.DefaultRequestHeaders.Add("mode", "no-cors");
-                    client.DefaultRequestHeaders.Add("Origin", "https://ve-nft.com");
+                    //
                     var response = await client.GetAsync(ConnectionParams.GatewayURL.Replace("/ipfs/","").Trim('/') + $":{ConnectionParams.GatewayPort}/ipfs/{path}");
                     if (response.IsSuccessStatusCode)
                     {

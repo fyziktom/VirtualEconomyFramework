@@ -2067,8 +2067,8 @@ namespace TestVEDriversLite
             {
                 using (Stream stream = new MemoryStream(filebytes))
                 {
-                    var imageLink = await NFTHelpers.ipfs.FileSystem.AddAsync(stream, fileName);
-                    link = "https://gateway.ipfs.io/ipfs/" + imageLink.ToLink().Id.ToString();
+                    //var imageLink = await NFTHelpers.ipfs.FileSystem.AddAsync(stream, fileName);
+                    //link = "https://gateway.ipfs.io/ipfs/" + imageLink.ToLink().Id.ToString();
                 }
             }
             catch (Exception ex)
@@ -3476,23 +3476,6 @@ namespace TestVEDriversLite
 
         #region Apps
 
-        /// <summary>
-        /// Pin file to infura
-        /// </summary>
-        /// <param name="param"></param>
-        [TestEntry]
-        public static void PinFileToInfura(string param)
-        {
-            PinFileToInfuraAsync(param);
-        }
-        public static async Task PinFileToInfuraAsync(string param)
-        {
-            Console.WriteLine("Pinning file to infura");
-            if (await NFTHelpers.PinToInfuraAsync(param))
-                Console.WriteLine("Success");
-            else
-                Console.WriteLine("Success");
-        }
         /// <summary>
         /// Mint Neblio NFT Producer Profile
         /// </summary>

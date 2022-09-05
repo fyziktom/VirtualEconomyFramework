@@ -350,6 +350,68 @@ namespace TestVEDriversLite
         }
 
         [TestEntry]
+        public static void Storage_TransferFile(string param)
+        {
+            Storage_TransferFileAsync(param);
+        }
+        public static async Task Storage_TransferFileAsync(string param)
+        {
+            try
+            {
+                VEDLDataContext.Storage.StorageDrivers.TryGetValue("Infura", out var infdriver);
+                VEDLDataContext.Storage.StorageDrivers.TryGetValue("BDP", out var bdpdriver);
+
+                    var res = await infdriver.GetBytesAsync(param);
+                if (res.Item1)
+                {
+                    Console.WriteLine("----------------------");
+                    Console.WriteLine("-------Downloaded--------");
+                    Console.WriteLine($"File Hash: {param}");
+                    Console.WriteLine($"File Size: {res.Item2.Length}");
+                    Console.WriteLine("----------------------");
+                    Console.WriteLine("-------Uploading-------");
+                    await using (var ms = new MemoryStream(res.Item2))
+                    {
+                        var resu = await bdpdriver.WriteStreamAsync(new WriteStreamRequestDto()
+                        {
+                            Data = ms,
+                            Filename = "file",
+                            DriverType = StorageDriverType.IPFS,
+                        });
+                        if (resu.Item1)
+                        {
+                            Console.WriteLine("-------Uploaded--------");
+                            Console.WriteLine($"File Hash: {param}");
+                            Console.WriteLine($"File Link: {resu.Item2}");
+                            Console.WriteLine("----------------------");
+                            Console.WriteLine("----------------------");
+                        }
+                        else
+                        {
+                            Console.WriteLine("-------Cannot Upload--------");
+                            Console.WriteLine($"File Hash: {param}");
+                            Console.WriteLine("----------------------");
+                            Console.WriteLine("----------------------");
+                        }
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("-------Cannot Download--------");
+                    Console.WriteLine($"File Hash: {param}");
+                    Console.WriteLine("----------------------");
+                    Console.WriteLine("----------------------");
+                }
+                
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error during getting hash from the link." + ex.Message);
+            }
+
+        }
+
+        [TestEntry]
         public static void Storage_GetFromIPFS(string param)
         {
             Storage_GetFromIPFSAsync(param);

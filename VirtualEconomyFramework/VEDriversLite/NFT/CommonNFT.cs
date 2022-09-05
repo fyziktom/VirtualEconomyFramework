@@ -628,10 +628,10 @@ namespace VEDriversLite.NFT
                 string hash = string.Empty;
                 if (!string.IsNullOrEmpty(imageLink))
                 {
-                    var ipfslink = VEDriversLite.StorageDriver.Helpers.IPFSHelpers.GetHashFromIPFSLink(imageLink);
-                    if (!string.IsNullOrEmpty(ipfslink))
+                    hash = VEDriversLite.StorageDriver.Helpers.IPFSHelpers.GetHashFromIPFSLink(imageLink);
+                    if (!string.IsNullOrEmpty(hash))
                     {
-                        var il = VEDriversLite.StorageDriver.Helpers.IPFSHelpers.GetIPFSLinkFromHash(ipfslink);
+                        var il = VEDriversLite.StorageDriver.Helpers.IPFSHelpers.GetIPFSLinkFromHash(hash);
                         if (!string.IsNullOrEmpty(il))
                             ImageLink = il;
                     }
