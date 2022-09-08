@@ -6,8 +6,16 @@ using System.Threading.Tasks;
 
 namespace VEDriversLite.StorageDriver.StorageDrivers
 {
+    /// <summary>
+    /// Factory to create Storage Driver based on the type
+    /// </summary>
     public static class StorageDriverFactory
     {
+        /// <summary>
+        /// Get Storage Driver based on the type
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
         public static IStorageDriver GetStorageDriver(StorageDriverType type)
         {
             IStorageDriver driver = null;

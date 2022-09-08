@@ -8,6 +8,9 @@ using System.Xml.Linq;
 
 namespace VEDriversLite.StorageDriver.StorageDrivers.Dto
 {
+    /// <summary>
+    /// Status of the connection to the Storage Driver
+    /// </summary>
     public class ConnectionStatus
     {
         /// <summary>

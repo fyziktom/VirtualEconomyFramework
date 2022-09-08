@@ -24,7 +24,10 @@ namespace VEDriversLite.StorageDriver.StorageDrivers
         {
             Type = StorageDriverType.IPFS;
         }
-
+        /// <summary>
+        /// Test connection to the storage
+        /// </summary>
+        /// <returns></returns>
         public override async Task<(bool, string)> TestConnection()
         {
             if (string.IsNullOrEmpty(ConnectionParams.IP) &&
@@ -150,9 +153,9 @@ namespace VEDriversLite.StorageDriver.StorageDrivers
 
 
         /// <summary>
-        /// Download file from IPFS
+        /// Get bytes from the storage based on the path
         /// </summary>
-        /// <param name="path">CID/Hash of the file on IPFS</param>
+        /// <param name="path"></param>
         /// <returns></returns>
         public override async Task<(bool, byte[])> GetBytesAsync(string path)
         {
@@ -191,7 +194,11 @@ namespace VEDriversLite.StorageDriver.StorageDrivers
             }
             return (false, null);
         }
-
+        /// <summary>
+        /// Get stream of the data from the storage based on the path
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
         public override async Task<(bool, StreamResponseDto)> GetStreamAsync(string path)
         {
             try
@@ -220,7 +227,11 @@ namespace VEDriversLite.StorageDriver.StorageDrivers
             }
             return (false, null);
         }
-
+        /// <summary>
+        /// Remove file on the storage based on the path
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
         public override async Task<(bool, string)> RemoveFileAsync(string path)
         {
             if (string.IsNullOrEmpty(ConnectionParams.APIUrl))
@@ -240,7 +251,11 @@ namespace VEDriversLite.StorageDriver.StorageDrivers
             }
             return (false, $"Cannot remove CID {path}");
         }
-
+        /// <summary>
+        /// Write stream of the data to the storage
+        /// </summary>
+        /// <param name="dto"></param>
+        /// <returns></returns>
         public override async Task<(bool, string)> WriteStreamAsync(WriteStreamRequestDto dto)
         {
             if (dto.Data == null)

@@ -1,14 +1,53 @@
-﻿using Newtonsoft.Json;
+﻿using Google.Protobuf.WellKnownTypes;
+using Newtonsoft.Json;
 using System.Collections.Concurrent;
+using System.Runtime.InteropServices;
 using VEDriversLite.StorageDriver.StorageDrivers;
 using VEDriversLite.StorageDriver.StorageDrivers.Dto;
 
 namespace VEDriversLite.StorageDriver
 {
+    /// <summary>
+    /// Main Handler for storage drivers
+    /// Storage drivers can be used to access IPFS, File system and other storage technologies
+    /// </summary>
     public class StorageHandler
     {
+        /// <summary>
+        /// Dictionary of all loaded drivers
+        /// </summary>
         public ConcurrentDictionary<string, IStorageDriver> StorageDrivers { get; set; } = new ConcurrentDictionary<string, IStorageDriver>();
 
+        /// <summary>
+        /// Function will deserialize the list of the Drivers Configs Dtos and load all the drivers.
+        /// It can be use to load the drivers settings from the file
+        /// </summary>
+        /// <param name="driversConfigJson"></param>
+        /// <returns></returns>
+        public async Task<(bool, string)> LoadDriversFromJson(string driversConfigJson)
+        {
+            if (string.IsNullOrEmpty(driversConfigJson))
+                return (false, "Input drivers config cannot be empty or null.");
+
+            try
+            {
+                var driversConfig = JsonConvert.DeserializeObject<List<StorageDriverConfigDto>>(driversConfigJson);
+                if (driversConfig != null)
+                    return await LoadDrivers(driversConfig); 
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine($"Cannot load storage drivers. " + ex.Message);
+                return (false, "Cannot load storage drivers. " + ex.Message);
+            }
+            return (false, "Canont load storage drivers.");
+        }
+
+        /// <summary>
+        /// Function will load the drivers based on the list of the configs
+        /// </summary>
+        /// <param name="driversConfig"></param>
+        /// <returns></returns>
         public async Task<(bool, string)> LoadDrivers(List<StorageDriverConfigDto> driversConfig)
         {
             try
@@ -50,6 +89,11 @@ namespace VEDriversLite.StorageDriver
             return (false, "Cannot load the drivers.");
         }
 
+        /// <summary>
+        /// Load one driver 
+        /// </summary>
+        /// <param name="driverConfig"></param>
+        /// <returns></returns>
         public async Task<(bool, string)> AddDriver(StorageDriverConfigDto driverConfig)
         {
             try
@@ -92,6 +136,11 @@ namespace VEDriversLite.StorageDriver
             return (false, "Cannot load the driver.");
         }
 
+        /// <summary>
+        /// Remove the drivers base on ID
+        /// </summary>
+        /// <param name="driverId"></param>
+        /// <returns></returns>
         public async Task<(bool, string)> RemoveDriver(string driverId)
         {
             try
@@ -110,6 +159,49 @@ namespace VEDriversLite.StorageDriver
             return (false, "Cannot remove the driver.");
         }
 
+        /// <summary>
+        /// Get list of available drivers
+        /// You can filter drivers based on the type.
+        /// If input types are empty it will return all available drivers
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public List<StorageDriverConfigDto> GetListOfDrivers(List<StorageDriverType> types = null)
+        {
+            List<StorageDriverConfigDto> result = new List<StorageDriverConfigDto>();
+            if (StorageDrivers == null) return null;
+            foreach (var driver in StorageDrivers.Values)
+            {
+                var add = false;
+                if (types != null)
+                {
+                    if (types.Contains(driver.Type))
+                        add = true;
+                }
+                if (add)
+                {
+                    result.Add(new StorageDriverConfigDto()
+                    {
+                        ConnectionParams = driver.ConnectionParams,
+                        ID = driver.ID,
+                        IsLocal = driver.IsLocal,
+                        IsPublicGateway = driver.IsPublicGateway,
+                        Location = System.Enum.GetName(typeof(LocationType), driver.Location) ?? "Local",
+                        Name = driver.Name,
+                        Type = System.Enum.GetName(typeof(StorageDriverType), driver.Type) ?? "None",
+                    });
+                }
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// Save file to the IPFS storage
+        /// Function can use specific driver if the StorageId is provided. 
+        /// Otherwise it iwill find first available IPFS driver and try to use it.
+        /// </summary>
+        /// <param name="dto"></param>
+        /// <returns></returns>
         public async Task<(bool, string)> SaveFileToIPFS(WriteStreamRequestDto dto)
         {
             try
@@ -158,6 +250,13 @@ namespace VEDriversLite.StorageDriver
             }
         }
 
+        /// <summary>
+        /// Get file to the IPFS storage
+        /// Function can use specific driver if the StorageId is provided. 
+        /// Otherwise it iwill find first available IPFS driver and try to use it.
+        /// </summary>
+        /// <param name="dto"></param>
+        /// <returns></returns>
         public async Task<(bool, byte[])> GetFileFromIPFS(ReadFileRequestDto dto)
         {
             try

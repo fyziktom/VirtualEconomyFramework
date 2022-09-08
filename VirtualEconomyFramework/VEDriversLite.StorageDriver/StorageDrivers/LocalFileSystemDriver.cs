@@ -16,7 +16,10 @@ namespace VEDriversLite.StorageDriver.StorageDrivers
         {
             Type = StorageDriverType.FileSystem;
         }
-
+        /// <summary>
+        /// Test connection to the storage
+        /// </summary>
+        /// <returns></returns>
         public override async Task<(bool, string)> TestConnection()
         {
             if (string.IsNullOrEmpty(ConnectionParams.FileStoragePath))
@@ -54,7 +57,11 @@ namespace VEDriversLite.StorageDriver.StorageDrivers
                 return (false, string.Empty);
             }
         }
-
+        /// <summary>
+        /// Get bytes from the storage based on the path
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
         public override async Task<(bool,byte[])> GetBytesAsync(string path)
         {
             var response = new StreamResponseDto();
@@ -77,6 +84,11 @@ namespace VEDriversLite.StorageDriver.StorageDrivers
                 return (false, null);
             }
         }
+        /// <summary>
+        /// Get stream of the data from the storage based on the path
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
         public override async Task<(bool, StreamResponseDto)> GetStreamAsync(string path)
         {
             var response = new StreamResponseDto();
@@ -104,7 +116,11 @@ namespace VEDriversLite.StorageDriver.StorageDrivers
                 return (false, null);
             }
         }
-
+        /// <summary>
+        /// Remove file on the storage based on the path
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
         public override async Task<(bool, string)> RemoveFileAsync(string path)
         {
             try
@@ -118,7 +134,11 @@ namespace VEDriversLite.StorageDriver.StorageDrivers
                 return (false, string.Empty);
             }
         }
-
+        /// <summary>
+        /// Write stream of the data to the storage
+        /// </summary>
+        /// <param name="dto"></param>
+        /// <returns></returns>
         public override async Task<(bool, string)> WriteStreamAsync(WriteStreamRequestDto dto)
         {
             var fullpath = Path.Combine(ConnectionParams.FileStoragePath, dto.Filename);
