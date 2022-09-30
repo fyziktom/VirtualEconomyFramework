@@ -4,15 +4,4059 @@
   "xrefmap": "xrefmap.yml",
   "files": [
     {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.AccountHandler.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.AccountHandler.html",
+          "hash": "6tAuC78orIl3UlX4xSComTX/2eTIpt03sHj2NDjU0HM="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Admin.AdminActionFactory.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Admin.AdminActionFactory.html",
+          "hash": "VCGu8aM5fwvQa9f8lmKdjIEk7NBG9ejY2NmgkugyUh4="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Admin.Dto.AdminActionBase.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Admin.Dto.AdminActionBase.html",
+          "hash": "GnPaKt88ZBom4C9V2qIae26iiXfYq3IFMfrlTCK2a4M="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Admin.Dto.AdminActionTypes.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Admin.Dto.AdminActionTypes.html",
+          "hash": "Gqf3i+3vKY11FtWfQ9Xj3oUnDWAI5igkFKZsFjsxe4M="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Admin.Dto.CommonAdminAction.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Admin.Dto.CommonAdminAction.html",
+          "hash": "jJ57gyKu/VUMGlFEHDjNgSsacamiclInUQwLbGh9bSg="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Admin.Dto.ConnectDogeAccountDto.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Admin.Dto.ConnectDogeAccountDto.html",
+          "hash": "F8mO5g9cawq6P5wza90PHpqqcjl4XR5orBWi7+uVFRU="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Admin.Dto.EncryptedBackupDto.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Admin.Dto.EncryptedBackupDto.html",
+          "hash": "H7LCcOF5i+aJ+n5oHFJpkcPXStzvVwlAvatzJN42wiY="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Admin.Dto.IAdminAction.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Admin.Dto.IAdminAction.html",
+          "hash": "lsvybXiokHlw9wVUF7xblqPJrFtqvZBD+fxdxNFtBUM="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Admin.Dto.ImportBackupDto.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Admin.Dto.ImportBackupDto.html",
+          "hash": "l+G8JewpVtaJ7qHQWvo7ei7APSbl8NztKeADorO14LI="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Admin.Dto.ImportVENFTBackupRequestDto.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Admin.Dto.ImportVENFTBackupRequestDto.html",
+          "hash": "YyUQQgFqsgI+Xff5diZM1dG4/60lR0Po2x6e+QWuxNo="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Admin.Dto.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Admin.Dto.html",
+          "hash": "Lx8GobbAEgfPyM37jQRpQml3BYmF4giHxxAvqaMmp9w="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Admin.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Admin.html",
+          "hash": "NEJOh5dqehHj3w2Z2u5qACjSdz5fjOoU+ctYUC+naPI="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Bookmarks.ActiveTab.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Bookmarks.ActiveTab.html",
+          "hash": "4J84NJvi4wRumB/j4OIP0dvn0eaSq4k8UcSTBmZy/N0="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Bookmarks.Bookmark.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Bookmarks.Bookmark.html",
+          "hash": "nptoYhVvVY3oEq/TpvMiSu55OXCZQcKrUmQk6BN5t3M="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Bookmarks.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Bookmarks.html",
+          "hash": "KOPaBUAw5hx5bO/aM2p7K4uUe3yKsk3UdKbbn+Cogfw="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Builders.Neblio.NeblioBuilderAddress.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Builders.Neblio.NeblioBuilderAddress.html",
+          "hash": "ii4pYpcFMYhlzmFKU1JD/eYpmVcdpTO+uUXZ40tZ+c0="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Builders.Neblio.NeblioBuilderOutput.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Builders.Neblio.NeblioBuilderOutput.html",
+          "hash": "MBuxOnZ+j98r0XA4O98wy6SYi03m4QeFGeRl/IbMGPM="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Builders.Neblio.NeblioBuilderTransaction.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Builders.Neblio.NeblioBuilderTransaction.html",
+          "hash": "0mja+Ob845APxZMRfUQkl+AB1IzWtLTfbgM/JCN0YKU="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Builders.Neblio.NeblioBuilderUtxo.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Builders.Neblio.NeblioBuilderUtxo.html",
+          "hash": "JzIhDg7t90T52XORavec1569I1HO/4/lOJ5Fd7x4f+4="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Builders.Neblio.NeblioTransactionBuilder.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Builders.Neblio.NeblioTransactionBuilder.html",
+          "hash": "pxj69w7RBmFZUuYL91ZtceiFV6iU5BonJaOjWwnYBcM="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Builders.Neblio.NewTokenTxMetaField.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Builders.Neblio.NewTokenTxMetaField.html",
+          "hash": "4PHCPYZEPLrrAIh9vZODhlGVIDrp7gp/jzMnB30P5dU="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Builders.Neblio.NewTokenTxReceiver.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Builders.Neblio.NewTokenTxReceiver.html",
+          "hash": "32TIUQPE31jZPHZ7rWkb3SuozkarTh0IQxVbItKk2+o="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Builders.Neblio.NewTokenTxUtxo.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Builders.Neblio.NewTokenTxUtxo.html",
+          "hash": "h7kcc7bVw54TDC0IXNWP6jztI4yEnetiCg+wSyVI8Pg="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Builders.Neblio.TransactionInputSummary.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Builders.Neblio.TransactionInputSummary.html",
+          "hash": "Xkw68KyoUru5ibIfQ27wZ6632f/y3Kd1MP9c9HkqxLY="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Builders.Neblio.TransactionOutputSummary.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Builders.Neblio.TransactionOutputSummary.html",
+          "hash": "qGmswUW6icsAqluDoxvuHvKV44bg19xGnNeh/BTyE00="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Builders.Neblio.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Builders.Neblio.html",
+          "hash": "fghHP2c7VlWspV6E5bFsFeru10p66L95sjPreq37O1g="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Common.QTRPCConfig.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Common.QTRPCConfig.html",
+          "hash": "ertxpnoNYfQGQUoUbYe1nEtMnuGMZ16gCEn44YI5SUg="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Common.QTWalletRPC.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Common.QTWalletRPC.html",
+          "hash": "hAqYBmwRZYULP+JraN9MuTYRL1tUUPO86OmnBsXTBwU="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Common.QTWalletRPCClient.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Common.QTWalletRPCClient.html",
+          "hash": "2nP9xTppR0yDvmX5FlAhmNdy2ZURMg19LuTmy+cp6S4="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Common.QTWalletResponseDto.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Common.QTWalletResponseDto.html",
+          "hash": "JGMcmBCRZFJ+e8MHI2GZ6nT02v/vQVL8LB+7HqstD5g="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Common.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Common.html",
+          "hash": "JpfVhAEVQTWt5KdGa9RVnKlLug2jFomsqfLDflNx0oY="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.CommonReturnTypeDto.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.CommonReturnTypeDto.html",
+          "hash": "7ukypRKOpjgTXe+lOUK2pca1nsdQI0l1Mu0wgK3n/3o="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Cryptocurrencies.CoingeckoAPI.CoingeckoDto.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Cryptocurrencies.CoingeckoAPI.CoingeckoDto.html",
+          "hash": "cIYHBAi1sUVoliBG0PhSd6szFe1w2sB+oj6kBXcwTvk="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Cryptocurrencies.CoingeckoAPI.CoingeckoExchangeRatesAPI.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Cryptocurrencies.CoingeckoAPI.CoingeckoExchangeRatesAPI.html",
+          "hash": "XqwuYfpkvj7yTv8qKk2VUOw0kPAq1YR1kHzNadFz0go="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Cryptocurrencies.CoingeckoAPI.CoingeckoUsdPriceDto.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Cryptocurrencies.CoingeckoAPI.CoingeckoUsdPriceDto.html",
+          "hash": "l83ByycIjgqLMquqb80oE6BsDqk/gLcWJ6OghQNltCU="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Cryptocurrencies.CoingeckoAPI.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Cryptocurrencies.CoingeckoAPI.html",
+          "hash": "hnT91P0qB7u7kKDp1GYoom5Z5/oiHzZe9SHf6Ip0G/4="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Cryptocurrencies.CommonExchangeRatesAPI.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Cryptocurrencies.CommonExchangeRatesAPI.html",
+          "hash": "HElpswzLaZIVoNt3cKUB9BXBFkBMOh3dsq0jCzN/HSw="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Cryptocurrencies.CurrencyTypes.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Cryptocurrencies.CurrencyTypes.html",
+          "hash": "QUNalfVEN5UokNeSzCGJaVf52pBx3yhpXTOIP8nqew0="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Cryptocurrencies.Dto.PriceDto.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Cryptocurrencies.Dto.PriceDto.html",
+          "hash": "CmCMvQcxEuM9WASOwZqit9EDXjZPtesV/zWHoWObTKQ="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Cryptocurrencies.Dto.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Cryptocurrencies.Dto.html",
+          "hash": "6hBgvD6NrAoW6233ggQ2GHVdnCFLcjnuIV5NlrmKML0="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Cryptocurrencies.ExchangeRatesAPIFactory.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Cryptocurrencies.ExchangeRatesAPIFactory.html",
+          "hash": "t6/1VtLya5xrwbOETTyUV8CWlaAOP4hlDB6pcJDR4sI="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Cryptocurrencies.ExchangeRatesAPITypes.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Cryptocurrencies.ExchangeRatesAPITypes.html",
+          "hash": "OhVGLZcNtzsBfl9iPB3zTL2bku3aJfIQhbgU7//FMW8="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Cryptocurrencies.IExchangeRatesAPI.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Cryptocurrencies.IExchangeRatesAPI.html",
+          "hash": "VW39yujWsnZ+XQZd12EpLIAode3HPoZ7KA1fnSXW9Yc="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Cryptocurrencies.PriceCalculator.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Cryptocurrencies.PriceCalculator.html",
+          "hash": "deG/XLiRjgLtSgfYxW1rkd3c3vzyQIs1kNgOO3nQhG4="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Cryptocurrencies.PriceService.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Cryptocurrencies.PriceService.html",
+          "hash": "tbHNPN4k737LifbGuC1s2zHzmytMkTA1T+v1teAAykM="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Cryptocurrencies.TestExchangeRatesAPI.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Cryptocurrencies.TestExchangeRatesAPI.html",
+          "hash": "2p0wCM5v/eryQs9gZavYZhy+7+uRdkbqXUNlnx0lOT8="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Cryptocurrencies.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Cryptocurrencies.html",
+          "hash": "8PDkfqaaCaZGH8jc4eB4bOSE4E+i7Hw3HBo8z3JD3N8="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Devices.APIs.HARDWARIO.Dto.Acceleration.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Devices.APIs.HARDWARIO.Dto.Acceleration.html",
+          "hash": "Ll4NNfXcePAR8oGPskNnxhRSrjr+ZX1b/m8abmvRqNw="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Devices.APIs.HARDWARIO.Dto.HWAccelerometer.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Devices.APIs.HARDWARIO.Dto.HWAccelerometer.html",
+          "hash": "WpWs/OKdhx2CF9n1ZbnHux7thzG1Jc86Ek+Piq+o6d0="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Devices.APIs.HARDWARIO.Dto.HWDataDto.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Devices.APIs.HARDWARIO.Dto.HWDataDto.html",
+          "hash": "m15mVNyTNKVWB6q1cp1j6TNDBd6bF3qzg2+t6Arlw3s="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Devices.APIs.HARDWARIO.Dto.HWDto.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Devices.APIs.HARDWARIO.Dto.HWDto.html",
+          "hash": "/9vTwNE7D9EJgFMzvuAmUOHco5qnAn7pgfu+NqpYdkc="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Devices.APIs.HARDWARIO.Dto.HWSensor.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Devices.APIs.HARDWARIO.Dto.HWSensor.html",
+          "hash": "oLjVSLy9HHo97gRfNHqIkZX0CbphwLjNh1WMSYBRGfU="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Devices.APIs.HARDWARIO.Dto.HWThermometer.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Devices.APIs.HARDWARIO.Dto.HWThermometer.html",
+          "hash": "7I9SlZcxUP92510/AMGQJqz0NPI+AxA3DYPKU4JqtCw="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Devices.APIs.HARDWARIO.Dto.TrackingInfo.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Devices.APIs.HARDWARIO.Dto.TrackingInfo.html",
+          "hash": "YViTa3E4G4/SRXRB1e7O71uWYdC6wk31BV5hhoi1hDo="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Devices.APIs.HARDWARIO.Dto.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Devices.APIs.HARDWARIO.Dto.html",
+          "hash": "elAKrdnSzYPeqcygeodkqS23R2l10XC4TxkeegjnGgI="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Devices.APIs.HARDWARIO.HARDWARIOApiClient.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Devices.APIs.HARDWARIO.HARDWARIOApiClient.html",
+          "hash": "uEBAgMvDvwnWIQEdj35QR4lXBRHRu9ioAGaXlT5r/1s="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Devices.APIs.HARDWARIO.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Devices.APIs.HARDWARIO.html",
+          "hash": "kjXiPNTov+lPaeD6d1Fxtx3VP4mMajrJQo2kfr/4rSE="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Devices.CommonIoTDataDriver.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Devices.CommonIoTDataDriver.html",
+          "hash": "UxR+mqPRf5l0ks5NZtEEZUUMaJPmyUkEKgLfP8OcaSc="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Devices.CommunicationSchemeType.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Devices.CommunicationSchemeType.html",
+          "hash": "AhWHUx6fS9rhoy9Hrg/1lrLbaP0XNfyvxmkuyjPJvRA="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Devices.Dto.CommonConnectionParams.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Devices.Dto.CommonConnectionParams.html",
+          "hash": "2K+vXYOm6My0U1lnvksz00F4wnuZZ50MD+BLCbDBTS4="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Devices.Dto.CommunitacionSecurityType.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Devices.Dto.CommunitacionSecurityType.html",
+          "hash": "UvkAqFUMyLqhdWqv7gI/s5nISWOpeEkdVUfokZIHHTg="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Devices.Dto.IoTDataDriverSettings.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Devices.Dto.IoTDataDriverSettings.html",
+          "hash": "sZAnu4e9tiF/Os9dk9M1D7BRjlyGXf9VqRKQw5/iq8Y="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Devices.Dto.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Devices.Dto.html",
+          "hash": "nuKbEL31MlvpUSmtMuE7lRltLqcQkjchoaQPGcDQui4="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Devices.HARDWARIOIoTDataDriver.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Devices.HARDWARIOIoTDataDriver.html",
+          "hash": "YCBosLwM2dAi7cUfT4OOsssUsHFcFfsdvYSXL8OZG1k="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Devices.IIoTDataDriver.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Devices.IIoTDataDriver.html",
+          "hash": "bRztmfMkFuDk74NaHeKTg488Cl1EUkvuiWLd3v1DyBA="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Devices.IoTCommunicationType.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Devices.IoTCommunicationType.html",
+          "hash": "URfppkXLU+lCJzhWqAtiGPgk1rmafbdK3xpP/23tUII="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Devices.IoTDataDriverFactory.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Devices.IoTDataDriverFactory.html",
+          "hash": "b9MvV+bAFAGL1CrrovnvI19N/W8M8+LLGlfo2+sD8OE="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Devices.IoTDataDriverType.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Devices.IoTDataDriverType.html",
+          "hash": "omMtIflwJekUbk9A/JUAsHg4Xi/JmwDa7zvzrEzOtkU="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Devices.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Devices.html",
+          "hash": "4sXRAj8xLVSlDXU1PxyYzsVij+GmsoVzbNoKQBp+4JY="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.DogeAPI.ApiException-1.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.DogeAPI.ApiException-1.html",
+          "hash": "oCoqiEhlCUk1PPcDio3ZTDL0vE1kfhtYcbrcuiBk+As="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.DogeAPI.ApiException.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.DogeAPI.ApiException.html",
+          "hash": "yP3KbTLAy07ALuFGi6FysqC6Qr2o16Bh02HG6jgGwPA="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.DogeAPI.BTData.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.DogeAPI.BTData.html",
+          "hash": "agpQi6pOvLhCf66vQ3Cgc2LzhqWL58xzpwQusMWoPxA="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.DogeAPI.BroadcastTxRequest.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.DogeAPI.BroadcastTxRequest.html",
+          "hash": "Y8UPbotNf3GDT/OBBmXFAAS2FQADblmaQXPevzZp2A4="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.DogeAPI.BroadcastTxResponse.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.DogeAPI.BroadcastTxResponse.html",
+          "hash": "hkPfPwXBx2wvhdPy8ZNIbupm0Saj+aGREdFvm+szUZE="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.DogeAPI.BroadcastTxResponseData.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.DogeAPI.BroadcastTxResponseData.html",
+          "hash": "tq4c1tN4TnksyM9S+3Xmuqps6YePcDO0YB7XSDud+U0="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.DogeAPI.ChainSoBroadcastTxRequest.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.DogeAPI.ChainSoBroadcastTxRequest.html",
+          "hash": "nPaCq+3ivdaLdVMe8a2HBN1BbVa2BNusP1cGntcBPUY="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.DogeAPI.ChainSoBroadcastTxResponse.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.DogeAPI.ChainSoBroadcastTxResponse.html",
+          "hash": "6/47R/SjBQOFMQ53gqhLKFT5KDa10+9LL7aOJR1U3zk="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.DogeAPI.Client.ObjectResponseResult-1.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.DogeAPI.Client.ObjectResponseResult-1.html",
+          "hash": "+20qUQtYqGDdpRE3+k7v4EyX7TV8PwOMk09Llb4krPw="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.DogeAPI.Client.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.DogeAPI.Client.html",
+          "hash": "R81PX6b4AVTiUA0Dt2ettuWiCSXdHwgPc+8eLSbBnwo="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.DogeAPI.Error.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.DogeAPI.Error.html",
+          "hash": "5+zy6iUFPfJo7Srma/llVx0tsw44E/M5YGzagVhzlGE="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.DogeAPI.GetAddressBalanceResponse.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.DogeAPI.GetAddressBalanceResponse.html",
+          "hash": "FbEHR3hkShg0hAJZyInnflwg/jqCdDPqOkKcinwSf+E="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.DogeAPI.GetAddressBalanceResponseData.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.DogeAPI.GetAddressBalanceResponseData.html",
+          "hash": "D1JPDP+qNI5Lihrj0WJkDMWOkBofbgnkNVASoEe3q2k="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.DogeAPI.GetAddressReceivedTxsResponse.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.DogeAPI.GetAddressReceivedTxsResponse.html",
+          "hash": "RlbJscQsv6tFRwUoASFG7z8XN7dQ73ZXPbiaLpCbNLM="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.DogeAPI.GetAddressReceivedTxsResponseData.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.DogeAPI.GetAddressReceivedTxsResponseData.html",
+          "hash": "T2Haz+5VbfpgUjdp4ONwIcS6jCoQYuTEKsbtOOmYy18="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.DogeAPI.GetAddressSpentTxsResponse.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.DogeAPI.GetAddressSpentTxsResponse.html",
+          "hash": "VUAPNUQfswm4vghkxK5jP2PRL94pLPTBuG2Sm4eoj5Q="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.DogeAPI.GetAddressSpentTxsResponseData.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.DogeAPI.GetAddressSpentTxsResponseData.html",
+          "hash": "TEZ61P4eJy00AvWc2SPixOBt+l6Su3KZ/paHXjzScyw="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.DogeAPI.GetAddressUtxosResponse.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.DogeAPI.GetAddressUtxosResponse.html",
+          "hash": "GfY5/ccvUEhV0FctRH/rx3BqN8Apa2huCd2mj8i68p4="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.DogeAPI.GetAddressUtxosResponseData.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.DogeAPI.GetAddressUtxosResponseData.html",
+          "hash": "XczIhFHFk4Uu+44BMJL9yp58490bj+CrbmCWR5V4inI="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.DogeAPI.GetTransactionInfoResponse.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.DogeAPI.GetTransactionInfoResponse.html",
+          "hash": "I0IOYtH9jQA32MuzqmL229zZKon1J494lWaYTXQ77QU="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.DogeAPI.IClient.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.DogeAPI.IClient.html",
+          "hash": "tOK14YPdT+UHWg6obzESN0YUA0mdS4ns+WyF3O+xK9Q="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.DogeAPI.IJsonClient.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.DogeAPI.IJsonClient.html",
+          "hash": "4qfxFvorwTOXx2O/3PO57eTv5JaJQFg3Y2gEyAw3gA4="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.DogeAPI.JsonClient.ObjectResponseResult-1.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.DogeAPI.JsonClient.ObjectResponseResult-1.html",
+          "hash": "YErxbM4qr6u6P5lgfYZteHqjUpboHwASkAvuo/rFzas="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.DogeAPI.JsonClient.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.DogeAPI.JsonClient.html",
+          "hash": "UTqzRZopGrGPqP8D0UR67xbkleIWlD4v4kXlBsZ0sMg="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.DogeAPI.PreviousOutput.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.DogeAPI.PreviousOutput.html",
+          "hash": "/tNlM8msiPeZNd2p/fjGCUCWc3dtGg13q8sanU2amz4="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.DogeAPI.ReceivedTx.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.DogeAPI.ReceivedTx.html",
+          "hash": "VHIxDjq71CSNG0uoOI1MdL7xVBllEc6AAwBk54A5mAI="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.DogeAPI.RpcRequest.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.DogeAPI.RpcRequest.html",
+          "hash": "4nZZCZjdLr1V/dugX4+KKtwUV0e+t7TpN3wQXMlrX6E="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.DogeAPI.RpcResponse.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.DogeAPI.RpcResponse.html",
+          "hash": "STavzTKd81jQ2eQapbAK9TQjSNTDyT/itosg82307fM="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.DogeAPI.SpentTx.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.DogeAPI.SpentTx.html",
+          "hash": "aU2R+KlqSM3HzNwagkRYcTVDl+lW7kSy2idApZqRStw="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.DogeAPI.TransactionResponseObject.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.DogeAPI.TransactionResponseObject.html",
+          "hash": "/nbEIb/jPFW5RgabbJ/5Ikj5siawgAaIoKZrfZf0qhg="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.DogeAPI.Utxo.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.DogeAPI.Utxo.html",
+          "hash": "mxaEkUH3x3g5NjzzadMBEQ+DZxA0JbzNquhbvh/jmNU="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.DogeAPI.VENFTBroadcastTxRequest.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.DogeAPI.VENFTBroadcastTxRequest.html",
+          "hash": "VDUzpK4+QZKkIFyGjFzupp2KSSa5AEHQID43Cxc9k/U="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.DogeAPI.Vin.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.DogeAPI.Vin.html",
+          "hash": "vtis4hZDXZPuOlJlYqHndr9DPorhN4Atw2WuTmjHPDc="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.DogeAPI.Vout.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.DogeAPI.Vout.html",
+          "hash": "4iytbwYr3SU+3A8AdXECz+N0kB6BSeWUzZN6SMBxzeo="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.DogeAPI.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.DogeAPI.html",
+          "hash": "L5ie4u8cvag1PRdHMRjVl0Xnnw+18uLu+Bp3aTWtwXs="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.DogeAccount.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.DogeAccount.html",
+          "hash": "BEWrvW7HdQU+2Eh8YCZN+Gr7fQ6z7/A0SdzB8oyDyzg="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.DogeTransactionHelpers.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.DogeTransactionHelpers.html",
+          "hash": "CjzpK0QcMBzr/yy/PRc2nEWr93wuG7+K0AbYmPqN9Qc="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Dto.AccountExportDto.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Dto.AccountExportDto.html",
+          "hash": "fyMWitySSWBlI+axbhtIRnARMQ8USvI2O4loPzFEAqE="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Dto.BackupDataDto.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Dto.BackupDataDto.html",
+          "hash": "BlAji35d8yOjQttFwT8ZM+KRIMz7pIFlYmFgY7IC3X8="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Dto.DepositAddress.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Dto.DepositAddress.html",
+          "hash": "em7xpsBq8ci8TZgVZ+3HUCAeZs7qeVPtBSz2pZQH5+o="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Dto.DepositScheme.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Dto.DepositScheme.html",
+          "hash": "ozDtAXjlDIdsG/PnhekDdq1C98YvtTbK90NNa8IJpIQ="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Dto.SplitNeblioDto.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Dto.SplitNeblioDto.html",
+          "hash": "2k2gc6AZpdFLwgSYkTH/hI7V38D01uUTQgm0BN7Lpvg="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Dto.SplitNeblioTokensDto.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Dto.SplitNeblioTokensDto.html",
+          "hash": "n186BjNvxKOVAYu+ycWIMBBcpX//cw/FUILBmWF0TRs="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Dto.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Dto.html",
+          "hash": "FX60zf6gN2UhI7yQP51CQe+bK4Yml1CzXDl/OWARhQs="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Events.CommonEvent.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Events.CommonEvent.html",
+          "hash": "vN7QDOfb0ZWP4meOCyVmtPi0bJMkeOb6Fzec/MbprCs="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Events.ErrorEvent.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Events.ErrorEvent.html",
+          "hash": "Fig1x38eB0Y5yG/cPf+gw9GjaIca7i99OUpOJ1nn9Ec="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Events.EventFactory.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Events.EventFactory.html",
+          "hash": "ETMl2uevzndL/O7h0pwyLrTsMJms8wlnBAIIBbrssHw="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Events.EventInfoProvider.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Events.EventInfoProvider.html",
+          "hash": "xoALhp4XgEtniluP6A9uQ1+qGX9e8cqNVxem+cxISc4="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Events.EventType.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Events.EventType.html",
+          "hash": "Szcg9nMMSsjaNGbf6TP8YlVmPAzaRGC5tuNtMx/kHSk="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Events.IEventInfo.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Events.IEventInfo.html",
+          "hash": "X95Ha7V7U/gNCaoFErlRy7/KG6GjXZuVEq6Q9jWp8Os="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Events.InfoEvent.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Events.InfoEvent.html",
+          "hash": "CB//0+ahKeGooecqdbkorgkG9QlqrzGMhZRXhhKFI3k="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Events.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Events.html",
+          "hash": "QCEPIuvk5L3URSLTe4fwtlmIc807tJJEySIfr9DTmD0="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Extensions.WooCommerce.Dto.Billing.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Extensions.WooCommerce.Dto.Billing.html",
+          "hash": "85No/zFiSVV2YpNSg4FYfH01qRGh4LY54HtUydlGN+M="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Extensions.WooCommerce.Dto.Category.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Extensions.WooCommerce.Dto.Category.html",
+          "hash": "0HdRfxnJWL9x7lo7EpGNoqFXDupNZizfS6HtTxTaNew="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Extensions.WooCommerce.Dto.CategoryOfDownloads.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Extensions.WooCommerce.Dto.CategoryOfDownloads.html",
+          "hash": "v8Zxc/vaJkpQwG5RWWwtQ7kAnVQu0Hd9gz+G7pz4YlM="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Extensions.WooCommerce.Dto.DownloadsObject.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Extensions.WooCommerce.Dto.DownloadsObject.html",
+          "hash": "Bo36qkr75vKHOdfecRITKKtoFo8qisiHa478AfWV9qA="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Extensions.WooCommerce.Dto.ImageObject.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Extensions.WooCommerce.Dto.ImageObject.html",
+          "hash": "n9ZIOq8grtV0osncPWaTNbTjwqn7kRWkvamC99B6M64="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Extensions.WooCommerce.Dto.LineItem.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Extensions.WooCommerce.Dto.LineItem.html",
+          "hash": "YLyeZDCFPVebyq55HqvVoTP6FpA6tCO6/l6vqM8zdkQ="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Extensions.WooCommerce.Dto.NFTOrderToDispatch.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Extensions.WooCommerce.Dto.NFTOrderToDispatch.html",
+          "hash": "jG2FgBcZfnxuersjHn8fQpsZO01jKceRH9PF6LH+yes="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Extensions.WooCommerce.Dto.Order.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Extensions.WooCommerce.Dto.Order.html",
+          "hash": "1/NZ8xEQP0i6NydoyOY7PegeU50sJaAxpri0Ij01cDA="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Extensions.WooCommerce.Dto.OrderStatus.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Extensions.WooCommerce.Dto.OrderStatus.html",
+          "hash": "8BqTEjXiOdS3AjRJLVXXfg46HgsOPc+pVkmJZmGmJUs="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Extensions.WooCommerce.Dto.Product.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Extensions.WooCommerce.Dto.Product.html",
+          "hash": "5RAKRuFjeiHWqyT0zmLsnYk3bfJzn61vhzyC2GPVOCI="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Extensions.WooCommerce.Dto.ProductMetadata.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Extensions.WooCommerce.Dto.ProductMetadata.html",
+          "hash": "uZ0Ai80oYgT/onKZC2OGpsVazD0CFvG1FVzDVVe70Ho="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Extensions.WooCommerce.Dto.ReceivedPaymentForOrder.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Extensions.WooCommerce.Dto.ReceivedPaymentForOrder.html",
+          "hash": "hYNvYsAE4TJSM5CnLarESp5uKXSyIOjPKoaf/z1dbiw="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Extensions.WooCommerce.Dto.Shipping.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Extensions.WooCommerce.Dto.Shipping.html",
+          "hash": "um4NLd3sNx00hrKnENVzXPddLI7MNIyCGLmPcHZPops="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Extensions.WooCommerce.Dto.StockStatus.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Extensions.WooCommerce.Dto.StockStatus.html",
+          "hash": "3RhzKFMZS8ECEsqBdQ/JhPsVqhw9i1LyhZ8W46cark0="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Extensions.WooCommerce.Dto.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Extensions.WooCommerce.Dto.html",
+          "hash": "+DjE85oTi2eWuJra6LRzm3KspcI8GjlQhxLYQpsUeAc="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Extensions.WooCommerce.WooCommerceHelpers.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Extensions.WooCommerce.WooCommerceHelpers.html",
+          "hash": "jOnXZu1RcSLbetIt4aSALWNIXB8v0/SuaXuE3Ag6wf4="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Extensions.WooCommerce.WooCommerceShop.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Extensions.WooCommerce.WooCommerceShop.html",
+          "hash": "PudzShlNvSJb5cmzC0W4HKDojIWXaR7mMYnbYC0pfyc="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Extensions.WooCommerce.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Extensions.WooCommerce.html",
+          "hash": "bVUXIipf3xEXpRhByeMAamM/q3SnRbUYRd8/7EYX5UQ="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.FileHelpers.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.FileHelpers.html",
+          "hash": "yXEMxrclZ3CJQfgmeWDa7RzlUbFy+Ai71eR1nnvcoRA="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.KeyDto.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.KeyDto.html",
+          "hash": "A86+7PaXYaPHibL8hnXXm0bO0yIDajcS10IYjC7zu7s="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Messaging.MessageTab.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Messaging.MessageTab.html",
+          "hash": "CnUl+L3RoQkC61xpRxGxjkBB1P0prM1jy1N0Xj2H22g="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Messaging.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Messaging.html",
+          "hash": "1Z33Niw0Y+JJZSg8Wc0zjRr2Z45G+z8yIcoxtJ7NOMA="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.MintNFTData.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.MintNFTData.html",
+          "hash": "cu0eYRF0aOPihd/go3bGutvn4yLPv9Wg0bK1EkLPv/I="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.AppNFT.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.AppNFT.html",
+          "hash": "WoynPI1Kk1olWOA1jy/D7iH6/f7zVPElv1EuKPZLwOg="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.ClassOfNFTEvent.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.ClassOfNFTEvent.html",
+          "hash": "+lJoGJ/7qVoIF0DokYaRjg3NzUpHYnBwGhBCbzCGuhc="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.ClassOfNFTTicket.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.ClassOfNFTTicket.html",
+          "hash": "YObuGoTpf9Gw/CBGqFKZSI1jqiZcKA7sJkt5XrazwjA="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.CommonNFT.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.CommonNFT.html",
+          "hash": "yDDgKP3zcqopeTFoMKok7550HE4I5RscdYDXX/Xh42U="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.Coruzant.BuzzsproutEpisodeDto.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.Coruzant.BuzzsproutEpisodeDto.html",
+          "hash": "QsREQUqeOulY1j31yAcrUZam3ttKveuw5F1rISvnAeQ="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.Coruzant.CommonCoruzantNFT.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.Coruzant.CommonCoruzantNFT.html",
+          "hash": "RGvBFYxEAbLyge35SjzYa423+QzcdDWveTCagZSbB3k="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.Coruzant.CoruzantArticleNFT.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.Coruzant.CoruzantArticleNFT.html",
+          "hash": "b3011foVWbmnRZfYcanXNiyoDoVF/530ZOZyb8HFmLY="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.Coruzant.CoruzantBrowser.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.Coruzant.CoruzantBrowser.html",
+          "hash": "8NSrwTcPOiGn2NDx2kZGviCGy6jbNEidtdGm9YX41jg="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.Coruzant.CoruzantNFTHelpers.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.Coruzant.CoruzantNFTHelpers.html",
+          "hash": "ggKdJVcoouh6q0W9a5AJ8Q8Fmm1Gmw4x+eQP0x6vGDI="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.Coruzant.CoruzantProfileNFT.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.Coruzant.CoruzantProfileNFT.html",
+          "hash": "S8PscmF5nRm+2CAzqONkSuiyV6EbjWGgxUwmg8eNydI="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.Coruzant.CoruzantTab.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.Coruzant.CoruzantTab.html",
+          "hash": "QrIp8rud0JI/0Tku46uTul6jp8KwUV6cQfyItomNXA8="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.Coruzant.Dto.CoruzantContentAddressDto.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.Coruzant.Dto.CoruzantContentAddressDto.html",
+          "hash": "GPz2aF6prnBY4LpF++xcUREg/b5rbt7o26Vy42s5GMk="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.Coruzant.Dto.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.Coruzant.Dto.html",
+          "hash": "FUfFlT2yoI8KxDzjb7ACePzF93ws+pB2DW1gDtx8/E4="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.Coruzant.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.Coruzant.html",
+          "hash": "9yblJ+BfmejMXDMMho34ix7P2IZXrXddAFaDvv4RjO4="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.DevicesNFTs.DeviceNFT.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.DevicesNFTs.DeviceNFT.html",
+          "hash": "X5OaitMDGdGhpM/Q5dC5uwQo4Q1KbHNdSvFMt9SALik="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.DevicesNFTs.FWSrcNFT.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.DevicesNFTs.FWSrcNFT.html",
+          "hash": "ia8L4MqyGN81bgAjN1dW53Nk/uMwkgmsT6oJl2W9/Rs="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.DevicesNFTs.HWSrcNFT.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.DevicesNFTs.HWSrcNFT.html",
+          "hash": "fzvOyZaeIh7t+f8Vi8dgUA/qrrjNiII6S8iLJof22yg="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.DevicesNFTs.HardwarioNFTHelpers.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.DevicesNFTs.HardwarioNFTHelpers.html",
+          "hash": "vtPA6Ed1BFFjnv68iLQd4dHJSMcJO5RTH66Hm8Dwghs="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.DevicesNFTs.IoTDeviceNFT.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.DevicesNFTs.IoTDeviceNFT.html",
+          "hash": "BGz37OUha899y8ndqzOQBxU8CaIIO/+iZr4fvUCrMU4="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.DevicesNFTs.IoTMessageNFT.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.DevicesNFTs.IoTMessageNFT.html",
+          "hash": "iGlKs/BsduTMU/amPq1eAuzHjqQBvohzKLDBW6hw5V8="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.DevicesNFTs.MechSrcNFT.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.DevicesNFTs.MechSrcNFT.html",
+          "hash": "iY8VnnwgMjsk/fTkR/hPy1x2RBEzhSUGZu62hIMLfAQ="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.DevicesNFTs.ProtocolNFT.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.DevicesNFTs.ProtocolNFT.html",
+          "hash": "0wabMXGzOpC+kZvHGkj5yt37fzA0QWF7gvc4bpcHBeg="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.DevicesNFTs.SWSrcNFT.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.DevicesNFTs.SWSrcNFT.html",
+          "hash": "vuvXGb7NOKhffUT78ml4V1p8SPdg4NjIX7/T3oU7qT0="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.DevicesNFTs.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.DevicesNFTs.html",
+          "hash": "ZYKuJwJ/pUSE9tMdNEW5cw1R2j5rNcxFqfp7cYCTClQ="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.DogeftInfo.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.DogeftInfo.html",
+          "hash": "vrLI/4+rg0tW6hG0xF2zNWLtwyItGDXVGZpBkpUMato="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.Dto.DataItemStorageType.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.Dto.DataItemStorageType.html",
+          "hash": "YO/jJo4KTUJ2zTOY5r83Z4zU0UnTjHDHsGITSmNnGSk="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.Dto.DataItemType.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.Dto.DataItemType.html",
+          "hash": "rWQ45hOm5R1mUtdFRuP/0YHHwSgWWijxtJ6eo6zXIgs="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.Dto.GetNFTOwnerDto.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.Dto.GetNFTOwnerDto.html",
+          "hash": "HinTeyLakoo75nHdjHUcJx6dPPmM7baTvfBFINpfy4U="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.Dto.MintingTabData.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.Dto.MintingTabData.html",
+          "hash": "sHDw4gjxCmewqqiwauAXkZ9/a2GzzWd87WxPncGqOYA="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.Dto.NFTCacheDto.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.Dto.NFTCacheDto.html",
+          "hash": "hjkQz8oi14cjN7EgBRY7NYk+FvuPUN1nkxteeR3dvyY="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.Dto.NFTDataItem.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.Dto.NFTDataItem.html",
+          "hash": "2U8HpyfSILw1HcszhbhY9hfXiqtUqu+XE/c1moh9oKc="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.Dto.NFTHash.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.Dto.NFTHash.html",
+          "hash": "O5kVPn+X2t/03RDCs/Yr8IQjA81Tj3FsRrEowPPI8ag="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.Dto.NFTSoldInfo.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.Dto.NFTSoldInfo.html",
+          "hash": "rtFoR0MIVW3mGl35SqTW8pwjfjeSTyKdV8m1mh2ebIM="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.Dto.ReceiversListItem.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.Dto.ReceiversListItem.html",
+          "hash": "8AGpmPtQAwF2ExWPNvFk38xTeunemEUIl67sUFK5xFI="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.Dto.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.Dto.html",
+          "hash": "QT90zEtisGWNfvAOqh39txpOvT4tFNKRwaD73HToF7M="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.DurationOfNFTTicket.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.DurationOfNFTTicket.html",
+          "hash": "R8PeGtDen6q2EwERrbQvjQh8D3wm7jfLFdjeq7X0ml8="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.EventNFT.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.EventNFT.html",
+          "hash": "d4ta06jhQO92FE1W9tHeiLdYMib+8Sus1hZ5KJ4uJu4="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.INFT.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.INFT.html",
+          "hash": "lMuSDVD5zqceDjwtqSmgjysrGRebBDmcA9kUVCBGt0M="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.IPFSResponse.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.IPFSResponse.html",
+          "hash": "3Wa+GjytjjaoEFh8EHfF0xCbsJB4fdfWDcMKN2qiLTw="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.ImageNFT.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.ImageNFT.html",
+          "hash": "ZniFEkt2K4XVpobs3jW/v688TfGlE26VoTF8jf8/pCs="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.Imaging.Xray.Dto.AxisDto.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.Imaging.Xray.Dto.AxisDto.html",
+          "hash": "1WavCz0LKW2WXrnBoLBwisOlF0Avmc0ovMOJ17m5BRU="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.Imaging.Xray.Dto.DetectorDataDto.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.Imaging.Xray.Dto.DetectorDataDto.html",
+          "hash": "WXM3Z39IZA42P0wQcIJm239zGPUHf/TetTvzWLSzFYk="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.Imaging.Xray.Dto.ObjectPositionDto.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.Imaging.Xray.Dto.ObjectPositionDto.html",
+          "hash": "wpXS7ha1FDkvpbjxyi+KsTZYcR7eZpN9A7Iuu8WRb+4="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.Imaging.Xray.Dto.PositionerParametersDto.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.Imaging.Xray.Dto.PositionerParametersDto.html",
+          "hash": "+oKKbjCC06Bz6exF4CCdE6p+QRgigoIpk/JqSX4ERdo="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.Imaging.Xray.Dto.SourceParametersDto.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.Imaging.Xray.Dto.SourceParametersDto.html",
+          "hash": "aym9r61Z5qXnmWdYLtGnHCdqZmJtF1XdCFmR9+FNwrg="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.Imaging.Xray.Dto.XrayExposureParameters.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.Imaging.Xray.Dto.XrayExposureParameters.html",
+          "hash": "1pQTgR6wh1M0SQ1Zr+JKRZCFLRDuY7ABsvyUarhmzxI="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.Imaging.Xray.Dto.XrayPrimaryFilter.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.Imaging.Xray.Dto.XrayPrimaryFilter.html",
+          "hash": "Igjlb3wGsvY0/hWlnyKot/TaH8d4DzxorKqypSn7J3s="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.Imaging.Xray.Dto.XrayPrimaryFiltrationMaterials.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.Imaging.Xray.Dto.XrayPrimaryFiltrationMaterials.html",
+          "hash": "O7AJd//N1KgPuDp7AYuk3TCiou8cz6imVaxahtECwqw="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.Imaging.Xray.Dto.XrayTubeAnodeType.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.Imaging.Xray.Dto.XrayTubeAnodeType.html",
+          "hash": "BUv6w6fHEJCJuhrmlbZNzc8dR/DK0XPFtJJa93mFQ3c="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.Imaging.Xray.Dto.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.Imaging.Xray.Dto.html",
+          "hash": "77Ew+S8OoL5ltERpz4ELTHZYBmAVHTir9AWuMzP+Zco="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.Imaging.Xray.XrayImageNFT.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.Imaging.Xray.XrayImageNFT.html",
+          "hash": "5aBIf8Ygyf7n28r5QnI96gJBVY9YKhFLGiyqFSVxR1Y="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.Imaging.Xray.XrayNFT.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.Imaging.Xray.XrayNFT.html",
+          "hash": "MkjrxBx1OsFc3pwU/KAz1PcAkr0GQVi4pzw76zo/ze0="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.Imaging.Xray.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.Imaging.Xray.html",
+          "hash": "bzVFpiv4tcLwEZQoG9R2SJwbp+8TKGMvxi5AvFtwvO4="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.InvoiceItem.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.InvoiceItem.html",
+          "hash": "SvRr+KHTy8bFvLYi87L/7/0T3Gs1+u8jYe6nIbfzg8s="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.InvoiceNFT.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.InvoiceNFT.html",
+          "hash": "1ILMskKAs0X9J+oxxjDkjvDdW/bPeYDLHxVUSn92LJE="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.LoadNFTOriginDataDto.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.LoadNFTOriginDataDto.html",
+          "hash": "2BYmiVgIgQFKA7Dco8MbAvHxhMCsuxMr5oV3Ov3rvII="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.LoadingImageStages.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.LoadingImageStages.html",
+          "hash": "KC+Y1hgUV5cT3b+nvzrDhZgwBpCG8rrEd7ou0JkYBzo="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.MessageNFT.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.MessageNFT.html",
+          "hash": "jWBtG29VH/ZJXeXG/urwePFByjklxGAU6s5NJ80+sA8="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.MusicNFT.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.MusicNFT.html",
+          "hash": "89lsi31gGuWhHIb4/vunFAQi9WF2JciRMeYls1CBoHM="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.NFTDataContext.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.NFTDataContext.html",
+          "hash": "wype1b5LOWIwMxKHSFUdmXpJTQ86lcU5ItTEfiPfz+w="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.NFTFactory.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.NFTFactory.html",
+          "hash": "ENB0yE6Vyhp9Gc6T67IkwQZI6j3Ctm2IXrQ4NykdVRg="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.NFTHelpers.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.NFTHelpers.html",
+          "hash": "P960L90ffyelBHovVCQQtTYVdCdCadlWLwpfLPIfxn4="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.NFTTypes.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.NFTTypes.html",
+          "hash": "HZ9rCwdeCizai8Ddua9TzE4lbMb0+WAuZGSY9Q1W8WY="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.OrderNFT.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.OrderNFT.html",
+          "hash": "Gpi4TPTnBHb8e6A4iVHtgjjh7sh13ctrGGMC3hdl8e8="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.OwnershipVerificationCodeDto.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.OwnershipVerificationCodeDto.html",
+          "hash": "2sgsjDxuas11fjHoYtM8QnsSG4mWcl381k8yqm7PnU8="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.OwnershipVerificationResult.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.OwnershipVerificationResult.html",
+          "hash": "gdyFEg9h200Gxk9b6hsfY7+v4OQiIqMahjzSYUrMtBQ="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.OwnershipVerifier.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.OwnershipVerifier.html",
+          "hash": "eowjur68nA3G9Uap+5EUavfVMG+fShH/Z1Q+afSLBfw="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.PaymentNFT.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.PaymentNFT.html",
+          "hash": "L7VyBInBPqWnQr8+0eIVqqJldVL2SsSoQOeGuzmi8Ew="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.PostNFT.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.PostNFT.html",
+          "hash": "zPi5PW9RD+3WFZM2BRnEbPJtveEz+MmlwAY8Vyz7p+k="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.ProductNFT.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.ProductNFT.html",
+          "hash": "0EduSkBIBFzAqzl9gMdoFY+dIx6diSshJjblCcjx1jc="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.ProfileNFT.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.ProfileNFT.html",
+          "hash": "xTWQ9k9KDWvkbJa0IyndAB0KsMAp9szKnbMnMZh7e8g="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.ReceiptNFT.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.ReceiptNFT.html",
+          "hash": "ar8yvIeBKLTTwO+mARhgClfOcsw5TbT72PM6zhOn+ZE="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.Tags.Tag.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.Tags.Tag.html",
+          "hash": "gbYUcgfKP5rsmD09GOopDmMI1bryIDOcgiTHnOGAND0="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.Tags.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.Tags.html",
+          "hash": "CvXvyc7HXN9w85iCQS9ZZGSNkNhqZ2np05F/iM1ytsU="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.TicketNFT.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.TicketNFT.html",
+          "hash": "sHr+DGREp82ir3K3Ud5Rnn+ixFswmbldfp0fNQRSku4="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NFT.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NFT.html",
+          "hash": "KswbTUqGdJmogvibpeLGvWGITtR6PrAfbu9Q6ZrpfKI="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Neblio.NeblioAccountBase.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Neblio.NeblioAccountBase.html",
+          "hash": "Z/dXelXcAkVQeb0+eZa9Zr2Gc6h9fFGySYudLhyFzbg="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Neblio.NeblioSubAccount.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Neblio.NeblioSubAccount.html",
+          "hash": "HKZu3qE8J1esuegZC0MG0ctZ5GjlkZj9oVTVUMP6ZJA="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Neblio.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Neblio.html",
+          "hash": "gH1R7UxwS+JFHCQbdH6XeeDS757Hf/3Le02U1te94CU="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Anonymous.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Anonymous.html",
+          "hash": "QdamFeqGcEq6to08EFurEW/5hEMywDA0JLKuWGZaD8g="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.ApiException-1.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.ApiException-1.html",
+          "hash": "lUOAWMbjXumqe+suybJFhKPlKxVvL5S7HCadZFEvxro="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.ApiException.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.ApiException.html",
+          "hash": "M2j749cSl4e1KV5zLvYksoi/za177oalIk+saCIn19g="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.BroadcastTxRequest.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.BroadcastTxRequest.html",
+          "hash": "1WRKXGoLXJmWqoetxLb/go8sxZ/xj+Ows3RiSI5DcZo="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.BroadcastTxResponse.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.BroadcastTxResponse.html",
+          "hash": "KqS7hRYateYLcQBUqS4xoQ9ExDd0/BKHSA/xVyC6YmY="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Burn.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Burn.html",
+          "hash": "3YFpV+T0IixnHVMTKEMecEfdHIq62O4d+jV6BqroysU="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.BurnTokenRequest.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.BurnTokenRequest.html",
+          "hash": "/DGFZ74uMDR9vSTEpi3TYsde5zvURRW3jcW8HU9DtgI="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.BurnTokenResponse.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.BurnTokenResponse.html",
+          "hash": "MSwFEF+YHIsW0oUWeiXWsoFG4bS52kxOIWAIKDELgNs="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Client.ObjectResponseResult-1.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Client.ObjectResponseResult-1.html",
+          "hash": "DrAV58gpPr0VFzh37eAmEKajHYYemF27F6PhwdRI17k="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Client.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Client.html",
+          "hash": "8fHxqXUlCg2n2g3HPYhiaGY+NJiRtHMT4KJ0nVYHB0g="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Data.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Data.html",
+          "hash": "fqbqzkVjA3kQlSGh2sAVQNXoLHwIPS9zsyjkSfQ9/SQ="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Data2.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Data2.html",
+          "hash": "ZquZnLRtmlCPKbO5s9h5xDufSQvi1gPA9LhRUgTTO1Q="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Encryptions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Encryptions.html",
+          "hash": "AZteJqF+bOhX/yKvrk5q0YZhi2Igg8AfgjHjuz05x1U="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Encryptions2.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Encryptions2.html",
+          "hash": "PBse/ir/o4YZN0jvdUVtF5Ad4ibpw0SrEOgxAFb6Wv8="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Error.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Error.html",
+          "hash": "Q8cnwTHtHDHu4IVUV7uKU3jNSUhozYKZsLwwE8o9NMY="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Expiration.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Expiration.html",
+          "hash": "3zPFl36CdKOvBnnBhfQFQ6U46jenM8Ewp4b1AStGucA="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Expiration2.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Expiration2.html",
+          "hash": "xDfOjQKqPJohF2VKx5G4TySP43H5Hl6whXI8YAv675s="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Fees.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Fees.html",
+          "hash": "TzB0r+n2xkAMhHn6A5G3N1aBe5KXWpZAPj4PkFldFqY="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Fees2.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Fees2.html",
+          "hash": "7Yt3pV+yRGEynEGY7uZsvnJSSC4C7Ppn6vBcPUL/Qmw="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Flags.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Flags.html",
+          "hash": "44tiGFs+bXnVrSBdGZaZTwcpEOP3bcbGl3vQ1ALhxvU="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Flags2.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Flags2.html",
+          "hash": "WTwIdTQNN7ed6hEmI2IoxNCqlfhpbFy9tnLVBhwPU3w="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.GetAddressInfoResponse.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.GetAddressInfoResponse.html",
+          "hash": "815KXHqcwY5Dx0PDar2XtEjmffIMvbe7ltCDNsutbjc="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.GetAddressResponse.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.GetAddressResponse.html",
+          "hash": "wug8YwFPnKmkHUT+pHUGA9iZjXYYYyUVf6PrO56KwdY="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.GetAddressUtxosResponse.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.GetAddressUtxosResponse.html",
+          "hash": "PCVwp9PiBiUP56rUIkhP9LgCxXhGrTcZnC0xKNcIIg0="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.GetBlockIndexResponse.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.GetBlockIndexResponse.html",
+          "hash": "nINiAOv8O3Cr3+0e/2hgXRNh1RVmgC1LBev3JyxdFiM="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.GetBlockResponse.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.GetBlockResponse.html",
+          "hash": "CPVFrhC50Mls1PLAZxMC+nBt/ZlA3I7ad/16PxCNWc0="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.GetFaucetResponse.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.GetFaucetResponse.html",
+          "hash": "ZlegJOj5l01dbxQ9CAONt63YuOIDcUfkCRMw2bDMFQw="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.GetRawTxResponse.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.GetRawTxResponse.html",
+          "hash": "rbsxLdW4IJqEJi7VMJ+Qe5zwy1cJteHLPEsnpU5I7lE="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.GetStatusResponse.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.GetStatusResponse.html",
+          "hash": "v0heioPmwmdaDm73gxSSz9I55tdKcJdMjcWtbrDEpEk="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.GetSyncResponse.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.GetSyncResponse.html",
+          "hash": "IuylwFL+ZxiisKCLk2NxaE7DSmTmkZQBgeixrbFsIkY="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.GetTokenHoldersResponse.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.GetTokenHoldersResponse.html",
+          "hash": "+Jw72lg3tnEf2JhS0r+e/VZSl06RjoV7n6eLqhZ3/gQ="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.GetTokenIdResponse.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.GetTokenIdResponse.html",
+          "hash": "JLAR4DqjCDTsFENRabwlqWus5PuOgWrR0JRtm2RY66A="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.GetTokenMetadataResponse.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.GetTokenMetadataResponse.html",
+          "hash": "u3lmBJDDkbLorXlIPxO9BKnaHXrjVOZQvp3HHIFbVQw="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.GetTransactionInfoResponse.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.GetTransactionInfoResponse.html",
+          "hash": "pxxGQgYnIfEVUu+qWAJtvy7BF4UITyVgrWyceKszvqA="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.GetTxResponse.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.GetTxResponse.html",
+          "hash": "te2UxT3X8PlPBrqGDkY3nOtlALs6/CzBHFvLHcEra5A="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.GetTxsResponse.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.GetTxsResponse.html",
+          "hash": "JoFfgwgCbMlG7N6GX+H331DzgLDKcUSIPETp45hxnCc="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Holders.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Holders.html",
+          "hash": "+P4r1cxEw5QtYcQkqQzNVdF8B4bjZ0Nq2ZBjsT4dprg="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Holders2.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Holders2.html",
+          "hash": "flZ3MKjmduKvwpN/irZrBosr20udVfVLWje+nPfpyP0="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Holders3.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Holders3.html",
+          "hash": "sZLTqmRMk721WWjLTDPPA3e40JlgsJQamN6n6WtBw54="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.IClient.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.IClient.html",
+          "hash": "L9wakVYrIcDfiR71a0lfFDpYpl0ua6UsSVRHpkjEC/0="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.IJsonClient.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.IJsonClient.html",
+          "hash": "LPTFJB4MVE96kcLjPtaxdnHUf+QdEcwU5zurKWMjDK0="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.ITestnetClient.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.ITestnetClient.html",
+          "hash": "/vhAJPHo0UZau0H0TCWgereBTjmMwS0KpXynG56pVfg="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.IssueTokenRequest.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.IssueTokenRequest.html",
+          "hash": "rZUSu4dUxsQUmsRU5wexQM9SE65rErA0WoAG1FScICE="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.IssueTokenResponse.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.IssueTokenResponse.html",
+          "hash": "8Ba6vp6deYx/jJ9CDSM1S4MURHwuKjiOqC2dHvpxz1w="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Items.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Items.html",
+          "hash": "mzz1JSNlQLlRl04BIw3mW3aYJUDXer4XwPJLZrlS5b0="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Items2.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Items2.html",
+          "hash": "dFRKBTQr/NsuIR90hG1PXeYCRf3vOZjT/6Do3p7Thl4="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.JsonClient.ObjectResponseResult-1.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.JsonClient.ObjectResponseResult-1.html",
+          "hash": "X7lk7HCObQiU7tZVR+vUlrza6Ym+xQ5mecQ/XwgrZyA="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.JsonClient.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.JsonClient.html",
+          "hash": "WB9AkiHl7yROlX4ktiPPCSVbjrxFsQ7Tzr8Wn+hSNuw="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Meta.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Meta.html",
+          "hash": "UOosXEKWW2AwWOjnityg4TWMGR6SpK/rfbDwnyMR+p4="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Meta2.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Meta2.html",
+          "hash": "G8M5l0EqT4I7BPDK6TLKIdslpsgEqQziZ1G+dFjOAxs="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Meta3.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Meta3.html",
+          "hash": "ZJ8BU7ZpC+gpvsBn0cLROVEhRSps5AiE0BtZBqbeexw="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Metadata.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Metadata.html",
+          "hash": "ulc7bfZxjbr0064jJu4A1MUzXAHTZRKh7jtwetWoNds="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Metadata2.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Metadata2.html",
+          "hash": "mMVZIF+CmkkHCct6URurKW6i8A/HpFCg576EioJWBWI="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.MetadataOfIssuance.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.MetadataOfIssuance.html",
+          "hash": "+1d4uzMn+4cAwuoqB+R/Wm1amDo2a1bqHdFgva3sVfE="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.MetadataOfUtxo.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.MetadataOfUtxo.html",
+          "hash": "hxKA/0NHPc6Sd2KCaYsOTiCpPwCO2L7fGBP7q70/arE="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.NeblioAPIHelpers.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.NeblioAPIHelpers.html",
+          "hash": "VEqOGyURLakTnQBAjQ+EjP5ifHT3fhXbcdq6nwVnIaA="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.NeblioTransactionsCache.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.NeblioTransactionsCache.html",
+          "hash": "W8y3OAb9MbDLtwIILwnSDcs1b+j+2hxx3wmy8pVnuyA="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.PreviousOutput.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.PreviousOutput.html",
+          "hash": "6Jm8WYjspK9e2YnGHGbIjX9nhjLbTh9y2rgENdK6bXs="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.RpcRequest.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.RpcRequest.html",
+          "hash": "mhpTln6eaKzwaF5dX268qdJbJThMEmayaMfWeTNZfFk="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.RpcResponse.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.RpcResponse.html",
+          "hash": "LHG2Ps3c7Izvo902jTTqXgLWu0dZM6uSAWjj8A7wvnk="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Rules.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Rules.html",
+          "hash": "SZFyaC7sp6nHLnEgFx2ZAIWLYOOAt8Xmew7DK1fvtco="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Rules2.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Rules2.html",
+          "hash": "imPjW4F3LvEDx+QHDceN3syce48K0QRqte3R9WN1BoE="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.ScriptPubKey.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.ScriptPubKey.html",
+          "hash": "OZ7Mc9y4eSi4wwCBsnsXZlYJnY2AWwB3IEQdUsbLXMY="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.ScriptPubKey2.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.ScriptPubKey2.html",
+          "hash": "6O24kTlriLVajPH5nB/8XQg1O/q0zYiQ2P/E2Gga7xg="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.ScriptSig.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.ScriptSig.html",
+          "hash": "nL8KV1PcpBCkIyJ549va+EMQ3/ZW5P48U2kmuvrUA7E="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.ScriptSig2.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.ScriptSig2.html",
+          "hash": "zfoP2ltMog6X+teRq6T2o1Phr6H6GwrZHCyFs7G3p28="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.SendTokenRequest.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.SendTokenRequest.html",
+          "hash": "+q1Zx+pos13qP8INK/2JlXoVOCy4CrahSNBQC0vdqNc="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.SendTokenResponse.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.SendTokenResponse.html",
+          "hash": "q1W2jELujCaeRYIO8eewUjP+DdycSR6Cw/UbeQJgujM="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.SendTxRequest.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.SendTxRequest.html",
+          "hash": "zYVRyYHPQJFpSRnRVxeEE2cB7erWLn6a0g/irmnZfgM="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.TestnetClient.ObjectResponseResult-1.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.TestnetClient.ObjectResponseResult-1.html",
+          "hash": "T0++G61wegI1GC346VStN3prF9UYtYy5GZbyIchtR1Q="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.TestnetClient.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.TestnetClient.html",
+          "hash": "N0pBoDPisjSkVtNYDRwmNOUz2qMDbov2VNUXzU9id5w="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.To.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.To.html",
+          "hash": "/27BTE6UUDZCO+A0KPFVaa82FbFE9fSS0ciiclEKfTo="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.TokenOwnerDto.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.TokenOwnerDto.html",
+          "hash": "O3QGO69t3VOrWFpcx9ids7Nv5xenULDTheAQ9cGH+rk="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.TokenSupplyDto.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.TokenSupplyDto.html",
+          "hash": "2VU6REjLLKfz8lnUiCvBMwGexAzHABj5RiTYJkutZCw="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Tokens.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Tokens.html",
+          "hash": "G/z3E4BjX+xyRy7G9ZM2mJUhJHl9rGontHXxWfS877s="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Tokens2.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Tokens2.html",
+          "hash": "J2FiFV0O0OtkrNxlJVCOWjiOL8tv60zIky5fSUb2gk0="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Tokens3.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Tokens3.html",
+          "hash": "ndsvOZ7QH0ACqA+33ncdSZu0ee52FNghFD+vd9Tp3+E="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Transfer.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Transfer.html",
+          "hash": "JutKOTJ9O6Q9TAHzk0kVUFDmLvfHF6tleda2q3Cu8Q4="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Transfer2.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Transfer2.html",
+          "hash": "4HLrlnmI2yTGbuTo4kTi82rXZcZXjK7MtwPM8c4wR5Q="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Urls.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Urls.html",
+          "hash": "v0VYOI2dfncN4h8yU76DuFkTsbXba/yWRlyK8GBM3Is="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Urls2.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Urls2.html",
+          "hash": "DS0JS6DSUe4ZoJWxQ4pBU6A+aNSZG/3neXe/RtwXZWg="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.UserData.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.UserData.html",
+          "hash": "MMs5poCZ+ORiHR6B4iAwLWaLJND0d9qQ7ZK3zF/232U="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.UserData2.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.UserData2.html",
+          "hash": "94L9gQuX3cYfbXaghxswTwmIS5oEe021yY/Ni9eFBek="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.UserData3.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.UserData3.html",
+          "hash": "fnT6btON4GtFI/l/GBa3Yi3EwxCPDZYkAm0MB8/FpO4="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.UserData4.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.UserData4.html",
+          "hash": "LHQuDrkEFcqOQRR+XS5KJucZujl7Zk2Bp2QDSENWsIk="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Utxos.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Utxos.html",
+          "hash": "c8shW0mtU/fQocCSD4O/Y117feOCxrCnNvX7fonenQ8="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Vin.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Vin.html",
+          "hash": "1ktRgWidpxWGeCP9HP3qD47RHDpGgPB4CMdgprT0UiE="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Vin2.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Vin2.html",
+          "hash": "S160+853gOXdGx7Q0aUJ4a9BE07jiu3TFBLSm3F3s6s="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Vout.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Vout.html",
+          "hash": "00EH8Q8TFD+rcDDZZc/3Lt7qZsxxed5SD3A/mnqTdtk="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.Vout2.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.Vout2.html",
+          "hash": "1wNqCs6MrnHtOeF/OyG5KzwL+64NCANnjgoSSF57yX4="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAPI.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAPI.html",
+          "hash": "rNO2JiruFbjDtMxRQnwdbBOkFXlQC9b62raTm0tV8gs="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioAccount.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioAccount.html",
+          "hash": "m2VnTrtIE83kcyn4LE/6DPWyXklhCMxRvrns9Nhc61g="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.NeblioTransactionHelpers.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.NeblioTransactionHelpers.html",
+          "hash": "PCdzMVFtKnMlThNAHQL4sWuMyKkzH9AzN9lVCi8jx7g="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Security.ECDSAProvider.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Security.ECDSAProvider.html",
+          "hash": "7qSDa/vARLaHvKstPqCYiePbVaSwI+51746CLeLzcZo="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Security.EncryptionKey.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Security.EncryptionKey.html",
+          "hash": "eYbp+bVec9Uh24DChPx5sM+ymNPKMzZLCl9mxDSV0YI="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Security.SecurityUtils.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Security.SecurityUtils.html",
+          "hash": "qO6+VNvE8vqR9Vp0cfo8s5JC9LRqM8a4aUrCvWt03TU="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Security.SymetricProvider.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Security.SymetricProvider.html",
+          "hash": "KexR7Vszh2ICu3PaR3l/pApD3jzfii894SeEU1B6hOk="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.Security.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.Security.html",
+          "hash": "79THeYYDuWAVO+DtRU40TI3FxB7EdUV7qoU3pHvyr/A="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.SendTokenTxData.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.SendTokenTxData.html",
+          "hash": "5685y22WRvv3ewilszYiV51dACrPKquQH8VhNSdretM="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.SendTxData.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.SendTxData.html",
+          "hash": "VVPrarUETiKgMmfRm0S3PXncARXoqdsvMOR3WgYmUkI="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.StringExt.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.StringExt.html",
+          "hash": "5KA5FIPN/YGQLcxYtrYJ1UP+cHxfiiLt7hoFOxM/LjE="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.TimeHelpers.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.TimeHelpers.html",
+          "hash": "/a+b+Bh6awSDBH7uuboj/DnfEfXde7DEupoT9QNqQrU="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.UnstoppableDomains.ApiException-1.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.UnstoppableDomains.ApiException-1.html",
+          "hash": "UES8oumJgUvnhNZ4cke2F3U5lRJASB0WvxvBL8FOf4k="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.UnstoppableDomains.ApiException.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.UnstoppableDomains.ApiException.html",
+          "hash": "KP/lF0LDaqq//BmFOHWztdduL/ZRxBHK4Zb6Zcm7GRw="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.UnstoppableDomains.Client.ObjectResponseResult-1.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.UnstoppableDomains.Client.ObjectResponseResult-1.html",
+          "hash": "0fPEl9KsuRAjKxmbwmWTpQVkm3GEczpsb2OuKzOmaPY="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.UnstoppableDomains.Client.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.UnstoppableDomains.Client.html",
+          "hash": "6UPF0TUZDFeLv7/q+lzh7UilU2IhG/kFG+1rJGJoKoI="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.UnstoppableDomains.Error.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.UnstoppableDomains.Error.html",
+          "hash": "zFnokR0WU+uzpXsQp9wybIaKBfHo4NfhiDndNppneA8="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.UnstoppableDomains.GetAddressDetailsResponse.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.UnstoppableDomains.GetAddressDetailsResponse.html",
+          "hash": "PSOUwJi0eA3Ae6EYFtSgEvZKQzIFoYxIIgbK6ybXElY="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.UnstoppableDomains.IClient.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.UnstoppableDomains.IClient.html",
+          "hash": "W8y3QJ2LynxCatH9FREHFHEKx4P6JWb2ZL+zbxBDJdU="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.UnstoppableDomains.UnstoppableDomainsHelpers.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.UnstoppableDomains.UnstoppableDomainsHelpers.html",
+          "hash": "U+PjdAR5WvnOTBBolc+GsPMZO9jvRxsa/u4iVW5O+wQ="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.UnstoppableDomains.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.UnstoppableDomains.html",
+          "hash": "ogNMH8/NpUFTplWeuShImPYavBBAQRdA1a55N9RpjQQ="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.VEDLDataContext.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.VEDLDataContext.html",
+          "hash": "mNra36jNQsfdeAaqJq0igYi+8dRlknXJos9fziLDoMM="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/VEDriversLite.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/VEDriversLite.html",
+          "hash": "hWSt3sCQ56ElfWGcLBxlWNxttMrpNev08K0OIdmtMAY="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
       "type": "Conceptual",
       "source_relative_path": "api/index.md",
       "output": {
         ".html": {
           "relative_path": "api/index.html",
-          "hash": "kzlxjGDa0ZIE7oACNQO5tGygi9odv76ec5spT2EZJTg="
+          "hash": "WU5bpByCuxsu6hd1waBqZKxPIPdceRTqje29TBVOIeE="
         }
       },
       "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "api/toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/toc.html",
+          "hash": "zD072U4b6SJueJD9ymEbUaS9ot8jxgH2qEcpuFSgf3I="
+        }
+      },
+      "is_incremental": false,
       "version": ""
     },
     {
@@ -21,7 +4065,7 @@
       "output": {
         ".html": {
           "relative_path": "articles/intro.html",
-          "hash": "bTte4F1BF8lkCvkPzUgwejAZtKDzcisyLwXux0VXz+s="
+          "hash": "ape6LkKdzeLbiKTmobsMkdiSP7fMSl5KcyAgTe4Cf8M="
         }
       },
       "is_incremental": true,
@@ -45,7 +4089,7 @@
       "output": {
         ".html": {
           "relative_path": "index.html",
-          "hash": "TjudBKkSoJhlM95PZaMAJ0Tjkk3h5EYYZ36jf0MJWx8="
+          "hash": "XLlTMDOAtEP75AVXrYSnBefJ/EtqW7w1W2NqJpv8SAM="
         }
       },
       "is_incremental": true,
@@ -57,7 +4101,7 @@
       "output": {
         ".html": {
           "relative_path": "toc.html",
-          "hash": "YXJJxZYXeqjE5rN5RpzcW70B5QEiSi2FmcyOHi4wtR0="
+          "hash": "EM8HF3+meUrwkVMnryT8+3EpVnNyN+Nxdf9PYKP6TKc="
         }
       },
       "is_incremental": false,
@@ -78,6 +4122,12 @@
           "incrementalPhase": "build",
           "total_file_count": 3,
           "skipped_file_count": 3
+        },
+        "ManagedReferenceDocumentProcessor": {
+          "can_incremental": true,
+          "incrementalPhase": "build",
+          "total_file_count": 336,
+          "skipped_file_count": 282
         },
         "TocDocumentProcessor": {
           "can_incremental": false,
