@@ -11,7 +11,7 @@
                 <CopyButton TextToCopy="@IPFSLink" ButtonText="Copy Link" /> 
             </Column> 
             <Column> 
-                <CopyButton TextToCopy="@(NFTHelpers.GetHashFromIPFSLink(IPFSLink))" ButtonText="Copy Hash" /> 
+                <CopyButton TextToCopy="@(VEDriversLite.StorageDriver.Helpers.IPFSHelpers.GetHashFromIPFSLink(IPFSLink))" ButtonText="Copy Hash" />
             </Column> 
         </Row> 
         <Row Margin="Margin.Is2.FromTop"> 

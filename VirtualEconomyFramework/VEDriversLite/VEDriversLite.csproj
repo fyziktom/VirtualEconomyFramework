@@ -63,6 +63,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\VEDriversLite.NeblioAPI\VEDriversLite.NeblioAPI.csproj" />
+    <ProjectReference Include="..\VEDriversLite.StorageDriver\VEDriversLite.StorageDriver.csproj" />
   </ItemGroup>
 
 </Project>

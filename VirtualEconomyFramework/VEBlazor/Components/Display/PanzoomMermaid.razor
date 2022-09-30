@@ -65,7 +65,7 @@
     {
         if (!string.IsNullOrEmpty(hash))
         {
-            var fileLink = NFTHelpers.GetIPFSLinkFromHash(hash);
+            var fileLink = VEDriversLite.StorageDriver.Helpers.IPFSHelpers.GetIPFSLinkFromHash(hash);
             var data = await Http.GetStringAsync(fileLink);
             if (data != null)
                 Text = string.Concat("```mermaid\n\n", data, "\n```");

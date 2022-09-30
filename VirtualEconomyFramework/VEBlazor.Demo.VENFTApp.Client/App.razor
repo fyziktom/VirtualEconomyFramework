@@ -1,5 +1,7 @@
-﻿@using VEDriversLite.NFT
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
 @using VEDriversLite.NFT.Dto
+@using VEDriversLite.StorageDriver.StorageDrivers
 @inject AppData AppData
 
 <ThemeProvider Theme="@theme">
@@ -33,6 +35,63 @@
         AppData.DisplayGettingStartedMenuItem = true;
         AppData.GettingStartedPageName = "gettingstarted";
         AppData.AppTokenId = VEDriversLite.NFT.NFTHelpers.TokenId;
+
+        VEDriversLite.StorageDriver.Helpers.IPFSHelpers.GatewayURL = "https://ve-framework.com/ipfs/"; //veframework public gateway
+        //VEDriversLite.StorageDriver.Helpers.IPFSHelpers.GatewayURL = "https://ipfs.io/ipfs/"; //public gateway
+
+        var res = await VEDLDataContext.Storage.AddDriver(new VEDriversLite.StorageDriver.StorageDrivers.Dto.StorageDriverConfigDto()   
+            {
+                Type = "IPFS",
+                Name = "BDP",
+                Location = "Cloud",
+                ID = "BDP",
+                IsPublicGateway = true,
+                IsLocal = false,
+                ConnectionParams = new StorageDriverConnectionParams()
+                {
+                    APIUrl = "https://ve-framework.com/",
+                    APIPort = 443,
+                    Secured = false,
+                    GatewayURL = "https://ve-framework.com/ipfs/",
+                    GatewayPort = 443,
+                }
+            });
+        /*
+            {
+                Type = "IPFS",
+                Name = "LocalIPFS",
+                Location = "Local",
+                ID = "LocalIPFS",
+                IsPublicGateway = false,
+                IsLocal = true,
+                ConnectionParams = new StorageDriverConnectionParams()
+                {
+                    APIUrl = "http://127.0.0.1/",
+                    APIPort = 5001,
+                    Secured = false,
+                    GatewayURL = "http://127.0.0.1/ipfs/",
+                    GatewayPort = 8080,
+                }
+            });
+        
+        {
+                Type = "IPFS",
+                Name = "Infura",
+                Location = "Cloud",
+                ID = "Infura",
+                IsPublicGateway = true,
+                IsLocal = false,
+                ConnectionParams = new StorageDriverConnectionParams()
+                {
+                    APIUrl = "https://ipfs.infura.io/",
+                    APIPort = 5001,
+                    Secured = true,
+                    Username = "1urI71lwIaCjNo4b2kyL8LQ5Rlf",
+                    Password = "ce9c8fb81ab177c713841cecc3f9af51",
+                    GatewayURL = "https://bdp.infura-ipfs.io/ipfs/",
+                    GatewayPort = 443,
+                }
+        });*/
         
         if ( AppData.MintingTabsData.TryGetValue( "default", out var tab ) )
         {

@@ -72,7 +72,7 @@
     {
         if (!string.IsNullOrEmpty(hash))
         {
-            var fileLink = NFTHelpers.GetIPFSLinkFromHash(hash);
+            var fileLink = VEDriversLite.StorageDriver.Helpers.IPFSHelpers.GetIPFSLinkFromHash(hash);
             var data = await Http.GetStringAsync(fileLink);
             if (data != null)
                 return data;
@@ -115,10 +115,17 @@
         using (Stream ms = new MemoryStream(data))
         {
             ms.Seek( 0, SeekOrigin.Begin );
-            var link = await NFTHelpers.UploadInfura(ms, "mermaid.mmd");           
-            if (!string.IsNullOrEmpty(link))
+            //var link = await NFTHelpers.UploadInfura(ms, "mermaid.mmd");     
+            var result = await VEDriversLite.VEDLDataContext.Storage.SaveFileToIPFS(new VEDriversLite.StorageDriver.StorageDrivers.Dto.WriteStreamRequestDto()
+                {
+                    Data = ms,
+                    Filename = "mermaid.mmd",
+                    DriverType = VEDriversLite.StorageDriver.StorageDrivers.StorageDriverType.IPFS,
+                    BackupInLocal = false
+                });
+            if (result.Item1)
             {
-                var hash = NFTHelpers.GetHashFromIPFSLink(link);
+                var hash = VEDriversLite.StorageDriver.Helpers.IPFSHelpers.GetHashFromIPFSLink(result.Item2);
 
                 if (NotificationService != null)
                     await NotificationService.Success( "Data saved.", "Saved" );
