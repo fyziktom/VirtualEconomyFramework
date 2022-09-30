@@ -56,14 +56,14 @@ namespace VEDriversLite.StorageDriver
                 {
                     if (!string.IsNullOrEmpty(driver.Type))
                     {
-                        if (!Enum.TryParse(driver.Type, out StorageDriverType dt)) 
+                        if (!System.Enum.TryParse(driver.Type, out StorageDriverType dt)) 
                             return (false, "wrong type of the driver");
 
                         var drv = StorageDriverFactory.GetStorageDriver(dt);
                         if (drv != null)
                         {
                             drv.ConnectionParams = driver.ConnectionParams;
-                            drv.Location = (LocationType)Enum.Parse(typeof(LocationType), driver.Location);
+                            drv.Location = (LocationType)System.Enum.Parse(typeof(LocationType), driver.Location);
                             drv.IsPublicGateway = driver.IsPublicGateway;
                             drv.IsLocal = driver.IsLocal;
                             drv.ID = driver.ID; 
@@ -100,14 +100,14 @@ namespace VEDriversLite.StorageDriver
             {
                 if (!string.IsNullOrEmpty(driverConfig.Type))
                 {
-                    if (!Enum.TryParse(driverConfig.Type, out StorageDriverType dt)) 
+                    if (!System.Enum.TryParse(driverConfig.Type, out StorageDriverType dt)) 
                         return (false, "wrong type of the driver");
 
                     var drv = StorageDriverFactory.GetStorageDriver(dt);
                     if (drv != null)
                     {
                         drv.ConnectionParams = driverConfig.ConnectionParams;
-                        drv.Location = (LocationType)Enum.Parse(typeof(LocationType), driverConfig.Location);
+                        drv.Location = (LocationType)System.Enum.Parse(typeof(LocationType), driverConfig.Location);
                         drv.IsPublicGateway = driverConfig.IsPublicGateway;
                         drv.IsLocal = driverConfig.IsLocal;
                         drv.ID = driverConfig.ID;
