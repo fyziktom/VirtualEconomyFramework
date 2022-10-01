@@ -23,7 +23,7 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
         /// <summary>
         /// dictionary of all entities in the network, where the key is the uniue Id of the entity
         /// </summary>
-        ConcurrentDictionary<string, IEntity> Entities { get; }
+        ConcurrentDictionary<string, IEntity> Entities { get; set; }
 
         /// <summary>
         /// Create new Entity and add it to the entities list

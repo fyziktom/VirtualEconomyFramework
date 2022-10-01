@@ -18,16 +18,15 @@ namespace ComunELite.Handlers
         /// <summary>
         /// dictionary of all sources in the network, where the key is the unieque Id of the source
         /// </summary>
-        public IEnumerable<IEntity> Sources { get => entities.Values.Where(e => e.Type == EntityType.Source) ?? new List<IEntity>(); }
+        public IEnumerable<IEntity> Sources { get => Entities.Values.Where(e => e.Type == EntityType.Source) ?? new List<IEntity>(); }
         /// <summary>
         /// dictionary of all consumers in the network, where the key is the uniue Id of the source
         /// </summary>
-        public IEnumerable<IEntity> Consumers { get => entities.Values.Where(e => e.Type == EntityType.Consumer) ?? new List<IEntity>(); }
+        public IEnumerable<IEntity> Consumers { get => Entities.Values.Where(e => e.Type == EntityType.Consumer) ?? new List<IEntity>(); }
         /// <summary>
         /// dictionary of all entities in the network, where the key is the uniue Id of the entity
         /// </summary>
-        public ConcurrentDictionary<string, IEntity> Entities { get => entities; }
-        private ConcurrentDictionary<string, IEntity> entities { get; set; } = new ConcurrentDictionary<string, IEntity>();
+        public ConcurrentDictionary<string, IEntity> Entities { get; set; } = new ConcurrentDictionary<string, IEntity>();
 
         /// <summary>
         /// Create new Entity and add it to the entities list
@@ -49,14 +48,14 @@ namespace ComunELite.Handlers
                 if (blocks != null)
                     entity.AddBlocks(blocks);
 
-                if (entities.TryAdd(id, entity))
+                if (Entities.TryAdd(id, entity))
                     return (true, ($"new source {sourceName} - {id} added to the Sources list.", id));
                 else
                     return (false, ($"cannot add source {sourceName} - {id} to the Sources list.", string.Empty));
             }
             else
             {
-                if (entities.ContainsKey(id))
+                if (Entities.ContainsKey(id))
                     return (false, ($"Id {id} is already exists in the Sources dict.", string.Empty));
             }
             return (false, ($"Cannot add source {sourceName} to the list.", string.Empty));
@@ -73,7 +72,7 @@ namespace ComunELite.Handlers
             if (string.IsNullOrEmpty(id))
                 return (false, "Cannot remove the entity. Entity id cannot be empty.");
 
-            if (entities.TryRemove(id, out var entity))
+            if (Entities.TryRemove(id, out var entity))
             {
                 return (true, $"Consumer {entity.Name} - {id} removed.");
             }
@@ -94,7 +93,7 @@ namespace ComunELite.Handlers
             if (block == null)
                 return (false, $"Cannot add block to the entity {id}, block cannot be empty.");
 
-            if (entities.TryGetValue(id, out var entity))
+            if (Entities.TryGetValue(id, out var entity))
             {
                 if (entity.AddBlocks(new List<IBlock>() { block }))
                     return (true, $"Blocks added to the entity {entity.Name} - {id}.");
@@ -118,7 +117,7 @@ namespace ComunELite.Handlers
             if (blocks == null)
                 return (false, $"Cannot add blocks to the entity {id}, blocks cannot be empty.");
 
-            if (entities.TryGetValue(id, out var entity))
+            if (Entities.TryGetValue(id, out var entity))
             {
                 if (entity.AddBlocks(blocks))
                     return (true, $"Blocks added to the entity {entity.Name} - {id}.");
@@ -150,7 +149,7 @@ namespace ComunELite.Handlers
             if (string.IsNullOrEmpty(blockId))
                 return (false, "Cannot change blocks to the consumer. Block id cannot be empty.");
 
-            if (entities.TryGetValue(id, out var entity))
+            if (Entities.TryGetValue(id, out var entity))
             {
                 if (entity.ChangeBlockParameters(blockId, name, description, type, amount, direction, startTime, timeframe).Item1)
                 {
@@ -177,7 +176,7 @@ namespace ComunELite.Handlers
             if (blocks == null)
                 return (false, $"Cannot remove blocks from the consumer {id}, blocks cannot be empty.");
 
-            if (entities.TryGetValue(id, out var entity))
+            if (Entities.TryGetValue(id, out var entity))
             {
                 if (entity.RemoveBlocks(blocks))
                     return (true, $"Blocks removed from the consumer {entity.Name} - {id}.");
@@ -199,11 +198,11 @@ namespace ComunELite.Handlers
         {
             if (!string.IsNullOrEmpty(entityId) && !string.IsNullOrEmpty(subentityId))
             {
-                if (entities.TryGetValue(entityId, out var entity))
+                if (Entities.TryGetValue(entityId, out var entity))
                 {
-                    if (entities.TryGetValue(subentityId, out var subentity))
+                    if (Entities.TryGetValue(subentityId, out var subentity))
                     {
-                        var scan = entities.Values.Where(c => c.Children.Contains(subentityId)).ToList();
+                        var scan = Entities.Values.Where(c => c.Children.Contains(subentityId)).ToList();
                         if (scan != null && scan.Count > 0)
                         {
                             var cns = scan.First();
@@ -242,11 +241,11 @@ namespace ComunELite.Handlers
         {
             if (!string.IsNullOrEmpty(entityId) && !string.IsNullOrEmpty(subentityId))
             {
-                if (entities.TryGetValue(entityId, out var entity))
+                if (Entities.TryGetValue(entityId, out var entity))
                 {
                     if (entity.Children.Contains(subentityId))
                     {
-                        if (entities.TryGetValue(subentityId, out var subentity))
+                        if (Entities.TryGetValue(subentityId, out var subentity))
                             subentity.ParentId = "";
                         
                         entity.Children.Remove(subentityId);
@@ -284,7 +283,7 @@ namespace ComunELite.Handlers
             if (string.IsNullOrEmpty(entityId))
                 return null;
 
-            if (entities.TryGetValue(entityId, out var entity))
+            if (Entities.TryGetValue(entityId, out var entity))
             {
                 var mainres = entity.GetSummedValuesOptimized(timeframesteps, starttime, endtime, takeConsumptionAsInvert, justThisDirections);
 
@@ -303,7 +302,7 @@ namespace ComunELite.Handlers
                             foreach (var childId in e.Children)
                             {
                                 {
-                                    if (entities.TryGetValue(childId, out var sbc))
+                                    if (Entities.TryGetValue(childId, out var sbc))
                                     {
                                         tmpEntity.AddBlocks(sbc.BlocksOrderByTime.ToList());
 
@@ -342,7 +341,7 @@ namespace ComunELite.Handlers
             if (string.IsNullOrEmpty(entityId))
                 return null;
 
-            if (entities.TryGetValue(entityId, out var entity))
+            if (Entities.TryGetValue(entityId, out var entity))
             {
                 var tmpEntity = new BaseEntity() { Name = "tmp", ParentId = entity.ParentId, Id = entityId + "-tmp" };
                 tmpEntity.AddBlocks(entity.BlocksOrderByTime);
@@ -357,7 +356,7 @@ namespace ComunELite.Handlers
                         {
                             foreach (var childId in e.Children)
                             {
-                                if (entities.TryGetValue(childId, out var sbc))
+                                if (Entities.TryGetValue(childId, out var sbc))
                                 {
                                     tmpEntity.AddBlocks(sbc.BlocksOrderByTime.ToList());
 
@@ -403,7 +402,7 @@ namespace ComunELite.Handlers
             if (string.IsNullOrEmpty(entityId))
                 return null;
 
-            if (entities.TryGetValue(entityId, out var entity))
+            if (Entities.TryGetValue(entityId, out var entity))
             {
                 var mainres = entity.GetSummedValuesWithHourWindow(timeframesteps, 
                                                                   starttime, 
@@ -430,7 +429,7 @@ namespace ComunELite.Handlers
                         {
                             foreach (var childId in e.Children)
                             {
-                                if (entities.TryGetValue(childId, out var sbc))
+                                if (Entities.TryGetValue(childId, out var sbc))
                                 {
                                     tmpEntity.AddBlocks(sbc.BlocksOrderByTime.ToList());
 
@@ -561,7 +560,7 @@ namespace ComunELite.Handlers
         {
             IEntity entity = null;
 
-            if (entities.TryGetValue(id, out var cs))
+            if (Entities.TryGetValue(id, out var cs))
                 entity = cs as IEntity;
             return entity;
         }
@@ -575,7 +574,7 @@ namespace ComunELite.Handlers
         {
             IEntity entity = null;
 
-            if (entities.TryGetValue(id, out var cs))
+            if (Entities.TryGetValue(id, out var cs))
                 entity = cs as IEntity;
             if (entity != null)
                 return entity.BlocksOrderByTime;
@@ -589,7 +588,7 @@ namespace ComunELite.Handlers
         /// <param name="id"></param>
         public virtual void RemoveAllEntityBlocks(string id)
         {
-            if (entities.TryGetValue(id, out var entity))
+            if (Entities.TryGetValue(id, out var entity))
                 entity.Blocks.Clear();
         }
 
