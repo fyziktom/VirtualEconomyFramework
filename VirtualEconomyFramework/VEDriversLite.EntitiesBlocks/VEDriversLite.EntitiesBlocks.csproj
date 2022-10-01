@@ -4,30 +4,27 @@
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-	  <PackageId>VEFramework.VEDriversLite.StorageDriver</PackageId>
+	  <PackageId>VEFramework.VEDriversLite.EntitiesBlocks</PackageId>
 	  <Version>0.3.3</Version>
 	  <Authors>fyziktom</Authors>
 	  <Company>VEFramework</Company>
-	  <Description>.NET drivers for IPFS, FileSystem, API files and other file storages.</Description>
+	  <Description>.NET drivers for calculation of the entities and its time based blocks with specfic amount.</Description>
 	  <PackageProjectUrl>https://veframework.com/</PackageProjectUrl>
 	  <RepositoryUrl>https://github.com/fyziktom/VirtualEconomyFramework</RepositoryUrl>
 	  <RepositoryType>Git</RepositoryType>
-	  <PackageTags>VEFramework, IPFS, InterPlanetaryFileSystem, FileSystem, API, Storage, NFT, NFTs, Blockchain, eCommerce, dApps</PackageTags>
+	  <PackageTags>VEFramework, Blocks, Entities, Energy, Data, Air, Finance, TimePlans, Model, API, NFT, NFTs, Blockchain, eCommerce, dApps</PackageTags>
 	  <Copyright>fyziktom</Copyright>
 	  <PackageReleaseNotes>
-		  - Driver for IPFS
-		  - Basic driver for FileSystem
+		  - Added basic objects for Entity and Block
+		  - Added basic calculation of the block amounts over specified time window and day window
+		  - Added tests to cover basic functions
 	  </PackageReleaseNotes>
 	  <PackageReadmeFile>README.md</PackageReadmeFile>
 	  <PackageLicenseExpression>BSD-2-Clause</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Ipfs.Http.Client" Version="0.33.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\VEDriversLite.Common\VEDriversLite.Common.csproj" />
+    <Folder Include="Dto\" />
   </ItemGroup>
 
 </Project>

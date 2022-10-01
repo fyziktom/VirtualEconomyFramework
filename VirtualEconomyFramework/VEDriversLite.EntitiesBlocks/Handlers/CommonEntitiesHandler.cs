@@ -1,0 +1,646 @@
+﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Xml;
+using static System.Reflection.Metadata.BlobBuilder;
+using VEDriversLite.EntitiesBlocks.Blocks;
+using VEDriversLite.EntitiesBlocks.Entities;
+using VEDriversLite.EntitiesBlocks.Handlers.Tree;
+using VEDriversLite.EntitiesBlocks.Handlers;
+
+namespace ComunELite.Handlers
+{
+    public abstract class CommonEntitiesHandler : IEntitiesHandler
+    {
+        /// <summary>
+        /// dictionary of all sources in the network, where the key is the unieque Id of the source
+        /// </summary>
+        public IEnumerable<IEntity> Sources { get => entities.Values.Where(e => e.Type == EntityType.Source) ?? new List<IEntity>(); }
+        /// <summary>
+        /// dictionary of all consumers in the network, where the key is the uniue Id of the source
+        /// </summary>
+        public IEnumerable<IEntity> Consumers { get => entities.Values.Where(e => e.Type == EntityType.Consumer) ?? new List<IEntity>(); }
+        /// <summary>
+        /// dictionary of all entities in the network, where the key is the uniue Id of the entity
+        /// </summary>
+        public ConcurrentDictionary<string, IEntity> Entities { get => entities; }
+        private ConcurrentDictionary<string, IEntity> entities { get; set; } = new ConcurrentDictionary<string, IEntity>();
+
+        /// <summary>
+        /// Create new Entity and add it to the entities list
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="sourceName"></param>
+        /// <param name="parentId"></param>
+        /// <param name="id"></param>
+        /// <param name="blocks"></param>
+        /// <returns></returns>
+        public virtual (bool, (string, string)) AddEntity(IEntity entity, string sourceName, string parentId, string id = null, List<IBlock> blocks = null)
+        {
+            if (id == null)
+            {
+                id = Guid.NewGuid().ToString();
+                entity.Name = sourceName;
+                entity.ParentId = parentId;
+                entity.Id = id;
+                if (blocks != null)
+                    entity.AddBlocks(blocks);
+
+                if (entities.TryAdd(id, entity))
+                    return (true, ($"new source {sourceName} - {id} added to the Sources list.", id));
+                else
+                    return (false, ($"cannot add source {sourceName} - {id} to the Sources list.", string.Empty));
+            }
+            else
+            {
+                if (entities.ContainsKey(id))
+                    return (false, ($"Id {id} is already exists in the Sources dict.", string.Empty));
+            }
+            return (false, ($"Cannot add source {sourceName} to the list.", string.Empty));
+        }
+
+
+        /// <summary>
+        /// remove the specific Entity
+        /// </summary>
+        /// <param name="id">consumer id</param>
+        /// <returns></returns>
+        public virtual (bool, string) RemoveEntity(string id)
+        {
+            if (string.IsNullOrEmpty(id))
+                return (false, "Cannot remove the entity. Entity id cannot be empty.");
+
+            if (entities.TryRemove(id, out var entity))
+            {
+                return (true, $"Consumer {entity.Name} - {id} removed.");
+            }
+            else
+                return (false, $"Cannot remove the entity. Entity {id} is not in Entities list. Add the entity first please.");
+        }
+
+        /// <summary>
+        /// Add block to the entity. 
+        /// </summary>
+        /// <param name="id">Id of the consumer</param>
+        /// <param name="block">Block</param>
+        /// <returns></returns>
+        public virtual (bool, string) AddBlockToEntity(string id, IBlock block)
+        {
+            if (string.IsNullOrEmpty(id))
+                return (false, "Cannot add block to the entity. Entity id cannot be empty.");
+            if (block == null)
+                return (false, $"Cannot add block to the entity {id}, block cannot be empty.");
+
+            if (entities.TryGetValue(id, out var entity))
+            {
+                if (entity.AddBlocks(new List<IBlock>() { block }))
+                    return (true, $"Blocks added to the entity {entity.Name} - {id}.");
+                else
+                    return (true, $"Cannot add block to the entity {entity.Name} - {id}.");
+            }
+            else
+                return (false, $"Cannot add block to the entity. Entity {id} is not in Entities list. Add the entity first please.");
+        }
+
+        /// <summary>
+        /// Add blocks to the entity. 
+        /// </summary>
+        /// <param name="id">Id of the consumer</param>
+        /// <param name="blocks">list of the Blocks</param>
+        /// <returns></returns>
+        public virtual (bool, string) AddBlocksToEntity(string id, List<IBlock> blocks)
+        {
+            if (string.IsNullOrEmpty(id))
+                return (false, "Cannot add blocks to the entity. Entity id cannot be empty.");
+            if (blocks == null)
+                return (false, $"Cannot add blocks to the entity {id}, blocks cannot be empty.");
+
+            if (entities.TryGetValue(id, out var entity))
+            {
+                if (entity.AddBlocks(blocks))
+                    return (true, $"Blocks added to the entity {entity.Name} - {id}.");
+                else
+                    return (true, $"Cannot add blocks to the entity {entity.Name} - {id}.");
+            }
+            else
+                return (false, $"Cannot add blocks to the entity. Entity {id} is not in Entities list. Add the entity first please.");
+        }
+
+        /// <summary>
+        /// Change block parameters to the consumer. 
+        /// </summary>
+        /// <param name="id">Id of the consumer</param>
+        /// <param name="type">type of Block</param>
+        /// <returns></returns>
+        public virtual (bool, string) ChangEntityBlockParameters(string id,
+                                                         string blockId,
+                                                         string name = null,
+                                                         string description = null,
+                                                         BlockType? type = null,
+                                                         double? amount = null,
+                                                         BlockDirection? direction = null,
+                                                         DateTime? startTime = null,
+                                                         TimeSpan? timeframe = null)
+        {
+            if (string.IsNullOrEmpty(id))
+                return (false, "Cannot change blocks to the consumer. Consumer id cannot be empty.");
+            if (string.IsNullOrEmpty(blockId))
+                return (false, "Cannot change blocks to the consumer. Block id cannot be empty.");
+
+            if (entities.TryGetValue(id, out var entity))
+            {
+                if (entity.ChangeBlockParameters(blockId, name, description, type, amount, direction, startTime, timeframe).Item1)
+                {
+                    return (true, $"Block {blockId} in {entity.Name} - {id} paramters changed.");
+                }
+                else
+                    return (true, $"Cannot add blocks to the consumer {entity.Name} - {id}");
+            }
+            else
+                return (false, $"Cannot add blocks to the consumer. Consumer {id} is not in Consumers list. Add the consumer first please.");
+        }
+
+
+        /// <summary>
+        /// Remove blocks from the entity. 
+        /// </summary>
+        /// <param name="id">Id of the consumer</param>
+        /// <param name="blocks">list of the Ids of the Blocks</param>
+        /// <returns></returns>
+        public virtual (bool, string) RemoveBlocksFromEntity(string id, List<string> blocks)
+        {
+            if (string.IsNullOrEmpty(id))
+                return (false, "Cannot remove blocks from the consumer. Consumer id cannot be empty.");
+            if (blocks == null)
+                return (false, $"Cannot remove blocks from the consumer {id}, blocks cannot be empty.");
+
+            if (entities.TryGetValue(id, out var entity))
+            {
+                if (entity.RemoveBlocks(blocks))
+                    return (true, $"Blocks removed from the consumer {entity.Name} - {id}.");
+                else
+                    return (true, $"Cannot remove blocks from the consumer {entity.Name} - {id}.");
+            }
+            else
+                return (false, $"Cannot remove blocks from the consumer. Source {id} is not in Consumers list. Add the consumer first please.");
+        }
+
+        /// <summary>
+        /// Add symbolic connection between some two subsource in the network. 
+        /// each entity has list of childerns, means relation to other entities
+        /// </summary>
+        /// <param name="entityId"></param>
+        /// <param name="subentityId"></param>
+        /// <returns></returns>
+        public virtual (bool, string) AddSubEntityToEntity(string entityId, string subentityId)
+        {
+            if (!string.IsNullOrEmpty(entityId) && !string.IsNullOrEmpty(subentityId))
+            {
+                if (entities.TryGetValue(entityId, out var entity))
+                {
+                    if (entities.TryGetValue(subentityId, out var subentity))
+                    {
+                        var scan = entities.Values.Where(c => c.Children.Contains(subentityId)).ToList();
+                        if (scan != null && scan.Count > 0)
+                        {
+                            var cns = scan.First();
+                            if (cns != null)
+                                return (false, $"subentity is already registered with entity {cns.Name} - {cns.Id}.");
+                        }
+                        if (!entity.Children.Contains(subentityId))
+                        {
+                            subentity.ParentId = entity.Id;
+                            entity.Children.Add(subentityId);
+                            return (true, $"subentity {subentity.Name} - {subentityId} added to entity {entity.Name} - {entity.Id} list.");
+                        }
+                    }
+                    else
+                        return (false, $"cannot find subentity {subentityId} in the Entities list. You must add the subentity to the Entities list first.");
+
+                }
+                else
+                    return (false, $"cannot find consumer {entityId} in the Consumers list. You must add the consumer to the Consumers list first.");
+            }
+            else
+            {
+                return (false, $"Please fill the inspu Ids of both consumers and subconsumer.");
+            }
+            return (false, $"Cannot add subconsumer to the specific consumer.");
+        }
+
+        /// <summary>
+        /// Remove symbolic connection between some two entities in the network. 
+        /// each entity has list of subentities, means relation to other entities
+        /// </summary>
+        /// <param name="entityId"></param>
+        /// <param name="subentityId"></param>
+        /// <returns></returns>
+        public virtual (bool, string) RemoveSubEntityFromEntity(string entityId, string subentityId)
+        {
+            if (!string.IsNullOrEmpty(entityId) && !string.IsNullOrEmpty(subentityId))
+            {
+                if (entities.TryGetValue(entityId, out var entity))
+                {
+                    if (entity.Children.Contains(subentityId))
+                    {
+                        if (entities.TryGetValue(subentityId, out var subentity))
+                            subentity.ParentId = "";
+                        
+                        entity.Children.Remove(subentityId);
+                        return (true, $"Subentity {subentityId} removed from entity {entity.Name} - {entity.Id} list.");
+                    }
+                }
+                else
+                    return (false, $"cannot find entity {entityId} in the Entities list. You must add the entity to the Entities list first.");
+            }
+            else
+            {
+                return (false, $"Please fill the inspu Ids of both entity and subentity.");
+            }
+            return (false, $"Cannot add subentity to the specific entity.");
+        }
+
+        /// <summary>
+        /// Get recalculated power consumption represented as list of Blocks split based on setted timegrame
+        /// </summary>
+        /// <param name="entityId">consumer Id</param>
+        /// <param name="withSubConsumers">when this is set, the function will load the same consumption of all subconsumers of this consumer. Then it is summed together as one output profile of consumpion.</param>
+        /// <param name="timeframesteps">enum of step of timeframe to recalculate the consumption into blocks, for example based on minutes</param>
+        /// <param name="starttime">start datetime of the recalculation frame</param>
+        /// <param name="endtime">end datetime of the recalculation frame</param>
+        /// <returns></returns>
+        public virtual List<IBlock> GetConsumptionOfEntity(string entityId, 
+                                                                BlockTimeframe timeframesteps, 
+                                                                DateTime starttime, 
+                                                                DateTime endtime, 
+                                                                bool withSubConsumers = true, 
+                                                                bool takeConsumptionAsInvert = false,
+                                                                List<BlockDirection> justThisDirections = null)
+        {
+
+            if (string.IsNullOrEmpty(entityId))
+                return null;
+
+            if (entities.TryGetValue(entityId, out var entity))
+            {
+                var mainres = entity.GetSummedValuesOptimized(timeframesteps, starttime, endtime, takeConsumptionAsInvert, justThisDirections);
+
+                if (withSubConsumers && mainres != null)
+                {
+                    Queue<IEntity> queue = new Queue<IEntity>();
+                    queue.Enqueue(entity);
+
+                    var tmpEntity = new BaseEntity() { Name = "tmp", ParentId = entity.ParentId, Id = entityId + "-tmp" };
+
+                    while (queue.Count > 0)
+                    {
+                        var e = queue.Dequeue();
+                        if (e != null)
+                        {
+                            foreach (var childId in e.Children)
+                            {
+                                {
+                                    if (entities.TryGetValue(childId, out var sbc))
+                                    {
+                                        tmpEntity.AddBlocks(sbc.BlocksOrderByTime.ToList());
+
+                                        if (sbc.IsParent)
+                                            queue.Enqueue(sbc);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    var re = tmpEntity.GetSummedValuesOptimized(timeframesteps, starttime, endtime, takeConsumptionAsInvert, justThisDirections);
+                    if (re != null)
+                    {
+                        foreach(var block in re.Where(r => r.Amount > 0 || r.Amount < 0))
+                        {
+                            var r = mainres.First(b => b.StartTime == block.StartTime);
+                            if (r != null)
+                                r.Amount += block.Amount;
+                        }
+                    }
+                }
+                return mainres;
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Get all Blocks with the all childern blocks
+        /// </summary>
+        /// <param name="entityId">consumer Id</param>
+        /// <returns></returns>
+        public virtual List<IBlock> GetBlocksOfEntityWithChildernBlocks(string entityId)
+        {
+            if (string.IsNullOrEmpty(entityId))
+                return null;
+
+            if (entities.TryGetValue(entityId, out var entity))
+            {
+                var tmpEntity = new BaseEntity() { Name = "tmp", ParentId = entity.ParentId, Id = entityId + "-tmp" };
+                tmpEntity.AddBlocks(entity.BlocksOrderByTime);
+
+                    Queue<IEntity> queue = new Queue<IEntity>();
+                    queue.Enqueue(entity);
+
+                    while (queue.Count > 0)
+                    {
+                        var e = queue.Dequeue();
+                        if (e != null)
+                        {
+                            foreach (var childId in e.Children)
+                            {
+                                if (entities.TryGetValue(childId, out var sbc))
+                                {
+                                    tmpEntity.AddBlocks(sbc.BlocksOrderByTime.ToList());
+
+                                    if (sbc.IsParent)
+                                        queue.Enqueue(sbc);
+                                }
+                            }
+                        }
+                    }
+                return tmpEntity.BlocksOrderByTime.ToList();
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Get list of the blocks of whole group based on setup timespan and step and specific timegrame and window
+        /// Timeframe will cause recalculation of the blocks of entity to timeframe like "hours", "days", "months" etc.
+        /// Window will cut the Amounts which are outside of specific time window. 
+        /// For example window can be 8:00-20:00. Only consumption in this window is added to final consumption.
+        /// If you set invertwindow to true with 8:00-20:00 times, it will take consumption just between 0:00-8:00 and 20:00-24:00 and add it to final consumption.
+        /// </summary>
+        /// <param name="entityId">consumer Id</param>
+        /// <param name="withSubConsumers">when this is set, the function will load the same consumption of all subconsumers of this consumer. Then it is summed together as one output profile of consumpion.</param>
+        /// <param name="timeframesteps">enum of step of timeframe to recalculate the consumption into blocks, for example based on minutes</param>
+        /// <param name="starttime">start datetime of the recalculation frame</param>
+        /// <param name="endtime">end datetime of the recalculation frame</param>
+        /// <param name="blockwindowstarttime">Start of time window. Takes just Hours parameter!</param>
+        /// <param name="blockwindowendtime">End of time window. Takes just Hours parameter!</param>
+        /// <returns></returns>
+        public virtual List<IBlock> GetConsumptionOfEntityWithWindow(string entityId, 
+                                                                          BlockTimeframe timeframesteps, 
+                                                                          DateTime starttime, 
+                                                                          DateTime endtime,
+                                                                          DateTime blockwindowstarttime,
+                                                                          DateTime blockwindowendtime,
+                                                                          bool invertWindow = false,
+                                                                          bool withSubConsumers = true, 
+                                                                          bool takeConsumptionAsInvert = false,
+                                                                          List<BlockDirection> justThisDirections = null)
+        {
+
+            if (string.IsNullOrEmpty(entityId))
+                return null;
+
+            if (entities.TryGetValue(entityId, out var entity))
+            {
+                var mainres = entity.GetSummedValuesWithHourWindow(timeframesteps, 
+                                                                  starttime, 
+                                                                  endtime, 
+                                                                  blockwindowstarttime, 
+                                                                  blockwindowendtime, 
+                                                                  invertWindow, 
+                                                                  takeConsumptionAsInvert, 
+                                                                  justThisDirections);
+
+                if (withSubConsumers && mainres != null)
+                {
+                    var subsres = new Dictionary<string, List<IBlock>>();
+
+                    Queue<IEntity> queue = new Queue<IEntity>();
+                    queue.Enqueue(entity);
+
+                    var tmpEntity = new BaseEntity() { Name = "tmp", ParentId = entity.ParentId, Id = entityId + "-tmp" };
+
+                    while (queue.Count > 0)
+                    {
+                        var e = queue.Dequeue();
+                        if (e != null)
+                        {
+                            foreach (var childId in e.Children)
+                            {
+                                if (entities.TryGetValue(childId, out var sbc))
+                                {
+                                    tmpEntity.AddBlocks(sbc.BlocksOrderByTime.ToList());
+
+                                    if (sbc.IsParent)
+                                        queue.Enqueue(sbc);
+                                }
+
+                            }
+                        }
+                    }
+
+                    var re = tmpEntity.GetSummedValuesWithHourWindow(timeframesteps,
+                                                                    starttime,
+                                                                    endtime,
+                                                                    blockwindowstarttime,
+                                                                    blockwindowendtime,
+                                                                    invertWindow,
+                                                                    takeConsumptionAsInvert, 
+                                                                    justThisDirections);
+                    if (re != null)
+                    {
+                        foreach (var block in re.Where(r => r.Amount > 0 || r.Amount < 0))
+                        {
+                            var r = mainres.First(b => b.StartTime == block.StartTime);
+                            if (r != null)
+                                r.Amount += block.Amount;
+                        }
+                    }
+                }
+                return mainres;
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Get recalculated power consumption represented as list of Blocks split based on setted timegrame
+        /// </summary>
+        /// <param name="consumerId">consumer Id</param>
+        /// <param name="withChilds">when this is set, the function will load the same consumption of all subconsumers of this consumer. Then it is summed together as one output profile of consumpion.</param>
+        /// <param name="timeframesteps">enum of step of timeframe to recalculate the consumption into blocks, for example based on minutes</param>
+        /// <param name="starttime">start datetime of the recalculation frame</param>
+        /// <param name="endtime">end datetime of the recalculation frame</param>
+        /// <returns></returns>
+        public virtual List<IBlock> GetRecalculatedBlocks(List<string> ids, BlockTimeframe timeframesteps, DateTime starttime, DateTime endtime, EntityType eetype = EntityType.Consumer, bool withChilds = true)
+        {
+
+            if (ids == null) return null;
+            if (ids.Count == 0) return null;
+            var parentId = string.Empty;
+
+            foreach (var id in ids)
+            {
+                // Get entity from Sources or Consumers dicts
+                var entity = GetEntity(id, eetype);
+                if (entity == null) return null;
+
+                if (string.IsNullOrEmpty(parentId))
+                    parentId = id;
+
+                var subsres = new Dictionary<string, List<IBlock>>();
+
+                Queue<IEntity> subs = new Queue<IEntity>();
+                subs.Enqueue(entity);
+
+                //explore the tree and load all childs blocks also if required (withChilds = true)
+                while (subs.Count > 0)
+                {
+                    var ent = subs.Dequeue();
+                    if (ent != null)
+                    {
+                        if (ent.Blocks.Count > 0)
+                        {
+                            var r = ent.GetSummedValues(timeframesteps, starttime, endtime);
+                            if (r != null)
+                                subsres.TryAdd(ent.Id, r);
+                        }
+                        if (withChilds)
+                        {
+                            foreach (var se in ent.Children)
+                            {
+                                var e = GetEntity(se, eetype);
+                                if (e != null)
+                                    subs.Enqueue(e);
+                            }
+                        }
+                    }
+                }
+
+                var result = new List<IBlock>();
+                if (subsres.Count > 0)
+                {
+                    //create empty list of final block to sum the subresults in it
+                    if (eetype == EntityType.Source)
+                        result = BlockHelpers.CreateEmptyBlocks(timeframesteps, starttime, endtime, parentId, 0, BlockDirection.Created, BlockType.Calculated);
+                    else if (eetype == EntityType.Consumer)
+                        result = BlockHelpers.CreateEmptyBlocks(timeframesteps, starttime, endtime, parentId, 0, BlockDirection.Consumed, BlockType.Calculated);
+                    else if (eetype == EntityType.Both)
+                        result = BlockHelpers.CreateEmptyBlocks(timeframesteps, starttime, endtime, parentId, 0, BlockDirection.Mix, BlockType.Calculated);
+
+                    // add all items of subresults to the final list
+                    if (result != null && result.Count > 0)
+                    {
+                        foreach (var sres in subsres)
+                        {
+                            foreach (var res in sres.Value.Where(r => r.Amount > 0 || r.Amount < 0))
+                            {
+                                var r = result.First(b => b.StartTime == res.StartTime);
+                                if (r != null)
+                                    r.Amount += res.Amount;
+                            }
+                        }
+                    }
+                }
+                return result;
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Get Entity if exists
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public virtual IEntity GetEntity(string id, EntityType type)
+        {
+            IEntity entity = null;
+
+            if (entities.TryGetValue(id, out var cs))
+                entity = cs as IEntity;
+            return entity;
+        }
+
+        /// <summary>
+        /// Get all entity blocks
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public virtual IEnumerable<IBlock> GetEntityBlocks(string id)
+        {
+            IEntity entity = null;
+
+            if (entities.TryGetValue(id, out var cs))
+                entity = cs as IEntity;
+            if (entity != null)
+                return entity.BlocksOrderByTime;
+            else
+                return new List<IBlock>();
+        }
+
+        /// <summary>
+        /// Remove all blocks in entity
+        /// </summary>
+        /// <param name="id"></param>
+        public virtual void RemoveAllEntityBlocks(string id)
+        {
+            if (entities.TryGetValue(id, out var entity))
+                entity.Blocks.Clear();
+        }
+
+        public class TreeQueue
+        {
+            public TreeItem? Parent { get; set; }
+            public IEntity? Entity { get; set; }
+        }
+
+        /// <summary>
+        /// Get Entities Tree
+        /// </summary>
+        /// <param name="rootId"></param>
+        /// <returns></returns>
+        public virtual TreeItem GetTree(string rootId)
+        {
+            if (string.IsNullOrEmpty(rootId)) return null;
+
+            // Get entity from Sources or Consumers dicts
+            var entity = GetEntity(rootId, EntityType.Both);
+            if (entity == null) return null;
+
+            var result = new TreeItem() { Name = entity.Name, Id = entity.Id, Type = entity.Type, Depth = 0 };
+
+            Queue<TreeQueue> queue = new Queue<TreeQueue>();
+            foreach (var se in entity.Children)
+            {
+                var e = GetEntity(se, EntityType.Both);
+                if (e != null)
+                    queue.Enqueue(new TreeQueue() { Parent = result, Entity = e });
+            }
+
+            //explore the tree and load all childerns
+            while (queue.Count > 0)
+            {
+                var q = queue.Dequeue();
+                if (q != null && q.Parent != null && q.Entity != null)
+                {
+                    var child = new TreeItem() { Name = q.Entity.Name, Id = q.Entity.Id, Type = q.Entity.Type, Depth = q.Parent.Depth + 1, Parent = q.Parent };
+                    q.Parent.AddChild(child);
+
+                    foreach (var se in q.Entity.Children)
+                    {
+                        var e = GetEntity(se, EntityType.Both);
+                        if (e != null)
+                            queue.Enqueue(new TreeQueue() { Parent = child, Entity = e });
+                    }
+                }
+            }
+
+            return result;
+        }
+    }
+}
