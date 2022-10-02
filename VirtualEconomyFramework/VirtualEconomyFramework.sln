@@ -69,13 +69,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VEBlazor.Demo.Publishing.Se
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VEDriversLite.StorageDriver", "VEDriversLite.StorageDriver\VEDriversLite.StorageDriver.csproj", "{A666B887-FCC4-4D5E-8D06-D2570F407B34}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VEDriversLite.EntitiesBlocks", "VEDriversLite.EntitiesBlocks\VEDriversLite.EntitiesBlocks.csproj", "{2B212A1B-7170-40FF-869D-5E26E23A83E8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VEDriversLite.EntitiesBlocks", "VEDriversLite.EntitiesBlocks\VEDriversLite.EntitiesBlocks.csproj", "{2B212A1B-7170-40FF-869D-5E26E23A83E8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VEFramework.VEBlazor.EntitiesBlocks", "VEFramework.VEBlazor.EntitiesBlocks\VEFramework.VEBlazor.EntitiesBlocks.csproj", "{788B8FBD-294C-4515-8B2D-64AF564F8D78}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VEFramework.VEBlazor.EntitiesBlocks", "VEFramework.VEBlazor.EntitiesBlocks\VEFramework.VEBlazor.EntitiesBlocks.csproj", "{788B8FBD-294C-4515-8B2D-64AF564F8D78}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "EntitiesBlocks", "EntitiesBlocks", "{BC30E4CB-F4FE-4C7E-BCD8-5EDBB2E9ADA7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VEBlazor.EntitiesBlocks.Demo.Energy", "VEBlazor.EntitiesBlocks.Demo.Energy\VEBlazor.EntitiesBlocks.Demo.Energy.csproj", "{42BAD5F8-09B5-43EB-BE10-FE2527E5BF22}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VEBlazor.EntitiesBlocks.Demo.Energy", "VEBlazor.EntitiesBlocks.Demo.Energy\VEBlazor.EntitiesBlocks.Demo.Energy.csproj", "{42BAD5F8-09B5-43EB-BE10-FE2527E5BF22}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
