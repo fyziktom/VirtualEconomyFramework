@@ -1,0 +1,19 @@
+﻿<Field>
+    <RadioGroup TValue="EntityType" Name="types" CheckedValue="@Type" CheckedValueChanged="@onChekedValueChanged">
+        <Radio Value="@(EntityType.Source)">Source</Radio>
+        <Radio Value="@(EntityType.Consumer)">Consumer</Radio>
+    </RadioGroup>
+</Field>
+
+@code {
+    [Parameter]
+    public EntityType Type { get; set; }
+    [Parameter]
+    public EventCallback<EntityType> TypeChanged { get; set; }
+
+    private async Task onChekedValueChanged(EntityType e)
+    {
+        Type = e;
+        await TypeChanged.InvokeAsync(e);
+    }
+}

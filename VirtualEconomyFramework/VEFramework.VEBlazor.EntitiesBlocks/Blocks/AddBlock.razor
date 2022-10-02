@@ -4,7 +4,7 @@
 <Modal @ref="AddBlockModal">
     <ModalContent Centered Size="ModalSize.ExtraLarge">
         <ModalHeader>
-            <ModalTitle>Add Block</ModalTitle>
+            <ModalTitle>@(!blockChange ? "Add" : "Change") Block</ModalTitle>
             <CloseButton />
         </ModalHeader>
         <ModalBody>
@@ -27,51 +27,23 @@
                                          StartDayLabel="Start of the Block"
                                          EndDayLabel="End of the Block" />
 
-                    <Check TValue="bool" @Checked="@repetitiveBlock" CheckedChanged="@OnRepetitiveBlockCheckedChanged">Repetitive Block</Check>
-                        
+                    <Check TValue="bool" Checked="@repetitiveBlock" CheckedChanged="@OnRepetitiveBlockCheckedChanged">Repetitive Block</Check>
+                    
                     @if (repetitiveBlock)
                     {
-                        <StartEndDaySelector StartTime="@((DateTime)Block.RepetitiveFirstRun)" 
-                                         EndTime="@((DateTime)Block.RepetitiveEndRun)" 
-                                         StartTimeChanged="@firstRunDateChanged"
-                                         EndTimeChanged="@endRunDateChanged"
-                                         StartDayLabel="First Run Of repetitive Block"
-                                         EndDayLabel="End Run of repetitive Block" />
-
-                            <Check TValue="bool" @bind-Checked="@repetitiveDayBlock">Repetitive Day Block</Check>
-                            @if (!repetitiveDayBlock)
-                            {
-                            <Field>
-                                <FieldLabel>Off Time in Hours</FieldLabel>
-                                <NumericPicker TValue="int" Min="0" Max="1000" Value="@((int)Block.OffPeriod.Value.TotalHours)" ValueChanged="OnOfftimeValueChanged" Decimals="4" />
-                                <FieldHelp>Please fill the off time between repetition</FieldHelp>
-                            </Field>
-                            }
-                            else
-                            {
-                            <Check TValue="bool" @bind-Checked="@Block.JustInWeek">Just Week Days</Check>
-                            <Check TValue="bool" @bind-Checked="@Block.JustInWeekends">Just Weekend</Check>
-                            }
-                                
+                        <SetRepetitiveBlock StartTime="@((DateTime)Block.RepetitiveFirstRun)" 
+                                            StartTimeChanged="@onRepetitiveFirstRunChanged"
+                                            EndTime="@((DateTime)Block.RepetitiveEndRun)" 
+                                            EndTimeChanged="@onRepetitiveEndRunChanged"
+                                            @bind-JustInWeek="@Block.JustInWeek"
+                                            @bind-JustInWeekend="@Block.JustInWeekends"
+                                            OffPeriod="@((TimeSpan)Block.OffPeriod)"
+                                            OffPeriodChanged="@onOffPeriodChanged"/>
                     }
-                    <Field>
-                        <FieldLabel>Total Amount of Power</FieldLabel>
-                        <NumericPicker TValue="double" Min="0" Max="1000" @bind-Value="@Block.Amount" Decimals="4" />
-                        <FieldHelp>Please fill the total amount of energy in the block</FieldHelp>
-                    </Field>
-                    <Field>
-                        <RadioGroup TValue="BlockType" Name="types" @bind-CheckedValue="@Block.Type">
-                            <Radio Value="@(BlockType.Real)">Real</Radio>
-                            <Radio Value="@(BlockType.Simulated)">Simulated</Radio>
-                        </RadioGroup>
-                    </Field>
-                    <Field>
-                        <RadioGroup TValue="BlockDirection" Name="direction" @bind-CheckedValue="@Block.Direction">
-                            <Radio Value="@(BlockDirection.Created)">Created</Radio>
-                            <Radio Value="@(BlockDirection.Consumed)">Consumed</Radio>
-                            <Radio Value="@(BlockDirection.Stored)">Stored</Radio>
-                        </RadioGroup>
-                    </Field>
+
+                    <SetBlockAmount @bind-Amount="@Block.Amount" StartTime="@StartTime" EndTime="@EndTime" />
+                    <SetBlockType @bind-Type="@Block.Type" />
+                    <SetBlockDirection @bind-Direction="@Block.Direction" />
                 </Column>
             </Row>
             <Row>
@@ -131,26 +103,29 @@
     async Task startDateChanged(DateTime e)
     {
         Block.StartTime = (DateTime)e;
+        await InvokeAsync(StateHasChanged);
     }
 
     async Task endDateChanged(DateTime e)
     {
         Block.Timeframe = (DateTime)e - Block.StartTime;
+        await InvokeAsync(StateHasChanged);
     }
 
-    async Task firstRunDateChanged(DateTime e)
+    async Task onRepetitiveFirstRunChanged(DateTime e)
     {
-        Block.RepetitiveFirstRun = (DateTime)e;
+        if (e != null)
+            Block.RepetitiveFirstRun = e;
     }
-
-    async Task endRunDateChanged(DateTime e)
+    async Task onRepetitiveEndRunChanged(DateTime e)
     {
-        Block.RepetitiveEndRun = (DateTime)e;
+        if (e != null)
+            Block.RepetitiveEndRun = e;
     }
-
-    async Task OnOfftimeValueChanged(int e)
+    async Task onOffPeriodChanged(TimeSpan e)
     {
-        Block.OffPeriod = new TimeSpan(e,0,0);
+        if (e != null)
+            Block.OffPeriod = e;
     }
 
     async Task OnRepetitiveBlockCheckedChanged(bool e)

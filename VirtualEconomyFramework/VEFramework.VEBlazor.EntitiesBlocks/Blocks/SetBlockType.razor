@@ -1,0 +1,19 @@
+﻿<Field>
+    <RadioGroup TValue="BlockType" Name="types" CheckedValue="@Type" CheckedValueChanged="@onChekedValueChanged">
+        <Radio Value="@(BlockType.Real)">Real</Radio>
+        <Radio Value="@(BlockType.Simulated)">Simulated</Radio>
+    </RadioGroup>
+</Field>
+
+@code {
+    [Parameter]
+    public BlockType Type { get; set; }
+    [Parameter]
+    public EventCallback<BlockType> TypeChanged { get; set; }
+
+    private async Task onChekedValueChanged(BlockType e)
+    {
+        Type = e;
+        await TypeChanged.InvokeAsync(e);
+    }
+}

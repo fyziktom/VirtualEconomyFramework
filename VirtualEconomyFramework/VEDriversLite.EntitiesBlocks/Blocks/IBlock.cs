@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -181,5 +181,12 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
         /// </summary>
         /// <param name="block"></param>
         void Fill(IBlock block);
+
+        /// <summary>
+        /// Set Block Total amount based on power per hour.
+        /// The StartTime and Timeframe must be already set
+        /// </summary>
+        /// <param name="powerperhour"></param>
+        void SetAmountByPower(double powerperhour);
     }
 }

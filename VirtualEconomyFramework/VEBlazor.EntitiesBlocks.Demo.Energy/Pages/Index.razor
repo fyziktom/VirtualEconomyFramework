@@ -1,7 +1,5 @@
 ﻿@page "/"
 
-@using VEFramework.VEBlazor.EntitiesBlocks.Entities
-
 @inject AppData AppData
 @inject HttpClient Http
 
@@ -16,7 +14,19 @@
             </Items>
             <Content>
                 <TabPanel Name="tree">
-                    <EntitiesTree @ref=entitiesTree ItemChanged="@OnItemChanged" DisplayRefreshButton="true" />
+                    <Row>
+                        <Column>
+                            <AddEntity Item="@Item" WithButton="true" />
+                        </Column>
+                        <Column>
+                            <AddBlock Item="@Item" WithButton="true" />
+                        </Column>
+                    </Row>
+                    <Row>
+                        <Column>
+                            <EntitiesTree @ref=entitiesTree ItemChanged="@OnItemChanged" DisplayRefreshButton="true" />
+                        </Column>
+                    </Row>
                 </TabPanel>
                 <TabPanel Name="backup">
                     <LoadAndBackup DataLoaded="@OnLoadData" />
@@ -91,7 +101,6 @@
                     var item = await entitiesTree.LoadData(AppData.RootItemId);
                     if (item != null && item.Id != null)
                         Item = item;
-
                     if (blocksList != null)
                         await blocksList.Load(Item);
 

@@ -1,0 +1,20 @@
+﻿<Field>
+    <RadioGroup TValue="SourceType" Name="types" CheckedValue="@Type" CheckedValueChanged="@onChekedValueChanged">
+        <Radio Value="@(SourceType.PVE)">PVE</Radio>
+        <Radio Value="@(SourceType.Battery)">Battery</Radio>
+        <Radio Value="@(SourceType.PowerGridSupplier)">Power Grid Supplier</Radio>
+    </RadioGroup>
+</Field>
+
+@code {
+    [Parameter]
+    public SourceType Type { get; set; }
+    [Parameter]
+    public EventCallback<SourceType> TypeChanged { get; set; }
+
+    private async Task onChekedValueChanged(SourceType e)
+    {
+        Type = e;
+        await TypeChanged.InvokeAsync(e);
+    }
+}

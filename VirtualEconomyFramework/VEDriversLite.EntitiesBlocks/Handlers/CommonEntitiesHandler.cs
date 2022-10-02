@@ -219,33 +219,43 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
         /// Create new Entity and add it to the entities list
         /// </summary>
         /// <param name="type"></param>
-        /// <param name="sourceName"></param>
+        /// <param name="entityName"></param>
         /// <param name="parentId"></param>
         /// <param name="id"></param>
         /// <param name="blocks"></param>
         /// <returns></returns>
-        public virtual (bool, (string, string)) AddEntity(IEntity entity, string sourceName, string parentId, string id = null, List<IBlock> blocks = null)
+        public virtual (bool, (string, string)) AddEntity(IEntity entity, string entityName, string parentId, string id = null, List<IBlock> blocks = null)
         {
             if (id == null)
             {
                 id = Guid.NewGuid().ToString();
-                entity.Name = sourceName;
+                entity.Name = entityName;
                 entity.ParentId = parentId;
                 entity.Id = id;
                 if (blocks != null)
                     entity.AddBlocks(blocks);
 
                 if (Entities.TryAdd(id, entity))
-                    return (true, ($"new source {sourceName} - {id} added to the Sources list.", id));
+                {
+                    if (!string.IsNullOrEmpty(parentId))
+                    {
+                        if (Entities.TryGetValue(parentId, out var parent))
+                            parent.Children.Add(id);
+
+                        return (true, ($"New entity {entityName} - {id} added to the Entities list.", id));
+                    }
+                    else
+                        return (false, ($"Cannot add entity {entityName} - {id} to the Entities list.", string.Empty));
+                }
                 else
-                    return (false, ($"cannot add source {sourceName} - {id} to the Sources list.", string.Empty));
+                    return (false, ($"Cannot add entity {entityName} - {id} to the Parent. Parent no in Entities list.", string.Empty));
             }
             else
             {
                 if (Entities.ContainsKey(id))
-                    return (false, ($"Id {id} is already exists in the Sources dict.", string.Empty));
+                    return (false, ($"Id {id} is already exists in the Entities dict.", string.Empty));
             }
-            return (false, ($"Cannot add source {sourceName} to the list.", string.Empty));
+            return (false, ($"Cannot add entity {entityName} to the list.", string.Empty));
         }
 
 
