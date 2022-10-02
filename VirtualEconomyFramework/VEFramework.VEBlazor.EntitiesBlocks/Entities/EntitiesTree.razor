@@ -1,0 +1,108 @@
+﻿@inherits EntitiesBlocksComponentBase
+@inject AppData AppData
+
+@if (Item != null)
+{
+    <Card Margin="Margin.Is2.FromTop">
+        <CardHeader>
+            <Row>
+                <Column>
+                    <Span>Entities Tree</Span>
+                </Column>
+                @if (DisplayRefreshButton)
+                {
+                    <Column>
+                        <Button Color="Color.Light" Clicked="@(async () => await LoadData(Item.Id))" Float="Float.End">
+                            <Icon Name="IconName.Sync" />
+                        </Button>
+                    </Column>
+                }
+            </Row>
+        </CardHeader>
+        <CardBody Margin="Margin.Is2.FromTop">
+            
+            <Row Margin="Margin.Is2.FromTop">
+                <Column>
+                    @if (Tree != null)
+                    {
+                        <TreeView Nodes="Tree.GetChilds()"
+                          TNode="TreeItem"
+                          GetChildNodes="@(item => item.GetChilds())"
+                          HasChildNodes="@(item => item.GetChilds()?.Any() == true)"
+                          SelectedNode="@Item"
+                          SelectedNodeChanged="SelectedNodeChangedHandler"
+                          @bind-ExpandedNodes="ExpandedNodes">
+                            <NodeContent>
+                                @((context.Type == EntityType.Source ? "Source: " : "Consumer: ") + $"{context.Name}")
+                            </NodeContent>
+                        </TreeView>
+                    }
+                </Column>
+            </Row>
+        </CardBody>
+    </Card>
+}
+
+@code {
+    [Parameter]
+    public TreeItem Tree { get; set; } = new TreeItem();
+
+    [Parameter]
+    public bool DisplayRefreshButton { get; set; } = false;
+
+    IList<TreeItem> ExpandedNodes = new List<TreeItem>();
+
+    public async Task<TreeItem> LoadData(string rootid)
+    {
+        //var rootid = AppData.EntitiesHandler.Entities.Values.Where(b => b.Name.Contains("network")).FirstOrDefault()?.Id;
+        if (rootid != null)
+        {
+            var root = AppData.EntitiesHandler.GetTree(rootid);
+            if (root != null)
+            {
+                Tree = new TreeItem();
+                await InvokeAsync(StateHasChanged);
+
+                Tree.AddChild(root);
+                Item = Tree;
+
+                await InvokeAsync(StateHasChanged);
+
+                await ItemChanged.InvokeAsync(Item);
+
+                return Item;
+            }
+        }
+        return null;
+    }
+
+    public async Task<TreeItem> LoadDataBasedOnItemName(string rootname)
+    {
+        var rootid = AppData.EntitiesHandler.Entities.Values.Where(b => b.Name.Contains(rootname)).FirstOrDefault()?.Id;
+        if (rootid != null)
+        {
+            var root = AppData.EntitiesHandler.GetTree(rootid);
+            if (root != null)
+            {
+                Tree = new TreeItem();
+                await InvokeAsync(StateHasChanged);
+
+                Tree.AddChild(root);
+                Item = Tree;
+
+                await InvokeAsync(StateHasChanged);
+
+                await ItemChanged.InvokeAsync(Item);
+
+                return Item;
+            }
+        }
+        return null;
+    }
+
+    private async Task SelectedNodeChangedHandler(TreeItem node)
+    {
+        Item = node;
+        await ItemChanged.InvokeAsync(Item);
+    }
+}

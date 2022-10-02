@@ -1,0 +1,68 @@
+﻿@inherits EntitiesComponentBase
+
+@inject AppData AppData
+
+<Row>
+    <Column>
+        <Span>Total Created: @(Math.Round(totalCreated, 4)) @(AppData.EntitiesHandler.UnitLabel)</Span>
+            <Span>Total Stored: @(Math.Round(totalStored, 4)) @(AppData.EntitiesHandler.UnitLabel)</Span>
+        <Span TextColor="TextColor.Danger">Total Consumed: @(Math.Round(totalConsumed, 4)) @(AppData.EntitiesHandler.UnitLabel)</Span>
+        <Span TextColor="@(totalTotal < 0 ? TextColor.Danger : TextColor.Primary)">
+                Total Bilance: @(Math.Round(totalTotal, 4)) @(AppData.EntitiesHandler.UnitLabel)
+        </Span>
+    </Column>
+</Row>
+
+@code {
+
+    private double totalConsumed = 0;
+    private double totalCreated = 0;
+    private double totalStored = 0;
+    private double totalTotal = 0;
+
+    public async Task GetTotals(TreeItem item, DateTime starttime, DateTime endtime)
+    {
+        if (item != null)
+        {
+            StartTime = starttime;
+            EndTime = endtime;
+
+            Item = item;
+            var bl = AppData.EntitiesHandler.GetConsumptionOfEntity(Item.Id,
+                                                                BlockTimeframe.Month,
+                                                                StartTime,
+                                                                EndTime,
+                                                                true,
+                                                                false,
+                                                                new List<BlockDirection> { BlockDirection.Consumed });
+            totalConsumed = 0;
+            foreach (var b in bl)
+                totalConsumed += b.Amount;
+            bl.Clear();
+            bl = AppData.EntitiesHandler.GetConsumptionOfEntity(Item.Id,
+                                                                BlockTimeframe.Month,
+                                                                StartTime,
+                                                                EndTime,
+                                                                true,
+                                                                false,
+                                                                new List<BlockDirection> { BlockDirection.Created });
+            totalCreated = 0;
+            foreach (var b in bl)
+                totalCreated += b.Amount;
+            bl = AppData.EntitiesHandler.GetConsumptionOfEntity(Item.Id,
+                                                                BlockTimeframe.Month,
+                                                                StartTime,
+                                                                EndTime,
+                                                                true,
+                                                                false,
+                                                                new List<BlockDirection> { BlockDirection.Stored });
+            totalStored = 0;
+            foreach (var b in bl)
+                totalStored += b.Amount;
+
+            totalTotal = totalCreated + totalStored - totalConsumed;
+
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+}

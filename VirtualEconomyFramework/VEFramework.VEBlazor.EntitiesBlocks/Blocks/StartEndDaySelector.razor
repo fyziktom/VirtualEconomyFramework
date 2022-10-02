@@ -1,0 +1,74 @@
+﻿@inherits TimeRangeComponentBase
+@if (ShowDatesAsLabels)
+{
+    <Row>
+        <Column>
+            <Span>Start Date: @(StartTime.ToString("dd.MM.yyyy hh:mm:ss"))</Span>
+            <Span>End Date: @(EndTime.ToString("dd.MM.yyyy hh:mm:ss"))</Span>
+        </Column>
+    </Row>
+}
+<Row>
+    <Column>
+        <Field>
+            <FieldLabel>@StartDayLabel</FieldLabel>
+            <Addons>
+                <Addon AddonType="AddonType.Start">
+                    <Button Color="Color.Light" Clicked="@(()=>datePickerStartTime.ToggleAsync())">
+                        <Icon Name="IconName.CalendarDay" />
+                    </Button>
+                </Addon>
+                <Addon AddonType="AddonType.Body">
+                    <DatePicker @ref="@datePickerStartTime"
+                                InputMode="DateInputMode.DateTime"
+                                Date="@StartTime"
+                                DateChanged="@startTimeDateChanged"
+                                TValue="DateTime" />
+                </Addon>
+            </Addons>
+        </Field>
+    </Column>
+    <Column>
+        <Field>
+            <FieldLabel>@EndDayLabel</FieldLabel>
+            <Addons>
+                <Addon AddonType="AddonType.Start">
+                    <Button Color="Color.Light" Clicked="@(()=>datePickerEndTime.ToggleAsync())">
+                        <Icon Name="IconName.CalendarDay" />
+                    </Button>
+                </Addon>
+                <Addon AddonType="AddonType.Body">
+                    <DatePicker @ref="@datePickerEndTime"
+                                InputMode="DateInputMode.DateTime"
+                                Date="@EndTime"
+                                DateChanged="@endTimeDateChanged"
+                                TValue="DateTime" />
+                </Addon>
+            </Addons>
+        </Field>
+    </Column>
+</Row>
+
+ @code {
+    [Parameter]
+    public bool ShowDatesAsLabels { get; set; } = false;
+
+    DatePicker<DateTime>? datePickerStartTime;
+    DatePicker<DateTime>? datePickerEndTime;
+
+    async Task startTimeDateChanged(DateTime e)
+    {
+        if (e == null) return;
+        StartTime = (DateTime)e;
+        await InvokeAsync(StateHasChanged);
+        await StartTimeChanged.InvokeAsync(StartTime);
+    }
+
+    async Task endTimeDateChanged(DateTime e)
+    {
+        if (e == null) return;
+        EndTime = (DateTime)e;
+        await InvokeAsync(StateHasChanged);
+        await EndTimeChanged.InvokeAsync(EndTime);
+    }
+}

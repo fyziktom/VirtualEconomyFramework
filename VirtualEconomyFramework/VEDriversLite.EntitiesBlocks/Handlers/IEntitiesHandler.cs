@@ -26,6 +26,11 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
         ConcurrentDictionary<string, IEntity> Entities { get; set; }
 
         /// <summary>
+        /// Label of the unit of the Amount. For example "kWh" for energy application
+        /// </summary>
+        string UnitLabel { get; set; }
+
+        /// <summary>
         /// Create new Entity and add it to the entities list
         /// </summary>
         /// <param name="type"></param>

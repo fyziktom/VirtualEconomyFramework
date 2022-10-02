@@ -10,5 +10,9 @@ namespace VEFramework.VEBlazor.EntitiesBlocks.Services
     public class AppData
     {
         public BaseEntitiesHandler EntitiesHandler { get; set; } = new BaseEntitiesHandler();
+        public string RootItemId { get; set; } = string.Empty;
+        public string RootItemName { get; set; } = string.Empty;
+        public string StoredConfig { get; set; } = string.Empty;
+
     }
 }

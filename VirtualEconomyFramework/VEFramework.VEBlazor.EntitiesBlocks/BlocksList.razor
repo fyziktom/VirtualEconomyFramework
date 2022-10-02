@@ -1,0 +1,121 @@
+﻿@inherits EntitiesBlocksComponentBase
+
+@inject AppData AppData
+
+<Card Margin="Margin.Is4.FromBottom">
+    @if (Item != null && Item.Id != null)
+    {
+        <CardHeader>
+            <CardTitle>@(Item.Type.ToString()) - @Item.Name</CardTitle>
+        </CardHeader>
+        <CardBody>
+            <Row>
+                <Column>
+                    <ClearAllBlocks Item="@Item" 
+                                    ActionFinished="@OnClearAllBlocksFinishedHandler" 
+                                    ButtonText="Clear All Blocks in Entity"
+                                    BlockButton="true"
+                                    OutlineButton="true"/>
+                </Column>
+            </Row>
+        </CardBody>
+        <CardBody>
+            <Row>
+                <Column>
+                    <Table>
+                        <TableHeader>
+                            <TableHeaderCell>Name</TableHeaderCell>
+                            <TableHeaderCell>IsRepetitive</TableHeaderCell>
+                            <TableHeaderCell>Total Amount [@(AppData.EntitiesHandler.UnitLabel)]</TableHeaderCell>
+                            <TableHeaderCell>StartTime</TableHeaderCell>
+                            <TableHeaderCell>EndTime</TableHeaderCell>
+                            <TableHeaderCell>Avg Power [kW]</TableHeaderCell>
+                        </TableHeader>
+                        <TableBody>
+                            @for (var i = 0; i < items; i++)
+                            {
+                                @if (i < Blocks.Count)
+                                {
+                                    var block = Blocks[i];
+                                    <TableRow>
+                                        <TableRowCell>@block.Name</TableRowCell>
+                                        <TableRowCell>@(block.IsRepetitiveChild || block.IsRepetitiveSource ? "Yes": "No")</TableRowCell>
+                                        <TableRowCell>@(Math.Round(block.Amount, 2))</TableRowCell>
+                                        <TableRowCell>@block.StartTime</TableRowCell>
+                                        <TableRowCell>@block.EndTime</TableRowCell>
+                                        <TableRowCell>@(Math.Round(block.AvgConsumptionPerHour, 5))</TableRowCell>
+                                    </TableRow>
+                                }
+                            }
+                        </TableBody>
+                    </Table>
+                </Column>
+            </Row>
+            <Row>
+                <Column>
+                    @if (items < Blocks.Count - 1)
+                    {
+                        <Button Color="Color.Primary" Outline Clicked="@loadMore">Load more</Button>
+                    }
+                </Column>
+            </Row>
+            
+        </CardBody>
+    }
+</Card>
+
+@code{
+    [Parameter]
+    public EventCallback<string> OnClearAllBlocksFinished { get; set; }
+
+    private int items = 10;
+
+    public async Task Load(TreeItem item)
+    {
+        if (item != null && item.Id != null)
+        {
+            Item = item;
+            Blocks = AppData.EntitiesHandler.GetEntityBlocks(Item.Id).ToList();
+            if (Blocks != null)
+            {
+                if (Blocks.Count > 10)
+                    items = 10;
+                else if (Blocks.Count != 0)
+                    items = Blocks.Count;
+                else
+                    items = 0;
+
+                await InvokeAsync(StateHasChanged);
+            }
+        }
+    }
+
+    public async Task Refresh()
+    {
+        if (Item != null && Item.Id != null)
+        {
+            Blocks = AppData.EntitiesHandler.GetBlocksOfEntityWithChildernBlocks(Item.Id).ToList();
+            if (Blocks != null)
+            {
+                if (items >= Blocks.Count && Blocks.Count != 0)
+                    items = Blocks.Count - 1;
+            }
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private async Task loadMore()
+    {
+        if ((items + 10) < Blocks.Count)
+            items += 10;
+        else if (Blocks.Count != 0)
+            items += Blocks.Count - items - 1;
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task OnClearAllBlocksFinishedHandler(string e)
+    {
+        await OnClearAllBlocksFinished.InvokeAsync(Item.Id);
+    }
+}

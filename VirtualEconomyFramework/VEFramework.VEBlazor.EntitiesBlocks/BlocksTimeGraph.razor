@@ -1,115 +1,63 @@
-﻿
+﻿@inherits EntitiesBlocksComponentBase
 @inject AppData AppData
 
 <Card Margin="Margin.Is4.FromBottom">
-    <CardHeader>
-        <CardTitle>Energy Entity Energy Blocks Time Graph</CardTitle>
-    </CardHeader>
     @if (Item != null)
     {
+        <CardHeader>
+            <CardTitle>@(Item.Type.ToString()) - @Item.Name</CardTitle>
+        </CardHeader>
         <CardBody>
-            <Row>
-                <Column>
-                    <Span>Name: @Item.Name</Span>
-                    <Span>Type: @(Item.Type.ToString())</Span>
-                </Column>
-            </Row>
-            <Row>
-                <Column>
-                    <Span>Start Date: @(StartTime.ToString("dd.MM.yyyy hh:mm:ss"))</Span>
-                    <Span>End Date: @(EndTime.ToString("dd.MM.yyyy hh:mm:ss"))</Span>
-                </Column>
-            </Row>
+            <StartEndDaySelector StartTime="@StartTime" 
+                                 EndTime="@EndTime" 
+                                 StartTimeChanged="@startTimeDateChanged"
+                                 EndTimeChanged="@endTimeDateChanged"
+                                 StartDayLabel="First run of the block line"
+                                 EndDayLabel="Last run of the block line"
+                                 ShowDatesAsLabels="false"/>
         </CardBody>
         <CardBody>
-            <Field>
-                <FieldLabel>First Run Of repetitive Block</FieldLabel>
-                <Addons>
-                    <Addon AddonType="AddonType.Start">
-                        <Button Color="Color.Light" Clicked="@(()=>datePickerStartTime.ToggleAsync())">
-                            <Icon Name="IconName.CalendarDay" />
-                        </Button>
-                    </Addon>
-                    <Addon AddonType="AddonType.Body">
-                        <DatePicker @ref="@datePickerStartTime"
-                            InputMode="DateInputMode.DateTime"
-                            Date="@StartTime"
-                            DateChanged="@startTimeDateChanged"
-                            TValue="DateTime" />
-                    </Addon>
-                </Addons>
-            </Field>
-            <Field>
-                <FieldLabel>End Run of repetitive Block</FieldLabel>
-                <Addons>
-                    <Addon AddonType="AddonType.Start">
-                        <Button Color="Color.Light" Clicked="@(()=>datePickerEndTime.ToggleAsync())">
-                            <Icon Name="IconName.CalendarDay" />
-                        </Button>
-                    </Addon>
-                    <Addon AddonType="AddonType.Body">
-                        <DatePicker @ref="@datePickerEndTime"
-                        InputMode="DateInputMode.DateTime"
-                        Date="@EndTime"
-                            DateChanged="@endTimeDateChanged"
-                            TValue="DateTime" />
-                        </Addon>
-                    </Addons>
-                </Field>
+            <EntityTotalBalance @ref=entityTotalBalance />
         </CardBody>
         <CardBody>
             <Row>
                 <Column>
-                    <Span>Total Created: @(Math.Round(totalCreated, 4)) kWh</Span>
-                    <Span>Total Stored: @(Math.Round(totalStored, 4)) kWh</Span>
-                    <Span TextColor="TextColor.Danger">Total Consumed: @(Math.Round(totalConsumed, 4)) kWh</Span>
-                    <Span TextColor="@(totalTotal < 0 ? TextColor.Danger : TextColor.Primary)">
-                        Total Bilance: @(Math.Round(totalTotal, 4)) kWh
-                    </Span>
+                    <Button Color="Color.Light" Clicked="@zoomReset" Float="Float.End">
+                        <Icon Name="IconName.Undo" />
+                    </Button>
+                    <Button Color="Color.Light" Clicked="@zoomTimeOut" Float="Float.End">
+                        <Icon Name="IconName.SearchMinus" />
+                    </Button>
+                    <Button Color="Color.Light" Clicked="@zoomTimeIn" Float="Float.End">
+                        <Icon Name="IconName.SearchPlus" /> 
+                    </Button>
                 </Column>
             </Row>
         </CardBody>
-        <CardBody>
-            <Row>
-                <Column>
-                    <Button Color="Color.Primary" Block Outline Clicked="@zoomTimeIn">Zoom Time In</Button>
-                </Column>
-                <Column>
-                    <Button Color="Color.Primary" Block Outline Clicked="@zoomTimeOut">Zoom Time Out</Button>
-                </Column>
-                <Column>
-                    <Button Color="Color.Primary" Block Outline Clicked="@zoomReset">Zoom Reset</Button>
-                </Column>
-            </Row>
-        </CardBody>
-        <CardBody>
+        <CardBody Overflow="Overflow.Scroll">
             <Row>
                 <Column>
                     
-                @if (blocks != null)
+                @if (Blocks != null)
                 {
                     var yposcounter = 0;
-                    var blockscount = blocks.Where(b => (b.IsRepetitiveSource && string.IsNullOrEmpty(b.RepetitiveSourceBlockId)) || ((!b.IsRepetitiveChild && !b.IsRepetitiveSource) && string.IsNullOrEmpty(b.RepetitiveSourceBlockId))).Count();
-                    
-                    var totalWidth = (int)((blockUnitWidth + 1) * totalXsteps);    
-                    var graphMaxWidth = (int)(MaxWidth * 0.9);
 
-                    <svg width="@(MaxWidth)px" height="@((int)((blockUnitHeight + 1) * blockscount) + 40)px" version="1.1"
+                    <svg width="@(MaxWidth)px" height="@((int)((blockUnitHeight + 1) * BlocksCount) + 40)px" version="1.1"
                             xmlns="http://www.w3.org/2000/svg">
                         <desc>Time Graph of Energy Blocks</desc>
                             <g fill="none" stroke="black" stroke-width="3">
-                                <line x1="0" y1="1.5" x2="@(graphMaxWidth)" y2="1.5" />
-                                <line x1="1.5" y1="0" x2="1.5" y2="@((int)((blockUnitHeight + 1) * blockscount))" />
+                                <line x1="0" y1="1.5" x2="@(GraphMaxWidth)" y2="1.5" />
+                                <line x1="1.5" y1="0" x2="1.5" y2="@((int)((blockUnitHeight + 1) * BlocksCount))" />
                             </g>
                             <g fill="red" stroke="none">
                                 <rect x="0" y="0" width="3" height="3" />
-                                <rect x="@(totalWidth - 3)" y="0" width="3" height="3" />
-                                <rect x="0" y="@((blockUnitHeight + 1) * blockscount)" width="3" height="3" />
+                                <rect x="@(TotalWidth - 3)" y="0" width="3" height="3" />
+                                <rect x="0" y="@((blockUnitHeight + 1) * BlocksCount)" width="3" height="3" />
                             </g>
                             <g font-size="12" font-family="Verdana" fill="black">
                                 <text x="@xgraphOffset" y="@(xgraphOffset * 2)">@(StartTime.ToString("dd.MM.yyyy hh:mm:ss"))</text>
-                                <text x="@(totalWidth - (12/3) * 19)" y="@(xgraphOffset * 2)">@(EndTime.ToString("dd.MM.yyyy hh:mm:ss"))</text>
-                                <text x="@xgraphOffset" y="@((blockUnitHeight + 1) * blockscount - 1)">@(blockscount) blocks</text>
+                                <text x="@(TotalWidth - (12/3) * 19)" y="@(xgraphOffset * 2)">@(EndTime.ToString("dd.MM.yyyy hh:mm:ss"))</text>
+                                <text x="@xgraphOffset" y="@((blockUnitHeight + 1) * BlocksCount - 1)">@(BlocksCount) blocks</text>
                             </g>
 
                             <!--
@@ -121,17 +69,17 @@
                                                      EndTime="EndTime" 
                                                      GraphDuration="GraphDuration"/>
                             -->
-                            @for (var i = 0; i < blocks.Count; i++)
+                            @for (var i = 0; i < Blocks.Count; i++)
                             {
-                                var block = blocks[i];
+                                var block = Blocks[i];
 
                                 var ypos = blockUnitHeight * yposcounter + xgraphOffset * 3;
                                 if (!string.IsNullOrEmpty(block.RepetitiveSourceBlockId))
                                 {
-                                    var parentblock = blocks.Where(b => b.Id == block.RepetitiveSourceBlockId).FirstOrDefault();
+                                    var parentblock = Blocks.Where(b => b.Id == block.RepetitiveSourceBlockId).FirstOrDefault();
                                     if (parentblock != null)
                                     {
-                                        var indx = blocks.IndexOf(parentblock);
+                                        var indx = Blocks.IndexOf(parentblock);
                                         ypos = blockUnitHeight * indx + xgraphOffset * 3;
                                     }
                                 }
@@ -147,7 +95,10 @@
                                     <BlockGraphBlock ActualBlockWidth="@actualBlockWidth" 
                                                      BlockUnitHeight="@blockUnitHeight" 
                                                      TextFontSize="@textFontSize"
-                                                     Block="@(block as BaseBlock)" XPos="@xpos" YPos="@((int)ypos)" ItemDoubleclick="@editItem" />
+                                                     Block="@(block as BaseBlock)" 
+                                                     XPos="@xpos" 
+                                                     YPos="@((int)ypos)" 
+                                                     BlockDoubleClick="@editItem" />
 
                                 }
                              }
@@ -164,31 +115,42 @@
     }
 </Card>
 
-<AddBlock @ref=editBlockModal WithButton="false" Item="@Item" EnergyBlockAdded="@OnBlockChanged" />
-
+@if (Item != null)
+{
+    <AddBlock @ref=editBlockModal WithButton="false" Item="@Item" BlockChanged="@OnBlockChanged" />
+}
 @code {
-    [Parameter]
-    public TreeItem Item { get; set; }
-
-    [Parameter]
-    public DateTime StartTime { get; set; } = new DateTime(2022,1,1);
-    [Parameter]
-    public DateTime EndTime { get; set; } = new DateTime(2023, 1, 1);
 
     [Parameter]
     public int MaxWidth { get; set; } = 1600;
     [Parameter]
     public int MaxHeight { get; set; } = 2500;
 
-    public TimeSpan GraphDuration { get => EndTime - StartTime; }
-
     [Inject] INotificationService NotificationService { get; set; }
 
-    DatePicker<DateTime>? datePickerStartTime;
-    DatePicker<DateTime>? datePickerEndTime;
+    public int BlocksCount 
+    { 
+        get
+        {
+            if (Item != null && Item.Id != null && Blocks != null)
+            {
+                return Blocks.Where(b => (b.IsRepetitiveSource && string.IsNullOrEmpty(b.RepetitiveSourceBlockId)) ||
+                                   ((!b.IsRepetitiveChild && !b.IsRepetitiveSource) && string.IsNullOrEmpty(b.RepetitiveSourceBlockId)))
+                                   .Count();
+            }
+            else
+                return 0;
+        }
+    }
+
+    public int TotalWidth { get => (int)((blockUnitWidth + 1) * totalXsteps); }
+
+    public int GraphMaxWidth { get => (int)(MaxWidth * 0.9); }
+
     Slider<int>? slider;
     AddBlock? editBlockModal;
     BlockGraphVerticalLines? blockGraphVerticalLines;
+    EntityTotalBalance? entityTotalBalance;
 
     private double blockUnitHeight = 25; //px
     private double blockUnitWidth = 4; //px
@@ -198,12 +160,6 @@
     private int textFontSize = 8;
     private double zoom = 1;
     private BlockTimeframe timeframe = BlockTimeframe.Day;
-    private double totalConsumed = 0;
-    private double totalCreated = 0;
-    private double totalStored = 0;
-    private double totalTotal = 0;
-
-    private List<IBlock> blocks { get; set; } = new List<IBlock>();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -242,7 +198,7 @@
 
     public async Task Load(TreeItem item)
     {
-        if (item != null)
+        if (item != null && item.Id != null)
         {
             Item = item;
             await loadData();
@@ -256,81 +212,47 @@
 
     private async Task loadData()
     {
-        if (Item != null)
+        if (Item != null && Item.Id != null)
         {
-            blocks = AppData.EntitiesHandler.GetBlocksOfEntityWithChildernBlocks(Item.Id).ToList();
-            SetSlider();
-            if (slider != null)
-                sliderValue = (int)(slider.Max / 2);
-            GetTotals();
-            if (blockGraphVerticalLines != null)
-                await blockGraphVerticalLines.DrawLines(StartTime, EndTime, GraphDuration, blockUnitHeight, blockUnitWidth);
-            await InvokeAsync(StateHasChanged);
+            Blocks = AppData.EntitiesHandler.GetBlocksOfEntityWithChildernBlocks(Item.Id).ToList();
+            if (Blocks != null)
+            {
+                SetSlider();
+                if (slider != null)
+                    sliderValue = (int)(slider.Max / 2);
+                if (entityTotalBalance != null)
+                    await entityTotalBalance.GetTotals(Item, StartTime, EndTime);
+                if (blockGraphVerticalLines != null)
+                    await blockGraphVerticalLines.DrawLines(StartTime, EndTime, Duration, blockUnitHeight, blockUnitWidth);
+                await InvokeAsync(StateHasChanged);
+            }
         }
-    }
-
-    private async Task GetTotals()
-    {
-        var bl = AppData.EntitiesHandler.GetConsumptionOfEntity(Item.Id, 
-                                                                  BlockTimeframe.Month, 
-                                                                  StartTime, 
-                                                                  EndTime, 
-                                                                  true, 
-                                                                  false, 
-                                                                  new List<BlockDirection> { BlockDirection.Consumed });
-        totalConsumed = 0;
-        foreach (var b in bl)
-            totalConsumed += b.Amount;
-        bl.Clear();
-        bl = AppData.EntitiesHandler.GetConsumptionOfEntity(Item.Id,
-                                                              BlockTimeframe.Month,
-                                                              StartTime,
-                                                              EndTime,
-                                                              true,
-                                                              false,
-                                                              new List<BlockDirection> { BlockDirection.Created });
-        totalCreated = 0;
-        foreach (var b in bl)
-            totalCreated += b.Amount;
-        bl = AppData.EntitiesHandler.GetConsumptionOfEntity(Item.Id,
-                                                              BlockTimeframe.Month,
-                                                              StartTime,
-                                                              EndTime,
-                                                              true,
-                                                              false,
-                                                              new List<BlockDirection> { BlockDirection.Stored });
-        totalStored = 0;
-        foreach (var b in bl)
-            totalStored += b.Amount;
-
-        totalTotal = totalCreated + totalStored - totalConsumed;
-
-        await InvokeAsync(StateHasChanged);
     }
 
     public async Task zoomTimeIn()
     {
-        if (GraphDuration.TotalHours >= 10)
+        if (Duration.TotalHours >= 10)
         {
-            var timeframeHalf = GraphDuration.TotalHours / 2;
+            var timeframeHalf = Duration.TotalHours / 2;
             var timeHalf = StartTime.AddHours(timeframeHalf);
             EndTime = timeHalf.AddHours(timeframeHalf / 2);
             StartTime = timeHalf.AddHours(-(timeframeHalf / 2));
             zoom += 1;
             SetSlider();
             SetTotalXstesps();
-            await GetTotals();
+            if (entityTotalBalance != null)
+                await entityTotalBalance.GetTotals(Item, StartTime, EndTime);
             if (blockGraphVerticalLines != null)
-                await blockGraphVerticalLines.DrawLines(StartTime, EndTime, GraphDuration, blockUnitHeight, blockUnitWidth);
+                await blockGraphVerticalLines.DrawLines(StartTime, EndTime, Duration, blockUnitHeight, blockUnitWidth);
             await InvokeAsync(StateHasChanged);
         }
     }
 
     public async Task zoomTimeOut()
     {
-        if (GraphDuration.TotalDays < (5 * 365))
+        if (Duration.TotalDays < (5 * 365))
         {
-            var timeframeHalf = GraphDuration.TotalHours / 2;
+            var timeframeHalf = Duration.TotalHours / 2;
             var timeframeTwice = timeframeHalf * 2;
             var timeHalf = StartTime.AddHours(timeframeHalf);
             var zoomratio = (Math.Log(timeframeHalf) / timeframeHalf) * 2 + 1;
@@ -339,19 +261,20 @@
             zoom -= 1;
             SetSlider();
             SetTotalXstesps();
-            await GetTotals();
+            if (entityTotalBalance != null)
+                await entityTotalBalance.GetTotals(Item, StartTime, EndTime);
             if (blockGraphVerticalLines != null)
-                await blockGraphVerticalLines.DrawLines(StartTime, EndTime, GraphDuration, blockUnitHeight, blockUnitWidth);
+                await blockGraphVerticalLines.DrawLines(StartTime, EndTime, Duration, blockUnitHeight, blockUnitWidth);
             await InvokeAsync(StateHasChanged);
         }
     }
 
     private void SetSlider()
     {
-        if (slider != null && blocks != null && blocks.Count > 0)
+        if (slider != null && Blocks != null && Blocks.Count > 0)
         {
-            var minblock = blocks[0];
-            var maxblock = blocks[blocks.Count - 1];
+            var minblock = Blocks[0];
+            var maxblock = Blocks[Blocks.Count - 1];
             if (minblock != null && maxblock != null)
             {
                 var timespan = maxblock.EndTime - minblock.StartTime;
@@ -372,7 +295,8 @@
         zoom = 1;
         SetSlider();
         SetTotalXstesps();
-        await GetTotals();
+        if (entityTotalBalance != null)
+            await entityTotalBalance.GetTotals(Item, StartTime, EndTime);
         await InvokeAsync(StateHasChanged);
     }
 
@@ -404,8 +328,9 @@
         {
             if (sliderValue == value)
             {
-                await GetTotals();
-                timer.Dispose();
+                if (entityTotalBalance != null)
+                    await entityTotalBalance.GetTotals(Item, StartTime, EndTime);
+                timer?.Dispose();
             }
         }, new System.Threading.AutoResetEvent(false), 2500, 2500);
         
@@ -417,10 +342,10 @@
         switch(timeframe)
         {
             case BlockTimeframe.Day:
-                totalXsteps = GraphDuration.TotalDays;
+                totalXsteps = Duration.TotalDays;
                 break;
             case BlockTimeframe.Hour:
-                totalXsteps = GraphDuration.TotalHours;
+                totalXsteps = Duration.TotalHours;
                 break;
             default:
                 totalXsteps = 365;

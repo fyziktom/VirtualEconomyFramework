@@ -1,4 +1,7 @@
-﻿<Router AppAssembly="@typeof(App).Assembly">
+﻿@inject AppData AppData
+@inject HttpClient Http
+
+<Router AppAssembly="@typeof(App).Assembly">
     <Found Context="routeData">
         <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
         <FocusOnNavigate RouteData="@routeData" Selector="h1" />
@@ -10,3 +13,27 @@
         </LayoutView>
     </NotFound>
 </Router>
+
+<MessageProvider />
+<PageProgressProvider />
+<NotificationProvider />
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        /*
+        if (firstRender)
+        {
+            AppData.RootItemId = "7b27c442-ad40-4679-b6d5-8873d9763996";
+            AppData.RootItemName = "network";
+            var storeddata = await Http.GetStringAsync("sampledata.json");
+            if (storeddata != null)
+                AppData.StoredConfig = storeddata;
+
+            AppData.EntitiesHandler.LoadFromConfig(AppData.StoredConfig);
+
+        }
+        */
+        await base.OnAfterRenderAsync(firstRender);
+    }
+}

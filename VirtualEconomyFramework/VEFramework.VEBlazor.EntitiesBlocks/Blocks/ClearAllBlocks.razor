@@ -1,0 +1,22 @@
+﻿@inherits EntitiesActionButtonComponentBase
+
+@inject AppData AppData
+
+<Button Color="Color.Primary" Block="@BlockButton" Outline="@OutlineButton" Clicked="@OnClearAllBlocks">Clear All Entity Blocks</Button>
+
+@code {
+    [Parameter]
+    public bool BlockButton { get; set;} = false;
+    [Parameter]
+    public bool OutlineButton { get; set;} = false;
+
+    private async Task OnClearAllBlocks()
+    {
+        if (Item != null && Item.Id != null)
+        {
+            AppData.EntitiesHandler.RemoveAllEntityBlocks(Item.Id);
+
+            await ActionFinished.InvokeAsync(Item.Id);
+        }
+    }
+}

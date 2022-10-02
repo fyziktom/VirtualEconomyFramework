@@ -35,6 +35,11 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
         public ConcurrentDictionary<string, IEntity> Entities { get; set; } = new ConcurrentDictionary<string, IEntity>();
 
         /// <summary>
+        /// Label of the unit of the Amount. For example "kWh" for energy application
+        /// </summary>
+        public string UnitLabel { get; set; } = "kWh";
+
+        /// <summary>
         /// Load Sources and Consumers data from the config file
         /// </summary>
         /// <param name="config"></param>
