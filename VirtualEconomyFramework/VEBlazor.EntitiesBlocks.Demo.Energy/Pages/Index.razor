@@ -1,0 +1,391 @@
+﻿@page "/"
+
+@inject AppData AppData
+@inject HttpClient Http
+
+<PageTitle>Index</PageTitle>
+
+<h1>VEBlazor.EntitiesBlocks.Demo.Energy</h1>
+
+Welcome to energy modeling app :)
+
+<Row>
+    <Column>
+        <Row>
+            <Column>
+                <LoadAndBackup DataLoaded="@OnLoadData" />
+            </Column>
+        </Row>
+        <Row>
+            <Column>
+                <Card Margin="Margin.Is4.FromBottom">
+            <CardHeader>
+                <CardTitle>Main</CardTitle>
+            </CardHeader>
+            <CardBody>
+                <Row>
+                    <Column>
+                        <Button Color="Color.Primary" Block Outline Clicked="@Refresh">Refresh Tree</Button>
+                    </Column>
+                    <Column>
+                        <AddBlock Item="@selectedNode" WithButton="true" EnergyBlockAdded="@onEnergyBlockAddedHandler" />
+                    </Column>
+                    <Column>
+                        <Button Color="Color.Primary" Block Outline Clicked="@ClearAllBlocks">Clear All Entity Blocks</Button>
+                    </Column>
+                </Row>
+                <Row>
+                    <Column>
+                        <Button Color="Color.Primary" Block Outline Clicked="@AddBlocks">Add Block preset</Button>
+                    </Column>
+                    <Column>
+                        <Button Color="Color.Primary" Block Outline Clicked="@AddBlocks2">Add Blocks preset 2</Button>
+                    </Column>
+                    <Column>
+                        <Button Color="Color.Primary" Block Outline Clicked="@( () => AddRepetitiveBlock(1,2))">Add Repetitive Block 1kW 8-10h</Button>
+                    </Column>
+                </Row>
+                <Row>
+                    <Column>
+                        <Button Color="Color.Primary" Block Outline Clicked="@( () => AddSolarBlocks(5))">Add Solar Blocks 5kW</Button>
+                    </Column>
+                    <Column>
+                         <Button Color="Color.Primary" Block Outline Clicked="@( () => AddSolarBlocksDayBlocks(5, 8, 18))">Add Solar Blocks 5kW 8-18h</Button>
+                    </Column>
+                    <Column>
+                        <Button Color="Color.Primary" Block Outline Clicked="@( () => AddSolarBlocks(3))">Add Solar Blocks 3kW</Button>
+                    </Column>
+                </Row>
+            </CardBody>
+            <CardBody>
+                @if (Tree != null)
+                {
+                    <TreeView Nodes="Tree.GetChilds()"
+                          TNode="TreeItem"
+                          GetChildNodes="@(item => item.GetChilds())"
+                          HasChildNodes="@(item => item.GetChilds()?.Any() == true)"
+                          SelectedNode="@selectedNode"
+                          SelectedNodeChanged="SelectedNodeChangedHandler"
+                          @bind-ExpandedNodes="ExpandedNodes">
+                        <NodeContent>
+                            @((context.Type == EntityType.Source ? "Source: " : "Consumer: ") + $"{context.Name} - {context.Id}")
+                        </NodeContent>
+                    </TreeView>
+                }
+            </CardBody>
+        </Card>
+            </Column>
+        </Row>
+
+        <Row>
+            <Column>
+                <DeviceDetails @ref=deviceDetails />
+            </Column>
+        </Row>
+    </Column>
+    <Column>
+        <ConsumptionGraph @ref=graph Item="@selectedNode"/>
+    </Column>
+</Row>
+
+<Row>
+    <Column>
+        <BlocksTimeGraph @ref=blockTimeGraph Item="@selectedNode" />
+    </Column>
+</Row>
+
+@code {
+    public TreeItem Tree { get; set; } = new TreeItem();
+    IList<TreeItem> ExpandedNodes = new List<TreeItem>();
+    TreeItem selectedNode;
+    ConsumptionGraph? graph;
+    DeviceDetails? deviceDetails;
+    BlocksTimeGraph? blockTimeGraph;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var sampledata = await Http.GetStringAsync("sampledata.json");
+            AppData.EntitiesHandler.LoadFromConfig(sampledata);
+
+            var root = AppData.EntitiesHandler.GetTree("7b27c442-ad40-4679-b6d5-8873d9763996");
+            if (root != null)
+            {
+                if (Tree == null) 
+                    Tree = new TreeItem();
+
+                Tree.AddChild(root);
+                if (deviceDetails != null)
+                    await deviceDetails.Refresh();
+                await RefreshGraphWithConsumption();
+                await InvokeAsync(StateHasChanged);
+            }
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private async Task Refresh()
+    {
+        await InvokeAsync( StateHasChanged );
+    }
+
+    private async Task RefreshGraphWithConsumption()
+    {
+        if (selectedNode != null && graph != null)
+            await graph.LoadData(selectedNode);
+    }
+
+    private async Task OnLoadData(string e)
+    {
+        var rootid = AppData.EntitiesHandler.Entities.Values.Where(b => b.Name.Contains("network")).FirstOrDefault()?.Id;
+        if (rootid != null)
+        {
+            var root = AppData.EntitiesHandler.GetTree(rootid);
+            if (root != null)
+            {
+                Tree = new TreeItem();
+                await InvokeAsync(StateHasChanged);
+
+                Tree.AddChild(root);
+                selectedNode = Tree;
+
+                if (selectedNode != null)
+                {
+                    await LoadDetailsAndGraphs(selectedNode);
+                }
+                await InvokeAsync(StateHasChanged);
+            }
+        }
+    }
+
+    private async Task RefreshDetailsAndGraphs()
+    {
+        if (deviceDetails != null && blockTimeGraph != null)
+        {
+            await deviceDetails.Refresh();
+            await blockTimeGraph.Refresh();
+            await RefreshGraphWithConsumption();
+        }
+    }
+
+    private async Task LoadDetailsAndGraphs(TreeItem node)
+    {
+        if (deviceDetails != null && blockTimeGraph != null)
+        {
+            await deviceDetails.Load(selectedNode);
+            await blockTimeGraph.Load(selectedNode);
+            await RefreshGraphWithConsumption();
+        }
+    }
+
+    private async Task SelectedNodeChangedHandler(TreeItem node)
+    {
+        selectedNode = node;
+        await LoadDetailsAndGraphs(node);
+    }
+
+    private async Task onEnergyBlockAddedHandler(IBlock block)
+    {
+        await RefreshDetailsAndGraphs();
+    }
+
+    private async Task AddBlocks()
+    {
+        if (selectedNode == null) return;
+
+        // add some custom blocks of simulated consumption
+        var blockstoadd = new List<IBlock>();
+        var id = selectedNode.Id;
+        var parent = selectedNode.Parent.Id;
+        var Block = new BaseBlock();
+        //device which consume 3kWh for 6 hours, started on 3rd of January in 00:00,
+        blockstoadd.Add(Block.GetBlock(BlockType.Simulated,
+                                       BlockDirection.Consumed,
+                                       new DateTime(2022, 1, 3),
+                                       new TimeSpan(6, 0, 0),
+                                       3,
+                                       id,
+                                       "Dryer",
+                                       null,
+                                       parent));
+
+        //device which consume 5kWh for 34 hours, started on 5th of January in 00:00,
+        blockstoadd.Add(Block.GetBlock(BlockType.Simulated,
+                                       BlockDirection.Consumed,
+                                       new DateTime(2022, 1, 5),
+                                       new TimeSpan(34, 0, 0),
+                                       5,
+                                       id, 
+                                       "Miner",
+                                       null,
+                                       parent));
+
+        //device which consume 0.03kW and run 4480 hours, started on 3rd of January in 5am, for example PC
+        blockstoadd.Add(Block.GetBlockByPower(BlockType.Simulated,
+                                              BlockDirection.Consumed,
+                                              new DateTime(2022, 1, 3, 5, 0, 0),
+                                              new TimeSpan(4480, 0, 0),
+                                              0.03,
+                                              id, 
+                                              "Server",
+                                              null,
+                                              parent));
+
+        //device which consume 0.1kW and run 2200 hours, started on 3rd of January in 5am, for example PC
+        blockstoadd.Add(Block.GetBlockByPower(BlockType.Simulated,
+                                              BlockDirection.Consumed,
+                                              new DateTime(2022, 3, 3, 5, 0, 0),
+                                              new TimeSpan(2200, 0, 0),
+                                              0.1,
+                                              id,
+                                              "PC",
+                                              null,
+                                              parent));
+
+        //device which consume 0.002kW and run 6200 hours, started on 3rd of January in 5am, for example PC
+        blockstoadd.Add(Block.GetBlockByPower(BlockType.Simulated,
+                                              BlockDirection.Consumed,
+                                              new DateTime(2022, 3, 3, 5, 0, 0),
+                                              new TimeSpan(6200, 0, 0),
+                                              0.002,
+                                              id,
+                                              "Charger",
+                                              null,
+                                              parent));
+
+        AppData.EntitiesHandler.AddBlocksToEntity(id, blockstoadd);
+        await RefreshDetailsAndGraphs();
+
+    }
+
+    private async Task AddBlocks2()
+    {
+        if (selectedNode == null) return;
+
+        // add some custom blocks of simulated consumption
+        var blockstoadd = new List<IBlock>();
+        var id = selectedNode.Id;
+        var parent = selectedNode.Parent.Id;
+        var Block = new BaseBlock();
+        //device which consume 1kWh for 6 hours, started on 3rd of January in 00:00,
+        blockstoadd.Add(Block.GetBlock(BlockType.Simulated,
+                                       BlockDirection.Consumed,
+                                       new DateTime(2022, 6, 3),
+                                       new TimeSpan(6, 0, 0),
+                                       1,
+                                       id,
+                                       "Microwave",
+                                       null,
+                                       parent));
+
+        //device which consume 3kWh for 34 hours, started on 5th of January in 00:00,
+        blockstoadd.Add(Block.GetBlock(BlockType.Simulated,
+                                       BlockDirection.Consumed,
+                                       new DateTime(2022, 1, 5),
+                                       new TimeSpan(34, 0, 0),
+                                       3,
+                                       id,
+                                       "Dryer",
+                                       null,
+                                       parent));
+
+        //device which consume 0.03kW and run 4480 hours, started on 3rd of January in 5am, for example PC
+        blockstoadd.Add(Block.GetBlockByPower(BlockType.Simulated,
+                                              BlockDirection.Consumed,
+                                              new DateTime(2022, 1, 5, 5, 0, 0),
+                                              new TimeSpan(4480, 0, 0),
+                                              0.03,
+                                              id,
+                                              "Charger",
+                                              null,
+                                              parent));
+
+        //device which consume 0.08kW and run 2200 hours, started on 3rd of January in 5am, for example PC
+        blockstoadd.Add(Block.GetBlockByPower(BlockType.Simulated,
+                                              BlockDirection.Consumed,
+                                              new DateTime(2022, 7, 3, 5, 0, 0),
+                                              new TimeSpan(2200, 0, 0),
+                                              0.08,
+                                              id,
+                                              "Server",
+                                              null,
+                                              parent));
+
+        //device which consume 0.1kW and run 6200 hours, started on 3rd of January in 5am, for example PC
+        blockstoadd.Add(Block.GetBlockByPower(BlockType.Simulated,
+                                              BlockDirection.Consumed,
+                                              new DateTime(2022, 3, 6, 5, 0, 0),
+                                              new TimeSpan(6200, 0, 0),
+                                              0.1,
+                                              id,
+                                              "Server 2",
+                                              null,
+                                              parent));
+
+        AppData.EntitiesHandler.AddBlocksToEntity(id, blockstoadd);
+        await RefreshDetailsAndGraphs();
+
+    }
+
+    private async Task AddSolarBlocks(int power = 5)
+    {
+        if (selectedNode != null && selectedNode.Id != null && selectedNode.Parent != null && selectedNode.Parent.Id != null)
+        {
+            var blocks = BlockHelpers.PVECreateYearBlocks(2022, 2023, selectedNode.Parent.Id, power, null);
+            AppData.EntitiesHandler.AddBlocksToEntity(selectedNode.Id, blocks);
+
+            await RefreshDetailsAndGraphs();
+        }
+
+    }
+    private async Task AddSolarBlocksDayBlocks(int power = 5, int sunstart = 8, int sunend = 18)
+    {
+        if (selectedNode != null && selectedNode.Id != null && selectedNode.Parent != null && selectedNode.Parent.Id != null)
+        {
+            var sun = new DateTime(2022, 1, 1, sunstart, 0, 0);
+            var sune = new DateTime(2022, 1, 1, sunend, 0, 0);
+            var blocks = BlockHelpers.PVECreateYearDaysBlocks(2022, 2023, sun, sune, selectedNode.Parent.Id, power, null);
+            AppData.EntitiesHandler.AddBlocksToEntity(selectedNode.Id, blocks);
+
+            await RefreshDetailsAndGraphs();
+        }
+    }
+
+
+    private async Task AddRepetitiveBlock(int power = 1, int hourduration = 2)
+    {
+        if (selectedNode != null && selectedNode.Id != null && selectedNode.Parent != null && selectedNode.Parent.Id != null)
+        {
+            var start = new DateTime(2022, 1, 1, 8, 0, 0);
+            var blocks = BlockHelpers.CreateRepetitiveDayBlock(start, 
+                                                               start.AddYears(1), 
+                                                               start, 
+                                                               start.AddHours(hourduration), 
+                                                               power,
+                                                               "", 
+                                                               selectedNode.Parent.Id, 
+                                                               BlockDirection.Consumed, 
+                                                               BlockType.Simulated,
+                                                               false, 
+                                                               false,
+                                                               "Airconditioner");
+
+            AppData.EntitiesHandler.AddBlocksToEntity(selectedNode.Id, blocks);
+
+            await RefreshDetailsAndGraphs();
+        }
+
+    }
+
+    private async Task ClearAllBlocks()
+    {
+        if (selectedNode != null && selectedNode.Id != null)
+            AppData.EntitiesHandler.RemoveAllEntityBlocks(selectedNode.Id);
+
+        if (deviceDetails != null)
+            await deviceDetails.Refresh();
+
+        await RefreshDetailsAndGraphs();
+    }
+}

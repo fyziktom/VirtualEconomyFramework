@@ -1,0 +1,127 @@
+﻿@using Microsoft.JSInterop
+@inject AppData AppData
+@inject IJSRuntime JSRuntime
+
+<Card Margin="Margin.Is4.FromBottom">
+    <CardHeader>
+        <CardTitle>Load and Backup</CardTitle>
+    </CardHeader>
+        <CardBody>
+            <Row Margin="Margin.Is4.FromBottom">
+                <Column>
+                    <Button Color="Color.Primary" Block Outline Clicked="@backup">Backup</Button>
+                </Column>
+            </Row>
+            <Row Margin="Margin.Is2.FromBottom">
+                <Column>
+                    <Field>
+                        <FileEdit Changed="@OnChanged" Written="@OnWritten" Progressed="@OnProgressed" />
+                    </Field>
+                </Column>
+            </Row>
+            <Row>
+                <Column>
+                    <Check TValue="bool" @bind-Checked="@clear">Clear eGrid before the load of the data</Check>
+                </Column>
+            </Row>
+            @if (canLoad)
+            {
+            <Row>
+                <Column>
+                    <Span>Data ready for load. Clicl "Load" button to process load.</Span>
+                </Column>
+            </Row>
+            }
+            <Row>
+                <Column>
+                    <Button Color="Color.Primary" Block Outline Disabled="@canLoad" Clicked="@load">Load</Button>
+                </Column>
+            </Row>
+
+        </CardBody>
+</Card>
+
+@code {
+    [Parameter]
+    public EventCallback<string> DataLoaded { get; set; }
+
+    string fileContent;
+    bool canLoad = false;
+    bool clear = true;
+
+    async Task OnChanged(FileChangedEventArgs e)
+    {
+        try
+        {
+            foreach (var file in e.Files)
+            {
+                // A stream is going to be the destination stream we're writing to.
+                using (var stream = new MemoryStream())
+                {
+                    // Here we're telling the FileEdit where to write the upload result
+                    await file.WriteToStreamAsync(stream);
+
+                    // Once we reach this line it means the file is fully uploaded.
+                    // In this case we're going to offset to the beginning of file
+                    // so we can read it.
+                    stream.Seek(0, SeekOrigin.Begin);
+
+                    // Use the stream reader to read the content of uploaded file,
+                    // in this case we can assume it is a textual file.
+                    using (var reader = new StreamReader(stream))
+                    {
+                        fileContent = await reader.ReadToEndAsync();
+                    }
+                }
+            }
+        }
+        catch (Exception exc)
+        {
+            Console.WriteLine(exc.Message);
+        }
+        finally
+        {
+            this.StateHasChanged();
+        }
+    }
+
+    void OnWritten(FileWrittenEventArgs e)
+    {
+        Console.WriteLine($"File: {e.File.Name} Position: {e.Position} Data: {Convert.ToBase64String(e.Data)}");
+        if (!string.IsNullOrEmpty(fileContent))
+            canLoad = true;
+        StateHasChanged();
+    }
+
+    void OnProgressed(FileProgressedEventArgs e)
+    {
+        Console.WriteLine($"File: {e.File.Name} Progress: {e.Percentage}");
+    }
+
+    private async Task load()
+    {
+        if (!string.IsNullOrEmpty(fileContent))
+        {
+            try
+            {
+                if (clear)
+                    AppData.EntitiesHandler = new BaseEntitiesHandler();
+                AppData.EntitiesHandler.LoadFromConfig(fileContent);
+                fileContent = string.Empty;
+                await DataLoaded.InvokeAsync("Loaded");
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("Cannot load the file. Exception: " + ex.Message);
+            }
+        }
+    }
+
+    private async Task backup()
+    {
+        var filename = "Backup-Export-" + DateTime.UtcNow.ToString("dd-MM-yyyyThh_mm_ss") + ".txt";
+        var backupData = AppData.EntitiesHandler.ExportToConfig();
+        if (backupData.Item1)
+            await JSRuntime.InvokeVoidAsync("entities.downloadText", backupData.Item2, filename);
+    }
+}

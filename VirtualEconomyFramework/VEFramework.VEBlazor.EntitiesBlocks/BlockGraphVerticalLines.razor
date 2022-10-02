@@ -1,0 +1,84 @@
+﻿@if (GraphDuration.TotalDays > 100)
+{
+    foreach (var tmp in dates)
+    {
+        @if (tmp.DayOfWeek == DayOfWeek.Monday || tmp.DayOfWeek == DayOfWeek.Saturday || tmp.DayOfWeek == DayOfWeek.Sunday)
+        {
+            <g fill="none" stroke="black" stroke-width="1">
+                <line x1="@(GetXPos(tmp))" y1="0" x2="@(GetXPos(tmp))" y2="@((int)((BlockUnitHeight + 1) * Blockscount))" />
+            </g>
+        }
+        @if (tmp.Day == 1)
+        {
+            <g fill="none" stroke="black" stroke-width="2">
+                <line x1="@(GetXPos(tmp))" y1="0" x2="@(GetXPos(tmp))" y2="@((int)((BlockUnitHeight + 1) * Blockscount))" />
+            </g>
+        }
+    }
+}
+else if (GraphDuration.TotalDays <= 100)
+{
+    foreach (var tmp in dates)
+    {
+        @if (tmp.DayOfWeek == DayOfWeek.Monday ||
+            tmp.DayOfWeek == DayOfWeek.Tuesday ||
+            tmp.DayOfWeek == DayOfWeek.Wednesday ||
+            tmp.DayOfWeek == DayOfWeek.Thursday ||
+            tmp.DayOfWeek == DayOfWeek.Friday)
+        {
+            <g fill="none" stroke="black" stroke-width="1">
+                <line x1="@(GetXPos(tmp))" y1="0" x2="@(GetXPos(tmp))" y2="@((int)((BlockUnitHeight + 1) * Blockscount))" />
+            </g>
+        }
+        @if (tmp.DayOfWeek == DayOfWeek.Saturday || tmp.DayOfWeek == DayOfWeek.Sunday)
+        {
+            <g fill="none" stroke="black" stroke-width="2">
+                <line x1="@(GetXPos(tmp))" y1="0" x2="@(GetXPos(tmp))" y2="@((int)((BlockUnitHeight + 1) * Blockscount))" />
+            </g>
+        }
+
+        @if (tmp.Day == 1)
+        {
+            <g fill="none" stroke="black" stroke-width="2">
+                <line x1="@(GetXPos(tmp))" y1="0" x2="@(GetXPos(tmp))" y2="@((int)((BlockUnitHeight + 1) * Blockscount))" />
+            </g>
+        }
+    }
+}
+@code {
+    [Parameter]
+    public TimeSpan GraphDuration { get; set; } = new TimeSpan();
+    [Parameter]
+    public double BlockUnitHeight { get; set; } = 0.0;
+    [Parameter]
+    public double BlockUnitWidth { get; set; } = 0.0;
+    [Parameter]
+    public int Blockscount { get; set; } = 0;
+    [Parameter]
+    public DateTime StartTime { get; set; } = new DateTime();
+    [Parameter]
+    public DateTime EndTime { get; set; } = new DateTime();
+    public List<DateTime> dates { get; set; } = new List<DateTime>();
+
+    public async Task DrawLines(DateTime st, DateTime et, TimeSpan gd, double buh, double buw)
+    {
+        StartTime = st;
+        EndTime = et;
+        GraphDuration = gd;
+        BlockUnitHeight = buh;
+        BlockUnitWidth = buw;
+        dates.Clear();
+        var tmp = StartTime;
+        while (tmp < EndTime)
+        {
+            dates.Add(tmp);
+            tmp = tmp.AddDays(1);
+        }
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public int GetXPos(DateTime time)
+    {
+        return (int)((time - StartTime).TotalDays * BlockUnitHeight);
+    }
+}

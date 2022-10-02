@@ -90,6 +90,22 @@ namespace VEDriversLite.EntitiesBlocks.Entities
         /// Last change of the parameters of the entity
         /// </summary>
         public DateTime LastChange { get; set; } = DateTime.UtcNow;
+
+        /// <summary>
+        /// Try to add the block to the Blocks dictionary. Block must have unique hashs
+        /// </summary>
+        /// <param name="block"></param>
+        /// <returns></returns>
+        public virtual bool AddBlock(IBlock block)
+        {
+            if (block == null) return false;
+            
+            if (!Blocks.ContainsKey(block.Id))
+                Blocks.TryAdd(block.Id, block);
+            
+            LastChange = DateTime.UtcNow;
+            return true;
+        }
         /// <summary>
         /// Try to add the list of the blocks to the Blocks dictionary. Blocks must have unique hashs
         /// </summary>

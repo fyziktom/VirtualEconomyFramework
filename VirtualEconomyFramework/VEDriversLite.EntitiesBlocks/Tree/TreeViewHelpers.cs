@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using VEDriversLite.EntitiesBlocks.Entities;
 
-namespace VEDriversLite.EntitiesBlocks.Handlers.Tree
+namespace VEDriversLite.EntitiesBlocks.Tree
 {
     public static class TreeViewHelpers
     {

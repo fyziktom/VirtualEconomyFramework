@@ -25,7 +25,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\VEDriversLite.Energy\VEDriversLite.Energy.csproj" />
     <ProjectReference Include="..\VEDriversLite.EntitiesBlocks\VEDriversLite.EntitiesBlocks.csproj" />
     <ProjectReference Include="..\VEDriversLite\VEDriversLite.csproj" />
   </ItemGroup>

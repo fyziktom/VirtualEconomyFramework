@@ -50,6 +50,12 @@ namespace VEDriversLite.EntitiesBlocks.Entities
         /// </summary>
         DateTime LastChange { get; set; }
         /// <summary>
+        /// Try to add the block to the Blocks dictionary. Block must have unique hashs
+        /// </summary>
+        /// <param name="blocks"></param>
+        /// <returns></returns>
+        bool AddBlock(IBlock block);
+        /// <summary>
         /// Try to add the list of the blocks to the Blocks dictionary. Blocks must have unique hashs
         /// </summary>
         /// <param name="blocks"></param>

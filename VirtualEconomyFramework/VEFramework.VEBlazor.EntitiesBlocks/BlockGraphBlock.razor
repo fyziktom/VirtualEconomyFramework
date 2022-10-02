@@ -1,0 +1,85 @@
+﻿
+@inject AppData AppData
+
+@{
+    var colorsource = "fill:rgb(150,200,0);stroke-width:1;stroke:rgb(100,100,50)";
+    var colorconsumer = "fill:rgb(0,200,255);stroke-width:1;stroke:rgb(0,100,255)";
+    var colorbattery = "fill:rgb(150,150,255);stroke-width:1;stroke:rgb(100,50,100)";
+    var color = colorsource;
+    @if (Block.Direction == BlockDirection.Consumed)
+    {
+        color = colorconsumer;
+    }
+    else if (Block.Direction == BlockDirection.Stored)
+    {
+        color = colorbattery;
+    }
+    @if (ActualBlockWidth < 50)
+    {
+        <g>
+            <rect x="@(XPos + 1)"
+                  y="@(YPos + 1)"
+                  width="@((int)ActualBlockWidth)"
+                  height="@((int)BlockUnitHeight)"
+                  style="@color" @onclick="@(async (e) => await BlockInfoMessage(Block, e))" />
+        </g>
+    }
+    else
+    {
+        <g>
+            <rect x="@(XPos + 1)"
+                  y="@(YPos + 1)"
+                  width="@((int)ActualBlockWidth)"
+                  height="@((int)BlockUnitHeight)"
+                  style="@color" @onclick="@((e) => BlockInfoMessage(Block, e))" />
+
+            <text x="@(XPos + 1 + (int)(ActualBlockWidth/2) - (int)(((double)TextFontSize/2) * Block.Name.Length) )"
+                  y="@(YPos + 1 + (int)(BlockUnitHeight/2) - (int)((double)TextFontSize/2))"
+                  font-family="Verdana"
+                  font-size="@TextFontSize"
+                  fill="black">
+                  @Block.Name
+            </text>
+            <text x="@(XPos + 1 + (int)(ActualBlockWidth/2) - (int)(((double)TextFontSize/3) * (6 + 4)) )"
+                  y="@(YPos + 1 + (int)(BlockUnitHeight/2) + TextFontSize - 1)"
+                  font-family="Verdana"
+                  font-size="@TextFontSize"
+                  fill="black">
+                  @(Math.Round(Block.Amount, 4)) kWh
+            </text>
+        </g>
+    }
+}
+
+@code {
+    [Inject] INotificationService NotificationService { get; set; }
+
+    [Parameter]
+    public int XPos { get; set; } = 0;
+    [Parameter]
+    public int YPos { get; set; } = 0;
+    [Parameter]
+    public double ActualBlockWidth { get; set; } = 0;
+    [Parameter]
+    public double BlockUnitHeight { get; set; } = 0;
+    [Parameter]
+    public int TextFontSize { get; set; } = 0;
+
+    [Parameter]
+    public EventCallback<IBlock> ItemDoubleclick { get; set; }
+
+    [Parameter]
+    public BaseBlock Block { get; set; } = new BaseBlock();
+
+    private async Task BlockInfoMessage(IBlock block, MouseEventArgs e)
+    {
+        if (e.Detail > 1)
+        {
+            await ItemDoubleclick.InvokeAsync(block);
+        }
+        else if (e.Detail == 1)
+        {
+            await NotificationService.Info($"Energy {Math.Round(block.Amount, 4)}kWh, Start: {block.StartTime}, End: {block.EndTime}", $"Block {block.Name}");
+        }
+    }
+}

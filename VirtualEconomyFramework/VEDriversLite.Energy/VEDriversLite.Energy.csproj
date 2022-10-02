@@ -30,4 +30,8 @@
     <ProjectReference Include="..\VEDriversLite.EntitiesBlocks\VEDriversLite.EntitiesBlocks.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Dto\" />
+  </ItemGroup>
+
 </Project>

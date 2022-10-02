@@ -4,11 +4,11 @@ using System.Linq;
 using System.Security.AccessControl;
 using System.Text;
 using System.Threading.Tasks;
-using VEDriversLite.Energy.Consumers;
-using VEDriversLite.Energy.Handlers;
-using VEDriversLite.Energy.Sources;
+using VEDriversLite.EntitiesBlocks.Consumers;
+using VEDriversLite.EntitiesBlocks.Sources;
 using VEDriversLite.EntitiesBlocks.Entities;
 using VEDriversLite.EntitiesBlocks.Handlers;
+using VEDriversLite.EntitiesBlocks.Sources;
 
 namespace VEFrameworkUnitTest.Energy
 {
@@ -28,9 +28,9 @@ namespace VEFrameworkUnitTest.Energy
         public string owner { get; set; } = string.Empty;
         public string sourceName { get; set; } = string.Empty;
 
-        public EnergyGridHandler GetTestEnergyGridHandler(string ownname = "fyziktom", string srcName = "mainPVE")
+        public BaseEntitiesHandler GetTestEnergyGridHandler(string ownname = "fyziktom", string srcName = "mainPVE")
         {
-            var eGrid = new EnergyGridHandler();
+            var eGrid = new BaseEntitiesHandler();
             sourceName = srcName;
             owner = ownname;
 

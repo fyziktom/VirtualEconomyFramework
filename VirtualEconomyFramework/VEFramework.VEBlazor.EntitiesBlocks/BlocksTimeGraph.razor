@@ -1,0 +1,482 @@
+﻿
+@inject AppData AppData
+
+<Card Margin="Margin.Is4.FromBottom">
+    <CardHeader>
+        <CardTitle>Energy Entity Energy Blocks Time Graph</CardTitle>
+    </CardHeader>
+    @if (Item != null)
+    {
+        <CardBody>
+            <Row>
+                <Column>
+                    <Span>Name: @Item.Name</Span>
+                    <Span>Type: @(Item.Type.ToString())</Span>
+                </Column>
+            </Row>
+            <Row>
+                <Column>
+                    <Span>Start Date: @(StartTime.ToString("dd.MM.yyyy hh:mm:ss"))</Span>
+                    <Span>End Date: @(EndTime.ToString("dd.MM.yyyy hh:mm:ss"))</Span>
+                </Column>
+            </Row>
+        </CardBody>
+        <CardBody>
+            <Field>
+                <FieldLabel>First Run Of repetitive Block</FieldLabel>
+                <Addons>
+                    <Addon AddonType="AddonType.Start">
+                        <Button Color="Color.Light" Clicked="@(()=>datePickerStartTime.ToggleAsync())">
+                            <Icon Name="IconName.CalendarDay" />
+                        </Button>
+                    </Addon>
+                    <Addon AddonType="AddonType.Body">
+                        <DatePicker @ref="@datePickerStartTime"
+                            InputMode="DateInputMode.DateTime"
+                            Date="@StartTime"
+                            DateChanged="@startTimeDateChanged"
+                            TValue="DateTime" />
+                    </Addon>
+                </Addons>
+            </Field>
+            <Field>
+                <FieldLabel>End Run of repetitive Block</FieldLabel>
+                <Addons>
+                    <Addon AddonType="AddonType.Start">
+                        <Button Color="Color.Light" Clicked="@(()=>datePickerEndTime.ToggleAsync())">
+                            <Icon Name="IconName.CalendarDay" />
+                        </Button>
+                    </Addon>
+                    <Addon AddonType="AddonType.Body">
+                        <DatePicker @ref="@datePickerEndTime"
+                        InputMode="DateInputMode.DateTime"
+                        Date="@EndTime"
+                            DateChanged="@endTimeDateChanged"
+                            TValue="DateTime" />
+                        </Addon>
+                    </Addons>
+                </Field>
+        </CardBody>
+        <CardBody>
+            <Row>
+                <Column>
+                    <Span>Total Created: @(Math.Round(totalCreated, 4)) kWh</Span>
+                    <Span>Total Stored: @(Math.Round(totalStored, 4)) kWh</Span>
+                    <Span TextColor="TextColor.Danger">Total Consumed: @(Math.Round(totalConsumed, 4)) kWh</Span>
+                    <Span TextColor="@(totalTotal < 0 ? TextColor.Danger : TextColor.Primary)">
+                        Total Bilance: @(Math.Round(totalTotal, 4)) kWh
+                    </Span>
+                </Column>
+            </Row>
+        </CardBody>
+        <CardBody>
+            <Row>
+                <Column>
+                    <Button Color="Color.Primary" Block Outline Clicked="@zoomTimeIn">Zoom Time In</Button>
+                </Column>
+                <Column>
+                    <Button Color="Color.Primary" Block Outline Clicked="@zoomTimeOut">Zoom Time Out</Button>
+                </Column>
+                <Column>
+                    <Button Color="Color.Primary" Block Outline Clicked="@zoomReset">Zoom Reset</Button>
+                </Column>
+            </Row>
+        </CardBody>
+        <CardBody>
+            <Row>
+                <Column>
+                    
+                @if (blocks != null)
+                {
+                    var yposcounter = 0;
+                    var blockscount = blocks.Where(b => (b.IsRepetitiveSource && string.IsNullOrEmpty(b.RepetitiveSourceBlockId)) || ((!b.IsRepetitiveChild && !b.IsRepetitiveSource) && string.IsNullOrEmpty(b.RepetitiveSourceBlockId))).Count();
+                    
+                    var totalWidth = (int)((blockUnitWidth + 1) * totalXsteps);    
+                    var graphMaxWidth = (int)(MaxWidth * 0.9);
+
+                    <svg width="@(MaxWidth)px" height="@((int)((blockUnitHeight + 1) * blockscount) + 40)px" version="1.1"
+                            xmlns="http://www.w3.org/2000/svg">
+                        <desc>Time Graph of Energy Blocks</desc>
+                            <g fill="none" stroke="black" stroke-width="3">
+                                <line x1="0" y1="1.5" x2="@(graphMaxWidth)" y2="1.5" />
+                                <line x1="1.5" y1="0" x2="1.5" y2="@((int)((blockUnitHeight + 1) * blockscount))" />
+                            </g>
+                            <g fill="red" stroke="none">
+                                <rect x="0" y="0" width="3" height="3" />
+                                <rect x="@(totalWidth - 3)" y="0" width="3" height="3" />
+                                <rect x="0" y="@((blockUnitHeight + 1) * blockscount)" width="3" height="3" />
+                            </g>
+                            <g font-size="12" font-family="Verdana" fill="black">
+                                <text x="@xgraphOffset" y="@(xgraphOffset * 2)">@(StartTime.ToString("dd.MM.yyyy hh:mm:ss"))</text>
+                                <text x="@(totalWidth - (12/3) * 19)" y="@(xgraphOffset * 2)">@(EndTime.ToString("dd.MM.yyyy hh:mm:ss"))</text>
+                                <text x="@xgraphOffset" y="@((blockUnitHeight + 1) * blockscount - 1)">@(blockscount) blocks</text>
+                            </g>
+
+                            <!--
+                            <BlockGraphVerticalLines ref=blockGraphVerticalLines
+                                                     Blockscount="blockscount" 
+                                                     BlockUnitHeight="blockUnitHeight" 
+                                                     BlockUnitWidth="blockUnitWidth" 
+                                                     StartTime="StartTime" 
+                                                     EndTime="EndTime" 
+                                                     GraphDuration="GraphDuration"/>
+                            -->
+                            @for (var i = 0; i < blocks.Count; i++)
+                            {
+                                var block = blocks[i];
+
+                                var ypos = blockUnitHeight * yposcounter + xgraphOffset * 3;
+                                if (!string.IsNullOrEmpty(block.RepetitiveSourceBlockId))
+                                {
+                                    var parentblock = blocks.Where(b => b.Id == block.RepetitiveSourceBlockId).FirstOrDefault();
+                                    if (parentblock != null)
+                                    {
+                                        var indx = blocks.IndexOf(parentblock);
+                                        ypos = blockUnitHeight * indx + xgraphOffset * 3;
+                                    }
+                                }
+                                else
+                                {
+                                    yposcounter++;
+                                }
+
+                                if (block != null && block.EndTime >= StartTime && block.StartTime <= EndTime)
+                                {
+                                    var xpos = GetXPosition(block);
+                                    var actualBlockWidth = GetActualBlockWidth(block);
+                                    <BlockGraphBlock ActualBlockWidth="@actualBlockWidth" 
+                                                     BlockUnitHeight="@blockUnitHeight" 
+                                                     TextFontSize="@textFontSize"
+                                                     Block="@(block as BaseBlock)" XPos="@xpos" YPos="@((int)ypos)" ItemDoubleclick="@editItem" />
+
+                                }
+                             }
+                    </svg>
+                    }
+                </Column>
+            </Row>
+            <Row>
+                <Column>
+                    <Slider @ref=slider TValue="int" Step="1" Value="sliderValue" ValueChanged="@OnsliderValueChanged" />
+                </Column>
+            </Row>
+        </CardBody>
+    }
+</Card>
+
+<AddBlock @ref=editBlockModal WithButton="false" Item="@Item" EnergyBlockAdded="@OnBlockChanged" />
+
+@code {
+    [Parameter]
+    public TreeItem Item { get; set; }
+
+    [Parameter]
+    public DateTime StartTime { get; set; } = new DateTime(2022,1,1);
+    [Parameter]
+    public DateTime EndTime { get; set; } = new DateTime(2023, 1, 1);
+
+    [Parameter]
+    public int MaxWidth { get; set; } = 1600;
+    [Parameter]
+    public int MaxHeight { get; set; } = 2500;
+
+    public TimeSpan GraphDuration { get => EndTime - StartTime; }
+
+    [Inject] INotificationService NotificationService { get; set; }
+
+    DatePicker<DateTime>? datePickerStartTime;
+    DatePicker<DateTime>? datePickerEndTime;
+    Slider<int>? slider;
+    AddBlock? editBlockModal;
+    BlockGraphVerticalLines? blockGraphVerticalLines;
+
+    private double blockUnitHeight = 25; //px
+    private double blockUnitWidth = 4; //px
+    private double totalXsteps = 365;
+    private int sliderValue = 0;
+    private int xgraphOffset = 10;
+    private int textFontSize = 8;
+    private double zoom = 1;
+    private BlockTimeframe timeframe = BlockTimeframe.Day;
+    private double totalConsumed = 0;
+    private double totalCreated = 0;
+    private double totalStored = 0;
+    private double totalTotal = 0;
+
+    private List<IBlock> blocks { get; set; } = new List<IBlock>();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            if (slider != null)
+            {
+                slider.Max = (int)totalXsteps;
+                sliderValue = (int)(totalXsteps / 2);
+                await InvokeAsync(StateHasChanged);
+            }   
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    async Task OnBlockChanged(IBlock e)
+    {
+        await loadData();
+    }
+
+    async Task startTimeDateChanged(DateTime e)
+    {
+        if (e == null) return;
+        StartTime = (DateTime)e;
+        SetTotalXstesps();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    async Task endTimeDateChanged(DateTime e)
+    {
+        if (e == null) return;
+        EndTime = (DateTime)e;
+        SetTotalXstesps();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public async Task Load(TreeItem item)
+    {
+        if (item != null)
+        {
+            Item = item;
+            await loadData();
+        }
+    }
+
+    public async Task Refresh()
+    {
+        await loadData();
+    }
+
+    private async Task loadData()
+    {
+        if (Item != null)
+        {
+            blocks = AppData.EntitiesHandler.GetBlocksOfEntityWithChildernBlocks(Item.Id).ToList();
+            SetSlider();
+            if (slider != null)
+                sliderValue = (int)(slider.Max / 2);
+            GetTotals();
+            if (blockGraphVerticalLines != null)
+                await blockGraphVerticalLines.DrawLines(StartTime, EndTime, GraphDuration, blockUnitHeight, blockUnitWidth);
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private async Task GetTotals()
+    {
+        var bl = AppData.EntitiesHandler.GetConsumptionOfEntity(Item.Id, 
+                                                                  BlockTimeframe.Month, 
+                                                                  StartTime, 
+                                                                  EndTime, 
+                                                                  true, 
+                                                                  false, 
+                                                                  new List<BlockDirection> { BlockDirection.Consumed });
+        totalConsumed = 0;
+        foreach (var b in bl)
+            totalConsumed += b.Amount;
+        bl.Clear();
+        bl = AppData.EntitiesHandler.GetConsumptionOfEntity(Item.Id,
+                                                              BlockTimeframe.Month,
+                                                              StartTime,
+                                                              EndTime,
+                                                              true,
+                                                              false,
+                                                              new List<BlockDirection> { BlockDirection.Created });
+        totalCreated = 0;
+        foreach (var b in bl)
+            totalCreated += b.Amount;
+        bl = AppData.EntitiesHandler.GetConsumptionOfEntity(Item.Id,
+                                                              BlockTimeframe.Month,
+                                                              StartTime,
+                                                              EndTime,
+                                                              true,
+                                                              false,
+                                                              new List<BlockDirection> { BlockDirection.Stored });
+        totalStored = 0;
+        foreach (var b in bl)
+            totalStored += b.Amount;
+
+        totalTotal = totalCreated + totalStored - totalConsumed;
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public async Task zoomTimeIn()
+    {
+        if (GraphDuration.TotalHours >= 10)
+        {
+            var timeframeHalf = GraphDuration.TotalHours / 2;
+            var timeHalf = StartTime.AddHours(timeframeHalf);
+            EndTime = timeHalf.AddHours(timeframeHalf / 2);
+            StartTime = timeHalf.AddHours(-(timeframeHalf / 2));
+            zoom += 1;
+            SetSlider();
+            SetTotalXstesps();
+            await GetTotals();
+            if (blockGraphVerticalLines != null)
+                await blockGraphVerticalLines.DrawLines(StartTime, EndTime, GraphDuration, blockUnitHeight, blockUnitWidth);
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    public async Task zoomTimeOut()
+    {
+        if (GraphDuration.TotalDays < (5 * 365))
+        {
+            var timeframeHalf = GraphDuration.TotalHours / 2;
+            var timeframeTwice = timeframeHalf * 2;
+            var timeHalf = StartTime.AddHours(timeframeHalf);
+            var zoomratio = (Math.Log(timeframeHalf) / timeframeHalf) * 2 + 1;
+            EndTime = timeHalf.AddHours(timeframeTwice * zoomratio);
+            StartTime = timeHalf.AddHours(-(timeframeTwice * zoomratio));
+            zoom -= 1;
+            SetSlider();
+            SetTotalXstesps();
+            await GetTotals();
+            if (blockGraphVerticalLines != null)
+                await blockGraphVerticalLines.DrawLines(StartTime, EndTime, GraphDuration, blockUnitHeight, blockUnitWidth);
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private void SetSlider()
+    {
+        if (slider != null && blocks != null && blocks.Count > 0)
+        {
+            var minblock = blocks[0];
+            var maxblock = blocks[blocks.Count - 1];
+            if (minblock != null && maxblock != null)
+            {
+                var timespan = maxblock.EndTime - minblock.StartTime;
+                if (timeframe == BlockTimeframe.Day)
+                    slider.Max = (int)timespan.TotalDays;
+                else if (timeframe == BlockTimeframe.Hour)
+                    slider.Max = (int)timespan.TotalHours;
+
+                sliderValue = (int)((double)slider.Max / 2);
+            }
+        }
+    }
+
+    public async Task zoomReset()
+    {
+        EndTime = new DateTime(2023, 1, 1);
+        StartTime = new DateTime(2022, 1, 1);
+        zoom = 1;
+        SetSlider();
+        SetTotalXstesps();
+        await GetTotals();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private System.Threading.Timer timer;
+    private async Task OnsliderValueChanged(int value)
+    {
+        var tmp = value - sliderValue;
+        //var right = tmp < 0 ? true : false;
+        sliderValue = value;
+        switch (timeframe)
+        {
+            case BlockTimeframe.Day:
+                StartTime = StartTime.AddDays(tmp);
+                EndTime = EndTime.AddDays(tmp);
+                break;
+            case BlockTimeframe.Hour:
+                StartTime = StartTime.AddDays(tmp);
+                EndTime = EndTime.AddDays(tmp);
+                break;
+            default:
+                totalXsteps = 365;
+                break;
+        }
+
+        //recalc just when the slider value is stable for at least 2500ms
+        if (timer != null)
+            timer.Dispose();
+        timer = new System.Threading.Timer(async (object stateInfo) =>
+        {
+            if (sliderValue == value)
+            {
+                await GetTotals();
+                timer.Dispose();
+            }
+        }, new System.Threading.AutoResetEvent(false), 2500, 2500);
+        
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private void SetTotalXstesps()
+    {
+        switch(timeframe)
+        {
+            case BlockTimeframe.Day:
+                totalXsteps = GraphDuration.TotalDays;
+                break;
+            case BlockTimeframe.Hour:
+                totalXsteps = GraphDuration.TotalHours;
+                break;
+            default:
+                totalXsteps = 365;
+                break;
+        }
+
+        blockUnitWidth = (((double)MaxWidth * 0.9) / totalXsteps) * zoom;
+        if (blockUnitWidth <= 0)
+            blockUnitWidth = 1;
+    }
+
+    private int GetXPosition(IBlock block)
+    {
+        int res = 0;
+        switch (timeframe)
+        {
+            case BlockTimeframe.Day:
+                res = (int)((block.StartTime - StartTime).TotalDays * blockUnitWidth);
+                break;
+            case BlockTimeframe.Hour:
+                res = (int)((block.StartTime - StartTime).TotalHours * blockUnitWidth);
+                break;
+            default:
+                res = (int)((block.StartTime - StartTime).TotalDays * blockUnitWidth);
+                break;
+        }
+        return res;
+    }
+
+    private double GetActualBlockWidth(IBlock block)
+    {
+        double res = 0;
+        switch (timeframe)
+        {
+            case BlockTimeframe.Day:
+                res = blockUnitWidth * (block.Timeframe.TotalDays == 0 ? 1 : block.Timeframe.TotalDays);
+                break;
+            case BlockTimeframe.Hour:
+                res = blockUnitWidth * (block.Timeframe.TotalHours == 0 ? 1 : block.Timeframe.TotalHours);
+                break;
+            default:
+                res = blockUnitWidth * (block.Timeframe.TotalDays == 0 ? 1 : block.Timeframe.TotalDays);
+                break;
+        }
+        if (res <= 0)
+            res = 1;
+
+        return res;
+    }
+
+    private async Task editItem(IBlock block)
+    {
+        if (editBlockModal != null)
+        {
+            await editBlockModal.LoadBlock(block);
+        }
+    }
+
+}

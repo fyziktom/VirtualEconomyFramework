@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using VEDriversLite.EntitiesBlocks.Blocks;
+using VEDriversLite.EntitiesBlocks.Blocks.Dto;
 using Xunit;
 
 namespace VEFrameworkUnitTest.BlockEntities
@@ -129,6 +130,73 @@ namespace VEFrameworkUnitTest.BlockEntities
                 total += b.Amount;
 
             Assert.Equal(10, total);
+        }
+
+        [Fact]
+        public void GetBlockConfigDto()
+        {
+            var block = new BaseBlock();
+            var Id = "1";
+            var parentId = "123";
+            var sourceId = "1234";
+            var repetitiveSourceId = "12345";
+            var starttime = new DateTime(2022, 1, 1);
+            var timeframe = starttime.AddYears(1) - starttime;
+            var repetitivefirstRun = new DateTime(2023, 1, 1, 8, 0, 0);
+            var repetitiveendRun = new DateTime(2023, 1, 1, 18, 0, 0);
+            var offperiod = new TimeSpan(0, 8, 0, 0);
+            var isindayonly = true;
+            var isoffperiodrepetitive = true;
+            var justinweek = true;
+            var justinweekends = true;
+
+            block.Id = Id;
+            block.ParentId = parentId;
+            block.SourceId = sourceId;
+            block.RepetitiveSourceBlockId = repetitiveSourceId;
+            block.StartTime = starttime;
+            block.Timeframe = timeframe;
+            block.RepetitiveFirstRun = repetitivefirstRun;
+            block.RepetitiveEndRun = repetitiveendRun;
+            block.OffPeriod = offperiod;
+            block.IsInDayOnly = isindayonly;
+            block.IsOffPeriodRepetitive = isoffperiodrepetitive;
+            block.JustInWeek = justinweek;
+            block.JustInWeekends = justinweekends;
+
+            var dto = new BaseBlockConfigDto();
+            dto.Fill(block);
+
+            Assert.Equal(Id, dto.Id);
+            Assert.Equal(parentId, dto.ParentId);
+            Assert.Equal(sourceId, dto.SourceId);
+            Assert.Equal(repetitiveSourceId, dto.RepetitiveSourceBlockId);
+            Assert.Equal(starttime, dto.StartTime);
+            Assert.Equal(timeframe, dto.Timeframe);
+            Assert.Equal(repetitivefirstRun, dto.RepetitiveFirstRun);
+            Assert.Equal(repetitiveendRun, dto.RepetitiveEndRun);
+            Assert.Equal(offperiod, dto.OffPeriod);
+            Assert.True(dto.IsInDayOnly);
+            Assert.True(dto.IsOffPeriodRepetitive);
+            Assert.True(dto.JustInWeek);
+            Assert.True(dto.JustInWeekends);
+
+            var rblock = dto.GetBlockFromDto();
+
+            Assert.Equal(Id, rblock.Id);
+            Assert.Equal(parentId, rblock.ParentId);
+            Assert.Equal(sourceId, rblock.SourceId);
+            Assert.Equal(repetitiveSourceId, rblock.RepetitiveSourceBlockId);
+            Assert.Equal(starttime, rblock.StartTime);
+            Assert.Equal(timeframe, rblock.Timeframe);
+            Assert.Equal(repetitivefirstRun, rblock.RepetitiveFirstRun);
+            Assert.Equal(repetitiveendRun, rblock.RepetitiveEndRun);
+            Assert.Equal(offperiod, rblock.OffPeriod);
+            Assert.True(rblock.IsInDayOnly);
+            Assert.True(rblock.IsOffPeriodRepetitive);
+            Assert.True(rblock.JustInWeek);
+            Assert.True(rblock.JustInWeekends);
+
         }
     }
 }

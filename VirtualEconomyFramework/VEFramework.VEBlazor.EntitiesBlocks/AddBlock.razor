@@ -1,0 +1,334 @@
+﻿
+@inject AppData AppData
+
+<Modal @ref="AddBlockModal">
+    <ModalContent Centered Size="ModalSize.ExtraLarge">
+        <ModalHeader>
+            <ModalTitle>Add Block</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            @if (Item != null && Item.Id != null)
+            {
+            <Row>
+                <Column>
+                    <Field>
+                        <FieldLabel>Name</FieldLabel>
+                        <TextEdit Placeholder="Block Name" @bind-Text="@block.Name" />
+                    </Field>
+                    <Field>
+                        <FieldLabel>Description</FieldLabel>
+                        <TextEdit Placeholder="Block Description" @bind-Text="@block.Description" />
+                    </Field>
+                    <Field>
+                        <FieldLabel>Start of the Block</FieldLabel>
+                        <Addons>
+                            <Addon AddonType="AddonType.Start">
+                                <Button Color="Color.Light" Clicked="@(()=>datePickerStartTime.ToggleAsync())">
+                                    <Icon Name="IconName.CalendarDay" />
+                                </Button>
+                            </Addon>
+                            <Addon AddonType="AddonType.Body">
+                                <DatePicker @ref="@datePickerStartTime"
+                                        InputMode="DateInputMode.DateTime"
+                                        Date="@block.StartTime"
+                                        DateChanged="@startDateChanged"
+                                        TValue="DateTime" />
+                            </Addon>
+                        </Addons>
+                    </Field>
+                    <Field>
+                        <FieldLabel>End of the Block</FieldLabel>
+                        <Addons>
+                            <Addon AddonType="AddonType.Start">
+                                <Button Color="Color.Light" Clicked="@(()=>datePickerEndTime.ToggleAsync())">
+                                    <Icon Name="IconName.CalendarDay" />
+                                </Button>
+                            </Addon>
+                            <Addon AddonType="AddonType.Body">
+                                <DatePicker @ref="@datePickerEndTime"
+                                        InputMode="DateInputMode.DateTime"
+                                        Date="@block.EndTime"
+                                        DateChanged="@endDateChanged"
+                                        TValue="DateTime" />
+                            </Addon>
+                        </Addons>
+                    </Field>
+                    <Check TValue="bool" @bind-Checked="@repetitiveBlock">Repetitive Block</Check>
+                        
+                    @if (repetitiveBlock)
+                    {
+                        <Field>
+                            <FieldLabel>First Run Of repetitive Block</FieldLabel>
+                            <Addons>
+                                <Addon AddonType="AddonType.Start">
+                                    <Button Color="Color.Light" Clicked="@(()=>datePickerFirstRun.ToggleAsync())">
+                                        <Icon Name="IconName.CalendarDay" />
+                                    </Button>
+                                </Addon>
+                                <Addon AddonType="AddonType.Body">
+                                    <DatePicker @ref="@datePickerFirstRun"
+                                        InputMode="(!repetitiveDayBlock ? DateInputMode.DateTime : DateInputMode.Date)"
+                                        Date="@block.RepetitiveFirstRun"
+                                        DateChanged="@firstRunDateChanged"
+                                        TValue="DateTime?" />
+                                </Addon>
+                            </Addons>
+                        </Field>
+                        <Field>
+                            <FieldLabel>End Run of repetitive Block</FieldLabel>
+                            <Addons>
+                                <Addon AddonType="AddonType.Start">
+                                    <Button Color="Color.Light" Clicked="@(()=>datePickerEndRun.ToggleAsync())">
+                                        <Icon Name="IconName.CalendarDay" />
+                                    </Button>
+                                </Addon>
+                                <Addon AddonType="AddonType.Body">
+                                    <DatePicker @ref="@datePickerEndRun"
+                                    InputMode="(!repetitiveDayBlock ? DateInputMode.DateTime : DateInputMode.Date)"
+                                    Date="@block.RepetitiveEndRun"
+                                        DateChanged="@endRunDateChanged"
+                                        TValue="DateTime?" />
+                                    </Addon>
+                                </Addons>
+                            </Field>
+
+                            <Check TValue="bool" @bind-Checked="@repetitiveDayBlock">Repetitive Day Block</Check>
+                            @if (!repetitiveDayBlock)
+                            {
+                            <Field>
+                                <FieldLabel>Off Time in Hours</FieldLabel>
+                                <NumericPicker TValue="int" Min="0" Max="1000" Value="@((int)block.OffPeriod.Value.TotalHours)" ValueChanged="OnOfftimeValueChanged" Decimals="4" />
+                                <FieldHelp>Please fill the off time between repetition</FieldHelp>
+                            </Field>
+                            }
+                            else
+                            {
+                            <Check TValue="bool" @bind-Checked="@block.JustInWeek">Just Week Days</Check>
+                            <Check TValue="bool" @bind-Checked="@block.JustInWeekends">Just Weekend</Check>
+                            }
+                                
+                    }
+                    <Field>
+                        <FieldLabel>Total Amount of Power</FieldLabel>
+                        <NumericPicker TValue="double" Min="0" Max="1000" @bind-Value="@block.Amount" Decimals="4" />
+                        <FieldHelp>Please fill the total amount of energy in the block</FieldHelp>
+                    </Field>
+                    <Field>
+                        <RadioGroup TValue="BlockType" Name="types" @bind-CheckedValue="@block.Type">
+                            <Radio Value="@(BlockType.Real)">Real</Radio>
+                            <Radio Value="@(BlockType.Simulated)">Simulated</Radio>
+                        </RadioGroup>
+                    </Field>
+                    <Field>
+                        <RadioGroup TValue="BlockDirection" Name="direction" @bind-CheckedValue="@block.Direction">
+                            <Radio Value="@(BlockDirection.Created)">Created</Radio>
+                            <Radio Value="@(BlockDirection.Consumed)">Consumed</Radio>
+                            <Radio Value="@(BlockDirection.Stored)">Stored</Radio>
+                        </RadioGroup>
+                    </Field>
+                </Column>
+            </Row>
+            <Row>
+                <Column>
+                    @if (blockChange)
+                    {
+                    <Button Color="Color.Primary" Outline Clicked="@changeBlock">Change Block</Button>
+                    }
+                    else
+                    {
+                    <Button Color="Color.Primary" Outline Clicked="@addBlock">Add Block</Button>
+                    }
+                </Column>
+            </Row>
+            }
+            else
+            {
+                <Row>
+                    <Column>
+                        <Span>Please select the Entity to add new block. Click to entity in the Tree.</Span>
+                    </Column>
+                </Row>
+            }
+        </ModalBody>
+    </ModalContent>
+</Modal>
+
+@if (WithButton)
+{
+    <Button Color="Color.Primary" Block Outline Clicked="@openAddBlock">New Block</Button>
+}
+
+@code {
+    [Parameter]
+    public TreeItem Item { get; set; }
+    [Parameter]
+    public EventCallback<IBlock> EnergyBlockAdded { get; set; }
+    [Parameter]
+    public bool WithButton { get; set; } = false;
+
+    Modal? AddBlockModal;
+    DatePicker<DateTime>? datePickerStartTime;
+    DatePicker<DateTime>? datePickerEndTime;
+    DatePicker<DateTime?>? datePickerFirstRun;
+    DatePicker<DateTime?>? datePickerEndRun;
+    bool basedOnTotalPower = true;
+    bool basedOnHourPowerConsumption = false;
+    bool repetitiveBlock = false;
+    bool repetitiveDayBlock = false;
+    bool blockChange = false;
+
+    private BaseBlock block = new BaseBlock();
+
+    [Inject] INotificationService NotificationService { get; set; }
+
+    public async Task LoadBlock(IBlock inputblock)
+    {
+        if (inputblock != null)
+            block.Fill(inputblock);
+        if (AddBlockModal != null)
+            await AddBlockModal.Show();
+        blockChange = true;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    async Task startDateChanged(DateTime e)
+    {
+        if (e == null) return;
+        block.StartTime = (DateTime)e;
+    }
+
+    async Task endDateChanged(DateTime e)
+    {
+        if (e == null) return;
+        block.Timeframe = (DateTime)e - block.StartTime;
+    }
+
+    async Task firstRunDateChanged(DateTime? e)
+    {
+        if (e == null) return;
+        block.RepetitiveFirstRun = (DateTime)e;
+    }
+
+    async Task endRunDateChanged(DateTime? e)
+    {
+        if (e == null) return;
+        block.RepetitiveEndRun = (DateTime)e;
+    }
+
+    async Task OnOfftimeValueChanged(int e)
+    {
+        block.OffPeriod = new TimeSpan(e,0,0);
+    }
+
+    async Task openAddBlock()
+    {
+        if (AddBlockModal != null)
+        {
+            block.StartTime = DateTime.Now;
+            block.Timeframe = new TimeSpan(1,0,0);
+            block.RepetitiveFirstRun = DateTime.Now;
+            block.RepetitiveEndRun = DateTime.Now;
+            block.OffPeriod = new TimeSpan(1,0,0);
+            blockChange = false;
+            await AddBlockModal.Show();
+        }
+    }
+
+    async Task addBlock()
+    {
+        if (block.EndTime < block.StartTime)
+        {
+            await NotificationService.Error("Please set end time bigger than start time!", "Cannot Add Block");
+            return;
+        }
+        if (block.Timeframe.TotalSeconds == 0)
+        {
+            await NotificationService.Error("Please set end time bigger than start time!", "Cannot Add Block");
+            return;
+        }
+        if (block.Amount <= 0)
+        {
+            await NotificationService.Error("Please set amount!", "Cannot Add Block");
+            return;
+        }
+
+        block.Id = Guid.NewGuid().ToString();
+
+        if (repetitiveBlock)
+        {
+            var blocks = BlockHelpers.CreateRepetitiveBlock(block.RepetitiveFirstRun.Value,
+                                                            block.RepetitiveEndRun.Value,
+                                                            block.StartTime,
+                                                            block.EndTime,
+                                                            block.OffPeriod.Value,
+                                                            block.Amount,
+                                                            "",
+                                                            Item.Id,
+                                                            block.Direction,
+                                                            block.Type,
+                                                            block.Name);
+
+            AppData.EntitiesHandler.AddBlocksToEntity(Item.Id, blocks);
+        }
+        else if (!repetitiveBlock && repetitiveDayBlock)
+        {
+            var blocks = BlockHelpers.CreateRepetitiveDayBlock(block.RepetitiveFirstRun.Value,
+                                                               block.RepetitiveEndRun.Value,
+                                                               block.StartTime,
+                                                               block.EndTime,
+                                                               block.Amount,
+                                                               "",
+                                                               Item.Id,
+                                                               block.Direction,
+                                                               block.Type,
+                                                               block.JustInWeek,
+                                                               block.JustInWeekends,
+                                                               block.Name);
+            AppData.EntitiesHandler.AddBlocksToEntity(Item.Id, blocks);
+        }
+        else if (!repetitiveBlock && !repetitiveDayBlock)
+        {
+            AppData.EntitiesHandler.AddBlockToEntity(Item.Id, block);
+        }
+        if (AddBlockModal != null)
+            await AddBlockModal.Hide();
+        await EnergyBlockAdded.InvokeAsync(block);
+    }
+
+    async Task changeBlock()
+    {
+        if (block.EndTime < block.StartTime)
+        {
+            await NotificationService.Error("Please set end time bigger than start time!", "Cannot Add Block");
+            return;
+        }
+        if (block.Timeframe.TotalSeconds == 0)
+        {
+            await NotificationService.Error("Please set end time bigger than start time!", "Cannot Add Block");
+            return;
+        }
+        if (block.Amount <= 0)
+        {
+            await NotificationService.Error("Please set amount!", "Cannot Add Block");
+            return;
+        }
+
+        if (Item != null && Item.Id != null)
+        {
+            var res = AppData.EntitiesHandler.ChangEntityBlockParameters(Item.Id,
+                                                                           block.Id,
+                                                                           block.Name,
+                                                                           block.Description,
+                                                                           block.Type,
+                                                                           block.Amount,
+                                                                           block.Direction,
+                                                                           block.StartTime,
+                                                                           block.Timeframe);
+
+            if (AddBlockModal != null)
+                await AddBlockModal.Hide();
+            await EnergyBlockAdded.InvokeAsync(block);
+        }
+    }
+}
