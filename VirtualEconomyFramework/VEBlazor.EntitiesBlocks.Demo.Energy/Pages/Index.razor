@@ -6,7 +6,7 @@
 <PageTitle>Index</PageTitle>
 
 <Row Margin="Margin.Is2.FromTop">
-    <Column ColumnSize="ColumnSize.Is12.OnMobile.Is2.OnTablet">
+    <Column ColumnSize="ColumnSize.Is12.OnMobile.Is3.OnTablet">
         <Tabs SelectedTab="@sidebarSelectedTab" SelectedTabChanged="@OnSidebarSelectedTabChanged">
             <Items>
                 <Tab Name="tree">Tree</Tab>
@@ -34,7 +34,7 @@
             </Content>
         </Tabs>
     </Column>
-    <Column ColumnSize="ColumnSize.Is12.OnMobile.Is10.OnTablet">
+    <Column ColumnSize="ColumnSize.Is12.OnMobile.Is9.OnTablet">
         <Row>
             <Column>
                 <Tabs SelectedTab="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged">
@@ -101,6 +101,8 @@
                     var item = await entitiesTree.LoadData(AppData.RootItemId);
                     if (item != null && item.Id != null)
                         Item = item;
+                    await InvokeAsync(StateHasChanged);
+
                     if (blocksList != null)
                         await blocksList.Load(Item);
 

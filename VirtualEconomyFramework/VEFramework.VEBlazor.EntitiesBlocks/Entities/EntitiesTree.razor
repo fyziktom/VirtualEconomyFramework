@@ -9,10 +9,10 @@
                 <Column>
                     <Span>Entities Tree</Span>
                 </Column>
-                @if (DisplayRefreshButton)
+                @if (DisplayRefreshButton && Tree != null && Tree.Id != null)
                 {
                     <Column>
-                        <Button Color="Color.Light" Clicked="@(async () => await LoadData(Item.Id))" Float="Float.End">
+                        <Button Color="Color.Light" Clicked="@(async () => await LoadData(Tree.Id))" Float="Float.End">
                             <Icon Name="IconName.Sync" />
                         </Button>
                     </Column>
@@ -25,13 +25,14 @@
                 <Column>
                     @if (Tree != null)
                     {
-                        <TreeView Nodes="Tree.GetChilds()"
-                          TNode="TreeItem"
-                          GetChildNodes="@(item => item.GetChilds())"
-                          HasChildNodes="@(item => item.GetChilds()?.Any() == true)"
-                          SelectedNode="@Item"
-                          SelectedNodeChanged="SelectedNodeChangedHandler"
-                          @bind-ExpandedNodes="ExpandedNodes">
+                        <TreeView @ref=treeView
+                                  Nodes="Tree.GetChilds()"
+                                  TNode="TreeItem"
+                                  GetChildNodes="@(item => item.GetChilds())"
+                                  HasChildNodes="@(item => item.GetChilds()?.Any() == true)"
+                                  SelectedNode="@Item"
+                                  SelectedNodeChanged="SelectedNodeChangedHandler"
+                                  @bind-ExpandedNodes="ExpandedNodes">
                             <NodeContent>
                                 @((context.Type == EntityType.Source ? "Source: " : "Consumer: ") + $"{context.Name}")
                             </NodeContent>
@@ -52,9 +53,10 @@
 
     IList<TreeItem> ExpandedNodes = new List<TreeItem>();
 
+    TreeView<TreeItem>? treeView;
+
     public async Task<TreeItem> LoadData(string rootid)
     {
-        //var rootid = AppData.EntitiesHandler.Entities.Values.Where(b => b.Name.Contains("network")).FirstOrDefault()?.Id;
         if (rootid != null)
         {
             var root = AppData.EntitiesHandler.GetTree(rootid);
@@ -64,7 +66,13 @@
                 await InvokeAsync(StateHasChanged);
 
                 Tree.AddChild(root);
-                Item = Tree;
+                Item = root;
+                await InvokeAsync(StateHasChanged);
+
+                ExpandedNodes = new List<TreeItem>();
+                if (Tree.Children != null)
+                    foreach (var child in Tree.Children)
+                        ExpandedNodes.Add(child);
 
                 await InvokeAsync(StateHasChanged);
 
@@ -88,7 +96,13 @@
                 await InvokeAsync(StateHasChanged);
 
                 Tree.AddChild(root);
-                Item = Tree;
+                Item = root;
+                await InvokeAsync(StateHasChanged);
+
+                ExpandedNodes = new List<TreeItem>();
+                if (Tree.Children != null)
+                    foreach (var child in Tree.Children)
+                        ExpandedNodes.Add(child);
 
                 await InvokeAsync(StateHasChanged);
 
@@ -100,9 +114,9 @@
         return null;
     }
 
-    private async Task SelectedNodeChangedHandler(TreeItem node)
+    private async Task SelectedNodeChangedHandler(TreeItem item)
     {
-        Item = node;
+        Item = item;
         await ItemChanged.InvokeAsync(Item);
     }
 }
