@@ -69,6 +69,10 @@ namespace VEFramework.VEBlazor.EntitiesBlocks.Base
         public EventCallback<IBlock> BlockDoubleClick { get; set; }
         [Parameter]
         public EventCallback<IBlock> BlockOneClick { get; set; }
+        [Parameter]
+        public EventCallback<IBlock> ChangeBlockRequest { get; set; }
+        [Parameter]
+        public EventCallback<IBlock> RemoveBlockRequest { get; set; }
     }
 
     public abstract class EntitiesActionButtonComponentBase : OneButtonComponentBase

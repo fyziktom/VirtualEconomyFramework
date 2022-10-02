@@ -14,11 +14,11 @@
                     <Column>
                         <Field>
                             <FieldLabel>Name</FieldLabel>
-                            <TextEdit Placeholder="Block Name" @bind-Text="@entity.Name" />
+                            <TextEdit Placeholder="Entity Name" @bind-Text="@entity.Name" />
                         </Field>
                         <Field>
                             <FieldLabel>Description</FieldLabel>
-                            <TextEdit Placeholder="Block Description" @bind-Text="@entity.Description" />
+                            <TextEdit Placeholder="Entity Description" @bind-Text="@entity.Description" />
                         </Field>
 
                         <SetEntityType Type="@entity.Type" TypeChanged="@onTypeChanged" />
@@ -60,13 +60,38 @@
 
 @if (WithButton)
 {
-    <Button Color="Color.Primary" Block Outline Clicked="@openAddBlock">New Entity</Button>
+    <Button Color="Color.Primary" Block="@BlockButton" Outline Float="@FloatButton" Clicked="@openAddBlock">
+        <Row>
+            @if(WithButtonIcon)
+            {
+                <Column>
+                    <Icon Name="IconName.Add" />
+                </Column>
+            }
+            @if(WithButtonText)
+            {
+                <Column Margin="Margin.Is2.FromStart">
+                    @ButtonText
+                </Column>
+            }
+        </Row>
+    </Button>
 }
 
 @code {
 
     [Parameter]
     public bool WithButton { get; set; } = false;
+    [Parameter]
+    public bool BlockButton { get; set; } = false;
+    [Parameter]
+    public Float FloatButton { get; set; } = Float.Default;
+    [Parameter]
+    public bool WithButtonIcon { get; set; } = false;
+    [Parameter]
+    public bool WithButtonText { get; set; } = false;
+    [Parameter]
+    public string ButtonText { get; set; } = "Add Entity";
 
     Modal? AddEntityModal;
     bool entityChange = false;

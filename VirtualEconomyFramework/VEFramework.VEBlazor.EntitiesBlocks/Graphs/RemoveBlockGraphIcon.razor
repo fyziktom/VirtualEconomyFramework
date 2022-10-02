@@ -1,0 +1,33 @@
+﻿
+<circle cx="@(X + 9)"
+        cy="@(Y + 9)"
+        r="8"
+        fill-opacity="0.3"
+        style="fill:rgb(255,0,0);stroke-width:1;stroke:rgb(255,0,0)" @onclick="@onClicked" />
+
+<text x="@(X + 6)"
+      y="@(Y + 12)"
+      font-family="Verdana"
+      font-size="10"
+      fill="white"
+      fill-opacity="0.8"
+      @onclick="@onClicked">
+    X
+</text>
+
+@code {
+	[Parameter]
+	public EventCallback<bool> DoubleClicked { get; set; }
+	[Parameter]
+	public int X { get; set; } = 0;
+	[Parameter]
+	public int Y { get; set; } = 0;
+
+	private async Task onClicked(MouseEventArgs e)
+    {
+        if (e.Detail > 1)
+        {
+            await DoubleClicked.InvokeAsync(true);
+        }
+    }
+}

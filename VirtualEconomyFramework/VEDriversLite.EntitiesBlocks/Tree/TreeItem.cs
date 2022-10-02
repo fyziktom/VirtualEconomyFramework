@@ -36,7 +36,7 @@ namespace VEDriversLite.EntitiesBlocks.Tree
         /// <summary>
         /// Type of the Entity
         /// </summary>
-        public EntityType? Type { get; set; }
+        public EntityType Type { get; set; }
 
         /// <summary>
         /// Get Enumerable of all childs

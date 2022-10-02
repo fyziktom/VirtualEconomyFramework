@@ -73,13 +73,38 @@
 
 @if (WithButton)
 {
-    <Button Color="Color.Primary" Block Outline Clicked="@openAddBlock">New Block</Button>
+    <Button Color="Color.Primary" Block="@BlockButton" Outline Float="@FloatButton" Clicked="@openAddBlock">
+        <Row>
+            @if(WithButtonIcon)
+            {
+                <Column ColumnSize="ColumnSize.Is3">
+                    <Icon Name="IconName.Add" />
+                </Column>
+            }
+            @if(WithButtonText)
+            {
+                <Column ColumnSize="ColumnSize.Is9">
+                    @ButtonText
+                </Column>
+            }
+        </Row>
+    </Button>
 }
 
 @code {
 
     [Parameter]
     public bool WithButton { get; set; } = false;
+    [Parameter]
+    public bool BlockButton { get; set; } = false;
+    [Parameter]
+    public Float FloatButton { get; set; } = Float.Default;
+    [Parameter]
+    public bool WithButtonIcon { get; set; } = false;
+    [Parameter]
+    public bool WithButtonText { get; set; } = false;
+    [Parameter]
+    public string ButtonText { get; set; } = "Add Block";
 
     Modal? AddBlockModal;
     bool basedOnTotalPower = true;

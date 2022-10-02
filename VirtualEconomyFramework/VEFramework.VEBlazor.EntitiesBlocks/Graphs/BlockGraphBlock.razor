@@ -33,7 +33,12 @@
                   width="@((int)ActualBlockWidth)"
                   height="@((int)BlockUnitHeight)"
                   style="@color" @onclick="@((e) => BlockInfoMessage(Block, e))" />
-
+            @if (ActualBlockWidth > 50)
+            {
+                <RemoveBlockGraphIcon DoubleClicked="@onRemoveBlockRequestHandler"
+                          X="@(XPos + (int)ActualBlockWidth - 20)"
+                          Y="@(YPos + 4)" />
+            }
             <text x="@(XPos + 1 + (int)(ActualBlockWidth/2) - (int)(((double)TextFontSize/2) * Block.Name.Length) )"
                   y="@(YPos + 1 + (int)(BlockUnitHeight/2) - (int)((double)TextFontSize/2))"
                   font-family="Verdana"
@@ -76,5 +81,10 @@
         {
             await NotificationService.Info($"Energy {Math.Round(block.Amount, 4)}kWh, Start: {block.StartTime}, End: {block.EndTime}", $"Block {block.Name}");
         }
+    }
+
+    private async Task onRemoveBlockRequestHandler(bool e)
+    {
+        await RemoveBlockRequest.InvokeAsync(Block);
     }
 }

@@ -5,7 +5,19 @@
     @if (Item != null)
     {
         <CardHeader>
-            <CardTitle>@(Item.Type.ToString()) - @Item.Name</CardTitle>
+            <Row>
+                <Column>
+                    <CardTitle>@(Item.Type.ToString()) - @Item.Name</CardTitle>
+                </Column>
+                <Column>
+                    <AddBlock Item="@Item" 
+                              WithButton="true" 
+                              BlockButton="false"
+                              FloatButton="Float.End" 
+                              WithButtonIcon="true" 
+                              WithButtonText="true" />
+                </Column>
+            </Row>
         </CardHeader>
         <CardBody>
             <StartEndDaySelector StartTime="@StartTime" 
@@ -94,6 +106,7 @@
                                     var actualBlockWidth = GetActualBlockWidth(block);
                                     <BlockGraphBlock ActualBlockWidth="@actualBlockWidth" 
                                                      BlockUnitHeight="@blockUnitHeight" 
+                                                     RemoveBlockRequest="@onRemoveBlockRequest"
                                                      TextFontSize="@textFontSize"
                                                      Block="@(block as BaseBlock)" 
                                                      XPos="@xpos" 
@@ -118,6 +131,7 @@
 @if (Item != null)
 {
     <AddBlock @ref=editBlockModal WithButton="false" Item="@Item" BlockChanged="@OnBlockChanged" />
+    <RemoveBlock @ref=removeBlockModal Item="@Item" WithButton="false" BlockChanged="OnBlockChanged" />
 }
 @code {
 
@@ -151,6 +165,7 @@
     AddBlock? editBlockModal;
     BlockGraphVerticalLines? blockGraphVerticalLines;
     EntityTotalBalance? entityTotalBalance;
+    RemoveBlock? removeBlockModal;
 
     private double blockUnitHeight = 25; //px
     private double blockUnitWidth = 4; //px
@@ -175,12 +190,20 @@
         await base.OnAfterRenderAsync(firstRender);
     }
 
-    async Task OnBlockChanged(IBlock e)
+    private async Task onRemoveBlockRequest(IBlock e)
+    {
+        if (Item != null && removeBlockModal != null)
+        {
+            await removeBlockModal.LoadBlock(Item, e);
+        }
+    }
+
+    private async Task OnBlockChanged(IBlock e)
     {
         await loadData();
     }
 
-    async Task startTimeDateChanged(DateTime e)
+    private async Task startTimeDateChanged(DateTime e)
     {
         if (e == null) return;
         StartTime = (DateTime)e;
@@ -188,7 +211,7 @@
         await InvokeAsync(StateHasChanged);
     }
 
-    async Task endTimeDateChanged(DateTime e)
+    private async Task endTimeDateChanged(DateTime e)
     {
         if (e == null) return;
         EndTime = (DateTime)e;
