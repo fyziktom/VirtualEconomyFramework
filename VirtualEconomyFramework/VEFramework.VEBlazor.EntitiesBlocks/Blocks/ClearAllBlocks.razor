@@ -1,22 +1,127 @@
-﻿@inherits EntitiesActionButtonComponentBase
-
+﻿@inherits EntitiesBlocksComponentBase
 @inject AppData AppData
 
-<Button Color="Color.Primary" Block="@BlockButton" Outline="@OutlineButton" Clicked="@OnClearAllBlocks">Clear All Entity Blocks</Button>
+<Modal @ref="RemoveAllBlocksModal">
+    <ModalContent Centered Size="ModalSize.ExtraLarge">
+        <ModalHeader>
+            <ModalTitle>Remove All Block</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            @if (Item != null && Item.Id != null)
+            {
+                <Row Margin="Margin.Is2.FromTop">
+                    <Column>
+                        <Span>Name: @Item.Name</Span>
+                    </Column>
+                </Row>
+                <Row Margin="Margin.Is2.FromTop">
+                    <Column>
+                        <Span>Id: @Item.Id</Span>
+                    </Column>
+                </Row>
+                <Row Margin="Margin.Is2.FromTop">
+                    <Column>
+                        <Span>Do you realy want to remove all blocks in the entity?</Span>
+                    </Column>
+                </Row>
+                <Row Margin="Margin.Is2.FromTop">
+                    <Column>
+                        <Button Color="Color.Primary" Outline Clicked="@removeAllBlocks">Remove All Blocks</Button>
+                    </Column>
+                </Row>
+            }
+            else
+            {
+                <Row>
+                    <Column>
+                        <Span>Please select the Entity to remove all blocks. Click to entity in the Tree.</Span>
+                    </Column>
+                </Row>
+            }
+        </ModalBody>
+    </ModalContent>
+</Modal>
+
+@if (WithButton)
+{
+    <Button Color="Color.Primary" Block="@BlockButton" Outline Float="@FloatButton" Clicked="@openRemoveAllBlocks">
+        <Row>
+            <Column>
+                @if (WithButtonIcon)
+                {
+                    <Icon Name="IconName.Remove" Margin="Margin.Is2.FromEnd" />
+                }
+                @if (WithButtonText)
+                {
+                    @ButtonText
+                }
+            </Column>
+        </Row>
+    </Button>
+}
 
 @code {
-    [Parameter]
-    public bool BlockButton { get; set;} = false;
-    [Parameter]
-    public bool OutlineButton { get; set;} = false;
 
-    private async Task OnClearAllBlocks()
+    [Parameter]
+    public bool WithButton { get; set; } = false;
+    [Parameter]
+    public bool BlockButton { get; set; } = false;
+    [Parameter]
+    public Float FloatButton { get; set; } = Float.Default;
+    [Parameter]
+    public bool WithButtonIcon { get; set; } = false;
+    [Parameter]
+    public bool WithButtonText { get; set; } = false;
+    [Parameter]
+    public string ButtonText { get; set; } = "Remove All Blocks";
+
+    Modal? RemoveAllBlocksModal;
+
+    [Inject] INotificationService NotificationService { get; set; }
+
+    public async Task LoadBlock(TreeItem item, IBlock block)
+    {
+        if (item != null)
+            Item = item;
+        if (block != null)
+            Block = block;
+        if (RemoveAllBlocksModal != null)
+            await RemoveAllBlocksModal.Show();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task openRemoveAllBlocks()
+    {
+        if (RemoveAllBlocksModal != null)
+            await RemoveAllBlocksModal.Show();
+    }
+
+    private async Task removeAllBlocks()
     {
         if (Item != null && Item.Id != null)
         {
-            AppData.EntitiesHandler.RemoveAllEntityBlocks(Item.Id);
+            var e = AppData.EntitiesHandler.GetEntity(Item.Id, Item.Type);
 
-            await ActionFinished.InvokeAsync(Item.Id);
+            if (e == null)
+            {
+                await NotificationService.Error("Cannot find entity in handler.", "Cannot Remove Block");
+                return;
+            }
+
+            try
+            {
+                AppData.EntitiesHandler.RemoveAllEntityBlocks(e.Id);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Cannot remove block. " + Block.Id + ", error: " + ex.Message);
+            }
+
+            if (RemoveAllBlocksModal != null)
+                await RemoveAllBlocksModal.Hide();
+            await ItemChanged.InvokeAsync(Item);
         }
     }
+
 }

@@ -12,10 +12,12 @@
             <Row>
                 <Column>
                     <ClearAllBlocks Item="@Item" 
-                                    ActionFinished="@OnClearAllBlocksFinishedHandler" 
+                                    ItemChanged="@OnItemChanged" 
                                     ButtonText="Clear All Blocks in Entity"
-                                    BlockButton="true"
-                                    OutlineButton="true"/>
+                                    WithButton="true"
+                                    WithButtonText="true"
+                                    WithButtonIcon="true"
+                                    BlockButton="true"/>
                 </Column>
             </Row>
         </CardBody>
@@ -75,7 +77,7 @@
         if (item != null && item.Id != null)
         {
             Item = item;
-            Blocks = AppData.EntitiesHandler.GetEntityBlocks(Item.Id).ToList();
+            Blocks = AppData.EntitiesHandler.GetBlocksOfEntityWithChildernBlocks(Item.Id).ToList();
             if (Blocks != null)
             {
                 if (Blocks.Count > 10)
@@ -114,8 +116,9 @@
         await InvokeAsync(StateHasChanged);
     }
 
-    private async Task OnClearAllBlocksFinishedHandler(string e)
+    private async Task OnItemChanged(TreeItem e)
     {
-        await OnClearAllBlocksFinished.InvokeAsync(Item.Id);
+        await ItemChanged.InvokeAsync(Item);
     }
+
 }

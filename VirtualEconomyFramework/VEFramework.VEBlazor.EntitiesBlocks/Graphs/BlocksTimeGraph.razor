@@ -67,9 +67,9 @@
                                 <rect x="0" y="@((blockUnitHeight + 1) * BlocksCount)" width="3" height="3" />
                             </g>
                             <g font-size="12" font-family="Verdana" fill="black">
-                                <text x="@xgraphOffset" y="@(xgraphOffset * 2)">@(StartTime.ToString("dd.MM.yyyy hh:mm:ss"))</text>
-                                <text x="@(TotalWidth - (12/3) * 19)" y="@(xgraphOffset * 2)">@(EndTime.ToString("dd.MM.yyyy hh:mm:ss"))</text>
-                                <text x="@xgraphOffset" y="@((blockUnitHeight + 1) * BlocksCount - 1)">@(BlocksCount) blocks</text>
+                                <text x="@ygraphOffset" y="@(ygraphOffset * 2)">@(StartTime.ToString("dd.MM.yyyy hh:mm:ss"))</text>
+                                <text x="@((int)(TotalWidth - textFontSize*20))" y="@(ygraphOffset * 2)">@(EndTime.ToString("dd.MM.yyyy hh:mm:ss"))</text>
+                                <text x="@ygraphOffset" y="@((blockUnitHeight + 1) * BlocksCount - 1)">@(BlocksCount) blocks</text>
                             </g>
 
                             <!--
@@ -85,14 +85,14 @@
                             {
                                 var block = Blocks[i];
 
-                                var ypos = blockUnitHeight * yposcounter + xgraphOffset * 3;
+                                var ypos = blockUnitHeight * yposcounter + ygraphOffset * 3;
                                 if (!string.IsNullOrEmpty(block.RepetitiveSourceBlockId))
                                 {
                                     var parentblock = Blocks.Where(b => b.Id == block.RepetitiveSourceBlockId).FirstOrDefault();
                                     if (parentblock != null)
                                     {
                                         var indx = Blocks.IndexOf(parentblock);
-                                        ypos = blockUnitHeight * indx + xgraphOffset * 3;
+                                        ypos = blockUnitHeight * indx + ygraphOffset * 3;
                                     }
                                 }
                                 else
@@ -171,7 +171,7 @@
     private double blockUnitWidth = 4; //px
     private double totalXsteps = 365;
     private int sliderValue = 0;
-    private int xgraphOffset = 10;
+    private int ygraphOffset = 10;
     private int textFontSize = 8;
     private double zoom = 1;
     private BlockTimeframe timeframe = BlockTimeframe.Day;
@@ -240,6 +240,7 @@
             Blocks = AppData.EntitiesHandler.GetBlocksOfEntityWithChildernBlocks(Item.Id).ToList();
             if (Blocks != null)
             {
+                SetTotalXstesps();
                 SetSlider();
                 if (slider != null)
                     sliderValue = (int)(slider.Max / 2);
@@ -261,8 +262,8 @@
             EndTime = timeHalf.AddHours(timeframeHalf / 2);
             StartTime = timeHalf.AddHours(-(timeframeHalf / 2));
             zoom += 1;
-            SetSlider();
             SetTotalXstesps();
+            SetSlider();
             if (entityTotalBalance != null)
                 await entityTotalBalance.GetTotals(Item, StartTime, EndTime);
             if (blockGraphVerticalLines != null)
@@ -282,8 +283,8 @@
             EndTime = timeHalf.AddHours(timeframeTwice * zoomratio);
             StartTime = timeHalf.AddHours(-(timeframeTwice * zoomratio));
             zoom -= 1;
-            SetSlider();
             SetTotalXstesps();
+            SetSlider();
             if (entityTotalBalance != null)
                 await entityTotalBalance.GetTotals(Item, StartTime, EndTime);
             if (blockGraphVerticalLines != null)
@@ -316,8 +317,8 @@
         EndTime = new DateTime(2023, 1, 1);
         StartTime = new DateTime(2022, 1, 1);
         zoom = 1;
-        SetSlider();
         SetTotalXstesps();
+        SetSlider();
         if (entityTotalBalance != null)
             await entityTotalBalance.GetTotals(Item, StartTime, EndTime);
         await InvokeAsync(StateHasChanged);

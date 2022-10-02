@@ -7,14 +7,14 @@
     </Items>
     <Content>
         <TabPanel Name="amount">
-            <Field>
+            <Field Margin="Margin.Is2.FromTop">
                 <FieldLabel>Total Amount of Power</FieldLabel>
                 <NumericPicker TValue="double" Min="0" Max="1000" Value="@Amount" ValueChanged="@onAmountChanged" Decimals="4" />
                 <FieldHelp>Please fill the total amount of energy in the block</FieldHelp>
             </Field>
         </TabPanel>
         <TabPanel Name="power">
-            <Field>
+            <Field Margin="Margin.Is2.FromTop">
                 <FieldLabel>Power per hour</FieldLabel>
                 <NumericPicker TValue="double" Min="0" Max="1000" Value="@power" ValueChanged="@onPowerChanged" Decimals="4" />
                 <FieldHelp>Please fill the power of energy per hour</FieldHelp>

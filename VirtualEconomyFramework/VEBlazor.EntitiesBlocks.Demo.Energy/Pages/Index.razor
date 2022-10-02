@@ -3,7 +3,7 @@
 @inject AppData AppData
 @inject HttpClient Http
 
-<PageTitle>Index</PageTitle>
+<PageTitle>VE Energy</PageTitle>
 
 <Row Margin="Margin.Is2.FromTop">
     <Column ColumnSize="ColumnSize.Is12.OnMobile.Is3.OnTablet">
@@ -14,12 +14,24 @@
             </Items>
             <Content>
                 <TabPanel Name="tree">
-                    <Row>
+                    <Row Margin="Margin.Is2.FromTop">
                         <Column>
-                            <AddEntity Item="@Item" WithButton="true" BlockButton="false" WithButtonText="true" WithButtonIcon="true" ButtonText=" Entity" />
+                            <AddEntity Item="@Item" 
+                                       WithButton="true" 
+                                       BlockButton="false" 
+                                       FloatButton="Float.Start" 
+                                       WithButtonText="true" 
+                                       WithButtonIcon="true" 
+                                       ButtonText=" Entity" />
                         </Column>
                         <Column>
-                            <RemoveEntity Item="@Item" WithButton="true" BlockButton="false" WithButtonText="true" WithButtonIcon="true" ButtonText=" Entity" />
+                            <RemoveEntity Item="@Item" 
+                                          WithButton="true" 
+                                          BlockButton="false" 
+                                          FloatButton="Float.End" 
+                                          WithButtonText="true" 
+                                          WithButtonIcon="true" 
+                                          ButtonText=" Entity" />
                         </Column>
                     </Row>
                     <Row>
@@ -54,14 +66,14 @@
                         <TabPanel Name="blockslist">
                             <Row>
                                 <Column>
-                                    <BlocksList @ref=blocksList OnClearAllBlocksFinished="@OnClearAllBlocksFinishedHandler" />
+                                    <BlocksList @ref=blocksList ItemChanged="@OnBlockListItemChanged" />
                                 </Column>
                             </Row>
                         </TabPanel>
                         <TabPanel Name="balancetimegraph">
                             <Row>
                                 <Column>
-                                    <ConsumptionGraph @ref=graph Item="@Item" />
+                                    <ConsumptionGraph @ref=graph />
                                 </Column>
                             </Row>
                         </TabPanel>
@@ -102,11 +114,8 @@
                     if (item != null && item.Id != null)
                         Item = item;
                     await InvokeAsync(StateHasChanged);
-
-                    if (blocksList != null)
-                        await blocksList.Load(Item);
-
-                    await LoadDetailsAndGraphs();
+                    
+                    await LoadDetailsAndGraphs(Item);
                     firstLoad = true;
                 }
             }
@@ -130,12 +139,6 @@
         await InvokeAsync( StateHasChanged );
     }
 
-    private async Task RefreshGraphWithConsumption()
-    {
-        if (Item != null && Item.Id != null && graph != null)
-            await graph.LoadData(Item);
-    }
-
     private async Task OnLoadData(string e)
     {
         if (entitiesTree != null)
@@ -144,7 +147,7 @@
             if (item != null)
             {
                 Item = item;
-                await LoadDetailsAndGraphs();
+                await LoadDetailsAndGraphs(Item);
 
                 await InvokeAsync(StateHasChanged);
             }
@@ -153,28 +156,28 @@
 
     private async Task RefreshDetailsAndGraphs()
     {
-        if (blocksList != null && blockTimeGraph != null)
+        if (blocksList != null && blockTimeGraph != null && graph != null)
         {
             await blocksList.Refresh();
             await blockTimeGraph.Refresh();
-            await RefreshGraphWithConsumption();
+            await graph.Refresh();
         }
     }
 
-    private async Task LoadDetailsAndGraphs()
+    private async Task LoadDetailsAndGraphs(TreeItem item)
     {
-        if (blocksList != null && blockTimeGraph != null)
+        if (item != null && item.Id != null && blocksList != null && blockTimeGraph != null && graph != null)
         {
-            await blocksList.Load(Item);
-            await blockTimeGraph.Load(Item);
-            await RefreshGraphWithConsumption();
+            await blocksList.Load(item);
+            await blockTimeGraph.Load(item);
+            await graph.LoadData(item);
         }
     }
 
     private async Task onBlockChangedHandler(IBlock block)
     {
         if (block != null)
-            await LoadDetailsAndGraphs();
+            await LoadDetailsAndGraphs(Item);
     }
 
     private async Task OnItemChanged(TreeItem item)
@@ -182,14 +185,13 @@
         if (item != null && item.Id != null)
         {
             Item = item;
-            await LoadDetailsAndGraphs();
+            await LoadDetailsAndGraphs(Item);
         }
     }
 
-    private async Task OnClearAllBlocksFinishedHandler(string e)
+    private async Task OnBlockListItemChanged(TreeItem item)
     {
-        if (!string.IsNullOrEmpty(e))
-            await LoadDetailsAndGraphs();
+        if (item != null && item.Id != null)
+            await RefreshDetailsAndGraphs();
     }
-
 }

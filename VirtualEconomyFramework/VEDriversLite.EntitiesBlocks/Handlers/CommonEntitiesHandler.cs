@@ -543,26 +543,26 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
                 var tmpEntity = new BaseEntity() { Name = "tmp", ParentId = entity.ParentId, Id = entityId + "-tmp" };
                 tmpEntity.AddBlocks(entity.BlocksOrderByTime);
 
-                    Queue<IEntity> queue = new Queue<IEntity>();
-                    queue.Enqueue(entity);
+                Queue<IEntity> queue = new Queue<IEntity>();
+                queue.Enqueue(entity);
 
-                    while (queue.Count > 0)
+                while (queue.Count > 0)
+                {
+                    var e = queue.Dequeue();
+                    if (e != null)
                     {
-                        var e = queue.Dequeue();
-                        if (e != null)
+                        foreach (var childId in e.Children)
                         {
-                            foreach (var childId in e.Children)
+                            if (Entities.TryGetValue(childId, out var sbc))
                             {
-                                if (Entities.TryGetValue(childId, out var sbc))
-                                {
-                                    tmpEntity.AddBlocks(sbc.BlocksOrderByTime.ToList());
+                                tmpEntity.AddBlocks(sbc.BlocksOrderByTime.ToList());
 
-                                    if (sbc.IsParent)
-                                        queue.Enqueue(sbc);
-                                }
+                                if (sbc.IsParent)
+                                    queue.Enqueue(sbc);
                             }
                         }
                     }
+                }
                 return tmpEntity.BlocksOrderByTime.ToList();
             }
 

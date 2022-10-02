@@ -81,6 +81,7 @@ namespace VEFramework.VEBlazor.EntitiesBlocks.Base
         public EventCallback<TreeItem> ItemChanged { get; set; }
         [Parameter]
         public TreeItem Item { get; set; }
+
     }
 
     public abstract class EntitiesComponentBase : BlockComponentBase
@@ -89,6 +90,7 @@ namespace VEFramework.VEBlazor.EntitiesBlocks.Base
         public EventCallback<TreeItem> ItemChanged { get; set; }
         [Parameter]
         public TreeItem? Item { get; set; }
+
     }
     public abstract class EntitiesBlocksComponentBase : EntitiesComponentBase
     {
