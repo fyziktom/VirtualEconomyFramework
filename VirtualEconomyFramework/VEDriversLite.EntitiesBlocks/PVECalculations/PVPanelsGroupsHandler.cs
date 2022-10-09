@@ -344,12 +344,12 @@ namespace VEDriversLite.EntitiesBlocks.PVECalculations
                     if (string.IsNullOrEmpty(firstBlockId))
                     {
                         firstBlockId = rblock.Id;
-                        rblock.IsRepetitiveSource = true;
+                        //rblock.IsRepetitiveSource = true;
                     }
                     else
                     {
                         rblock.RepetitiveSourceBlockId = firstBlockId;
-                        rblock.IsRepetitiveChild = true;
+                        //rblock.IsRepetitiveChild = true;
                     }
                     yield return rblock;
                     tmp = tmp.AddDays(1);
@@ -406,12 +406,12 @@ namespace VEDriversLite.EntitiesBlocks.PVECalculations
                 if (string.IsNullOrEmpty(firstBlockId))
                 {
                     firstBlockId = rblock.Id;
-                    rblock.IsRepetitiveSource = true;
+                    //rblock.IsRepetitiveSource = true;
                 }
                 else
                 {
                     rblock.RepetitiveSourceBlockId = firstBlockId;
-                    rblock.IsRepetitiveChild = true;
+                    //rblock.IsRepetitiveChild = true;
                 }
 
                 yield return rblock;
