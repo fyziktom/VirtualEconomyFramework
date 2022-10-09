@@ -122,5 +122,39 @@ namespace VEFrameworkUnitTest.Energy.PVESimulator
             PVEGrid.AddPanelToGroup(groupId, PVEGrid.CommonPanel, count);
 
         }
+
+
+        [Fact]
+        public void ExportImportSettings()
+        {
+            string name = "mytest";
+            int DurationInDays = 1;
+            DateTime start = new DateTime(2022, 1, 1, 0, 0, 0);
+            IEnumerable<(string, string)> groupIds = new List<(string, string)>();
+
+            var panelAzimuthE = MathHelpers.DegreeToRadians(-40);
+            var panelAzimuthS = MathHelpers.DegreeToRadians(0);
+            var panelAzimuthW = MathHelpers.DegreeToRadians(40);
+
+            var eastPanelsId = PVEGrid.AddGroup("East");
+            var southPanelsId = PVEGrid.AddGroup("South");
+            var westPanelsId = PVEGrid.AddGroup("West");
+
+            SetCommonPanel();
+            // set template panel in this PVE
+            AddPanelToGroup(eastPanelsId, panelAzimuthE, true, 5);
+            AddPanelToGroup(southPanelsId, panelAzimuthS, true, 5);
+            AddPanelToGroup(westPanelsId, panelAzimuthW, true, 5);
+
+            var config = PVEGrid.ExportSettingsToJSON();
+
+            PVEGrid = new PVPanelsGroupsHandler();
+
+            PVEGrid.ImportConfigFromJson(config);
+
+            Assert.Equal(15, PVEGrid.PanelCount);
+            Assert.Equal(49.194103, PVEGrid.MedianLatitude);
+            Assert.Equal(16.608998, PVEGrid.MedianLongitude);
+        }
     }
 }

@@ -4,6 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using VEDriversLite.Common;
+using VEDriversLite.EntitiesBlocks.Blocks.Dto;
+using VEDriversLite.EntitiesBlocks.Blocks;
+using System.Runtime.CompilerServices;
 
 namespace VEDriversLite.EntitiesBlocks.PVECalculations
 {
@@ -94,5 +97,58 @@ namespace VEDriversLite.EntitiesBlocks.PVECalculations
         /// </summary>
         public double PanelPeakAngleInDegrees { get => MathHelpers.RadiansToDegrees(PanelPeakAngle); }
 
+
+        /// <summary>
+        /// Fill object with source PVPanel
+        /// </summary>
+        /// <param name="panel"></param>
+        public void Fill(PVPanel panel)
+        {
+            foreach (var param in typeof(PVPanel).GetProperties())
+            {
+                try
+                {
+                    if (param.CanWrite)
+                    {
+                        var value = param.GetValue(panel);
+                        var paramname = param.Name;
+                        var pr = typeof(PVPanel).GetProperties().FirstOrDefault(p => p.Name == paramname);
+                        if (pr != null)
+                            pr.SetValue(this, value);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Cannot load parameter." + ex.Message);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Clone PVPanel
+        /// </summary>
+        public PVPanel Clone()
+        {
+            var res = new PVPanel();
+            foreach (var param in typeof(PVPanel).GetProperties())
+            {
+                try
+                {
+                    if (param.CanWrite)
+                    {
+                        var value = param.GetValue(this);
+                        var paramname = param.Name;
+                        var pr = typeof(PVPanel).GetProperties().FirstOrDefault(p => p.Name == paramname);
+                        if (pr != null)
+                            pr.SetValue(res, value);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Cannot load parameter. " + ex.Message);
+                }
+            }
+            return res;
+        }
     }
 }

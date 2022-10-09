@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,7 @@ using System.Threading.Tasks.Dataflow;
 using VEDriversLite.Common;
 using VEDriversLite.Common.Calendar;
 using VEDriversLite.EntitiesBlocks.Blocks;
+using VEDriversLite.EntitiesBlocks.PVECalculations.Dto;
 
 namespace VEDriversLite.EntitiesBlocks.PVECalculations
 {
@@ -170,8 +172,9 @@ namespace VEDriversLite.EntitiesBlocks.PVECalculations
             {
                 while (addcount > 0)
                 {
-                    panel.Id = Guid.NewGuid().ToString();
-                    group.AddPanel(panel);   
+                    var p = panel.Clone();
+                    p.Id = Guid.NewGuid().ToString();
+                    group.AddPanel(p);   
                     addcount--;
                 }
             }
@@ -191,6 +194,84 @@ namespace VEDriversLite.EntitiesBlocks.PVECalculations
             if (PVPanelsGroups.TryGetValue(groupId, out var group))
                  return group.RemovePanel(panelId);
             return false;
+        }
+
+        /// <summary>
+        /// Export Config file to the Json
+        /// </summary>
+        /// <returns></returns>
+        public string ExportSettingsToJSON()
+        {
+            return JsonConvert.SerializeObject(CreateConfigFile());
+        }
+
+        /// <summary>
+        /// Fill the Config file
+        /// </summary>
+        /// <returns></returns>
+        public PVConfigDto CreateConfigFile()
+        {
+            var config = new PVConfigDto();
+
+            foreach (var group in PVPanelsGroups.Values)
+            {
+                var gr = new PVPanelsGroupConfigDto();
+                gr.Id = group.Id;
+                gr.Name = group.Name;
+                foreach (var panel in group.PVPanels.Values)
+                    gr.Panels.Add(panel.Id, panel.Clone());
+
+                config.Groups.Add(group.Id, gr);
+            }
+
+            return config;
+        }
+
+        /// <summary>
+        /// Import settings of the PVE from JSON
+        /// </summary>
+        /// <param name="jsonConfig"></param>
+        /// <returns></returns>
+        public bool ImportConfigFromJson(string jsonConfig)
+        {
+            if (string.IsNullOrEmpty(jsonConfig))
+                return false;
+
+            var config = JsonConvert.DeserializeObject<PVConfigDto>(jsonConfig);
+            if (config != null)
+                return ImportConfig(config);
+            else
+                return false;
+        }
+
+        /// <summary>
+        /// Import config from config file
+        /// </summary>
+        /// <param name="config"></param>
+        /// <returns></returns>
+        public bool ImportConfig(PVConfigDto config)
+        {
+            if (config == null)
+                return false;
+
+            Id = config.Id;
+            Name = config.Name;
+
+            PVPanelsGroups.Clear();
+
+            foreach(var group in config.Groups.Values)
+            {
+                var gr = new PVPanelsGroup() 
+                { 
+                    Id = group.Id, 
+                    Name = group.Name
+                };
+                foreach (var panel in group.Panels.Values)
+                    gr.PVPanels.TryAdd(panel.Id, panel);
+                PVPanelsGroups.TryAdd(group.Id, gr);
+            }
+
+            return true;
         }
 
         /// <summary>
