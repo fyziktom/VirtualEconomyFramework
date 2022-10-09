@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace VEDriversLite.EntitiesBlocks.Blocks.Dto
 {
+    /// <summary>
+    /// Type of the action of the profile data to some other value
+    /// </summary>
     public enum DayProfileType
     {
         Default,
@@ -18,16 +21,32 @@ namespace VEDriversLite.EntitiesBlocks.Blocks.Dto
         WeatherCoeficient,
         DirtCoeficient,
     }
-
+    /// <summary>
+    /// Day profile with the values for recalculate some blocks amounts
+    /// for example profile of the weather coeficient
+    /// </summary>
     public class DayProfile
     {
+        /// <summary>
+        /// Set of the profile data identified by DateTime as key
+        /// </summary>
         public Dictionary<DateTime, double> ProfileData { get; set; } = new Dictionary<DateTime, double>();
-
+        /// <summary>
+        /// Name of the profile
+        /// </summary>
         public string Name { get; set; } = string.Empty;
+        /// <summary>
+        /// Type of the profile data action
+        /// </summary>
         public DayProfileType Type { get; set; } = DayProfileType.Default;
-
+        /// <summary>
+        /// First date in the profile data values
+        /// </summary>
         [JsonIgnore]
         public DateTime FirstDate { get => ProfileData.Keys.ToList().OrderBy(x => x).FirstOrDefault(); }
+        /// <summary>
+        /// Last date in the profile data values
+        /// </summary>
         [JsonIgnore]
         public DateTime LastDate { get => ProfileData.Keys.ToList().OrderByDescending(x => x).FirstOrDefault(); }
 

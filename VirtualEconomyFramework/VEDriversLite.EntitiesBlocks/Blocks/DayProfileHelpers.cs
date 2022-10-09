@@ -74,7 +74,7 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
             foreach(var value in values)
             {
                 profile.ProfileData.TryAdd(tmp, value);
-                tmp = tmp.AddSeconds(BlockHelpers.GetTimeSpanBasedOntimeframe(timeframe).TotalSeconds);
+                tmp = tmp.AddSeconds(BlockHelpers.GetTimeSpanBasedOntimeframe(timeframe, tmp).TotalSeconds);
                 if (tmp >= end)
                     break;
             }

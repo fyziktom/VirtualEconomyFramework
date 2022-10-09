@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Metrics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -13,22 +14,27 @@ namespace VEFrameworkUnitTest.BlockEntities
     public class DayProfileBlocksTests
     {
         private DayProfile CreateDayProfileTestData(double value = 3, 
-                                                    int days = 10,
+                                                    int count = 10,
                                                     string name = "test",
+                                                    BlockTimeframe timeframe = BlockTimeframe.Day,
                                                     DayProfileType type = DayProfileType.MultiplyCoeficient)
         {
             var start = new DateTime(2022, 1, 1);
-            var end = start.AddDays(days);
+            var end = start;
+
             var data = new List<double>();
-            for (var i = 0; i < days; i++)
+            for (var i = 0; i < count; i++)
+            {
+                end = end.AddSeconds(count * BlockHelpers.GetTimeSpanBasedOntimeframe(timeframe, end).TotalSeconds);
                 data.Add(value);
+            }
 
             var profile = DayProfileHelpers.LoadDayProfileFromListOfValuesAndTimeframe(name,
                                                                                        data,
                                                                                        start,
                                                                                        end,
                                                                                        type,
-                                                                                       BlockTimeframe.Day);
+                                                                                       timeframe);
 
             return profile;
         }
@@ -57,10 +63,64 @@ namespace VEFrameworkUnitTest.BlockEntities
         }
 
         [Fact]
+        public void ProfileWithMonthFrame()
+        {
+            var timeframe = BlockTimeframe.Month;
+            var profile = CreateDayProfileTestData(3, 12, "test", timeframe, DayProfileType.MultiplyCoeficient);
+            
+            Assert.Equal(12, profile.ProfileData.Count);
+            var counter = 1;
+            foreach (var data in profile.ProfileData)
+            {
+                Assert.Equal(3, data.Value);
+                var month = counter < 10 ? "0" + counter.ToString() : counter.ToString();
+                if (DateTime.TryParse($"2022-{month}-01T00:00:00", out var date))
+                    Assert.Equal(date, data.Key);
+                counter++;
+            }
+        }
+
+        [Fact]
+        public void ProfileWithYearFrame()
+        {
+            var timeframe = BlockTimeframe.Year;
+            var profile = CreateDayProfileTestData(3, 5, "test", timeframe, DayProfileType.MultiplyCoeficient);
+
+            Assert.Equal(5, profile.ProfileData.Count);
+            var counter = 2022;
+            foreach (var data in profile.ProfileData)
+            {
+                Assert.Equal(3, data.Value);
+                var year = counter < 10 ? "0" + counter.ToString() : counter.ToString();
+                if (DateTime.TryParse($"{year}-01-01T00:00:00", out var date))
+                    Assert.Equal(date, data.Key);
+                counter++;
+            }
+        }
+
+        [Fact]
+        public void ProfileWithHourFrame()
+        {
+            var timeframe = BlockTimeframe.Hour;
+            var profile = CreateDayProfileTestData(3, 24, "test", timeframe, DayProfileType.MultiplyCoeficient);
+
+            Assert.Equal(24, profile.ProfileData.Count);
+            var counter = 0;
+            foreach (var data in profile.ProfileData)
+            {
+                Assert.Equal(3, data.Value);
+                var hour = counter < 10 ? "0" + counter.ToString() : counter.ToString();
+                if (DateTime.TryParse($"2022-01-01T{hour}:00:00", out var date))
+                    Assert.Equal(date, data.Key);
+                counter++;
+            }
+        }
+
+        [Fact]
         public void MultiplyBlocksWithProfile()
         {
             var timeframe = BlockTimeframe.Day;
-            var profile = CreateDayProfileTestData(3, 10, "test", DayProfileType.MultiplyCoeficient);
+            var profile = CreateDayProfileTestData(3, 10, "test", timeframe, DayProfileType.MultiplyCoeficient);
             var blocks = BlockHelpers.GetResultBlocks(timeframe, profile.FirstDate, profile.LastDate, profile.Name);
             foreach (var block in blocks)
                 block.Amount = 1;
@@ -74,7 +134,7 @@ namespace VEFrameworkUnitTest.BlockEntities
         public void DivideBlocksWithProfile()
         {
             var timeframe = BlockTimeframe.Day;
-            var profile = CreateDayProfileTestData(3, 10, "test", DayProfileType.DivideCoeficient);
+            var profile = CreateDayProfileTestData(3, 10, "test", timeframe, DayProfileType.DivideCoeficient);
             var blocks = BlockHelpers.GetResultBlocks(timeframe, profile.FirstDate, profile.LastDate, profile.Name);
             foreach (var block in blocks)
                 block.Amount = 3;
@@ -88,7 +148,7 @@ namespace VEFrameworkUnitTest.BlockEntities
         public void AddBlocksWithProfile()
         {
             var timeframe = BlockTimeframe.Day;
-            var profile = CreateDayProfileTestData(3, 10, "test", DayProfileType.AddCoeficient);
+            var profile = CreateDayProfileTestData(3, 10, "test", timeframe, DayProfileType.AddCoeficient);
             var blocks = BlockHelpers.GetResultBlocks(timeframe, profile.FirstDate, profile.LastDate, profile.Name);
             foreach (var block in blocks)
                 block.Amount = 3;
@@ -102,7 +162,7 @@ namespace VEFrameworkUnitTest.BlockEntities
         public void SubtractBlocksWithProfile()
         {
             var timeframe = BlockTimeframe.Day;
-            var profile = CreateDayProfileTestData(3, 10, "test", DayProfileType.SubtractCoeficient);
+            var profile = CreateDayProfileTestData(3, 10, "test", timeframe, DayProfileType.SubtractCoeficient);
             var blocks = BlockHelpers.GetResultBlocks(timeframe, profile.FirstDate, profile.LastDate, profile.Name);
             foreach (var block in blocks)
                 block.Amount = 3;
@@ -116,15 +176,15 @@ namespace VEFrameworkUnitTest.BlockEntities
         public void LoadDayProfileDataFromRawWithDates()
         {
             var data = "2022-01-01T00:00:00\t3.0" +
-                       "2022-02-01T00:00:00\t3.0" +
-                       "2022-03-01T00:00:00\t3.0" +
-                       "2022-04-01T00:00:00\t3.0" +
-                       "2022-05-01T00:00:00\t3.0" +
-                       "2022-06-01T00:00:00\t3.0" +
-                       "2022-07-01T00:00:00\t3.0" +
-                       "2022-08-01T00:00:00\t3.0" +
-                       "2022-09-01T00:00:00\t3.0" +
-                       "2022-10-01T00:00:00\t3.0";
+                       "2022-01-02T00:00:00\t3.0" +
+                       "2022-01-03T00:00:00\t3.0" +
+                       "2022-01-04T00:00:00\t3.0" +
+                       "2022-01-05T00:00:00\t3.0" +
+                       "2022-01-06T00:00:00\t3.0" +
+                       "2022-01-07T00:00:00\t3.0" +
+                       "2022-01-08T00:00:00\t3.0" +
+                       "2022-01-09T00:00:00\t3.0" +
+                       "2022-01-10T00:00:00\t3.0";
             var profile = DayProfileHelpers.LoadDayProfileFromRawData(data, "\t", "test", DayProfileType.MultiplyCoeficient);
 
             var counter = 1;
@@ -132,7 +192,7 @@ namespace VEFrameworkUnitTest.BlockEntities
             {
                 Assert.Equal(3, pr.Value);
                 var day = counter < 10 ? "0" + counter.ToString() : counter.ToString();
-                if(DateTime.TryParse($"2022-{day}-01T00:00:00", out var date))
+                if(DateTime.TryParse($"2022-01-{day}T00:00:00", out var date))
                     Assert.Equal(date, pr.Key);
             }
         }
@@ -158,8 +218,9 @@ namespace VEFrameworkUnitTest.BlockEntities
             {
                 Assert.Equal(value, pr.Value);
                 var day = counter < 10 ? "0" + counter.ToString() : counter.ToString();
-                if (DateTime.TryParse($"2022-{day}-01T00:00:00", out var date))
+                if (DateTime.TryParse($"2022-01-{day}T00:00:00", out var date))
                     Assert.Equal(date, pr.Key);
+                counter++;
             }
         }
 

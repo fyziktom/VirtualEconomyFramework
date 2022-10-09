@@ -60,7 +60,7 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
             List<IBlock> blocks = new List<IBlock>();
 
             var tmpdate = starttime;
-            var ts = GetTimeSpanBasedOntimeframe(timeframesteps);
+            var ts = GetTimeSpanBasedOntimeframe(timeframesteps, starttime);
 
             tmpdate = starttime;
 
@@ -78,16 +78,15 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
                     Id = Guid.NewGuid().ToString()
                 });
                 tmpdate += ts;
+                ts = GetTimeSpanBasedOntimeframe(timeframesteps, tmpdate);
             }
 
             return blocks;
         }
 
-        public static TimeSpan GetTimeSpanBasedOntimeframe(BlockTimeframe timeframesteps)
+        public static TimeSpan GetTimeSpanBasedOntimeframe(BlockTimeframe timeframesteps, DateTime starttime)
         {
-            var starttime = DateTime.UtcNow;
             var tmpdate = starttime;
-
             TimeSpan ts = new TimeSpan();
             switch (timeframesteps)
             {
@@ -126,7 +125,7 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
         {
             var result = new List<IBlock>();
             var tmpdate = starttime;
-            var ts = GetTimeSpanBasedOntimeframe(timeframesteps);
+            var ts = GetTimeSpanBasedOntimeframe(timeframesteps, starttime);
 
             tmpdate = starttime;
 
@@ -142,6 +141,7 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
                     ParentId = parentId,
                 });
                 tmpdate += ts;
+                ts = GetTimeSpanBasedOntimeframe(timeframesteps, tmpdate);
             }
 
             return result;
