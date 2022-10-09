@@ -390,7 +390,6 @@ namespace VEDriversLite.EntitiesBlocks.PVECalculations
             var start = new DateTime(year, 1, 1);
             var end = start.AddYears(1);
             var block = new BaseBlock();
-            var blocks = new List<IBlock>();
             var firstBlockId = string.Empty;
 
             if (PVPanelsGroups.TryGetValue(groupId, out var group))
@@ -494,6 +493,130 @@ namespace VEDriversLite.EntitiesBlocks.PVECalculations
                     rblock.RepetitiveSourceBlockId = firstBlockId;
                     //rblock.IsRepetitiveChild = true;
                 }
+
+                yield return rblock;
+                tmp = tmp.AddDays(1);
+            }
+        }
+
+        /// <summary>
+        /// Get group peak power across all panels in the group based on the start-end time and return as list of IBlock.
+        /// For each day in timeframe there will be one block created.
+        /// </summary>
+        /// <param name="start">Start DateTime</param>
+        /// <param name="end">End DateTime</param>
+        /// <param name="coord">Coordinates on planet</param>
+        /// <param name="weatherFactor">Weather efficiency factor</param>
+        /// <returns>Peak energy in specific datetime in form of List of IBlock for whole one year</returns>
+        public IEnumerable<IBlock> GetGroupPeakPowerInTimeframeBlock(string groupId, DateTime start, DateTime end, Coordinates coord, double weatherFactor)
+        {
+            if (string.IsNullOrEmpty(groupId))
+                throw new Exception("annot get Peak power in year data. Group Id is required.");
+
+            if (end < start)
+                throw new Exception("Wrong input of the start and end. End cannot be earlier than start.");
+
+            start = start.AddHours(-start.Hour).AddMinutes(-start.Minute).AddSeconds(-start.Second);
+            end = end.AddHours(-end.Hour).AddMinutes(-end.Minute).AddSeconds(-end.Second);
+
+            var block = new BaseBlock();
+            var firstBlockId = string.Empty;
+
+            if (PVPanelsGroups.TryGetValue(groupId, out var group))
+            {
+                var tmp = start;
+                while (tmp < end)
+                {
+                    var amount = 0.0;
+                    for (var i = 0; i < 24; i++)
+                        amount += group.GetGroupPeakPowerInDateTime(tmp.AddHours(i), coord, weatherFactor);
+
+                    SunMoonCalcs.SunCalc.GetTimes(tmp,
+                                                  coord.Latitude,
+                                                  coord.Longitude,
+                                                  out var rise,
+                                                  out var set);
+
+                    var effectiverise = rise.AddSeconds((set - rise).TotalSeconds * 0.1);
+                    var effectiveset = set.AddSeconds(-(set - rise).TotalSeconds * 0.1);
+
+                    var rblock = block.GetBlock(BlockType.Simulated,
+                                                BlockDirection.Created,
+                                                effectiverise,
+                                                effectiveset - effectiverise,
+                                                amount,
+                                                groupId,
+                                                Name,
+                                                null,
+                                                groupId);
+
+                    rblock.IsInDayOnly = true;
+                    if (string.IsNullOrEmpty(firstBlockId))
+                        firstBlockId = rblock.Id;
+                    else
+                        rblock.RepetitiveSourceBlockId = firstBlockId;
+
+                    yield return rblock;
+                    tmp = tmp.AddDays(1);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Get total peak power across all groups and panels in the handler based on the start-end datetime and return as list of IBlock.
+        /// For each day in timeframe there will be one block created.
+        /// </summary>
+        /// <param name="start">Start DateTime</param>
+        /// <param name="end">End DateTime</param>
+        /// <param name="coord">Coordinates on planet</param>
+        /// <param name="weatherFactor">Weather efficiency factor</param>
+        /// <returns>Peak energy in specific datetime in form of List of IBlock for whole one year</returns>
+        public IEnumerable<IBlock> GetTotalPeakPowerInTimeframeBlocks(DateTime start, DateTime end, Coordinates coord, double weatherFactor)
+        {
+            if (end < start)
+                throw new Exception("Wrong input of the start and end. End cannot be earlier than start.");
+
+            var block = new BaseBlock();
+
+            start = start.AddHours(-start.Hour).AddMinutes(-start.Minute).AddSeconds(-start.Second);
+            end = end.AddHours(-end.Hour).AddMinutes(-end.Minute).AddSeconds(-end.Second);
+            var tmp = start;
+            var firstBlockId = string.Empty;
+
+            while (tmp < end)
+            {
+                var amount = 0.0;
+
+                foreach (var group in PVPanelsGroups.Values)
+                {
+                    for (var i = 0; i < 24; i++)
+                        amount += group.GetGroupPeakPowerInDateTime(tmp.AddHours(i), coord, weatherFactor);
+                }
+
+                SunMoonCalcs.SunCalc.GetTimes(tmp,
+                                              coord.Latitude,
+                                              coord.Longitude,
+                                              out var rise,
+                                              out var set);
+
+                var effectiverise = rise.AddSeconds((set - rise).TotalSeconds * 0.1);
+                var effectiveset = set.AddSeconds(-(set - rise).TotalSeconds * 0.1);
+
+                var rblock = block.GetBlock(BlockType.Simulated,
+                                            BlockDirection.Created,
+                                            effectiverise,
+                                            effectiveset - effectiverise,
+                                            amount,
+                                            Id,
+                                            Name,
+                                            null,
+                                            Id);
+
+                rblock.IsInDayOnly = true;
+                if (string.IsNullOrEmpty(firstBlockId))
+                    firstBlockId = rblock.Id;
+                else
+                    rblock.RepetitiveSourceBlockId = firstBlockId;
 
                 yield return rblock;
                 tmp = tmp.AddDays(1);
