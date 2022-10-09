@@ -16,6 +16,7 @@ namespace VEFramework.VEBlazor.EntitiesBlocks.Services
         public string RootItemId { get; set; } = string.Empty;
         public string RootItemName { get; set; } = string.Empty;
         public string StoredConfig { get; set; } = string.Empty;
+        public string StoredPVEConfig { get; set; } = string.Empty;
         public TreeItem SelectedItem { get; set; } = new TreeItem();
         public bool PVESimulatorLoaded { get; set; }
 

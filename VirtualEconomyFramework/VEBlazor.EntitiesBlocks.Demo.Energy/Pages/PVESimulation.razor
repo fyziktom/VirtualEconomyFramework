@@ -3,6 +3,7 @@
 @page "/pvesimulation"
 
 @inject AppData AppData
+@inject HttpClient Http
 
 <PageTitle>VE Energy - PVE Simulation</PageTitle>
 
@@ -49,20 +50,26 @@
         if (!AppData.PVESimulatorLoaded)
         {
             end = start.AddDays(DurationInDays);
+            var storeddata = await Http.GetStringAsync("samplepve.json");
+            if (storeddata != null)
+                AppData.StoredPVEConfig = storeddata;
 
-            panelAzimuthE = MathHelpers.DegreeToRadians(-40);
-            panelAzimuthS = MathHelpers.DegreeToRadians(0);
-            panelAzimuthW = MathHelpers.DegreeToRadians(60);
+            if (storeddata != null && !AppData.PVEGrid.ImportConfigFromJson(storeddata))
+            {
+                panelAzimuthE = MathHelpers.DegreeToRadians(-40);
+                panelAzimuthS = MathHelpers.DegreeToRadians(0);
+                panelAzimuthW = MathHelpers.DegreeToRadians(60);
 
-            var eastPanelsId = AppData.PVEGrid.AddGroup("East");
-            var southPanelsId = AppData.PVEGrid.AddGroup("South");
-            var westPanelsId = AppData.PVEGrid.AddGroup("West");
+                var eastPanelsId = AppData.PVEGrid.AddGroup("East");
+                var southPanelsId = AppData.PVEGrid.AddGroup("South");
+                var westPanelsId = AppData.PVEGrid.AddGroup("West");
 
-            SetCommonPanel();
-            // set template panel in this PVE
-            AddPanelToGroup(eastPanelsId, panelAzimuthE, true, 3);
-            AddPanelToGroup(southPanelsId, panelAzimuthS, true, 6);
-            AddPanelToGroup(westPanelsId, panelAzimuthW, true, 8);
+                SetCommonPanel();
+                // set template panel in this PVE
+                AddPanelToGroup(eastPanelsId, panelAzimuthE, true, 3);
+                AddPanelToGroup(southPanelsId, panelAzimuthS, true, 6);
+                AddPanelToGroup(westPanelsId, panelAzimuthW, true, 8);
+            }
 
             groupIds = AppData.PVEGrid.PVPanelsGroups.Values.Where(p => p.Id != null).Select(p => (p.Id, p.Name));
             
