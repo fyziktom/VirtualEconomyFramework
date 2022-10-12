@@ -8,7 +8,7 @@ using VEDriversLite.EntitiesBlocks.Blocks.Dto;
 
 namespace VEDriversLite.EntitiesBlocks.Blocks
 {
-    public static class DayProfileHelpers
+    public static class DataProfileHelpers
     {
 
         /// <summary>
@@ -21,9 +21,9 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
         /// <param name="name"></param>
         /// <param name="type"></param>
         /// <returns></returns>
-        public static DayProfile LoadDayProfileFromRawData(string inputdata, string separator, string name, DayProfileType type)
+        public static DataProfile LoadDataProfileFromRawData(string inputdata, string separator, string name, DataProfileType type)
         {
-            var result = new DayProfile()
+            var result = new DataProfile()
             {
                 Name = name,
                 Type = type
@@ -60,14 +60,14 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
         /// <param name="type">type of the DayProfile</param>
         /// <param name="timeframe">timeframe will set the step of DateTime stamp for the next loaded value</param>
         /// <returns></returns>
-        public static DayProfile LoadDayProfileFromListOfValuesAndTimeframe(string name, 
-                                                                            List<double> values, 
-                                                                            DateTime start, 
-                                                                            DateTime end, 
-                                                                            DayProfileType type,
-                                                                            BlockTimeframe timeframe)
+        public static DataProfile LoadDataProfileFromListOfValuesAndTimeframe(string name, 
+                                                                              List<double> values, 
+                                                                              DateTime start, 
+                                                                              DateTime end, 
+                                                                              DataProfileType type,
+                                                                              BlockTimeframe timeframe)
         {
-            var profile = new DayProfile()
+            var profile = new DataProfile()
             {
                 Name = name,
                 Type = type,
@@ -86,11 +86,11 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
         }
 
         /// <summary>
-        /// Export Day profile to json
+        /// Export Data profile to json
         /// </summary>
         /// <param name="profile"></param>
         /// <returns></returns>
-        public static string ExportDayProfileToJson(DayProfile profile)
+        public static string ExportDataProfileToJson(DataProfile profile)
         {
             return JsonConvert.SerializeObject(profile);
         }
@@ -100,11 +100,11 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
         /// </summary>
         /// <param name="profilejson"></param>
         /// <returns></returns>
-        public static DayProfile? ImportDayProfileFromJson(string profilejson)
+        public static DataProfile? ImportDataProfileFromJson(string profilejson)
         {
             try
             {
-                var profile = JsonConvert.DeserializeObject<DayProfile>(profilejson);
+                var profile = JsonConvert.DeserializeObject<DataProfile>(profilejson);
                 return profile;
             }
             catch(Exception ex)
@@ -122,31 +122,31 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
         /// <param name="input"></param>
         /// <param name="profile"></param>
         /// <returns></returns>
-        public static IEnumerable<IBlock> ActionBlockWithDayProfile(IEnumerable<IBlock> input, DayProfile profile)
+        public static IEnumerable<IBlock> ActionBlockWithDataProfile(IEnumerable<IBlock> input, DataProfile profile)
         {
             var counter = 0;
 
             foreach (var inp in input)
             {
-                if (profile.ProfileData.TryGetValue(new DateTime(inp.StartTime.Year, inp.StartTime.Month, inp.StartTime.Day), out var pr))
+                foreach (var data in profile.ProfileData.Where(d => d.Key > inp.StartTime && d.Key < inp.EndTime))
                 {
                     switch (profile.Type)
                     {
-                        case DayProfileType.AddCoeficient:
-                            inp.Amount += pr;
+                        case DataProfileType.AddCoeficient:
+                            inp.Amount += data.Value;
                             break;
-                        case DayProfileType.SubtractCoeficient:
-                            inp.Amount -= pr;
+                        case DataProfileType.SubtractCoeficient:
+                            inp.Amount -= data.Value;
                             break;
-                        case DayProfileType.MultiplyCoeficient:
-                            inp.Amount *= pr;
+                        case DataProfileType.MultiplyCoeficient:
+                            inp.Amount *= data.Value;
                             break;
-                        case DayProfileType.DivideCoeficient:
-                            if (pr != 0)
-                                inp.Amount /= pr;
+                        case DataProfileType.DivideCoeficient:
+                            if (data.Value != 0)
+                                inp.Amount /= data.Value;
                             break;
                     }
-                    
+
                     yield return inp;
                     counter++;
                 }

@@ -10,7 +10,7 @@ namespace VEDriversLite.EntitiesBlocks.Blocks.Dto
     /// <summary>
     /// Type of the action of the profile data to some other value
     /// </summary>
-    public enum DayProfileType
+    public enum DataProfileType
     {
         Default,
         MultiplyCoeficient,
@@ -22,10 +22,10 @@ namespace VEDriversLite.EntitiesBlocks.Blocks.Dto
         DirtCoeficient,
     }
     /// <summary>
-    /// Day profile with the values for recalculate some blocks amounts
+    /// Data profile with the values for recalculate some blocks amounts
     /// for example profile of the weather coeficient
     /// </summary>
-    public class DayProfile
+    public class DataProfile
     {
         /// <summary>
         /// Set of the profile data identified by DateTime as key
@@ -38,7 +38,7 @@ namespace VEDriversLite.EntitiesBlocks.Blocks.Dto
         /// <summary>
         /// Type of the profile data action
         /// </summary>
-        public DayProfileType Type { get; set; } = DayProfileType.Default;
+        public DataProfileType Type { get; set; } = DataProfileType.Default;
         /// <summary>
         /// First date in the profile data values
         /// </summary>

@@ -11,13 +11,13 @@ using Xunit;
 
 namespace VEFrameworkUnitTest.BlockEntities
 {
-    public class DayProfileBlocksTests
+    public class DataProfileBlocksTests
     {
-        private DayProfile CreateDayProfileTestData(double value = 3, 
+        private DataProfile CreateDataProfileTestData(double value = 3, 
                                                     int count = 10,
                                                     string name = "test",
                                                     BlockTimeframe timeframe = BlockTimeframe.Day,
-                                                    DayProfileType type = DayProfileType.MultiplyCoeficient)
+                                                    DataProfileType type = DataProfileType.MultiplyCoeficient)
         {
             var start = new DateTime(2022, 1, 1);
             var end = start;
@@ -29,7 +29,7 @@ namespace VEFrameworkUnitTest.BlockEntities
                 data.Add(value);
             }
 
-            var profile = DayProfileHelpers.LoadDayProfileFromListOfValuesAndTimeframe(name,
+            var profile = DataProfileHelpers.LoadDataProfileFromListOfValuesAndTimeframe(name,
                                                                                        data,
                                                                                        start,
                                                                                        end,
@@ -51,11 +51,11 @@ namespace VEFrameworkUnitTest.BlockEntities
             for(var i = 0; i < days; i ++)
                 data.Add(value);
 
-            var profile = DayProfileHelpers.LoadDayProfileFromListOfValuesAndTimeframe(name, 
+            var profile = DataProfileHelpers.LoadDataProfileFromListOfValuesAndTimeframe(name, 
                                                                                        data, 
                                                                                        start, 
                                                                                        end, 
-                                                                                       DayProfileType.MultiplyCoeficient,
+                                                                                       DataProfileType.MultiplyCoeficient,
                                                                                        BlockTimeframe.Day);
             Assert.Equal(name, profile.Name);
             Assert.Equal(days, profile.ProfileData.Count);
@@ -66,7 +66,7 @@ namespace VEFrameworkUnitTest.BlockEntities
         public void ProfileWithMonthFrame()
         {
             var timeframe = BlockTimeframe.Month;
-            var profile = CreateDayProfileTestData(3, 12, "test", timeframe, DayProfileType.MultiplyCoeficient);
+            var profile = CreateDataProfileTestData(3, 12, "test", timeframe, DataProfileType.MultiplyCoeficient);
             
             Assert.Equal(12, profile.ProfileData.Count);
             var counter = 1;
@@ -84,7 +84,7 @@ namespace VEFrameworkUnitTest.BlockEntities
         public void ProfileWithYearFrame()
         {
             var timeframe = BlockTimeframe.Year;
-            var profile = CreateDayProfileTestData(3, 5, "test", timeframe, DayProfileType.MultiplyCoeficient);
+            var profile = CreateDataProfileTestData(3, 5, "test", timeframe, DataProfileType.MultiplyCoeficient);
 
             Assert.Equal(5, profile.ProfileData.Count);
             var counter = 2022;
@@ -102,7 +102,7 @@ namespace VEFrameworkUnitTest.BlockEntities
         public void ProfileWithHourFrame()
         {
             var timeframe = BlockTimeframe.Hour;
-            var profile = CreateDayProfileTestData(3, 24, "test", timeframe, DayProfileType.MultiplyCoeficient);
+            var profile = CreateDataProfileTestData(3, 24, "test", timeframe, DataProfileType.MultiplyCoeficient);
 
             Assert.Equal(24, profile.ProfileData.Count);
             var counter = 0;
@@ -120,12 +120,12 @@ namespace VEFrameworkUnitTest.BlockEntities
         public void MultiplyBlocksWithProfile()
         {
             var timeframe = BlockTimeframe.Day;
-            var profile = CreateDayProfileTestData(3, 10, "test", timeframe, DayProfileType.MultiplyCoeficient);
+            var profile = CreateDataProfileTestData(3, 10, "test", timeframe, DataProfileType.MultiplyCoeficient);
             var blocks = BlockHelpers.GetResultBlocks(timeframe, profile.FirstDate, profile.LastDate, profile.Name);
             foreach (var block in blocks)
                 block.Amount = 1;
 
-            var mblocks = DayProfileHelpers.ActionBlockWithDayProfile(blocks, profile);
+            var mblocks = DataProfileHelpers.ActionBlockWithDataProfile(blocks, profile);
             foreach (var mb in mblocks)
                 Assert.Equal(3, mb.Amount);
         }
@@ -134,12 +134,12 @@ namespace VEFrameworkUnitTest.BlockEntities
         public void DivideBlocksWithProfile()
         {
             var timeframe = BlockTimeframe.Day;
-            var profile = CreateDayProfileTestData(3, 10, "test", timeframe, DayProfileType.DivideCoeficient);
+            var profile = CreateDataProfileTestData(3, 10, "test", timeframe, DataProfileType.DivideCoeficient);
             var blocks = BlockHelpers.GetResultBlocks(timeframe, profile.FirstDate, profile.LastDate, profile.Name);
             foreach (var block in blocks)
                 block.Amount = 3;
 
-            var mblocks = DayProfileHelpers.ActionBlockWithDayProfile(blocks, profile);
+            var mblocks = DataProfileHelpers.ActionBlockWithDataProfile(blocks, profile);
             foreach (var mb in mblocks)
                 Assert.Equal(1, mb.Amount);
         }
@@ -148,32 +148,65 @@ namespace VEFrameworkUnitTest.BlockEntities
         public void AddBlocksWithProfile()
         {
             var timeframe = BlockTimeframe.Day;
-            var profile = CreateDayProfileTestData(3, 10, "test", timeframe, DayProfileType.AddCoeficient);
+            var profile = CreateDataProfileTestData(3, 10, "test", timeframe, DataProfileType.AddCoeficient);
             var blocks = BlockHelpers.GetResultBlocks(timeframe, profile.FirstDate, profile.LastDate, profile.Name);
             foreach (var block in blocks)
                 block.Amount = 3;
 
-            var mblocks = DayProfileHelpers.ActionBlockWithDayProfile(blocks, profile);
+            var mblocks = DataProfileHelpers.ActionBlockWithDataProfile(blocks, profile);
             foreach (var mb in mblocks)
                 Assert.Equal(6, mb.Amount);
+        }
+
+        [Fact]
+        public void AddBlocksWithProfileMultipleDayBlock()
+        {
+            var datavalue = 3;
+            var blockvalue = 3;
+            var timeframe = BlockTimeframe.Day;
+            var profile = CreateDataProfileTestData(datavalue, 10, "test", timeframe, DataProfileType.AddCoeficient);
+            var blocks = BlockHelpers.GetResultBlocks(timeframe, profile.FirstDate, profile.LastDate, profile.Name);
+            foreach (var block in blocks)
+                block.Amount = blockvalue;
+
+            var blockdays = 3;
+            var blocktimespan = new TimeSpan(blockdays, 0, 0);
+            blocks.Add(new BaseBlock()
+            {
+                Id = Guid.NewGuid().ToString(),
+                StartTime = profile.LastDate,
+                Timeframe = blocktimespan,
+                Amount = blockvalue * blockdays,
+                Direction = BlockDirection.Consumed,
+                Type = BlockType.Simulated
+            });
+
+            var mblocks = DataProfileHelpers.ActionBlockWithDataProfile(blocks, profile);
+            foreach (var mb in mblocks)
+            {
+                if (mb.Timeframe == blocktimespan)
+                    Assert.Equal((blockvalue + datavalue) * blockdays, mb.Amount);
+                else
+                    Assert.Equal(datavalue + blockvalue, mb.Amount);
+            }
         }
 
         [Fact]
         public void SubtractBlocksWithProfile()
         {
             var timeframe = BlockTimeframe.Day;
-            var profile = CreateDayProfileTestData(3, 10, "test", timeframe, DayProfileType.SubtractCoeficient);
+            var profile = CreateDataProfileTestData(3, 10, "test", timeframe, DataProfileType.SubtractCoeficient);
             var blocks = BlockHelpers.GetResultBlocks(timeframe, profile.FirstDate, profile.LastDate, profile.Name);
             foreach (var block in blocks)
                 block.Amount = 3;
 
-            var mblocks = DayProfileHelpers.ActionBlockWithDayProfile(blocks, profile);
+            var mblocks = DataProfileHelpers.ActionBlockWithDataProfile(blocks, profile);
             foreach (var mb in mblocks)
                 Assert.Equal(0, mb.Amount);
         }
 
         [Fact]
-        public void LoadDayProfileDataFromRawWithDates()
+        public void LoadDataProfileDataFromRawWithDates()
         {
             var data = "2022-01-01T00:00:00\t3.0" +
                        "2022-01-02T00:00:00\t3.0" +
@@ -185,7 +218,7 @@ namespace VEFrameworkUnitTest.BlockEntities
                        "2022-01-08T00:00:00\t3.0" +
                        "2022-01-09T00:00:00\t3.0" +
                        "2022-01-10T00:00:00\t3.0";
-            var profile = DayProfileHelpers.LoadDayProfileFromRawData(data, "\t", "test", DayProfileType.MultiplyCoeficient);
+            var profile = DataProfileHelpers.LoadDataProfileFromRawData(data, "\t", "test", DataProfileType.MultiplyCoeficient);
 
             var counter = 1;
             foreach (var pr in profile.ProfileData)
@@ -198,7 +231,7 @@ namespace VEFrameworkUnitTest.BlockEntities
         }
 
         [Fact]
-        public void LoadDayProfileDataFromRaw()
+        public void LoadDataProfileDataFromRaw()
         {
             var value = 3;
             var data = new List<double>();
@@ -206,12 +239,12 @@ namespace VEFrameworkUnitTest.BlockEntities
             for (var i = 0; i < 10; i++)
                 data.Add(value);
 
-            var profile = DayProfileHelpers.LoadDayProfileFromListOfValuesAndTimeframe("test", 
-                                                                                        data, 
-                                                                                        start,
-                                                                                        start.AddDays(10),
-                                                                                        DayProfileType.MultiplyCoeficient,
-                                                                                        BlockTimeframe.Day);
+            var profile = DataProfileHelpers.LoadDataProfileFromListOfValuesAndTimeframe("test", 
+                                                                                         data, 
+                                                                                         start,
+                                                                                         start.AddDays(10),
+                                                                                         DataProfileType.MultiplyCoeficient,
+                                                                                         BlockTimeframe.Day);
 
             var counter = 1;
             foreach (var pr in profile.ProfileData)
@@ -233,16 +266,16 @@ namespace VEFrameworkUnitTest.BlockEntities
             for (var i = 0; i < 10; i++)
                 data.Add(value);
 
-            var profile = DayProfileHelpers.LoadDayProfileFromListOfValuesAndTimeframe("test",
-                                                                                        data,
-                                                                                        start,
-                                                                                        start.AddDays(10),
-                                                                                        DayProfileType.MultiplyCoeficient,
-                                                                                        BlockTimeframe.Day);
+            var profile = DataProfileHelpers.LoadDataProfileFromListOfValuesAndTimeframe("test",
+                                                                                         data,
+                                                                                         start,
+                                                                                         start.AddDays(10),
+                                                                                         DataProfileType.MultiplyCoeficient,
+                                                                                         BlockTimeframe.Day);
 
-            var export = DayProfileHelpers.ExportDayProfileToJson(profile);
+            var export = DataProfileHelpers.ExportDataProfileToJson(profile);
 
-            var inprofile = DayProfileHelpers.ImportDayProfileFromJson(export);
+            var inprofile = DataProfileHelpers.ImportDataProfileFromJson(export);
 
             Assert.Equal(profile.Name, inprofile.Name);
             Assert.Equal(profile.Type, inprofile.Type);
