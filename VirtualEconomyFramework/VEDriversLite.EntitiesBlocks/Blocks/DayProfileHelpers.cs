@@ -36,10 +36,13 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
                     if (!string.IsNullOrEmpty(line))
                     {
                         var split = line.Split(separator);
-                        if (split != null && split.Length > 1)
-                            if (DateTime.TryParse(split[0], out var date) &&
-                                double.TryParse(split[1], out var value))
-                                    result.ProfileData.TryAdd(date, value);
+                        if (split != null && 
+                            split.Length > 1 &&
+                            DateTime.TryParse(split[0], out var date) &&
+                            double.TryParse(split[1], out var value))
+                        {
+                            result.ProfileData.TryAdd(date, value);
+                        }
                     }
                 }
             }
@@ -97,7 +100,7 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
         /// </summary>
         /// <param name="profilejson"></param>
         /// <returns></returns>
-        public static DayProfile ImportDayProfileFromJson(string profilejson)
+        public static DayProfile? ImportDayProfileFromJson(string profilejson)
         {
             try
             {
@@ -130,12 +133,10 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
                     switch (profile.Type)
                     {
                         case DayProfileType.AddCoeficient:
-                            if (pr != 0)
-                                inp.Amount += pr;
+                            inp.Amount += pr;
                             break;
                         case DayProfileType.SubtractCoeficient:
-                            if (pr != 0)
-                                inp.Amount -= pr;
+                            inp.Amount -= pr;
                             break;
                         case DayProfileType.MultiplyCoeficient:
                             inp.Amount *= pr;

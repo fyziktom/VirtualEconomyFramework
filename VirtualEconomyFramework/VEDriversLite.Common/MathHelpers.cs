@@ -16,7 +16,7 @@ namespace VEDriversLite.Common
         /// <returns></returns>
         public static T Median<T>(this IEnumerable<T> items)
         {
-            if (items != null && items.Count() > 0)
+            if (items != null && items.Any())
             {
                 var i = (int)Math.Ceiling((double)(items.Count() - 1) / 2);
                 if (i >= 0)

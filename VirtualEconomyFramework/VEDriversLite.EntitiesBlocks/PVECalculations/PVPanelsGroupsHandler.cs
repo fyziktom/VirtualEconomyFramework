@@ -86,41 +86,11 @@ namespace VEDriversLite.EntitiesBlocks.PVECalculations
         /// <summary>
         /// Set parameters for the Common panel template
         /// </summary>
-        /// <param name="azimuth"></param>
-        /// <param name="baseAngle"></param>
-        /// <param name="dirtRatio"></param>
-        /// <param name="efficiency"></param>
-        /// <param name="width"></param>
-        /// <param name="height"></param>
-        /// <param name="coords"></param>
-        /// <param name="peakpower"></param>
-        /// <param name="panelPeakAngle"></param>
-        public void SetCommonPanel(string name,
-                                   double azimuth, 
-                                   double baseAngle, 
-                                   double dirtRatio, 
-                                   double efficiency, 
-                                   double width, 
-                                   double height,
-                                   Coordinates coords,
-                                   double peakpower,
-                                   double panelPeakAngle)
+        /// <param name="panel"></param>
+        public void SetCommonPanel(PVPanel panel)
         {
-            CommonPanel = new PVPanel()
-            {
-                Name = name,
-                GroupId = Id,
-                Azimuth = azimuth,
-                BaseAngle = baseAngle,
-                DirtRatio = dirtRatio,
-                Efficiency = efficiency,
-                Height = height,
-                Width = width,
-                Latitude = coords.Latitude,
-                Longitude = coords.Longitude,
-                PeakPower = peakpower,
-                PanelPeakAngle = panelPeakAngle
-            };
+            CommonPanel = panel.Clone();
+            CommonPanel.GroupId = Id;
         }
         /// <summary>
         /// Add new group with specified name
@@ -130,7 +100,7 @@ namespace VEDriversLite.EntitiesBlocks.PVECalculations
         public string AddGroup(string name)
         {
             if (string.IsNullOrEmpty(name))
-                return null;
+                return string.Empty;
             if (!PVPanelsGroups.ContainsKey(name))
             {
                 var group = new PVPanelsGroup() { Name = name };
@@ -138,7 +108,7 @@ namespace VEDriversLite.EntitiesBlocks.PVECalculations
 
                 return group.Id;
             }
-            return null;
+            return string.Empty;
         }
 
         /// <summary>
@@ -150,8 +120,7 @@ namespace VEDriversLite.EntitiesBlocks.PVECalculations
         {
             if (string.IsNullOrEmpty(groupId))
                 return false;
-            if (PVPanelsGroups.ContainsKey(groupId))
-                if (PVPanelsGroups.TryGetValue(groupId, out var group))
+            if (PVPanelsGroups.TryRemove(groupId, out var group))
                     return true;
             return false;
         }
@@ -162,24 +131,23 @@ namespace VEDriversLite.EntitiesBlocks.PVECalculations
         /// <param name="panel">Panel object</param>
         /// <param name="addcount">Add multiple times. In that case each panel will have new created Id</param>
         /// <returns>Id of last added panel</returns>
-        public string AddPanelToGroup(string groupId, PVPanel panel, int addcount = 1)
+        public IEnumerable<string> AddPanelToGroup(string groupId, PVPanel panel, int addcount = 1)
         {
-            if (panel == null || string.IsNullOrEmpty(panel.Id))
-                return null;
-
-            panel.GroupId = groupId;
-            if (PVPanelsGroups.TryGetValue(groupId, out var group))
+            if (panel != null && !string.IsNullOrEmpty(panel.Id))
             {
-                while (addcount > 0)
+                panel.GroupId = groupId;
+                if (PVPanelsGroups.TryGetValue(groupId, out var group))
                 {
-                    var p = panel.Clone();
-                    p.Id = Guid.NewGuid().ToString();
-                    group.AddPanel(p);   
-                    addcount--;
+                    while (addcount > 0)
+                    {
+                        var p = panel.Clone();
+                        p.Id = Guid.NewGuid().ToString();
+                        group.AddPanel(p);
+                        addcount--;
+                        yield return p.Id;
+                    }
                 }
             }
-            // todo return list of all ids
-            return panel.Id;
         }
         /// <summary>
         /// Remove Panel from the group based on Group Id and Panel Id
@@ -202,7 +170,15 @@ namespace VEDriversLite.EntitiesBlocks.PVECalculations
         /// <returns></returns>
         public string ExportSettingsToJSON()
         {
-            return JsonConvert.SerializeObject(CreateConfigFile());
+            try
+            {
+                var exp = JsonConvert.SerializeObject(CreateConfigFile());
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("Cannot serialize PVE settings. " + ex.Message);
+            }
+            return string.Empty;
         }
 
         /// <summary>
@@ -299,7 +275,7 @@ namespace VEDriversLite.EntitiesBlocks.PVECalculations
         /// </summary>
         /// <param name="groupId"></param>
         /// <returns></returns>
-        public PVPanelsGroup GetGroup(string groupId)
+        public PVPanelsGroup? GetGroup(string groupId)
         {
             if (string.IsNullOrEmpty(groupId))
                 return null;
@@ -316,10 +292,10 @@ namespace VEDriversLite.EntitiesBlocks.PVECalculations
         public IEnumerable<PVPanel> GetGroupPanelsList(string groupId)
         {
             if (string.IsNullOrEmpty(groupId))
-                return null;
+                return new List<PVPanel>();
             if (PVPanelsGroups.TryGetValue(groupId, out var group))
                 return group.PVPanels.Values;
-            return null;
+            return new List<PVPanel>();
         }
 
         /// <summary>
@@ -361,7 +337,7 @@ namespace VEDriversLite.EntitiesBlocks.PVECalculations
         /// <param name="coord">Coordinates on planet</param>
         /// <param name="weatherFactor">Weather efficiency factor</param>
         /// <returns>Peak energy in specific datetime in form of IBlock</returns>
-        public IBlock GetGroupPeakPowerInDateBlock(string groupId, DateTime start, Coordinates coord, double weatherFactor)
+        public IBlock? GetGroupPeakPowerInDateBlock(string groupId, DateTime start, Coordinates coord, double weatherFactor)
         {
             if (string.IsNullOrEmpty(groupId))
                 return null;
@@ -384,55 +360,49 @@ namespace VEDriversLite.EntitiesBlocks.PVECalculations
         /// <returns>Peak energy in specific datetime in form of List of IBlock for whole one year</returns>
         public IEnumerable<IBlock> GetGroupPeakPowerInYearBlock(string groupId, int year, Coordinates coord, double weatherFactor)
         {
-            if (string.IsNullOrEmpty(groupId))
-                throw new Exception("annot get Peak power in year data. Group Id is required.");
-
-            var start = new DateTime(year, 1, 1);
-            var end = start.AddYears(1);
-            var block = new BaseBlock();
-            var firstBlockId = string.Empty;
-
-            if (PVPanelsGroups.TryGetValue(groupId, out var group))
+            if (!string.IsNullOrEmpty(groupId))
             {
-                var tmp = start;
-                while (tmp < end)
+                var start = new DateTime(year, 1, 1);
+                var end = start.AddYears(1);
+                var block = new BaseBlock();
+                var firstBlockId = string.Empty;
+
+                if (PVPanelsGroups.TryGetValue(groupId, out var group))
                 {
-                    var amount = 0.0;
-                    for (var i = 0; i < 24; i++)
-                        amount += group.GetGroupPeakPowerInDateTime(tmp.AddHours(i), coord, weatherFactor);
-
-                    SunMoonCalcs.SunCalc.GetTimes(tmp,
-                                                  coord.Latitude,
-                                                  coord.Longitude,
-                                                  out var rise,
-                                                  out var set);
-
-                    var effectiverise = rise.AddSeconds((set - rise).TotalSeconds * 0.1);
-                    var effectiveset = set.AddSeconds(-(set - rise).TotalSeconds * 0.1);
-
-                    var rblock = block.GetBlock(BlockType.Simulated,
-                                                BlockDirection.Created,
-                                                effectiverise,
-                                                effectiveset - effectiverise,
-                                                amount,
-                                                groupId,
-                                                Name,
-                                                null,
-                                                groupId);
-
-                    rblock.IsInDayOnly = true;
-                    if (string.IsNullOrEmpty(firstBlockId))
+                    var tmp = start;
+                    while (tmp < end)
                     {
-                        firstBlockId = rblock.Id;
-                        //rblock.IsRepetitiveSource = true;
+                        var amount = 0.0;
+                        for (var i = 0; i < 24; i++)
+                            amount += group.GetGroupPeakPowerInDateTime(tmp.AddHours(i), coord, weatherFactor);
+
+                        SunMoonCalcs.SunCalc.GetTimes(tmp,
+                                                      coord.Latitude,
+                                                      coord.Longitude,
+                                                      out var rise,
+                                                      out var set);
+
+                        var effectiverise = rise.AddSeconds((set - rise).TotalSeconds * 0.1);
+                        var effectiveset = set.AddSeconds(-(set - rise).TotalSeconds * 0.1);
+
+                        var rblock = block.GetBlock(BlockType.Simulated,
+                                                    BlockDirection.Created,
+                                                    effectiverise,
+                                                    effectiveset - effectiverise,
+                                                    amount,
+                                                    groupId,
+                                                    Name,
+                                                    null,
+                                                    groupId);
+
+                        rblock.IsInDayOnly = true;
+                        if (string.IsNullOrEmpty(firstBlockId))
+                            firstBlockId = rblock.Id;
+                        else
+                            rblock.RepetitiveSourceBlockId = firstBlockId;
+                        yield return rblock;
+                        tmp = tmp.AddDays(1);
                     }
-                    else
-                    {
-                        rblock.RepetitiveSourceBlockId = firstBlockId;
-                        //rblock.IsRepetitiveChild = true;
-                    }
-                    yield return rblock;
-                    tmp = tmp.AddDays(1);
                 }
             }
         }

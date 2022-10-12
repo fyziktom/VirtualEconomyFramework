@@ -81,9 +81,8 @@ namespace VEDriversLite.EntitiesBlocks.PVECalculations
             if (panel == null || string.IsNullOrEmpty(panel.Id))
                 return null;
             if (!PVPanels.ContainsKey(panel.Id))
-            {
                 PVPanels.TryAdd(panel.Id, panel);
-            }
+
             return panel.Id;
         }
         /// <summary>
@@ -95,9 +94,9 @@ namespace VEDriversLite.EntitiesBlocks.PVECalculations
         {
             if (string.IsNullOrEmpty(panelId))
                 return false;
-            if (PVPanels.ContainsKey(panelId))
-                if (PVPanels.TryGetValue(panelId, out var panel))
+            if (PVPanels.TryRemove(panelId, out var panel))
                     return true;
+
             return false;
         }
         /// <summary>

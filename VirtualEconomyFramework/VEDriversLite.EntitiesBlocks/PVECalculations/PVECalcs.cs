@@ -1,4 +1,6 @@
-﻿namespace VEDriversLite.EntitiesBlocks.PVECalculations
+﻿using VEDriversLite.Common;
+
+namespace VEDriversLite.EntitiesBlocks.PVECalculations
 {
     public static class PVECalcs
     {
@@ -16,8 +18,8 @@
         /// <returns></returns>
         public static double GetTotalPeakPowerOfPanel(double panelPeakPower, double efficiency, double weatherFactor, double panelPeakAngle, double sunBeamAngle, bool anglesInDegrees = false, bool round = false, int decimals = 4)
         {
-            var sunangle = anglesInDegrees ? sunBeamAngle / (180 / Math.PI) : sunBeamAngle;
-            var panelpowerangle = anglesInDegrees ? panelPeakAngle / (180 / Math.PI) : panelPeakAngle;
+            var sunangle = anglesInDegrees ? MathHelpers.DegreeToRadians(sunBeamAngle) : sunBeamAngle;
+            var panelpowerangle = anglesInDegrees ? MathHelpers.DegreeToRadians(panelPeakAngle) : panelPeakAngle;
             var res = GetPeakPowerOfPanel(panelPeakPower, efficiency, weatherFactor, sunangle, panelpowerangle);
 
             var result = res >= 0 ? res : 0;
@@ -38,7 +40,7 @@
         public static double GetPeakPowerOfPanel(double panelPeakPower, double efficiency, double weatherFactor, double sunangle, double panelpowerangle)
         {
             if (panelpowerangle > 0)
-                return panelPeakPower * efficiency * weatherFactor * (sunangle / panelpowerangle);
+                return panelPeakPower * efficiency * weatherFactor * ((sunangle*0.33) / panelpowerangle);
             else
                 throw new DivideByZeroException();
         }

@@ -43,8 +43,8 @@ namespace VEDriversLite.Common.Calendar
         public class SunTime
         {
             public double Angle { get; set; }
-            public string MorningName { get; set; }
-            public string EveningName { get; set; }
+            public string MorningName { get; set; } = string.Empty;
+            public string EveningName { get; set; } = string.Empty;
         }
 
         public class SunTimeRiseSet : SunTime
@@ -54,7 +54,7 @@ namespace VEDriversLite.Common.Calendar
         }
 
         // sun times configuration (angle, morning name, evening name)
-        public static List<SunTime> SunTimes = new List<SunTime>(new SunTime[]
+        public static List<SunTime> SunTimes { get; set; } = new List<SunTime>(new SunTime[]
         {
             new SunTime {Angle = -0.833,    MorningName = "sunrise",        EveningName = "sunset" },
             new SunTime {Angle = -0.3,      MorningName = "sunriseEnd",     EveningName = "sunsetStart" },
@@ -72,8 +72,8 @@ namespace VEDriversLite.Common.Calendar
 
         public class RaDec
         {
-            public double ra = 0;
-            public double dec = 0;
+            public double ra { get; set; } = 0;
+            public double dec { get; set; } = 0;
         }
 
         public static double ToJulianDate(DateTime dt)
@@ -157,9 +157,9 @@ namespace VEDriversLite.Common.Calendar
 
         public class MoonRaDecDist
         {
-            public double ra = 0;
-            public double dec = 0;
-            public double dist = 0;
+            public double ra { get; set; } = 0;
+            public double dec { get; set; } = 0;
+            public double dist { get; set; } = 0;
         }
 
         public static MoonRaDecDist MoonCoords(double d) // geocentric ecliptic coordinates of the moon
@@ -181,8 +181,8 @@ namespace VEDriversLite.Common.Calendar
 
             public class AzAlt
             {
-                public double azimuth = 0;
-                public double altitude = 0;
+                public double Azimuth { get; set; } = 0;
+                public double Altitude { get; set; } = 0;
             }
 
             public static AzAlt GetPosition(DateTime dt, double lat, double lng)
@@ -192,17 +192,17 @@ namespace VEDriversLite.Common.Calendar
                 double d = JulianDays(dt);
                 RaDec c = SunCoords(d);
                 double H = SiderealTime(d, lw) - c.ra;
-                return new AzAlt { azimuth = Azimuth(H, phi, c.dec), altitude = Altitude(H, phi, c.dec) };
+                return new AzAlt { Azimuth = Azimuth(H, phi, c.dec), Altitude = Altitude(H, phi, c.dec) };
             }
 
             public static double GetSunBeamAngle(AzAlt pos, double panelBaseAngle, double panelAzimuth, bool returnDegrees = false, bool round = false, int decimals = 0)
             {
-                var zenitsunangle = Math.PI / 2 - pos.altitude;
+                var zenitsunangle = Math.PI / 2 - pos.Altitude;
 
                 var angle = Math.PI / 2 - 
                             Math.Acos(
                                 Math.Cos(zenitsunangle) * Math.Cos(panelBaseAngle) +
-                                Math.Sin(zenitsunangle) * Math.Sin(panelBaseAngle) * Math.Cos(pos.azimuth -
+                                Math.Sin(zenitsunangle) * Math.Sin(panelBaseAngle) * Math.Cos(pos.Azimuth -
                                 panelAzimuth)
                             );
                 if (!returnDegrees)
@@ -276,17 +276,17 @@ namespace VEDriversLite.Common.Calendar
         {
             public class MoonAzAltDistPa
             {
-                public double azimuth = 0;
-                public double altitude = 0;
-                public double distance = 0;
-                public double parallacticAngle = 0;
+                public double Azimuth { get; set; } = 0;
+                public double Altitude { get; set; } = 0;
+                public double Distance { get; set; } = 0;
+                public double ParallacticAngle { get; set; } = 0;
             }
 
             public class MoonFracPhaseAngle
             {
-                public double fraction = 0;
-                public double phase = 0;
-                public double angle = 0;
+                public double Fraction { get; set; } = 0;
+                public double Phase { get; set; } = 0;
+                public double Angle { get; set; } = 0;
             }
 
             public static MoonAzAltDistPa GetMoonPosition(DateTime dt, double lat, double lng)
@@ -302,7 +302,7 @@ namespace VEDriversLite.Common.Calendar
                 double pa = Math.Atan2(Math.Sin(H), Math.Tan(phi) * Math.Cos(c.dec) - Math.Sin(c.dec) * Math.Cos(H));
 
                 h += AstroRefraction(h); // altitude correction for refraction
-                return new MoonAzAltDistPa { azimuth = Azimuth(H, phi, c.dec), altitude = h, distance = c.dist, parallacticAngle = pa };
+                return new MoonAzAltDistPa { Azimuth = Azimuth(H, phi, c.dec), Altitude = h, Distance = c.dist, ParallacticAngle = pa };
             }
 
             public static MoonFracPhaseAngle GetMoonIllumination(DateTime dt)
@@ -315,7 +315,7 @@ namespace VEDriversLite.Common.Calendar
                 double inc = Math.Atan2(sdist * Math.Sin(phi), m.dist - sdist * Math.Cos(phi));
                 double angle = Math.Atan2(Math.Cos(s.dec) * Math.Sin(s.ra - m.ra), Math.Sin(s.dec) * Math.Cos(m.dec) -
                                Math.Cos(s.dec) * Math.Sin(m.dec) * Math.Cos(s.ra - m.ra));
-                return new MoonFracPhaseAngle { fraction = (1 + Math.Cos(inc)) / 2, phase = 0.5 + 0.5 * inc * (angle < 0 ? -1 : 1) / PI, angle = angle };
+                return new MoonFracPhaseAngle { Fraction = (1 + Math.Cos(inc)) / 2, Phase = 0.5 + 0.5 * inc * (angle < 0 ? -1 : 1) / PI, Angle = angle };
             }
 
             // DateTime.Max = always up, DateTime.Min = always down
@@ -326,14 +326,14 @@ namespace VEDriversLite.Common.Calendar
                 DateTime t = dt;
 
                 double hc = 0.133 * rad;
-                double h0 = GetMoonPosition(t, lat, lng).altitude - hc;
+                double h0 = GetMoonPosition(t, lat, lng).Altitude - hc;
                 double h1, h2, rise = 0, set = 0, a, b, xe, ye = 0, d, x1, x2, dx;
                 int roots;
 
                 for (double i = 1.0; i <= 24.0; i += 2.0)
                 {
-                    h1 = GetMoonPosition(HoursLater(t, i), lat, lng).altitude - hc;
-                    h2 = GetMoonPosition(HoursLater(t, i + 1), lat, lng).altitude - hc;
+                    h1 = GetMoonPosition(HoursLater(t, i), lat, lng).Altitude - hc;
+                    h2 = GetMoonPosition(HoursLater(t, i + 1), lat, lng).Altitude - hc;
 
                     a = (h0 + h2) / 2 - h1;
                     b = (h2 - h0) / 2;
