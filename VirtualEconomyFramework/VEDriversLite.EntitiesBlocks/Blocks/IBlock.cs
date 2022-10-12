@@ -151,10 +151,10 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
                         DateTime starttime,
                         TimeSpan timeframe,
                         double amount = 0,
-                        string source = null,
-                        string name = null,
-                        string description = null,
-                        string owner = null);
+                        string? source = null,
+                        string? name = null,
+                        string? description = null,
+                        string? owner = null);
 
         /// <summary>
         /// Get Empty block with predefined parameters such as type or direction based on powe consumption of device
@@ -171,10 +171,10 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
                                DateTime starttime,
                                TimeSpan timeframe,
                                double powerconsumption = 0,
-                               string source = null,
-                               string name = null,
-                               string description = null,
-                               string owner = null);
+                               string? source = null,
+                               string? name = null,
+                               string? description = null,
+                               string? owner = null);
 
         /// <summary>
         /// Fill object with source IBlock

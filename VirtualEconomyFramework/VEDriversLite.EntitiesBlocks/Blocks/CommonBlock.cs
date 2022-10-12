@@ -183,10 +183,10 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
                                DateTime starttime,
                                TimeSpan timeframe,
                                double amount = 0,
-                               string source = null,
-                               string name = null,
-                               string description = null,
-                               string owner = null)
+                               string? source = null,
+                               string? name = null,
+                               string? description = null,
+                               string? owner = null)
         {
             var e = new BaseBlock();
             e.Id = Guid.NewGuid().ToString();
@@ -223,10 +223,10 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
                                       DateTime starttime,
                                       TimeSpan timeframe,
                                       double powerconsumption = 0,
-                                      string source = null,
-                                      string name = null,
-                                      string description = null,
-                                      string owner = null)
+                                      string? source = null,
+                                      string? name = null,
+                                      string? description = null,
+                                      string? owner = null)
         {
 
             var amount = powerconsumption * timeframe.TotalHours;

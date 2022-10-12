@@ -109,7 +109,23 @@ namespace VEFrameworkUnitTest.Energy.PVESimulator
         private void SetCommonPanel()
         {
             if (PVEGrid != null)
-                PVEGrid.SetCommonPanel("test", 0, MathHelpers.DegreeToRadians(23), 0.05 / 365, 1, 2000, 1000, coord, 0.3, Math.PI / 4);
+            {
+                var panel = new PVPanel()
+                {
+                    Name = "test",
+                    Azimuth = 0,
+                    BaseAngle = MathHelpers.DegreeToRadians(23),
+                    DirtRatio = 0.05 / 365,
+                    Efficiency = 1,
+                    Height = 2000,
+                    Width = 1000,
+                    Latitude = coord.Latitude,
+                    Longitude = coord.Longitude,
+                    PeakPower = 0.3,
+                    PanelPeakAngle = MathHelpers.DegreeToRadians(90)
+                };
+                PVEGrid.SetCommonPanel(panel);
+            }
         }
 
         private void AddPanelToGroup(string groupId, double azimuth = 0, bool setAzimuth = false, int count = 1)
