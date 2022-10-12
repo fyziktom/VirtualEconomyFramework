@@ -173,6 +173,8 @@ namespace VEDriversLite.EntitiesBlocks.PVECalculations
             try
             {
                 var exp = JsonConvert.SerializeObject(CreateConfigFile());
+                if (exp != null)
+                    return exp;
             }
             catch(Exception ex)
             {
@@ -454,15 +456,9 @@ namespace VEDriversLite.EntitiesBlocks.PVECalculations
 
                 rblock.IsInDayOnly = true;
                 if (string.IsNullOrEmpty(firstBlockId))
-                {
                     firstBlockId = rblock.Id;
-                    //rblock.IsRepetitiveSource = true;
-                }
                 else
-                {
                     rblock.RepetitiveSourceBlockId = firstBlockId;
-                    //rblock.IsRepetitiveChild = true;
-                }
 
                 yield return rblock;
                 tmp = tmp.AddDays(1);

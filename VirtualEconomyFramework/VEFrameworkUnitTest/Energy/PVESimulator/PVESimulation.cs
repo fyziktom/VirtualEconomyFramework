@@ -132,11 +132,9 @@ namespace VEFrameworkUnitTest.Energy.PVESimulator
         {
             SetCommonPanel();
             if (setAzimuth)
-            {
                 PVEGrid.CommonPanel.Azimuth = azimuth;
-            }
-            PVEGrid.AddPanelToGroup(groupId, PVEGrid.CommonPanel, count);
 
+            var addedPanelsId = PVEGrid.AddPanelToGroup(groupId, PVEGrid.CommonPanel, count).ToList();
         }
 
 

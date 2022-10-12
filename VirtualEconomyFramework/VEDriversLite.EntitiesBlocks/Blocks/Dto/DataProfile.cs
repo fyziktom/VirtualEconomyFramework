@@ -43,12 +43,12 @@ namespace VEDriversLite.EntitiesBlocks.Blocks.Dto
         /// First date in the profile data values
         /// </summary>
         [JsonIgnore]
-        public DateTime FirstDate { get => ProfileData.Keys.ToList().OrderBy(x => x).FirstOrDefault(); }
+        public DateTime FirstDate { get => ProfileData.Keys.OrderBy(x => x).FirstOrDefault(); }
         /// <summary>
         /// Last date in the profile data values
         /// </summary>
         [JsonIgnore]
-        public DateTime LastDate { get => ProfileData.Keys.ToList().OrderByDescending(x => x).FirstOrDefault(); }
+        public DateTime LastDate { get => ProfileData.Keys.OrderByDescending(x => x).FirstOrDefault(); }
 
     }
 }

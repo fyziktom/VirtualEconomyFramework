@@ -128,22 +128,22 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
 
             foreach (var inp in input)
             {
-                foreach (var data in profile.ProfileData.Where(d => d.Key > inp.StartTime && d.Key < inp.EndTime))
+                foreach (var data in profile.ProfileData.Where(d => d.Key > inp.StartTime && d.Key < inp.EndTime).Select(d => d.Value))
                 {
                     switch (profile.Type)
                     {
                         case DataProfileType.AddCoeficient:
-                            inp.Amount += data.Value;
+                            inp.Amount += data;
                             break;
                         case DataProfileType.SubtractCoeficient:
-                            inp.Amount -= data.Value;
+                            inp.Amount -= data;
                             break;
                         case DataProfileType.MultiplyCoeficient:
-                            inp.Amount *= data.Value;
+                            inp.Amount *= data;
                             break;
                         case DataProfileType.DivideCoeficient:
-                            if (data.Value != 0)
-                                inp.Amount /= data.Value;
+                            if (data != 0)
+                                inp.Amount /= data;
                             break;
                     }
 

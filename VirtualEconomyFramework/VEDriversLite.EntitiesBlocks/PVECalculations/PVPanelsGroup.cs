@@ -79,7 +79,7 @@ namespace VEDriversLite.EntitiesBlocks.PVECalculations
         public string AddPanel(PVPanel panel)
         {
             if (panel == null || string.IsNullOrEmpty(panel.Id))
-                return null;
+                return string.Empty;
             if (!PVPanels.ContainsKey(panel.Id))
                 PVPanels.TryAdd(panel.Id, panel);
 

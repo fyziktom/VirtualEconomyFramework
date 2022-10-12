@@ -133,7 +133,7 @@
         {
             AppData.PVEGrid.CommonPanel.Azimuth = azimuth;
         }
-        AppData.PVEGrid.AddPanelToGroup(groupId, AppData.PVEGrid.CommonPanel, count);
+        var addedPanelsId = AppData.PVEGrid.AddPanelToGroup(groupId, AppData.PVEGrid.CommonPanel, count).ToList();
 
     }
 }
