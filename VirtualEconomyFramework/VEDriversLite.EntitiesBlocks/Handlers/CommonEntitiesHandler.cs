@@ -678,6 +678,8 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
             if (ids.Count == 0) return null;
             var parentId = string.Empty;
 
+            var subsres = new Dictionary<string, List<IBlock>>();
+
             foreach (var id in ids)
             {
                 // Get entity from Sources or Consumers dicts
@@ -686,8 +688,6 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
 
                 if (string.IsNullOrEmpty(parentId))
                     parentId = id;
-
-                var subsres = new Dictionary<string, List<IBlock>>();
 
                 Queue<IEntity> subs = new Queue<IEntity>();
                 subs.Enqueue(entity);
@@ -715,36 +715,33 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
                         }
                     }
                 }
+            }
+            var result = new List<IBlock>();
+            if (subsres.Count > 0)
+            {
+                //create empty list of final block to sum the subresults in it
+                if (eetype == EntityType.Source)
+                    result = BlockHelpers.CreateEmptyBlocks(timeframesteps, starttime, endtime, parentId, 0, BlockDirection.Created, BlockType.Calculated);
+                else if (eetype == EntityType.Consumer)
+                    result = BlockHelpers.CreateEmptyBlocks(timeframesteps, starttime, endtime, parentId, 0, BlockDirection.Consumed, BlockType.Calculated);
+                else if (eetype == EntityType.Both)
+                    result = BlockHelpers.CreateEmptyBlocks(timeframesteps, starttime, endtime, parentId, 0, BlockDirection.Mix, BlockType.Calculated);
 
-                var result = new List<IBlock>();
-                if (subsres.Count > 0)
+                // add all items of subresults to the final list
+                if (result != null && result.Count > 0)
                 {
-                    //create empty list of final block to sum the subresults in it
-                    if (eetype == EntityType.Source)
-                        result = BlockHelpers.CreateEmptyBlocks(timeframesteps, starttime, endtime, parentId, 0, BlockDirection.Created, BlockType.Calculated);
-                    else if (eetype == EntityType.Consumer)
-                        result = BlockHelpers.CreateEmptyBlocks(timeframesteps, starttime, endtime, parentId, 0, BlockDirection.Consumed, BlockType.Calculated);
-                    else if (eetype == EntityType.Both)
-                        result = BlockHelpers.CreateEmptyBlocks(timeframesteps, starttime, endtime, parentId, 0, BlockDirection.Mix, BlockType.Calculated);
-
-                    // add all items of subresults to the final list
-                    if (result != null && result.Count > 0)
+                    foreach (var sres in subsres)
                     {
-                        foreach (var sres in subsres)
+                        foreach (var res in sres.Value.Where(r => r.Amount > 0 || r.Amount < 0))
                         {
-                            foreach (var res in sres.Value.Where(r => r.Amount > 0 || r.Amount < 0))
-                            {
-                                var r = result.First(b => b.StartTime == res.StartTime);
-                                if (r != null)
-                                    r.Amount += res.Amount;
-                            }
+                            var r = result.First(b => b.StartTime == res.StartTime);
+                            if (r != null)
+                                r.Amount += res.Amount;
                         }
                     }
                 }
-                return result;
             }
-
-            return null;
+            return result;
         }
 
         /// <summary>

@@ -62,8 +62,6 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
             var tmpdate = starttime;
             var ts = GetTimeSpanBasedOntimeframe(timeframesteps, starttime);
 
-            tmpdate = starttime;
-
             while (tmpdate < endtime)
             {
                 blocks.Add(new BaseBlock()
@@ -71,7 +69,7 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
                     Amount = energyAmount,
                     Direction = direction,
                     ParentId = parentId,
-                    StartTime = starttime,
+                    StartTime = tmpdate,
                     Timeframe = ts,
                     Used = false,
                     Type = blocktype,
