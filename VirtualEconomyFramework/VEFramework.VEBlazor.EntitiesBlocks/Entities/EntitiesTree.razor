@@ -117,6 +117,7 @@
     private async Task SelectedNodeChangedHandler(TreeItem item)
     {
         Item = item;
+        AppData.SelectedItem = item;
         await ItemChanged.InvokeAsync(Item);
     }
 }

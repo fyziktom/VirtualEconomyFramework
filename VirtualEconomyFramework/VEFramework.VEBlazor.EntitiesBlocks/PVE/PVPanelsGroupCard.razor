@@ -1,0 +1,58 @@
+﻿@inject AppData AppData
+
+<Card Margin="Margin.Is4.FromBottom" Style="min-width:300px;">
+    @if (Panels != null)
+    {
+        <CardHeader>
+            <CardTitle>PV Panels Group - @Name</CardTitle>
+        </CardHeader>
+        <CardBody>
+            <Row>
+                <Column>
+                    <Table>
+                        <TableHeader>
+                            <TableHeaderCell>Name</TableHeaderCell>
+                            <TableHeaderCell>Power</TableHeaderCell>
+                            <TableHeaderCell>Azimuth</TableHeaderCell>
+                            <TableHeaderCell>Latitude</TableHeaderCell>
+                            <TableHeaderCell>Longitude</TableHeaderCell>
+                        </TableHeader>
+                        <TableBody>
+                            @foreach (var panel in Panels)
+                            {
+                                <TableRow>
+                                    <TableRowCell>@panel.Name</TableRowCell>
+                                    <TableRowCell>@panel.PeakPower</TableRowCell>
+                                    <TableRowCell>@(Math.Round(panel.AzimutInDegrees,2)) </TableRowCell>
+                                    <TableRowCell>@panel.Latitude</TableRowCell>
+                                    <TableRowCell>@panel.Longitude</TableRowCell>
+                                </TableRow>
+                            }
+                        </TableBody>
+                    </Table>
+                </Column>
+            </Row>
+        </CardBody>
+    }
+</Card>
+
+@code {
+    [Parameter]
+    public IEnumerable<PVPanel> Panels { get; set; } = new List<PVPanel>();
+    [Parameter]
+    public string Name { get; set; } = string.Empty;
+    [Parameter]
+    public string GroupId { get; set; } = string.Empty;
+
+    public async Task LoadData(string groupId)
+    {
+       var panels = AppData.PVEGrid.GetGroupPanelsList(groupId);
+       if (panels != null)
+       {
+           Panels = panels;
+           Name = AppData.PVEGrid.GetGroup(groupId)?.Name;
+       }
+       await InvokeAsync(StateHasChanged);
+    }
+
+}
