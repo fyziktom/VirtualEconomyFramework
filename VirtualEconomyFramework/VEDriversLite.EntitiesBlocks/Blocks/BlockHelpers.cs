@@ -22,29 +22,31 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
                 startyear = endyear;
                 lengthinYears *= -1;
             }
-            if (lengthinYears == 0)
-                throw new Exception("endyear must be bigger than startyear.");
-
-            List<IBlock> blocks = new List<IBlock>();
-            DateTime date = new DateTime(startyear, 1, 1);
-            var lengthInMonths = lengthinYears * 12;
-            for (var i = 1; i <= lengthInMonths; i++)
+            if (lengthinYears > 0)
             {
-                var tmpdate = date;
-                blocks.Add(new BaseBlock()
+                List<IBlock> blocks = new List<IBlock>();
+                DateTime date = new DateTime(startyear, 1, 1);
+                var lengthInMonths = lengthinYears * 12;
+                for (var i = 1; i <= lengthInMonths; i++)
                 {
-                    Amount = energyAmount,
-                    Direction = direction,
-                    ParentId = parentId,
-                    StartTime = date,
-                    Timeframe = tmpdate.AddMonths(1) - date,
-                    Used = false,
-                    Type = blocktype,
-                    Id = Guid.NewGuid().ToString()
-                });
-                date = date.AddMonths(1);
+                    var tmpdate = date;
+                    blocks.Add(new BaseBlock()
+                    {
+                        Amount = energyAmount,
+                        Direction = direction,
+                        ParentId = parentId,
+                        StartTime = date,
+                        Timeframe = tmpdate.AddMonths(1) - date,
+                        Used = false,
+                        Type = blocktype,
+                        Id = Guid.NewGuid().ToString()
+                    });
+                    date = date.AddMonths(1);
+                }
+                return blocks;
             }
-            return blocks;
+            else
+                return new List<IBlock>();
         }
 
         public static List<IBlock> CreateEmptyBlocks(BlockTimeframe timeframesteps, DateTime starttime, DateTime endtime, string parentId, double energyAmount, BlockDirection direction, BlockType blocktype)
@@ -53,9 +55,13 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
                 parentId = string.Empty;
 
             if (starttime == endtime)
-                throw new Exception("starttime and endtime cannot be same.");
+                return new List<IBlock>();
             else if (starttime > endtime)
-                throw new Exception("starttime must be earlier than endtime.");
+            {
+                var tmp = starttime;
+                starttime = endtime;
+                starttime = tmp;
+            }
 
             List<IBlock> blocks = new List<IBlock>();
 
@@ -125,8 +131,6 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
             var tmpdate = starttime;
             var ts = GetTimeSpanBasedOntimeframe(timeframesteps, starttime);
 
-            tmpdate = starttime;
-
             while (tmpdate < endtime)
             {
                 result.Add(new BaseBlock()
@@ -182,8 +186,6 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
             var tmpdate = firstrun;
             var ts = endtime - starttime;
 
-            tmpdate = starttime;
-
             // to identify repetitive blocks with first one
             var firstBlockId = string.Empty;
             var counter = 0;
@@ -202,8 +204,8 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
                 {
                     Id = counter == 0 && !string.IsNullOrEmpty(starthash) ? starthash : hash,
                     Name = name != null ? name : string.Empty,
-                    IsRepetitiveSource = counter == 0 ? true : false,
-                    IsRepetitiveChild = counter > 0 ? true : false,
+                    IsRepetitiveSource = counter == 0,
+                    IsRepetitiveChild = counter > 0,
                     RepetitiveSourceBlockId = counter > 0 ? firstBlockId : string.Empty,
                     IsOffPeriodRepetitive = true,
                     RepetitiveFirstRun = counter == 0 ? firstrun : null,
@@ -259,15 +261,14 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
             var result = new List<IBlock>();
             var tmpdate = starttime;
             var ts = endtime - starttime;
-            if (ts.TotalHours > 24)
-                throw new Exception("Endtime - starttime cannot be bigger than 24h.");
+            if (ts.TotalHours > 24) //total hours must be lower or equal to 24 hours.
+                return result;
 
             var end = new DateTime(endrun.Year, endrun.Month, endrun.Day);
 
             // to identify repetitive blocks with first one
             var firstBlockId = string.Empty;
             var counter = 0;
-
 
             while (tmpdate < end)
             {
@@ -286,8 +287,8 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
                     {
                         Id = counter == 0 && !string.IsNullOrEmpty(starthash) ? starthash : hash,
                         Name = name != null ? name : string.Empty,
-                        IsRepetitiveSource = counter == 0 ? true : false,
-                        IsRepetitiveChild = counter > 0 ? true : false,
+                        IsRepetitiveSource = counter == 0,
+                        IsRepetitiveChild = counter > 0,
                         RepetitiveSourceBlockId = counter > 0 ? firstBlockId : string.Empty,
                         IsOffPeriodRepetitive = false,
                         IsInDayOnly = true,
@@ -349,7 +350,7 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
                                                             int endyear,
                                                             string parentId,
                                                             double PVEPeakPower,
-                                                            List<double> energyAmountYearProfile = null,
+                                                            List<double>? energyAmountYearProfile = null,
                                                             string starthash = null)
         {
             if (string.IsNullOrEmpty(parentId))
@@ -357,7 +358,6 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
             var lengthinYears = endyear - startyear;
             if (lengthinYears < 0)
             {
-                var tp = endyear;
                 endyear = startyear;
                 startyear = endyear;
                 lengthinYears *= -1;
@@ -371,12 +371,11 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
 
             List<IBlock> blocks = new List<IBlock>();
             DateTime date = new DateTime(startyear, 1, 1);
-            var name = "January";
             var lengthInMonths = lengthinYears * 12;
             for (var i = 1; i <= lengthInMonths; i++)
             {
                 var tmpdate = date;
-                name = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(tmpdate.Month);
+                var name = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(tmpdate.Month);
                 var hash = Guid.NewGuid().ToString();
 
                 // store the first block Id to let others refer to it
@@ -426,15 +425,14 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
                                                             DateTime endsun,
                                                             string parentId,
                                                             double PVEPeakPower,
-                                                            List<double> energyAmountYearProfile = null,
-                                                            string starthash = null)
+                                                            List<double>? energyAmountYearProfile = null,
+                                                            string? starthash = null)
         {
             if (string.IsNullOrEmpty(parentId))
                 parentId = string.Empty;
             var lengthinYears = endyear - startyear;
             if (lengthinYears < 0)
             {
-                var tp = endyear;
                 endyear = startyear;
                 startyear = endyear;
                 lengthinYears *= -1;
@@ -453,12 +451,11 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
             var firstBlockId = string.Empty;
             var counter = 0;
 
-            var name = "January";
             var end = new DateTime(endyear, 1, 1);
             while (date < end)
             {
                 var tmpdate = date;
-                name = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(tmpdate.Month);
+                var name = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(tmpdate.Month);
                 var hash = Guid.NewGuid().ToString();
 
                 // store the first block Id to let others refer to it
