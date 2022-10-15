@@ -60,7 +60,7 @@
 
 @if (WithButton)
 {
-    <Button Color="Color.Primary" Block="@BlockButton" Outline Float="@FloatButton" Clicked="@openAddBlock">
+    <Button Color="Color.Primary" Block="@BlockButton" Outline Float="@FloatButton" Clicked="@openAddEntity">
         <Row>
             @if(WithButtonIcon)
             {
@@ -109,7 +109,7 @@
         await InvokeAsync(StateHasChanged);
     }
 
-    private async Task openAddBlock()
+    private async Task openAddEntity()
     {
         if (AddEntityModal != null)
         {
