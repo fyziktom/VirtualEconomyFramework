@@ -1,6 +1,27 @@
 {
   "Id": "",
   "Name": "",
+  "CommonPanel": {
+    "Id": "",
+    "Name": "base panel",
+    "TypeName": "",
+    "PeakPower": 0.3,
+    "PanelPeakAngle": 0.7853981633974483,
+    "BaseAngle": 0.4014257279586958,
+    "Azimuth": 0,
+    "GroupId": "",
+    "Width": 2000.0,
+    "Height": 1000.0,
+    "CenterWidth": 1000.0,
+    "CenterHeight": 500.0,
+    "Efficiency": 1.0,
+    "DirtRatio": 0.00013698630136986303,
+    "Latitude": 49.194103,
+    "Longitude": 16.608998,
+    "AzimutInDegrees": 0.0,
+    "BaseAngleInDegrees": 23.0,
+    "PanelPeakAngleInDegrees": 45.0
+  },
   "Groups": {
     "76f28d8c-4988-4281-a032-fe4e003b976a": {
       "Id": "76f28d8c-4988-4281-a032-fe4e003b976a",

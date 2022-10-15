@@ -71,22 +71,6 @@
                 AddPanelToGroup(westPanelsId, panelAzimuthW, true, 8);
             }
 
-            var panel = new PVPanel()
-            {
-                Name = "test",
-                Azimuth = 0,
-                BaseAngle = MathHelpers.DegreeToRadians(23),
-                DirtRatio = 0.05 / 365,
-                Efficiency = 1,
-                Height = 2000,
-                Width = 1000,
-                Latitude = coord.Latitude,
-                Longitude = coord.Longitude,
-                PeakPower = 0.3,
-                PanelPeakAngle = MathHelpers.DegreeToRadians(90)
-            };
-            AppData.PVEGrid.SetCommonPanel(panel);
-
             groupIds = AppData.PVEGrid.PVPanelsGroups.Values.Where(p => p.Id != null).Select(p => (p.Id, p.Name));
 
             AppData.PVESimulatorLoaded = true;

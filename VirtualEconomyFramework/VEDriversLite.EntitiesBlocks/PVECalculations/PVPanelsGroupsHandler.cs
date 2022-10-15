@@ -234,6 +234,7 @@ namespace VEDriversLite.EntitiesBlocks.PVECalculations
 
             Id = config.Id;
             Name = config.Name;
+            CommonPanel = config.CommonPanel;
 
             PVPanelsGroups.Clear();
 

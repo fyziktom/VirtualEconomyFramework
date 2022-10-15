@@ -16,6 +16,7 @@ namespace VEDriversLite.EntitiesBlocks.PVECalculations.Dto
     {
         public string Id { get; set; } = string.Empty;
         public string Name { get; set; } = string.Empty;
+        public PVPanel CommonPanel { get; set; } = new PVPanel();
         public Dictionary<string, PVPanelsGroupConfigDto> Groups { get; set; } = new Dictionary<string, PVPanelsGroupConfigDto>();
     }
 }
