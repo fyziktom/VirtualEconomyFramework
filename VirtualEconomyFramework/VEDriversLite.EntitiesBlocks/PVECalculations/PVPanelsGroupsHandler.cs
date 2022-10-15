@@ -133,7 +133,7 @@ namespace VEDriversLite.EntitiesBlocks.PVECalculations
         /// <returns>Id of last added panel</returns>
         public IEnumerable<string> AddPanelToGroup(string groupId, PVPanel panel, int addcount = 1)
         {
-            if (panel != null && !string.IsNullOrEmpty(panel.Id))
+            if (panel != null)
             {
                 panel.GroupId = groupId;
                 if (PVPanelsGroups.TryGetValue(groupId, out var group))
