@@ -42,6 +42,7 @@
 
     private DataProfile totalProductionDataProfile = new DataProfile();
     private DataProfile storageChargingDataProfile = new DataProfile();
+    private DataProfile storageDischargingDataProfile = new DataProfile();
 
     Slider<int>? slider;
     int sliderValue = 0;
@@ -102,6 +103,7 @@
 
                 await lineChart.AddDataSet(GetLineChartDatasetForTotal(Start));
                 await lineChart.AddDataSet(GetLineChartDatasetForStorageCharging(Start, true));
+                await lineChart.AddDataSet(GetLineChartDatasetForStorageDischarging(Start));
 
                 await lineChart.Update();
             }
@@ -185,11 +187,70 @@
 
         foreach (var data in AppData.BatteryStorage.GetChargingProfileData(totalProductionDataProfile, false, true))
             storageChargingDataProfile.ProfileData.TryAdd(data.Item1, data.Item2 / 10000);
-            
+
         return new LineChartDataset<double>
             {
                 Label = "Charging in kWh/10",
                 Data = storageChargingDataProfile.ProfileData.Values.Where(p => p < double.MaxValue).ToList(),
+                BackgroundColor = backgroundColors,
+                BorderColor = borderColors,
+                Fill = true,
+                PointRadius = 3,
+                CubicInterpolationMode = "monotone",
+            };
+    }
+
+    LineChartDataset<double> GetLineChartDatasetForStorageDischarging(DateTime start)
+    {
+        storageDischargingDataProfile = new DataProfile();
+
+        var dayblocks = AppData.EntitiesHandler.GetConsumptionOfEntity(AppData.SelectedItem.Id,
+                                                                       BlockTimeframe.Hour,
+                                                                       start,
+                                                                       start.AddDays(1),
+                                                                       true,
+                                                                       false,
+                                                                       new List<BlockDirection>() { BlockDirection.Consumed });
+
+        var profile = DataProfileHelpers.ConvertBlocksToDataProfile(dayblocks);
+
+        var fullyloadedtime = start.AddDays(1);
+        var fullyloadtimefound = 1;
+        var lastval = 0.0;
+        var maxcharge = AppData.BatteryStorage.AverageMaxChargePower;
+        var totcap = AppData.BatteryStorage.TotalCapacity;
+
+        foreach (var loaded in storageChargingDataProfile.ProfileData)
+        {
+            if (fullyloadtimefound > 0 &&
+                loaded.Value * 1000 > totcap * 0.01 &&
+                Math.Abs((loaded.Value - lastval)) * 1000 <= maxcharge * 0.01)
+            {
+                fullyloadedtime = loaded.Key;
+                fullyloadtimefound--;
+            }
+            lastval = loaded.Value;
+        }
+
+        foreach (var k in profile.ProfileData.Keys)
+        {
+            if (k < fullyloadedtime)
+                if (profile.ProfileData.TryGetValue(k, out var d))
+                    d = 0;
+        }
+
+        foreach (var data in AppData.BatteryStorage.GetGetDischargingProfileData(profile, false, true))
+        {
+            if (data.Item1 >= fullyloadedtime)
+                storageDischargingDataProfile.ProfileData.TryAdd(data.Item1, data.Item2 / 10000);
+            else
+                storageDischargingDataProfile.ProfileData.TryAdd(data.Item1, 0);
+        }
+
+        return new LineChartDataset<double>
+            {
+                Label = "Discharging in kWh/10",
+                Data = storageDischargingDataProfile.ProfileData.Values.Where(p => p < double.MaxValue).ToList(),
                 BackgroundColor = backgroundColors,
                 BorderColor = borderColors,
                 Fill = true,

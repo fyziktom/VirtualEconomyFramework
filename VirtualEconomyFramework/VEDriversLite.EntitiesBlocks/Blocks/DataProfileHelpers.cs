@@ -152,5 +152,21 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
                 }
             }
         }
+
+        /// <summary>
+        /// Convert input blocks to data profile.
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        public static DataProfile ConvertBlocksToDataProfile(IEnumerable<IBlock> input)
+        {
+            var result = new DataProfile();
+            result.Type = DataProfileType.AddCoeficient;
+
+            foreach (var inp in input)
+                result.ProfileData.TryAdd(inp.StartTime, inp.Amount);
+
+            return result;
+        }
     }
 }
