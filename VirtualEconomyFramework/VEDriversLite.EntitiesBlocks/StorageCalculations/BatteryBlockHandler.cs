@@ -312,10 +312,8 @@ namespace VEDriversLite.EntitiesBlocks.StorageCalculations
                 var loaded = TotalActualFilledCapacity;
                 var laststeptime = starttime;
                 if (inputProfile.ProfileData.Count > 1)
-                {
                     laststeptime = starttime - (inputProfile.ProfileData.Keys.Skip(1).Take(1).First() - starttime);
-                }
-
+                
                 foreach (var step in inputProfile.ProfileData)
                 {
                     var value = step.Value;
@@ -437,6 +435,128 @@ namespace VEDriversLite.EntitiesBlocks.StorageCalculations
                         yield return (step.Key, loaded / totalcapacity);
                 }
             }
+        }
+
+        /// <summary>
+        /// Calculate Charging, Discharging and Balance profile for storage based on input production and consumption data
+        /// It does not count with actual loaded capacity in battery storage. It calculate indepenedent characteristics.
+        /// Function logic will start discharge after the battery charging was considered as stable enough (not loading anymore, or full capacity).
+        /// </summary>
+        /// <param name="sourceData">dataprofile with source/charging data</param>
+        /// <param name="consumptionData">dataprofile with consumption/discharging data</param>
+        /// <param name="inputInkWh">if the input data are in kWh set this and it will be convrted to Wh</param>
+        /// <param name="loaded">start state of loaded capacity of battery</param>
+        /// <param name="startDischarge">charging change ratio against max charge power when discharge starts (battery is not charging anymore)</param>
+        /// <param name="minimumLoadedToDischarge">minimum amount in storage to start discharge. it is ratio against totalcapacity (for example 0.1 for 10% of totalcapacity</param>
+        /// <returns></returns>
+        public Dictionary<string, DataProfile> GetChargingAndDischargingProfiles(DataProfile sourceData, 
+                                                                                 DataProfile consumptionData, 
+                                                                                 bool inputInkWh, 
+                                                                                 double loaded = 0.0, 
+                                                                                 double startDischarge = 0.04,
+                                                                                 double minimumLoadedToDischarge = 0.1)
+        {
+            var result = new Dictionary<string, DataProfile>();
+            var chargingProfile = new DataProfile();
+            var dischargingProfile = new DataProfile();
+            var balanceProfile = new DataProfile();
+
+            var starttime = sourceData.FirstDate;
+            var endtime = sourceData.LastDate;
+            var totalcapacity = TotalCapacity;
+
+            var laststeptime = starttime;
+            if (sourceData.ProfileData.Count > 1)
+                laststeptime = starttime - (sourceData.ProfileData.Keys.Skip(1).Take(1).ToList().First() - starttime);
+
+            foreach (var step in sourceData.ProfileData)
+            {
+                var value = step.Value;
+                if (inputInkWh)
+                    value *= 1000;
+
+               var dtMaxChargePower = AverageMaxChargePower * (step.Key - laststeptime).TotalHours;
+
+                var addvalue = value;
+                if (value >= dtMaxChargePower)
+                    addvalue = dtMaxChargePower;
+
+                if ((loaded + addvalue) > totalcapacity && loaded < totalcapacity)
+                    addvalue = totalcapacity - loaded - totalcapacity * 0.001;
+
+                if ((loaded + addvalue) < totalcapacity)
+                {
+                    loaded += addvalue;
+
+                    if (loaded <= 0)
+                        loaded = 0.000001;
+                }
+
+                laststeptime = step.Key;
+                chargingProfile.ProfileData.TryAdd(step.Key, loaded);
+            }
+
+            var dischargestarted = false;
+            var avgmaxcharge = AverageMaxChargePower;
+            var lastval = 0.0;
+            var unloaded = 0.0;
+            if (consumptionData.ProfileData.Count > 1)
+                laststeptime = starttime - (consumptionData.ProfileData.Keys.Skip(1).Take(1).ToList().First() - starttime);
+
+            foreach (var step in consumptionData.ProfileData)
+            {
+                if (chargingProfile.ProfileData.TryGetValue(step.Key, out var chargeLoadValue))
+                {
+                    if (!dischargestarted &&
+                        chargeLoadValue > totalcapacity * minimumLoadedToDischarge &&
+                        Math.Abs((chargeLoadValue - lastval)) <= avgmaxcharge * startDischarge)
+                    {
+                        dischargestarted = true;
+                        unloaded = chargeLoadValue;
+                    }
+                    lastval = chargeLoadValue;
+
+                    if (dischargestarted)
+                    {
+                        var value = step.Value;
+                        if (inputInkWh)
+                            value *= 1000;
+
+                        var dtMaxDischargePower = AverageMaxDischargePower * (step.Key - laststeptime).TotalHours;
+
+                        var subvalue = value;
+                        if (value >= dtMaxDischargePower)
+                            subvalue = dtMaxDischargePower;
+                        
+                        if ((unloaded - subvalue) < 0 && unloaded > 0)
+                            subvalue = unloaded - 0.000001;
+
+                        if ((unloaded - subvalue) > 0)
+                        {
+                            unloaded -= subvalue;
+
+                            if (unloaded <= 0)
+                                unloaded = 0.000001;
+                        }
+
+                        dischargingProfile.ProfileData.TryAdd(step.Key, unloaded);
+                        balanceProfile.ProfileData.TryAdd(step.Key, chargeLoadValue - (chargeLoadValue - unloaded));
+                    }
+                    else
+                    {
+                        dischargingProfile.ProfileData.TryAdd(step.Key, 0);
+                        balanceProfile.ProfileData.TryAdd(step.Key, chargeLoadValue);
+                    }
+
+                    laststeptime = step.Key;
+                }
+            }
+
+            result.Add("charge", chargingProfile);
+            result.Add("discharge", dischargingProfile);
+            result.Add("balance", balanceProfile);
+
+            return result;
         }
 
         public bool DischargeAllBatteryBlocks()

@@ -238,39 +238,19 @@
                                                                        false,
                                                                        new List<BlockDirection>() { BlockDirection.Consumed });
 
-        var profile = DataProfileHelpers.ConvertBlocksToDataProfile(dayblocks);
+        var consumptionProfile = DataProfileHelpers.ConvertBlocksToDataProfile(dayblocks);
 
-        var fullyloadedtime = start.AddDays(1);
-        var fullyloadtimefound = 1;
-        var lastval = 0.0;
-        var maxcharge = AppData.BatteryStorage.AverageMaxChargePower;
-        var totcap = AppData.BatteryStorage.TotalCapacity;
+        var profiles = AppData.BatteryStorage.GetChargingAndDischargingProfiles(totalProductionDataProfile, consumptionProfile, true);
 
-        foreach (var loaded in storageChargingDataProfile.ProfileData)
+        if (profiles != null && profiles.TryGetValue("discharge", out var disch))
         {
-            if (fullyloadtimefound > 0 &&
-                loaded.Value * 1000 > totcap * 0.01 &&
-                Math.Abs((loaded.Value - lastval)) * 1000 <= maxcharge * 0.01)
+            foreach (var v in disch.ProfileData.Keys)
             {
-                fullyloadedtime = loaded.Key;
-                fullyloadtimefound--;
+                if (disch.ProfileData.TryGetValue(v, out var d))
+                    storageDischargingDataProfile.ProfileData.TryAdd(v, d / 10000);
             }
-            lastval = loaded.Value;
-        }
-
-        foreach (var k in profile.ProfileData.Keys)
-        {
-            if (k < fullyloadedtime)
-                if (profile.ProfileData.TryGetValue(k, out var d))
-                    d = 0;
-        }
-
-        foreach (var data in AppData.BatteryStorage.GetGetDischargingProfileData(profile, false, true))
-        {
-            if (data.Item1 >= fullyloadedtime)
-                storageDischargingDataProfile.ProfileData.TryAdd(data.Item1, data.Item2 / 10000);
-            else
-                storageDischargingDataProfile.ProfileData.TryAdd(data.Item1, 0);
+            storageDischargingDataProfile.Name = disch.Name;
+            storageDischargingDataProfile.Type = disch.Type;
         }
 
         return new LineChartDataset<double>
