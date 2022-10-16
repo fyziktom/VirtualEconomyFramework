@@ -26,6 +26,11 @@
                 <PVEBlock @ref=pveblock />
             </Column>
         </Row>
+        <Row>
+            <Column>
+                <BatteryBlocksGroupCard @ref=batterystorage />
+            </Column>
+        </Row>
     </Column>
 </Row>
 
@@ -34,6 +39,7 @@
     PVEBlock? pveblock;
     PVESimulationGraph? graph;
     PVEYearGraph? ygraph;
+    BatteryBlocksGroupCard? batterystorage;
 
     Coordinates coord = new Coordinates(49.194103, 16.608998);
     double panelAzimuthE = MathHelpers.DegreeToRadians(-40);
@@ -47,6 +53,26 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (!AppData.BatteryStorageSimulatorLoaded)
+        {
+            var storeddata = await Http.GetStringAsync("samplestorage.json");
+            if (storeddata != null)
+                AppData.StoredBatteryStorageConfig = storeddata;
+
+            if (storeddata != null && !AppData.BatteryStorage.ImportConfigFromJson(storeddata))
+            {
+                setCommonBattery();
+                AppData.BatteryStorage.AddBatteryBlock(AppData.BatteryStorage.CommonBattery).ToList();
+                AppData.BatteryStorage.AddBatteryBlock(AppData.BatteryStorage.CommonBattery).ToList();
+                
+                AppData.BatteryStorageSimulatorLoaded = true;
+            }
+
+            if (batterystorage != null)
+                await batterystorage.LoadData();
+
+        }
+
         if (!AppData.PVESimulatorLoaded)
         {
             end = start.AddDays(DurationInDays);
@@ -101,6 +127,7 @@
                 await ygraph.LoadData(start, groupIds, coord, false);
 
         }
+
         await base.OnAfterRenderAsync(firstRender);
     }
 
@@ -124,6 +151,18 @@
                 };
             AppData.PVEGrid.SetCommonPanel(panel);
         }
+    }
+
+    private void setCommonBattery()
+    {
+        AppData.BatteryStorage.SetCommonBattery(new BatteryBlock()
+            {
+                Id = Guid.NewGuid().ToString(),
+                Capacity = 10000,
+                InternalResistance = 0.1,
+                MaximumChargePower = 2000,
+                MaximumDischargePower = 2000
+            });
     }
 
     private void AddPanelToGroup(string groupId, double azimuth = 0, bool setAzimuth = false, int count = 1)

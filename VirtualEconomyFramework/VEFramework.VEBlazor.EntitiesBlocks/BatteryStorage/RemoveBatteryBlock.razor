@@ -3,35 +3,35 @@
 <Modal @ref="RemoveModal">
     <ModalContent Centered Size="ModalSize.ExtraLarge">
         <ModalHeader>
-            <ModalTitle>Remove PV Panel</ModalTitle>
+            <ModalTitle>Remove Battery Block</ModalTitle>
             <CloseButton />
         </ModalHeader>
         <ModalBody>
-            @if (Panel != null)
+            @if (Battery != null)
             {
                 <Row Margin="Margin.Is2.FromTop">
                     <Column>
-                        <Span>nme: @Panel.Name</Span>
+                        <Span>nme: @Battery.Name</Span>
                     </Column>
                 </Row>
                 <Row Margin="Margin.Is2.FromTop">
                     <Column>
-                        <Span>Id: @Panel.Id</Span>
+                        <Span>Id: @Battery.Id</Span>
                     </Column>
                 </Row>
                 <Row Margin="Margin.Is2.FromTop">
                     <Column>
-                        <Span>GroupId: @Panel.GroupId</Span>
+                        <Span>GroupId: @Battery.GroupId</Span>
                     </Column>
                 </Row>
                 <Row Margin="Margin.Is2.FromTop">
                     <Column>
-                        <Span>Do you realy want to remove this panel?</Span>
+                        <Span>Do you realy want to remove this battery block?</Span>
                     </Column>
                 </Row>
                 <Row Margin="Margin.Is2.FromTop">
                     <Column>
-                        <Button Color="Color.Primary" Outline Clicked="@removePanel">Remove Panel</Button>
+                        <Button Color="Color.Primary" Outline Clicked="@remove">Remove Battery</Button>
                     </Column>
                 </Row>
             }
@@ -49,7 +49,7 @@
 
 @if (WithButton)
 {
-    <Button Color="Color.Primary" Block="@BlockButton" Outline Float="@FloatButton" Clicked="@openRemoveBlock">
+    <Button Color="Color.Primary" Block="@BlockButton" Outline Float="@FloatButton" Clicked="@openRemoveModal">
         <Row>
             @if (WithButtonIcon)
             {
@@ -80,43 +80,43 @@
     [Parameter]
     public bool WithButtonText { get; set; } = false;
     [Parameter]
-    public string ButtonText { get; set; } = "Remove Panel";
+    public string ButtonText { get; set; } = "Remove Battery";
     [Parameter]
     public EventCallback<string> Removed { get; set; }
     [Parameter]
-    public PVPanel Panel { get; set; } = new PVPanel();
+    public BatteryBlock Battery { get; set; } = new BatteryBlock();
 
     Modal? RemoveModal;
 
     [Inject] INotificationService NotificationService { get; set; }
 
-    public async Task Load(PVPanel input, bool showModal = false)
+    public async Task Load(BatteryBlock input, bool showModal = false)
     {
         if (input != null)
-            Panel = input;
+            Battery = input;
         if (showModal && RemoveModal != null)
             await RemoveModal.Show();
         await InvokeAsync(StateHasChanged);
     }
 
-    private async Task openRemoveBlock()
+    private async Task openRemoveModal()
     {
         if (RemoveModal != null)
             await RemoveModal.Show();
     }
 
-    private async Task removePanel()
+    private async Task remove()
     {
-        if (Panel != null && Panel.GroupId != null && Panel.Id != null)
+        if (Battery != null && Battery.GroupId != null && Battery.Id != null)
         {
-            if(AppData.PVEGrid.RemovePanelFromGroup(Panel.GroupId, Panel.Id))
+            if (AppData.BatteryStorage.RemoveBatteryBlock(Battery.Id))
             {
-                await NotificationService.Success($"Panel {Panel.Name} was removed.", "Remove Panel");
+                await NotificationService.Success($"Battery Block {Battery.Name} was removed.", "Remove Battery");
             }
 
             if (RemoveModal != null)
                 await RemoveModal.Hide();
-            await Removed.InvokeAsync(Panel.Id);
+            await Removed.InvokeAsync(Battery.Id);
         }
     }
 

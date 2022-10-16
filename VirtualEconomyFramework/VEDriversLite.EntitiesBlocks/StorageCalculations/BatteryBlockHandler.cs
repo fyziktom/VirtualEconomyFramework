@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,6 +7,8 @@ using System.Text;
 using System.Threading.Tasks;
 using VEDriversLite.EntitiesBlocks.Blocks.Dto;
 using VEDriversLite.EntitiesBlocks.PVECalculations;
+using VEDriversLite.EntitiesBlocks.PVECalculations.Dto;
+using VEDriversLite.EntitiesBlocks.StorageCalculations.Dto;
 
 namespace VEDriversLite.EntitiesBlocks.StorageCalculations
 {
@@ -133,21 +136,121 @@ namespace VEDriversLite.EntitiesBlocks.StorageCalculations
         public ConcurrentDictionary<string, BatteryBlock> BatteryBlocks { get; set; } = new ConcurrentDictionary<string, BatteryBlock>();
 
         /// <summary>
-        /// Add PVPanel to the group
+        /// Template battery for this Battery Group
+        /// </summary>
+        public BatteryBlock CommonBattery { get; set; } = new BatteryBlock();
+
+        /// <summary>
+        /// Set parameters for the Common battery template
+        /// </summary>
+        /// <param name="batteryblock"></param>
+        public void SetCommonBattery(BatteryBlock batteryblock)
+        {
+            CommonBattery = batteryblock.Clone();
+            CommonBattery.GroupId = Id;
+        }
+
+        /// <summary>
+        /// Export Config file to the Json
+        /// </summary>
+        /// <returns></returns>
+        public string ExportSettingsToJSON()
+        {
+            try
+            {
+                var exp = JsonConvert.SerializeObject(CreateConfigFile());
+                if (exp != null)
+                    return exp;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Cannot serialize Battery Storage settings. " + ex.Message);
+            }
+            return string.Empty;
+        }
+
+        /// <summary>
+        /// Fill the Config file
+        /// </summary>
+        /// <returns></returns>
+        public BatteryStorageDto CreateConfigFile()
+        {
+            var config = new BatteryStorageDto();
+            config.Id = Id;
+            config.Name = Name;
+            config.CommonBattery = CommonBattery;
+
+            foreach (var battery in BatteryBlocks.Values)
+                config.BatteryBlocks.TryAdd(battery.Id, battery);
+
+            return config;
+        }
+
+        /// <summary>
+        /// Import settings of the Battery Storage from JSON
+        /// </summary>
+        /// <param name="jsonConfig"></param>
+        /// <returns></returns>
+        public bool ImportConfigFromJson(string jsonConfig)
+        {
+            if (string.IsNullOrEmpty(jsonConfig))
+                return false;
+
+            var config = JsonConvert.DeserializeObject<BatteryStorageDto>(jsonConfig);
+            if (config != null)
+                return ImportConfig(config);
+            else
+                return false;
+        }
+
+        /// <summary>
+        /// Import config from config file
+        /// </summary>
+        /// <param name="config"></param>
+        /// <returns></returns>
+        public bool ImportConfig(BatteryStorageDto config)
+        {
+            if (config == null)
+                return false;
+
+            Id = config.Id;
+            Name = config.Name;
+            CommonBattery = config.CommonBattery;
+
+            BatteryBlocks.Clear();
+
+            foreach (var block in config.BatteryBlocks.Values)
+                BatteryBlocks.TryAdd(block.Id, block);
+                
+            return true;
+        }
+
+        /// <summary>
+        /// Add Battery Block to the group
         /// </summary>
         /// <param name="block"></param>
+        /// <param name="addcount">Add multiple times. In that case each panel will have new created Id</param>
         /// <returns>Id of new added panel</returns>
-        public string AddBatteryBlock(BatteryBlock block)
+        public IEnumerable<string> AddBatteryBlock(BatteryBlock block, int addcount = 1)
         {
-            if (block == null || string.IsNullOrEmpty(block.Id))
-                return string.Empty;
-            if (!BatteryBlocks.ContainsKey(block.Id))
-                BatteryBlocks.TryAdd(block.Id, block);
-
-            return block.Id;
+            if (block != null)
+            { 
+                while (addcount > 0)
+                {
+                    var b = block.Clone();
+                    b.Id = Guid.NewGuid().ToString();
+                    b.GroupId = Id;
+                    if (BatteryBlocks.TryAdd(b.Id, b))
+                    { 
+                        addcount--;
+                        yield return b.Id;
+                    }
+                }
+            }
         }
+
         /// <summary>
-        /// Remove panel from the group based on Id
+        /// Remove battery block from the group based on Id
         /// </summary>
         /// <param name="blockId">Panel Id</param>
         /// <returns>true if success</returns>

@@ -48,7 +48,7 @@ namespace VEFrameworkUnitTest.Energy.StorageSimulator
                 InternalResistance = 0.1,
                 MaximumChargePower = 500,
                 MaximumDischargePower = 2000
-            });
+            }).ToList();
 
             storage.AddBatteryBlock(new BatteryBlock()
             {
@@ -57,7 +57,7 @@ namespace VEFrameworkUnitTest.Energy.StorageSimulator
                 InternalResistance = 0.1,
                 MaximumChargePower = 500,
                 MaximumDischargePower = 2000
-            });
+            }).ToList();
 
             Assert.Equal(2, storage.BatteryBlocks.Count);
             Assert.Equal(20000, storage.TotalCapacity);
@@ -79,16 +79,18 @@ namespace VEFrameworkUnitTest.Energy.StorageSimulator
                 InternalResistance = 0.1,
                 MaximumChargePower = 500,
                 MaximumDischargePower = 2000
-            });
+            }).ToList();
 
-            var batId = storage.AddBatteryBlock(new BatteryBlock()
+            var batIds = storage.AddBatteryBlock(new BatteryBlock()
             {
                 Id = Guid.NewGuid().ToString(),
                 Capacity = 10000,
                 InternalResistance = 0.1,
                 MaximumChargePower = 500,
                 MaximumDischargePower = 2000
-            });
+            }).ToList();
+
+            var batId = batIds.ToList().FirstOrDefault();
 
             Assert.Equal(2, storage.BatteryBlocks.Count);
             Assert.Equal(20000, storage.TotalCapacity);
@@ -119,7 +121,7 @@ namespace VEFrameworkUnitTest.Energy.StorageSimulator
                 InternalResistance = 0.1,
                 MaximumChargePower = 2000,
                 MaximumDischargePower = 2000
-            });
+            }).ToList();
 
             storage.AddBatteryBlock(new BatteryBlock()
             {
@@ -128,7 +130,7 @@ namespace VEFrameworkUnitTest.Energy.StorageSimulator
                 InternalResistance = 0.1,
                 MaximumChargePower = 2000,
                 MaximumDischargePower = 2000
-            });
+            }).ToList();
 
             var source = CreatekWhDataProfile(BlockTimeframe.Minute, 1, start, start.AddDays(1));
 
@@ -154,7 +156,7 @@ namespace VEFrameworkUnitTest.Energy.StorageSimulator
                 InternalResistance = 0.1,
                 MaximumChargePower = 2000,
                 MaximumDischargePower = 2000
-            });
+            }).ToList();
 
             storage.AddBatteryBlock(new BatteryBlock()
             {
@@ -163,7 +165,7 @@ namespace VEFrameworkUnitTest.Energy.StorageSimulator
                 InternalResistance = 0.1,
                 MaximumChargePower = 2000,
                 MaximumDischargePower = 2000
-            });
+            }).ToList();
 
             var source = CreatekWhDataProfile(BlockTimeframe.Minute, 1, start, start.AddDays(1));
 
@@ -176,6 +178,60 @@ namespace VEFrameworkUnitTest.Energy.StorageSimulator
             Assert.NotNull(res);
             Assert.Equal(1440, result.Count);
             Assert.Equal(0, Math.Round(storage.TotalActualFilledCapacity, 0));
+        }
+
+        [Fact]
+        public void ImportExportBatteryStorageConfigTet()
+        {
+            var start = new DateTime(2022, 1, 1);
+            var storage = CreateStorage();
+
+            Assert.Equal("mainbattery", storage.Name);
+
+            storage.SetCommonBattery(new BatteryBlock()
+            {
+                Id = Guid.NewGuid().ToString(),
+                Capacity = 10000,
+                InternalResistance = 0.1,
+                MaximumChargePower = 2000,
+                MaximumDischargePower = 2000
+            });
+
+            storage.AddBatteryBlock(new BatteryBlock()
+            {
+                Id = Guid.NewGuid().ToString(),
+                Capacity = 10000,
+                InternalResistance = 0.1,
+                MaximumChargePower = 2000,
+                MaximumDischargePower = 2000
+            }).ToList();
+
+            storage.AddBatteryBlock(new BatteryBlock()
+            {
+                Id = Guid.NewGuid().ToString(),
+                Capacity = 10000,
+                InternalResistance = 0.1,
+                MaximumChargePower = 2000,
+                MaximumDischargePower = 2000
+            }).ToList();
+
+            var export = storage.ExportSettingsToJSON();
+
+            var storage1 = CreateStorage();
+            storage1.Id = "";
+            storage1.Name = "";
+
+            if (storage1.ImportConfigFromJson(export))
+            {
+                Assert.Equal("mainbattery", storage1.Name);
+                Assert.Equal(20000, storage1.TotalCapacity);
+                Assert.Equal(2, storage1.BatteryBlocks.Count);
+                Assert.Equal(storage.CommonBattery.Id, storage1.CommonBattery.Id);
+                Assert.Equal(storage.CommonBattery.Capacity, storage1.CommonBattery.Capacity);
+                Assert.Equal(storage.CommonBattery.MaximumChargePower, storage1.CommonBattery.MaximumChargePower);
+                Assert.Equal(storage.CommonBattery.MaximumDischargePower, storage1.CommonBattery.MaximumDischargePower);
+
+            }
         }
     }
 }
