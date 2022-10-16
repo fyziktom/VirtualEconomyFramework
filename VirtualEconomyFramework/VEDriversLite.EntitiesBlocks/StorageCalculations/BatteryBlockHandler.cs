@@ -301,7 +301,7 @@ namespace VEDriversLite.EntitiesBlocks.StorageCalculations
         /// </summary>
         /// <param name="inputProfile"></param>
         /// <returns></returns>
-        public IEnumerable<(DateTime, double)> GetChargingProfileData(DataProfile inputProfile)
+        public IEnumerable<(DateTime, double)> GetChargingProfileData(DataProfile inputProfile, bool addRelativeValues = false, bool inputInkWh = false)
         {
             if (ChargingFunctionDelegate != null)
             {
@@ -318,39 +318,51 @@ namespace VEDriversLite.EntitiesBlocks.StorageCalculations
 
                 foreach (var step in inputProfile.ProfileData)
                 {
+                    var value = step.Value;
+                    if (inputInkWh)
+                        value *= 1000;
+
                     var dtMaxChargePower = AverageMaxChargePower * (step.Key - laststeptime).TotalHours;
 
-                    if (step.Value >= dtMaxChargePower)
+                    var addvalue = value;
+                    if (value >= dtMaxChargePower)
                     {
                         /*
-                        var resistance = 1 / AverageMaxChargePower;
+                            var resistance = 1 / AverageMaxChargePower;
 
-                        if (resistance <= 0)
-                            resistance = 0.00001;
+                            if (resistance <= 0)
+                                resistance = 0.00001;
 
-                        var load = ChargingFunctionDelegate(totalcapacity,
-                                                          TotalActualFilledCapacity,
-                                                          resistance,
-                                                          (step.Key - starttime).TotalHours,
-                                                          (step.Key - laststeptime).TotalHours);
+                            var load = ChargingFunctionDelegate(totalcapacity,
+                                                              TotalActualFilledCapacity,
+                                                              resistance,
+                                                              (step.Key - starttime).TotalHours,
+                                                              (step.Key - laststeptime).TotalHours);
 
-                        loaded += (load / totalcapacity) * dtMaxChargePower;
-                        */
-                        loaded += dtMaxChargePower;
+                            loaded += (load / totalcapacity) * dtMaxChargePower;
+                            */
+                        addvalue = dtMaxChargePower;
                     }
-                    else if (step.Value > 0 && step.Value < dtMaxChargePower)
+
+                    if ((loaded + addvalue) > totalcapacity && loaded < totalcapacity)
+                        addvalue = totalcapacity - loaded - totalcapacity * 0.001;
+
+                    if ((loaded + addvalue) < totalcapacity)
                     {
-                        loaded += step.Value;
+                        loaded += addvalue;
+                        
+                        if (loaded <= 0)
+                            loaded = 0.000001;
+
+                        foreach (var bat in BatteryBlocks.Values)
+                            bat.ActualFilledCapacity = loaded / BatteryBlocks.Count;
                     }
-
-                    if (loaded <= 0)
-                        loaded = 0.000001;
-
-                    foreach (var bat in BatteryBlocks.Values)
-                        bat.ActualFilledCapacity = loaded / BatteryBlocks.Count;
 
                     laststeptime = step.Key;
-                    yield return (step.Key, loaded);
+                    if (!addRelativeValues)
+                        yield return (step.Key, loaded);
+                    else
+                        yield return (step.Key, loaded / totalcapacity);
                 }
             }
         }
@@ -362,7 +374,7 @@ namespace VEDriversLite.EntitiesBlocks.StorageCalculations
         /// </summary>
         /// <param name="inputProfile"></param>
         /// <returns></returns>
-        public IEnumerable<(DateTime, double)> GetGetDischargingProfileData(DataProfile inputProfile)
+        public IEnumerable<(DateTime, double)> GetGetDischargingProfileData(DataProfile inputProfile, bool addRelativeValues = false, bool inputInkWh = false)
         {
             if (ChargingFunctionDelegate != null)
             {
@@ -378,40 +390,61 @@ namespace VEDriversLite.EntitiesBlocks.StorageCalculations
                 }
                 foreach (var step in inputProfile.ProfileData)
                 {
+                    var value = step.Value;
+                    if (inputInkWh)
+                        value *= 1000;
+
                     var dtMaxDischargePower = AverageMaxDischargePower * (step.Key - laststeptime).TotalHours;
 
-                    if (step.Value >= dtMaxDischargePower)
+                    var addvalue = value;
+                    if (value >= dtMaxDischargePower)
                     {
                         /*
-                        var resistance = 1 / dtMaxDischargePower;
+                            var resistance = 1 / dtMaxDischargePower;
 
-                        if (resistance <= 0)
-                            resistance = 0.00001;
+                            if (resistance <= 0)
+                                resistance = 0.00001;
 
-                        var load = DischargingFunctionDelegate(totalcapacity,
-                                                             TotalActualFilledCapacity,
-                                                             resistance,
-                                                             (step.Key - starttime).TotalHours,
-                                                             (step.Key - laststeptime).TotalHours);
-                        
-                        loaded -= (load/totalcapacity) * dtMaxDischargePower;
-                        */
-                        loaded -= dtMaxDischargePower;
+                            var load = DischargingFunctionDelegate(totalcapacity,
+                                                                 TotalActualFilledCapacity,
+                                                                 resistance,
+                                                                 (step.Key - starttime).TotalHours,
+                                                                 (step.Key - laststeptime).TotalHours);
+
+                            loaded -= (load/totalcapacity) * dtMaxDischargePower;
+                            */
+                        addvalue = dtMaxDischargePower;
                     }
-                    else if (step.Value > 0 && step.Value < dtMaxDischargePower)
+
+                    if ((loaded - addvalue) < 0 && loaded > 0)
+                        addvalue = loaded - 0.000001;
+
+                    if ((loaded - addvalue) > 0)
                     {
-                        loaded -= step.Value;
-                    }
-                    if (loaded <= 0)
-                        loaded = 0.000001;
+                        loaded -= addvalue;
+                        
+                        if (loaded <= 0)
+                            loaded = 0.000001;
 
-                    foreach (var bat in BatteryBlocks.Values)
-                        bat.ActualFilledCapacity = loaded / BatteryBlocks.Count;
+                        foreach (var bat in BatteryBlocks.Values)
+                            bat.ActualFilledCapacity = loaded / BatteryBlocks.Count;
+                    }
 
                     laststeptime = step.Key;
-                    yield return (step.Key, loaded);
+                    if (!addRelativeValues)
+                        yield return (step.Key, loaded);
+                    else
+                        yield return (step.Key, loaded / totalcapacity);
                 }
             }
+        }
+
+        public bool DischargeAllBatteryBlocks()
+        {
+            foreach(var battery in BatteryBlocks.Values)
+                battery.ActualFilledCapacity = 0.0001;
+
+            return true;
         }
     }
 }

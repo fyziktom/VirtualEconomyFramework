@@ -40,6 +40,9 @@
 
     private LineChart<double>? lineChart;
 
+    private DataProfile totalProductionDataProfile = new DataProfile();
+    private DataProfile storageChargingDataProfile = new DataProfile();
+
     Slider<int>? slider;
     int sliderValue = 0;
 
@@ -97,6 +100,9 @@
                 foreach (var group in GroupIds)
                     await lineChart.AddDataSet(GetLineChartDataset(Start, group));
 
+                await lineChart.AddDataSet(GetLineChartDatasetForTotal(Start));
+                await lineChart.AddDataSet(GetLineChartDatasetForStorageCharging(Start, true));
+
                 await lineChart.Update();
             }
         }
@@ -144,6 +150,52 @@
                     CubicInterpolationMode = "monotone",
                 };
         }
+    }
+
+    LineChartDataset<double> GetLineChartDatasetForTotal(DateTime start)
+    {
+        totalProductionDataProfile = new DataProfile();
+        var tmp = start;
+        var end = start.AddDays(1);
+
+        while (tmp < end)
+        {
+            totalProductionDataProfile.ProfileData.Add(tmp, AppData.PVEGrid.GetTotalPowerInDateTime(tmp, Coords, 1));
+            tmp = tmp.AddHours(1);
+        }
+
+        return new LineChartDataset<double>
+            {
+                Label = "Total",
+                Data = totalProductionDataProfile.ProfileData.Values.Where(p => p < double.MaxValue).ToList(),
+                BackgroundColor = backgroundColors,
+                BorderColor = borderColors,
+                Fill = true,
+                PointRadius = 3,
+                CubicInterpolationMode = "monotone",
+            };
+    }
+
+    LineChartDataset<double> GetLineChartDatasetForStorageCharging(DateTime start, bool emptyStorageInStart)
+    {
+        storageChargingDataProfile = new DataProfile();
+
+        if (emptyStorageInStart)
+            AppData.BatteryStorage.DischargeAllBatteryBlocks();
+
+        foreach (var data in AppData.BatteryStorage.GetChargingProfileData(totalProductionDataProfile, false, true))
+            storageChargingDataProfile.ProfileData.TryAdd(data.Item1, data.Item2 / 10000);
+            
+        return new LineChartDataset<double>
+            {
+                Label = "Charging in kWh/10",
+                Data = storageChargingDataProfile.ProfileData.Values.Where(p => p < double.MaxValue).ToList(),
+                BackgroundColor = backgroundColors,
+                BorderColor = borderColors,
+                Fill = true,
+                PointRadius = 3,
+                CubicInterpolationMode = "monotone",
+            };
     }
 
     public async Task Refresh()
