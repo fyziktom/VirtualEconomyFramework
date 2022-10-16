@@ -103,6 +103,7 @@
 
                 await lineChart.AddDataSet(GetLineChartDatasetForTotal(Start));
                 await lineChart.AddDataSet(GetLineChartDatasetForStorageCharging(Start, true));
+                await lineChart.AddDataSet(GetLineChartDatasetForDayConsumption(Start));
                 await lineChart.AddDataSet(GetLineChartDatasetForStorageDischarging(Start));
 
                 await lineChart.Update();
@@ -192,6 +193,31 @@
             {
                 Label = "Charging in kWh/10",
                 Data = storageChargingDataProfile.ProfileData.Values.Where(p => p < double.MaxValue).ToList(),
+                BackgroundColor = backgroundColors,
+                BorderColor = borderColors,
+                Fill = true,
+                PointRadius = 3,
+                CubicInterpolationMode = "monotone",
+            };
+    }
+
+
+    LineChartDataset<double> GetLineChartDatasetForDayConsumption(DateTime start)
+    {
+        var dayblocks = AppData.EntitiesHandler.GetConsumptionOfEntity(AppData.SelectedItem.Id,
+                                                                               BlockTimeframe.Hour,
+                                                                               start,
+                                                                               start.AddDays(1),
+                                                                               true,
+                                                                               false,
+                                                                               new List<BlockDirection>() { BlockDirection.Consumed });
+
+        var profile = DataProfileHelpers.ConvertBlocksToDataProfile(dayblocks);
+
+        return new LineChartDataset<double>
+            {
+                Label = "Day consumption in kWh",
+                Data = profile.ProfileData.Values.Where(p => p < double.MaxValue).ToList(),
                 BackgroundColor = backgroundColors,
                 BorderColor = borderColors,
                 Fill = true,
