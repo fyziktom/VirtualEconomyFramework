@@ -43,6 +43,8 @@
     private DataProfile totalProductionDataProfile = new DataProfile();
     private DataProfile storageChargingDataProfile = new DataProfile();
     private DataProfile storageDischargingDataProfile = new DataProfile();
+    private DataProfile consumptionDataProfile = new DataProfile();
+    private DataProfile storageBilanceDataProfile = new DataProfile();
 
     Slider<int>? slider;
     int sliderValue = 0;
@@ -212,12 +214,12 @@
                                                                                false,
                                                                                new List<BlockDirection>() { BlockDirection.Consumed });
 
-        var profile = DataProfileHelpers.ConvertBlocksToDataProfile(dayblocks);
+        consumptionDataProfile = DataProfileHelpers.ConvertBlocksToDataProfile(dayblocks);
 
         return new LineChartDataset<double>
             {
                 Label = "Day consumption in kWh",
-                Data = profile.ProfileData.Values.Where(p => p < double.MaxValue).ToList(),
+                Data = consumptionDataProfile.ProfileData.Values.Where(p => p < double.MaxValue).ToList(),
                 BackgroundColor = backgroundColors,
                 BorderColor = borderColors,
                 Fill = true,
@@ -252,6 +254,9 @@
             storageDischargingDataProfile.Name = disch.Name;
             storageDischargingDataProfile.Type = disch.Type;
         }
+
+        if (profiles != null && profiles.TryGetValue("bilance", out var bil))
+            storageBilanceDataProfile = bil;
 
         return new LineChartDataset<double>
             {

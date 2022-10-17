@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using VEDriversLite.EntitiesBlocks.Blocks.Dto;
+using static System.Reflection.Metadata.BlobBuilder;
 
 namespace VEDriversLite.EntitiesBlocks.Blocks
 {
@@ -167,6 +168,54 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
                 result.ProfileData.TryAdd(inp.StartTime, inp.Amount);
 
             return result;
+        }
+
+        /// <summary>
+        /// Convert dataprofile to IBlocks
+        /// </summary>
+        /// <param name="input">input dataProfile</param>
+        /// <param name="direction">direction of final blocks</param>
+        /// <param name="type">type of final blocks</param>
+        /// <param name="parentId">parentId of final blocks</param>
+        /// <returns></returns>
+        public static IEnumerable<IBlock> ConvertDataProfileToBlocks(DataProfile input, BlockDirection direction, BlockType type, string parentId)
+        {
+            var result = new List<IBlock>();
+            
+            var keys = input.ProfileData.Keys.ToArray();
+            var values = input.ProfileData.Values.ToArray();
+
+            for (int i = 0; i < input.ProfileData.Count; i++)
+            { 
+                var k = keys[i];
+                var v = values[i];
+
+                DateTime? k1 = null;
+                var v1 = 0.0;
+
+                if (i == 0)
+                    k1 = keys[1];
+                else if (i == input.ProfileData.Count - 1)
+                    k1 = keys[i - 1];
+                else
+                    k1 = keys[i + 1];
+
+                var b = new BaseBlock()
+                {
+                    Amount = v,
+                    Direction = direction,
+                    ParentId = !string.IsNullOrEmpty(parentId) ? parentId : string.Empty,
+                    StartTime = k,
+                    Timeframe = (TimeSpan)(k1 - k),
+                    Used = false,
+                    Type = type,
+                    Id = Guid.NewGuid().ToString()
+                };
+                
+                result.Add(b);
+
+                yield return b;
+            }
         }
     }
 }
