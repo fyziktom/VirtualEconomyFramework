@@ -457,9 +457,11 @@ namespace VEDriversLite.EntitiesBlocks.StorageCalculations
                                                                                  double minimumLoadedToDischarge = 0.1)
         {
             var result = new Dictionary<string, DataProfile>();
-            var chargingProfile = new DataProfile();
-            var dischargingProfile = new DataProfile();
-            var balanceProfile = new DataProfile();
+            var chargingProfile = new DataProfile(); // keeps total charged in time
+            var dchargingProfile = new DataProfile(); // keeps charge step in time (delta t1 - t0)
+            var dischargingProfile = new DataProfile(); // keeps total discharged in time
+            var ddischargingProfile = new DataProfile(); // keeps discharge step in time (delta t1 - t0)
+            var balanceProfile = new DataProfile(); // keeps balance in time
 
             var starttime = sourceData.FirstDate;
             var endtime = sourceData.LastDate;
@@ -487,13 +489,18 @@ namespace VEDriversLite.EntitiesBlocks.StorageCalculations
                 if ((loaded + addvalue) < totalcapacity)
                 {
                     loaded += addvalue;
-
+                    dchargingProfile.ProfileData.TryAdd(step.Key, addvalue);
                     if (loaded <= 0)
                         loaded = 0.000001;
                 }
-
+                else
+                {
+                    dchargingProfile.ProfileData.TryAdd(step.Key, 0);
+                }
+                
                 laststeptime = step.Key;
                 chargingProfile.ProfileData.TryAdd(step.Key, loaded);
+                
             }
 
             var dischargestarted = false;
@@ -534,9 +541,13 @@ namespace VEDriversLite.EntitiesBlocks.StorageCalculations
                         if ((unloaded - subvalue) > 0)
                         {
                             unloaded -= subvalue;
-
+                            ddischargingProfile.ProfileData.TryAdd(step.Key, subvalue);
                             if (unloaded <= 0)
                                 unloaded = 0.000001;
+                        }
+                        else
+                        {
+                            ddischargingProfile.ProfileData.TryAdd(step.Key, subvalue);
                         }
 
                         dischargingProfile.ProfileData.TryAdd(step.Key, unloaded);
@@ -553,7 +564,9 @@ namespace VEDriversLite.EntitiesBlocks.StorageCalculations
             }
 
             result.Add("charge", chargingProfile);
+            result.Add("dcharge", dchargingProfile);
             result.Add("discharge", dischargingProfile);
+            result.Add("ddischarge", ddischargingProfile);
             result.Add("balance", balanceProfile);
 
             return result;

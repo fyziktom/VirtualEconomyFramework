@@ -777,6 +777,20 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
         }
 
         /// <summary>
+        /// Find Entity by Name
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public virtual IEntity FindEntityByName(string name)
+        {
+            var entity = Entities.Values.Where(e => e.Name == name).FirstOrDefault();
+            if (entity != null)
+                return entity;
+            else
+                return null;
+        }
+
+        /// <summary>
         /// Remove all blocks in entity
         /// </summary>
         /// <param name="id"></param>

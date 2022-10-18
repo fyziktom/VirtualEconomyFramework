@@ -102,9 +102,8 @@ namespace VEDriversLite.EntitiesBlocks.Consumers
                 while (tddtime < tddend)
                 {
                     if (tdd.ProfileData.TryGetValue(tddtime, out var tddvalue))
-                    {
                         addvalue += tddvalue;
-                    }
+
                     tddtime = tddtime.AddHours(1);
                 }
 
