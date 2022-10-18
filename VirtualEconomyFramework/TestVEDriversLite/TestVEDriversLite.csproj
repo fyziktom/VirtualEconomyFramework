@@ -15,6 +15,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\VEDriversLite.EntitiesBlocks\VEDriversLite.EntitiesBlocks.csproj" />
     <ProjectReference Include="..\VEDriversLite.Extensions.WooCommerce\VEDriversLite.Extensions.WooCommerce.csproj" />
     <ProjectReference Include="..\VEDriversLite\VEDriversLite.csproj" />
   </ItemGroup>
