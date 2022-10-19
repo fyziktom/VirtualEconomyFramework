@@ -283,7 +283,7 @@ namespace TestVEDriversLite
                                     // total stored in storage from PVE production
                                     var totalStored = Math.Round(dch.ProfileData.Values.Sum(), 4);
                                     // total used from storage for consumption 
-                                    var totalUsedFromStorage = Math.Round(ddisch.ProfileData.Values.Sum(), 4);
+                                    var totalUsedFromStorage = Math.Round(ddisch.ProfileData.Values.Sum() / 1000, 4);
                                     
                                     // get rest in batery to load it next day morning as overstored from last day
                                     // it is inserted in charge and discharge profiles calculations
@@ -298,7 +298,7 @@ namespace TestVEDriversLite
                                                      $"{totalNTOverProduction}\t" +
                                                      $"{totalproduced}\t" +
                                                      $"{totalOverProducedAfterConsumedImmediately}\t" +
-                                                     $"{totalStored}" + 
+                                                     $"{totalStored}\t" + 
                                                      $"{totalUsedFromStorage}");
 
                                     // create line for export
@@ -325,7 +325,7 @@ namespace TestVEDriversLite
                              "totalNTOverProduction\t" +
                              "totalproduced\t" +
                              "totalOverProducedAfterConsumedImmediately\t" +
-                             "totalStored" +
+                             "totalStored\t" +
                              "totalUsedFromStorage";
 
                 FileHelpers.AppendLineToTextFile(header, filenameBilance);

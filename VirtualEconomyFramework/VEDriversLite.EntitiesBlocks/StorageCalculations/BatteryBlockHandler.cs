@@ -449,13 +449,14 @@ namespace VEDriversLite.EntitiesBlocks.StorageCalculations
         /// <param name="startDischarge">charging change ratio against max charge power when discharge starts (battery is not charging anymore)</param>
         /// <param name="minimumLoadedToDischarge">minimum amount in storage to start discharge. it is ratio against totalcapacity (for example 0.1 for 10% of totalcapacity</param>
         /// <returns></returns>
-        public Dictionary<string, DataProfile> GetChargingAndDischargingProfiles(DataProfile sourceData, 
-                                                                                 DataProfile consumptionData, 
-                                                                                 bool inputInkWh, 
-                                                                                 double loaded = 0.0, 
+        public Dictionary<string, DataProfile> GetChargingAndDischargingProfiles(DataProfile sourceData,
+                                                                                 DataProfile consumptionData,
+                                                                                 bool inputInkWh,
+                                                                                 double loaded = 0.0,
                                                                                  double startDischarge = 0.04,
                                                                                  double minimumLoadedToDischarge = 0.1)
         {
+
             var result = new Dictionary<string, DataProfile>();
             var chargingProfile = new DataProfile(); // keeps total charged in time
             var dchargingProfile = new DataProfile(); // keeps charge step in time (delta t1 - t0)
@@ -468,6 +469,51 @@ namespace VEDriversLite.EntitiesBlocks.StorageCalculations
             var totalcapacity = TotalCapacity;
 
             var laststeptime = starttime;
+
+            var lastConsumedData = new List<DateTime>();
+
+            if (consumptionData.ProfileData.Count > 1)
+                laststeptime = starttime - (consumptionData.ProfileData.Keys.Skip(1).Take(1).ToList().First() - starttime);
+
+            if (loaded > 0.05 * totalcapacity)
+            {
+                foreach (var step in consumptionData.ProfileData)
+                {
+                    var value = step.Value;
+                    if (inputInkWh)
+                        value *= 1000;
+
+                    var dtMaxDischargePower = AverageMaxDischargePower * (step.Key - laststeptime).TotalHours;
+
+                    var subvalue = value;
+                    if (value >= dtMaxDischargePower)
+                        subvalue = dtMaxDischargePower;
+
+                    if ((loaded - subvalue) < 0 && loaded > 0)
+                        subvalue = loaded - 0.000001;
+
+                    if ((loaded - subvalue) > 0)
+                    {
+                        loaded -= subvalue;
+                        ddischargingProfile.ProfileData.TryAdd(step.Key, subvalue);
+                        if (loaded <= 0)
+                            loaded = 0.000001;
+                    }
+                    else
+                    {
+                        ddischargingProfile.ProfileData.TryAdd(step.Key, subvalue);
+                    }
+
+                    dischargingProfile.ProfileData.TryAdd(step.Key, loaded);
+                    balanceProfile.ProfileData.TryAdd(step.Key, loaded);
+
+                    lastConsumedData.Add(step.Key);
+
+                    if (loaded < 0.02 * totalcapacity)
+                        break;
+                }
+            }
+
             if (sourceData.ProfileData.Count > 1)
                 laststeptime = starttime - (sourceData.ProfileData.Keys.Skip(1).Take(1).ToList().First() - starttime);
 
@@ -477,7 +523,7 @@ namespace VEDriversLite.EntitiesBlocks.StorageCalculations
                 if (inputInkWh)
                     value *= 1000;
 
-               var dtMaxChargePower = AverageMaxChargePower * (step.Key - laststeptime).TotalHours;
+                var dtMaxChargePower = AverageMaxChargePower * (step.Key - laststeptime).TotalHours;
 
                 var addvalue = value;
                 if (value >= dtMaxChargePower)
@@ -497,10 +543,10 @@ namespace VEDriversLite.EntitiesBlocks.StorageCalculations
                 {
                     dchargingProfile.ProfileData.TryAdd(step.Key, 0);
                 }
-                
+
                 laststeptime = step.Key;
                 chargingProfile.ProfileData.TryAdd(step.Key, loaded);
-                
+
             }
 
             var dischargestarted = false;
@@ -512,54 +558,57 @@ namespace VEDriversLite.EntitiesBlocks.StorageCalculations
 
             foreach (var step in consumptionData.ProfileData)
             {
-                if (chargingProfile.ProfileData.TryGetValue(step.Key, out var chargeLoadValue))
+                if (!lastConsumedData.Contains(step.Key))
                 {
-                    if (!dischargestarted &&
-                        chargeLoadValue > totalcapacity * minimumLoadedToDischarge &&
-                        Math.Abs((chargeLoadValue - lastval)) <= avgmaxcharge * startDischarge)
+                    if (chargingProfile.ProfileData.TryGetValue(step.Key, out var chargeLoadValue))
                     {
-                        dischargestarted = true;
-                        unloaded = chargeLoadValue;
-                    }
-                    lastval = chargeLoadValue;
-
-                    if (dischargestarted)
-                    {
-                        var value = step.Value;
-                        if (inputInkWh)
-                            value *= 1000;
-
-                        var dtMaxDischargePower = AverageMaxDischargePower * (step.Key - laststeptime).TotalHours;
-
-                        var subvalue = value;
-                        if (value >= dtMaxDischargePower)
-                            subvalue = dtMaxDischargePower;
-                        
-                        if ((unloaded - subvalue) < 0 && unloaded > 0)
-                            subvalue = unloaded - 0.000001;
-
-                        if ((unloaded - subvalue) > 0)
+                        if (!dischargestarted &&
+                            chargeLoadValue > totalcapacity * minimumLoadedToDischarge &&
+                            Math.Abs((chargeLoadValue - lastval)) <= avgmaxcharge * startDischarge)
                         {
-                            unloaded -= subvalue;
-                            ddischargingProfile.ProfileData.TryAdd(step.Key, subvalue);
-                            if (unloaded <= 0)
-                                unloaded = 0.000001;
+                            dischargestarted = true;
+                            unloaded = chargeLoadValue;
+                        }
+                        lastval = chargeLoadValue;
+
+                        if (dischargestarted)
+                        {
+                            var value = step.Value;
+                            if (inputInkWh)
+                                value *= 1000;
+
+                            var dtMaxDischargePower = AverageMaxDischargePower * (step.Key - laststeptime).TotalHours;
+
+                            var subvalue = value;
+                            if (value >= dtMaxDischargePower)
+                                subvalue = dtMaxDischargePower;
+
+                            if ((unloaded - subvalue) < 0 && unloaded > 0)
+                                subvalue = unloaded - 0.000001;
+
+                            if ((unloaded - subvalue) > 0)
+                            {
+                                unloaded -= subvalue;
+                                ddischargingProfile.ProfileData.TryAdd(step.Key, subvalue);
+                                if (unloaded <= 0)
+                                    unloaded = 0.000001;
+                            }
+                            else
+                            {
+                                ddischargingProfile.ProfileData.TryAdd(step.Key, subvalue);
+                            }
+
+                            dischargingProfile.ProfileData.TryAdd(step.Key, unloaded);
+                            balanceProfile.ProfileData.TryAdd(step.Key, chargeLoadValue - (chargeLoadValue - unloaded));
                         }
                         else
                         {
-                            ddischargingProfile.ProfileData.TryAdd(step.Key, subvalue);
+                            dischargingProfile.ProfileData.TryAdd(step.Key, 0);
+                            balanceProfile.ProfileData.TryAdd(step.Key, chargeLoadValue);
                         }
 
-                        dischargingProfile.ProfileData.TryAdd(step.Key, unloaded);
-                        balanceProfile.ProfileData.TryAdd(step.Key, chargeLoadValue - (chargeLoadValue - unloaded));
+                        laststeptime = step.Key;
                     }
-                    else
-                    {
-                        dischargingProfile.ProfileData.TryAdd(step.Key, 0);
-                        balanceProfile.ProfileData.TryAdd(step.Key, chargeLoadValue);
-                    }
-
-                    laststeptime = step.Key;
                 }
             }
 
