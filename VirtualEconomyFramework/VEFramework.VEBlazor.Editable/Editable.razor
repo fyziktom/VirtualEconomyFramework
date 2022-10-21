@@ -1,0 +1,129 @@
+﻿@typeparam TItem
+
+@if (ParameterValue != null)
+{
+    @if (!Editing)
+    {
+        <div class="row">
+            <div class="col">
+                <span>@ParameterValue</span>
+            </div>
+            <div class="col">
+                <button class="btn btn-primary" @onclick="Edit"><i class="oi oi-pencil" /></button>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col">
+                <input value="@ParameterValue" @onchange="OnValueChanged">
+            </div>
+            <div class="col">
+                <button class="btn btn-primary" @onclick="Save"><i class="oi oi-check" /></button>
+            </div>
+        </div>
+    }
+}
+
+@code {
+    [Parameter]
+    public TItem? Item { get; set; }
+    [Parameter]
+    public EventCallback<TItem> ItemChanged { get; set; }
+    [Parameter]
+    public string? ParameterName { get; set; }
+
+    public object? ParameterValue { get; set; }
+
+    public bool Editing = false;
+
+    Type paramType = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        await LoadParam();
+    }
+
+    private async Task LoadParam()
+    {
+        var param = typeof(TItem).GetProperties().Where(p => p.Name == ParameterName).FirstOrDefault();
+        if (param != null && param.CanRead)
+        {
+            var value = param.GetValue(Item);
+            if (value != null)
+            {
+                paramType = param.PropertyType;
+
+                if (param.PropertyType == typeof(string) || param.PropertyType == typeof(String))
+                    ParameterValue = (string)value;
+                else if (param.PropertyType == typeof(int))
+                    ParameterValue = (int)value;
+                else if (param.PropertyType == typeof(double))
+                    ParameterValue = (double)value;
+
+                await InvokeAsync(StateHasChanged);
+            }
+        }
+    }
+
+    private void Edit()
+    {
+        Editing = true;
+        StateHasChanged();
+    }
+
+    private async Task Save()
+    {
+        Editing = false;
+
+        var param = typeof(TItem).GetProperties().Where(p => p.Name == ParameterName).FirstOrDefault();
+        if (param != null && param.CanWrite)
+        {
+            param.SetValue(Item, ParameterValue);
+            await ItemChanged.InvokeAsync(Item);
+        }
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task OnValueChanged(ChangeEventArgs e)
+    {
+        if (paramType == typeof(string) || paramType == typeof(String))
+        {
+            var v = (string)e.Value;
+            if (v != null)
+                ParameterValue = v;
+            else
+                ParameterValue = string.Empty;
+        }
+        else if (paramType == typeof(int))
+        {
+            var v = (string)e.Value;
+            if (v != null)
+            {
+                var dv = v.Replace(',', '.');
+                if (Int32.TryParse(dv, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var d))
+                    ParameterValue = d;
+                else
+                    ParameterValue = 0;
+            }
+            else
+                ParameterValue = 0;
+        }
+        else if (paramType == typeof(double))
+        {
+            var v = (string)e.Value;
+            if (v != null)
+            {
+                var dv = v.Replace(',', '.');
+                if (Double.TryParse(dv, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var d))
+                    ParameterValue = d;
+                else
+                    ParameterValue = 0.0;
+            }
+            else
+                ParameterValue = 0.0;
+        }
+    }
+}

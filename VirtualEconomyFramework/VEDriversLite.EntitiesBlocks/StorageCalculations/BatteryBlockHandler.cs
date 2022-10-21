@@ -453,10 +453,9 @@ namespace VEDriversLite.EntitiesBlocks.StorageCalculations
                                                                                  DataProfile consumptionData,
                                                                                  bool inputInkWh,
                                                                                  double loaded = 0.0,
-                                                                                 double startDischarge = 0.04,
-                                                                                 double minimumLoadedToDischarge = 0.1)
+                                                                                 double startDischarge = 0.07,
+                                                                                 double minimumLoadedToDischarge = 0.04)
         {
-
             var result = new Dictionary<string, DataProfile>();
             var chargingProfile = new DataProfile(); // keeps total charged in time
             var dchargingProfile = new DataProfile(); // keeps charge step in time (delta t1 - t0)
@@ -475,7 +474,7 @@ namespace VEDriversLite.EntitiesBlocks.StorageCalculations
             if (consumptionData.ProfileData.Count > 1)
                 laststeptime = starttime - (consumptionData.ProfileData.Keys.Skip(1).Take(1).ToList().First() - starttime);
 
-            if (loaded > 0.05 * totalcapacity)
+            if (loaded > minimumLoadedToDischarge * totalcapacity)
             {
                 foreach (var step in consumptionData.ProfileData)
                 {

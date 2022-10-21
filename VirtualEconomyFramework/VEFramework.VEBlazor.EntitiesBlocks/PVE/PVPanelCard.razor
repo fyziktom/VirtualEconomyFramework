@@ -4,7 +4,9 @@
     @if (Panel != null && Panel.Id != null)
     {
         <CardHeader>
-            <CardTitle>PVPanel - @Panel.Name</CardTitle>
+            <CardTitle>
+                PVPanel - <Editable Item="@Panel" ParameterName="@(nameof(Panel.Name))" TItem="PVPanel" ItemChanged="@OnPanelChanged" />
+            </CardTitle>
         </CardHeader>
         <CardBody>
             <Row>
@@ -54,4 +56,10 @@
 @code {
     [Parameter]
     public PVPanel Panel { get; set; } = new PVPanel();
+
+    private void OnPanelChanged(PVPanel e)
+    {
+        Panel = e;
+        StateHasChanged();
+    }
 }

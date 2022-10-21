@@ -77,6 +77,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "EntitiesBlocks", "EntitiesB
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VEBlazor.EntitiesBlocks.Demo.Energy", "VEBlazor.EntitiesBlocks.Demo.Energy\VEBlazor.EntitiesBlocks.Demo.Energy.csproj", "{42BAD5F8-09B5-43EB-BE10-FE2527E5BF22}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VEFramework.VEBlazor.Editable", "VEFramework.VEBlazor.Editable\VEFramework.VEBlazor.Editable.csproj", "{43EC64CB-A86F-4BDB-860D-0C7995305AF6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -507,6 +509,18 @@ Global
 		{42BAD5F8-09B5-43EB-BE10-FE2527E5BF22}.Release|x64.Build.0 = Release|Any CPU
 		{42BAD5F8-09B5-43EB-BE10-FE2527E5BF22}.Release|x86.ActiveCfg = Release|Any CPU
 		{42BAD5F8-09B5-43EB-BE10-FE2527E5BF22}.Release|x86.Build.0 = Release|Any CPU
+		{43EC64CB-A86F-4BDB-860D-0C7995305AF6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{43EC64CB-A86F-4BDB-860D-0C7995305AF6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{43EC64CB-A86F-4BDB-860D-0C7995305AF6}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{43EC64CB-A86F-4BDB-860D-0C7995305AF6}.Debug|x64.Build.0 = Debug|Any CPU
+		{43EC64CB-A86F-4BDB-860D-0C7995305AF6}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{43EC64CB-A86F-4BDB-860D-0C7995305AF6}.Debug|x86.Build.0 = Debug|Any CPU
+		{43EC64CB-A86F-4BDB-860D-0C7995305AF6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{43EC64CB-A86F-4BDB-860D-0C7995305AF6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{43EC64CB-A86F-4BDB-860D-0C7995305AF6}.Release|x64.ActiveCfg = Release|Any CPU
+		{43EC64CB-A86F-4BDB-860D-0C7995305AF6}.Release|x64.Build.0 = Release|Any CPU
+		{43EC64CB-A86F-4BDB-860D-0C7995305AF6}.Release|x86.ActiveCfg = Release|Any CPU
+		{43EC64CB-A86F-4BDB-860D-0C7995305AF6}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
