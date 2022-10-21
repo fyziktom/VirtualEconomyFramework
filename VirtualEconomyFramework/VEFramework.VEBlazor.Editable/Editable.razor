@@ -6,7 +6,25 @@
     {
         <div class="row">
             <div class="col">
-                <span>@ParameterValue</span>
+                @if (IsSupportedTypeInputEditable())
+                {
+                    <span>@(Prefix)@(ParameterValue)@(Extension)</span>
+                }
+                else if (IsBoolean())
+                {
+                    @if ((bool)ParameterValue)
+                    {
+                        <span>@(Prefix)True@(Extension)</span>
+                    }
+                    else
+                    {
+                        <span>@(Prefix)False@(Extension)</span>
+                    }
+                }
+                else
+                {
+                    <span>Not Supported Type</span>
+                }
             </div>
             <div class="col">
                 <button class="btn btn-primary" @onclick="Edit"><i class="oi oi-pencil" /></button>
@@ -17,7 +35,18 @@
     {
         <div class="row">
             <div class="col">
-                <input value="@ParameterValue" @onchange="OnValueChanged">
+                @if (IsSupportedTypeInputEditable())
+                {
+                    <input value="@ParameterValue" @onchange="OnValueChanged">
+                }
+                else if (IsBoolean())
+                {
+                    <input type="checkbox" checked="@((bool)ParameterValue)" @onchange="OnCheckChanged" />
+                }
+                else
+                {
+                    <span>Not Supported Type</span>
+                }
             </div>
             <div class="col">
                 <button class="btn btn-primary" @onclick="Save"><i class="oi oi-check" /></button>
@@ -33,6 +62,10 @@
     public EventCallback<TItem> ItemChanged { get; set; }
     [Parameter]
     public string? ParameterName { get; set; }
+    [Parameter]
+    public string Extension { get; set; } = string.Empty;
+    [Parameter]
+    public string Prefix { get; set; } = string.Empty;
 
     public object? ParameterValue { get; set; }
 
@@ -44,6 +77,29 @@
     {
         await base.OnInitializedAsync();
         await LoadParam();
+    }
+
+    public bool IsSupportedTypeInputEditable()
+    {
+        if (paramType == typeof(string) ||
+            paramType == typeof(String) ||
+            paramType == typeof(int) ||
+            paramType == typeof(double))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public bool IsBoolean()
+    {
+        if (paramType == typeof(bool))
+            return true;
+        else
+            return false;
     }
 
     private async Task LoadParam()
@@ -62,6 +118,8 @@
                     ParameterValue = (int)value;
                 else if (param.PropertyType == typeof(double))
                     ParameterValue = (double)value;
+                else if (param.PropertyType == typeof(bool))
+                    ParameterValue = (bool)value;
 
                 await InvokeAsync(StateHasChanged);
             }
@@ -85,6 +143,15 @@
             await ItemChanged.InvokeAsync(Item);
         }
         await InvokeAsync(StateHasChanged);
+    }
+
+    private void OnCheckChanged(ChangeEventArgs e)
+    {
+        var v = (bool)e.Value;
+        if (v)
+            ParameterValue = true;
+        else
+            ParameterValue = false;
     }
 
     private async Task OnValueChanged(ChangeEventArgs e)
