@@ -34,7 +34,7 @@
             }
             <Row>
                 <Column>
-                    <Button Color="Color.Primary" Block Outline Disabled="@canLoad" Clicked="@load">Load</Button>
+                    <Button Color="Color.Primary" Block Outline Disabled="@(!canLoad)" Clicked="@load">Load</Button>
                 </Column>
             </Row>
 

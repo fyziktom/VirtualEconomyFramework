@@ -4,7 +4,9 @@
     <CardHeader>
         <Row>
             <Column>
-                <CardTitle>PV Panels Group - @Name</CardTitle>
+                <CardTitle>PV Panels Group - 
+                    <Editable Item="@getGroup()" ParameterName="@(nameof(panelsGroup.Name))" TItem="PVPanelsGroup" ItemChanged="@OnPanelsGroupNameChanged" />
+                </CardTitle>
             </Column>
             <Column>
                 <AddPVPanel @ref=addPVPanelModal 
@@ -69,6 +71,8 @@
     [Parameter]
     public string GroupId { get; set; } = string.Empty;
 
+    PVPanelsGroup? panelsGroup = new PVPanelsGroup();
+
     AddPVPanel? addPVPanelModal;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -76,10 +80,23 @@
         if (firstRender)
         {
             if (addPVPanelModal != null)
-            {
                 await addPVPanelModal.LoadPanel(getPanel());
-            }
         }
+    }
+
+    private PVPanelsGroup getGroup()
+    {
+        var g = AppData.PVEGrid.GetGroup(GroupId);
+        if (g != null)
+            return g;
+        else
+            return new PVPanelsGroup();
+    }
+
+    private void OnPanelsGroupNameChanged(PVPanelsGroup e)
+    {
+        if (e != null && AppData.PVEGrid.PVPanelsGroups.TryGetValue(GroupId, out var g))
+            g.Name = e.Name;
     }
 
     private PVPanel getPanel()

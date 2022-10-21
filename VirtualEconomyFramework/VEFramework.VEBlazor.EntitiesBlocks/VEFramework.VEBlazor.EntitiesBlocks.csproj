@@ -12,17 +12,18 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Blazorise" Version="1.1.1" />
-    <PackageReference Include="Blazorise.Bootstrap" Version="1.1.1" />
-    <PackageReference Include="Blazorise.Charts" Version="1.1.1" />
-    <PackageReference Include="Blazorise.Components" Version="1.1.1" />
-    <PackageReference Include="Blazorise.Icons.FontAwesome" Version="1.1.1" />
-    <PackageReference Include="Blazorise.TreeView" Version="1.1.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.9" />
+    <PackageReference Include="Blazorise" Version="1.1.2" />
+    <PackageReference Include="Blazorise.Bootstrap" Version="1.1.2" />
+    <PackageReference Include="Blazorise.Charts" Version="1.1.2" />
+    <PackageReference Include="Blazorise.Components" Version="1.1.2" />
+    <PackageReference Include="Blazorise.Icons.FontAwesome" Version="1.1.2" />
+    <PackageReference Include="Blazorise.TreeView" Version="1.1.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.10" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\VEDriversLite.EntitiesBlocks\VEDriversLite.EntitiesBlocks.csproj" />
+    <ProjectReference Include="..\VEFramework.VEBlazor.Editable\VEFramework.VEBlazor.Editable.csproj" />
   </ItemGroup>
 
 </Project>

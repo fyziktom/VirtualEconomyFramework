@@ -288,5 +288,27 @@ namespace VEFrameworkUnitTest.BlockEntities
                     Assert.Equal(val.Value, inval);
             }
         }
+
+        [Fact]
+        public void ConvertProfileToBlockTest()
+        {
+            var datavalue = 3;
+            var timeframe = BlockTimeframe.Hour;
+            var profile = CreateDataProfileTestData(datavalue, 24, "test", timeframe, DataProfileType.AddCoeficient);
+            var parentId = "12345";
+
+            var blocks = DataProfileHelpers.ConvertDataProfileToBlocks(profile, 
+                                                                       BlockDirection.Consumed, 
+                                                                       BlockType.Simulated, 
+                                                                       parentId).ToList();
+
+            Assert.Equal(24, blocks.Count);
+
+            foreach (var b in blocks)
+            {
+                if (profile.ProfileData.TryGetValue(b.StartTime, out var value))
+                    Assert.Equal(value, b.Amount);
+            }
+        }
     }
 }

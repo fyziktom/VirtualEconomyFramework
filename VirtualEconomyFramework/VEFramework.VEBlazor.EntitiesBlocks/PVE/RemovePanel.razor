@@ -3,7 +3,7 @@
 <Modal @ref="RemoveModal">
     <ModalContent Centered Size="ModalSize.ExtraLarge">
         <ModalHeader>
-            <ModalTitle>Remove Block</ModalTitle>
+            <ModalTitle>Remove PV Panel</ModalTitle>
             <CloseButton />
         </ModalHeader>
         <ModalBody>
@@ -80,7 +80,7 @@
     [Parameter]
     public bool WithButtonText { get; set; } = false;
     [Parameter]
-    public string ButtonText { get; set; } = "Remove Entity";
+    public string ButtonText { get; set; } = "Remove Panel";
     [Parameter]
     public EventCallback<string> Removed { get; set; }
     [Parameter]

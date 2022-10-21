@@ -1,0 +1,119 @@
+﻿@inject AppData AppData
+
+<Card Margin="Margin.Is4.FromBottom" Style="min-width:300px;">
+    <CardHeader>
+        <Row>
+            <Column>
+                <CardTitle>Battery Storage - @Name</CardTitle>
+            </Column>
+            <Column>
+                <AddBatteryBlock @ref=addBatteryBlockModal 
+                                 Battery="@getBlock()"
+                                 WithButton="true" 
+                                 BlockButton="false"
+                                 FloatButton="Float.End" 
+                                 WithButtonIcon="true" 
+                                 WithButtonText="false"
+                                 Added="@onBatteryBlockAdded"/>
+            </Column>
+        </Row>
+    </CardHeader>
+    <CardBody>
+    @if (BatteryBlocks != null)
+    {
+        <Row>
+            <Column>
+                <Table>
+                    <TableHeader>
+                        <TableHeaderCell>Name</TableHeaderCell>
+                        <TableHeaderCell>Capacity</TableHeaderCell>
+                        <TableHeaderCell>MaxCharge</TableHeaderCell>
+                        <TableHeaderCell>MaxDischarge</TableHeaderCell>
+                        <TableHeaderCell>Action</TableHeaderCell>
+                    </TableHeader>
+                    <TableBody>
+                        @foreach (var bblock in BatteryBlocks)
+                        {
+                            <TableRow>
+                                <TableRowCell>@bblock.Name</TableRowCell>
+                                <TableRowCell>@bblock.Capacity</TableRowCell>
+                                <TableRowCell>@bblock.MaximumChargePower </TableRowCell>
+                                <TableRowCell>@bblock.MaximumDischargePower</TableRowCell>
+                                <TableRowCell>
+                                    <RemoveBatteryBlock Battery="@bblock"
+                                                        Removed="@onRemovedBatteryBlock"
+                                                        WithButton="true"
+                                                        WithButtonText="false" 
+                                                        WithButtonIcon="true" 
+                                                        FloatButton="Float.End"/>
+                                </TableRowCell>
+                            </TableRow>
+                        }
+                    </TableBody>
+                </Table>
+            </Column>
+        </Row>
+    }
+    </CardBody>
+</Card>
+
+@code {
+    [Parameter]
+    public IEnumerable<BatteryBlock> BatteryBlocks { get; set; } = new List<BatteryBlock>();
+    [Parameter]
+    public string Name { get; set; } = string.Empty;
+    [Parameter]
+    public string GroupId { get; set; } = string.Empty;
+
+    AddBatteryBlock? addBatteryBlockModal;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            if (addBatteryBlockModal != null)
+            {
+                await addBatteryBlockModal.Load(getBlock());
+            }
+        }
+    }
+
+    private BatteryBlock getBlock()
+    {
+        var batteryblock = AppData.BatteryStorage.CommonBattery.Clone();
+        batteryblock.GroupId = GroupId;
+        if (BatteryBlocks.Any())
+        {
+            batteryblock.Name = Name + $"-{BatteryBlocks.Count()}";
+        }
+        return batteryblock;
+    }
+
+    public async Task LoadData()
+    {
+        var batteryblocks = AppData.BatteryStorage.BatteryBlocks.Values.ToList();
+        if (batteryblocks != null)
+        {
+            BatteryBlocks = batteryblocks;
+            Name = AppData.BatteryStorage.Name;
+            if (Name == null)
+                Name = "Default";
+        }
+
+        await InvokeAsync(StateHasChanged);
+
+        if (addBatteryBlockModal != null)
+            await addBatteryBlockModal.Load(getBlock());
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async void onBatteryBlockAdded(List<string> e)
+    {
+        await LoadData();
+    }
+    private async void onRemovedBatteryBlock(string e)
+    {
+        await LoadData();
+    }
+}

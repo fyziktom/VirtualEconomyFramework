@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using VEDriversLite.EntitiesBlocks.Blocks.Dto;
+using static System.Reflection.Metadata.BlobBuilder;
 
 namespace VEDriversLite.EntitiesBlocks.Blocks
 {
@@ -149,6 +150,88 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
 
                     yield return inp;
                     counter++;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Convert input blocks to data profile.
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        public static DataProfile ConvertBlocksToDataProfile(IEnumerable<IBlock> input, double divideEachValue = 0)
+        {
+            var result = new DataProfile();
+            if (input == null)
+                return result;
+
+            result.Type = DataProfileType.AddCoeficient;
+
+            foreach (var inp in input)
+                result.ProfileData.TryAdd(inp.StartTime, divideEachValue > 0 ? inp.Amount / divideEachValue : inp.Amount);
+
+            return result;
+        }
+
+        /// <summary>
+        /// Convert dataprofile to IBlocks
+        /// </summary>
+        /// <param name="input">input dataProfile</param>
+        /// <param name="direction">direction of final blocks</param>
+        /// <param name="type">type of final blocks</param>
+        /// <param name="parentId">parentId of final blocks</param>
+        /// <returns></returns>
+        public static IEnumerable<IBlock> ConvertDataProfileToBlocks(DataProfile input, BlockDirection direction, BlockType type, string parentId, double divideEachValue = 0, bool withoutNullValueBlocks = false)
+        {
+            var result = new List<IBlock>();
+            
+            var keys = input.ProfileData.Keys.ToArray();
+            var values = input.ProfileData.Values.ToArray();
+            var isChild = false;
+            var repetitiveParentId = string.Empty;
+
+            for (int i = 0; i < input.ProfileData.Count; i++)
+            { 
+                var k = keys[i];
+                var v = values[i];
+
+                if (!withoutNullValueBlocks || (withoutNullValueBlocks && v != 0))
+                {
+                    if (divideEachValue > 0)
+                        v = values[i] / divideEachValue;
+
+                    DateTime? k1 = null;
+
+                    if (i == 0)
+                        k1 = keys[1];
+                    else if (i == input.ProfileData.Count - 1)
+                        k1 = keys[i - 1];
+                    else
+                        k1 = keys[i + 1];
+
+                    var id = Guid.NewGuid().ToString();
+                    if (!isChild)
+                        repetitiveParentId = id;
+
+                    var b = new BaseBlock()
+                    {
+                        Amount = v,
+                        Direction = direction,
+                        ParentId = !string.IsNullOrEmpty(parentId) ? parentId : string.Empty,
+                        StartTime = k,
+                        Timeframe = (TimeSpan)(k1 - k),
+                        Used = false,
+                        RepetitiveSourceBlockId = isChild ? repetitiveParentId : string.Empty,
+                        Type = type,
+                        Id = id
+                    };
+
+                    if (!isChild)
+                        isChild = true;
+
+                    result.Add(b);
+
+                    yield return b;
                 }
             }
         }

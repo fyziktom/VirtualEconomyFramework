@@ -172,6 +172,12 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
         /// <returns></returns>
         IEnumerable<IBlock> GetEntityBlocks(string id);
         /// <summary>
+        /// Find Entity by Name
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        IEntity FindEntityByName(string name);
+        /// <summary>
         /// Remove all blocks in entity
         /// </summary>
         /// <param name="id"></param>

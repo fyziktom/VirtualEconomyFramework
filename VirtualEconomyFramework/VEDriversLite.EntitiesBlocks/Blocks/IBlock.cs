@@ -20,14 +20,14 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
     {
         Simulated,
         Calculated,
-        Real,
+        Real
     }
     public enum BlockDirection
     {
         Created,
         Stored,
         Consumed,
-        Mix,
+        Mix
     }
     public interface IBlock
     {

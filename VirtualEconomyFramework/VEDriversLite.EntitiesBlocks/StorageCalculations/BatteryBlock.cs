@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VEDriversLite.EntitiesBlocks.PVECalculations;
 
 namespace VEDriversLite.EntitiesBlocks.StorageCalculations
 {
@@ -17,13 +18,13 @@ namespace VEDriversLite.EntitiesBlocks.StorageCalculations
         /// </summary>
         public string Id { get; set; } = string.Empty;
         /// <summary>
+        /// Group Id where this Battery Block belongs
+        /// </summary>
+        public string GroupId { get; set; } = string.Empty;
+        /// <summary>
         /// Name of battery block
         /// </summary>
         public string Name { get; set; } = string.Empty;
-        /// <summary>
-        /// Battery storage (block handler) Id
-        /// </summary>
-        public string BatteryStorageId { get; set; } = string.Empty;
         /// <summary>
         /// Capacity of battery block.
         /// For example 20000 Wh
@@ -47,5 +48,59 @@ namespace VEDriversLite.EntitiesBlocks.StorageCalculations
         /// </summary>
         public double InternalResistance { get; set; } = 0.0;
 
+
+
+        /// <summary>
+        /// Fill object with source
+        /// </summary>
+        /// <param name="panel"></param>
+        public void Fill(BatteryBlock panel)
+        {
+            foreach (var param in typeof(BatteryBlock).GetProperties())
+            {
+                try
+                {
+                    if (param.CanWrite)
+                    {
+                        var value = param.GetValue(panel);
+                        var paramname = param.Name;
+                        var pr = typeof(BatteryBlock).GetProperties().FirstOrDefault(p => p.Name == paramname);
+                        if (pr != null)
+                            pr.SetValue(this, value);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Cannot load parameter." + ex.Message);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Clone this
+        /// </summary>
+        public BatteryBlock Clone()
+        {
+            var res = new BatteryBlock();
+            foreach (var param in typeof(BatteryBlock).GetProperties())
+            {
+                try
+                {
+                    if (param.CanWrite)
+                    {
+                        var value = param.GetValue(this);
+                        var paramname = param.Name;
+                        var pr = typeof(BatteryBlock).GetProperties().FirstOrDefault(p => p.Name == paramname);
+                        if (pr != null)
+                            pr.SetValue(res, value);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Cannot load parameter. " + ex.Message);
+                }
+            }
+            return res;
+        }
     }
 }

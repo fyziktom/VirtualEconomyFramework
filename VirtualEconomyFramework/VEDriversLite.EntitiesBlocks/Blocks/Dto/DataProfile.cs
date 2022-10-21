@@ -50,5 +50,11 @@ namespace VEDriversLite.EntitiesBlocks.Blocks.Dto
         [JsonIgnore]
         public DateTime LastDate { get => ProfileData.Keys.OrderByDescending(x => x).FirstOrDefault(); }
 
+        /// <summary>
+        /// Sum of all data in ProfileData
+        /// </summary>
+        [JsonIgnore]
+        public double DataSum { get => ProfileData.Values.Sum(); }
+
     }
 }
