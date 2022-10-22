@@ -128,6 +128,33 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
             return ts;
         }
 
+        /// <summary>
+        /// Approximated timeframe based on timespan 
+        /// </summary>
+        /// <param name="ts">End time - Start time = timespan</param>
+        /// <returns></returns>
+        public static BlockTimeframe GetTimeframeBasedOnTimespan(TimeSpan ts)
+        {            
+            if (ts.TotalSeconds == 1)
+                return BlockTimeframe.Second;
+            else if (ts.TotalSeconds > 30 && ts.TotalMinutes < 5)
+                return BlockTimeframe.Minute;
+            else if (ts.TotalMinutes >= 5 && ts.TotalMinutes < 30)
+                return BlockTimeframe.QuaterHour;
+            else if (ts.TotalMinutes >= 30 && ts.TotalMinutes < 90)
+                return BlockTimeframe.Hour;
+            else if (ts.TotalDays >= 5 && ts.TotalDays < 9)
+                return BlockTimeframe.Week;
+            else if (ts.TotalDays >= 20 && ts.TotalDays < 40)
+                return BlockTimeframe.Month;
+            else if (ts.TotalDays >= 60 && ts.TotalDays < 200)
+                return BlockTimeframe.QuaterYear;
+            else if (ts.TotalDays >= 200 && ts.TotalDays < 400)
+                return BlockTimeframe.Year;
+
+            return BlockTimeframe.Hour;
+        }
+
         public static List<IBlock> GetResultBlocks(BlockTimeframe timeframesteps,
                                                         DateTime starttime,
                                                         DateTime endtime,

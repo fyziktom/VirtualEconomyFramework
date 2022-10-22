@@ -7,6 +7,7 @@ using VEDriversLite.Common;
 using VEDriversLite.EntitiesBlocks.Blocks.Dto;
 using VEDriversLite.EntitiesBlocks.Blocks;
 using System.Runtime.CompilerServices;
+using VEDriversLite.EntitiesBlocks.Financial;
 
 namespace VEDriversLite.EntitiesBlocks.PVECalculations
 {
@@ -76,6 +77,10 @@ namespace VEDriversLite.EntitiesBlocks.PVECalculations
         /// 1 - means 100% celan panel without any dirt
         /// </summary>
         public double DirtRatio { get; set; }
+        /// <summary>
+        /// Financial info about the item
+        /// </summary>
+        public FinancialInfo FinancialInfo { get; set; } = new FinancialInfo();
         /// <summary>
         /// Latitude of the panel position 
         /// </summary>
