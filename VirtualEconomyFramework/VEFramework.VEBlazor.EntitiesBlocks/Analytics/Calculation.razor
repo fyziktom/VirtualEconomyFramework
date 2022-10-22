@@ -1,18 +1,18 @@
 ﻿@inject AppData AppData
 
-<Card Margin="Margin.Is4.FromBottom">
+<Card Margin="Margin.Is4.FromBottom" >
 
     <CardHeader><CardTitle>Výpočet</CardTitle></CardHeader>
     <CardBody>
         <Row>
             <Field>
                 <FieldLabel>Rozpočet</FieldLabel>
-                <Addons>
+                <Addons Width="Width.Is25" Style="min-width: 15rem">
                     <Addon AddonType="AddonType.Body">
                         <TextEdit Placeholder="Rozpočet" />
                     </Addon>
                     <Addon AddonType="AddonType.End">
-                        <AddonLabel VerticalAlignment="VerticalAlignment.Baseline">Kč</AddonLabel>
+                        <AddonLabel >Kč</AddonLabel>
                     </Addon>
                 </Addons>
 
@@ -21,7 +21,7 @@
         <Row>
             <Field>
                 <FieldLabel>Úroková sazba</FieldLabel>
-                <Addons>
+                <Addons Width="Width.Is25" Style="min-width: 15rem">
                     <Addon AddonType="AddonType.Body">
                         <TextEdit Placeholder="Úroková sazba" />
                     </Addon>
@@ -71,16 +71,19 @@
                                 </TableRowCell>
                                 <TableRowCell TextAlignment="TextAlignment.Center">
                                     <Div Style="width: 100px;" Margin="Margin.IsAuto">
-                                        <Field Margin="Margin.Is0">
-                                            <Addons>
-                                                <Addon AddonType="AddonType.Body">
-                                                    <TextEdit />
-                                                </Addon>
-                                                <Addon AddonType="AddonType.End">
-                                                    <AddonLabel>%</AddonLabel>
-                                                </Addon>
-                                            </Addons>
-                                        </Field>
+                                        @if (entity.Entity is IConsumer {ConsumerType: ConsumerType.Device })
+                                        {
+                                            <Field Margin="Margin.Is0">
+                                                <Addons>
+                                                    <Addon AddonType="AddonType.Body">
+                                                        <TextEdit/>
+                                                    </Addon>
+                                                    <Addon AddonType="AddonType.End">
+                                                        <AddonLabel>%</AddonLabel>
+                                                    </Addon>
+                                                </Addons>
+                                            </Field>
+                                        }
                                     </Div>
                                 </TableRowCell>
                                 <TableRowCell>1000Kč</TableRowCell>
@@ -92,6 +95,9 @@
             </Table>
         </Row>
     </CardBody>
+    <CardFooter>
+        <Button Clicked="@OnCalculate">Přepočítat</Button>
+    </CardFooter>
 </Card>
 
 @code {
@@ -120,18 +126,23 @@
 
     private void AddItemToList(TreeItem item, int depth = 0)
     {
-        if (item.Entity is ISource { SourceType: SourceType.PVE })
+        if (item.Entity is ISource {SourceType: SourceType.PVE })
         {
-            CalculationEntities.Last().IsLeading = true;
-        }
-
-        CalculationEntities.Add(new CalculationEntity
+            var leading = CalculationEntities.FirstOrDefault(e => e.Entity.Id == item.Entity.ParentId);
+            if (leading is not null)
             {
-                Name = item.Name,
-                Icon = GetIcon(item),
-                Depth = depth,
-                Entity = item.Entity
-            });
+                leading.IsLeading = true;
+                leading.AllocationKey = 0;
+            }
+        }
+        
+        CalculationEntities.Add(new CalculationEntity
+        {
+            Name = item.Name,
+            Icon = GetIcon(item),
+            Depth = depth,
+            Entity = item.Entity
+        });
 
         var children = item.GetChilds();
         foreach (var child in children)
@@ -140,7 +151,7 @@
         }
         StateHasChanged();
     }
-
+    
     private String GetIcon(TreeItem item)
     {
         if (item.Entity is ISource sourceItem)
@@ -166,8 +177,8 @@
     }
 
     private string rootItemId;
-
-
+    
+    
     public class CalculationEntity
     {
         public string? Name { get; set; }
@@ -178,11 +189,17 @@
         public bool IsSelected { get; set; }
         public double ResultCostsBefore { get; set; }
         public double ResultCostsAfter { get; set; }
+        public double AllocationKey { get; set; }
     }
 
     private void SetEntitySelected(CalculationEntity item, bool b)
     {
         item.IsSelected = b;
+    }
+
+    private void OnCalculate()
+    {
+       
     }
 
 }
