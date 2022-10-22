@@ -2,18 +2,35 @@
     var children = Item.GetChilds();
     if (!children.Any())
     {
-        <Heading Size="HeadingSize.Is5">
-            @Item.Name
-        </Heading>
+
+        <Div Flex="Flex.JustifyContent.Center.AlignItems.Center">
+            <Heading Size="HeadingSize.Is5" Margin="Margin.Is0"  TextAlignment="TextAlignment.Center" Padding="Padding.Is1.OnY.Is2.OnX">
+                @Item.Name
+            </Heading>
+
+            <Div Margin="Margin.Is3.FromEnd">
+                <Icon Name="@GetIcon(Item)" />
+            </Div>
+        </Div>
     }
     else
     {
         <Collapse Visible="@isExpanded">
-            <CollapseHeader>
-                <Heading Size="HeadingSize.Is5">
+            <CollapseHeader Flex="Flex.JustifyContent.Center.AlignItems.Center">
+                <Heading Margin="Margin.Is0" Size="HeadingSize.Is5" Padding="Padding.Is2.OnX">
                     @Item.Name
-                    <Button Clicked="@(() => isExpanded = !isExpanded)">&gt;</Button>
                 </Heading>
+
+                <Div Margin="Margin.Is3.FromEnd">
+                    <Icon Name="@GetIcon(Item)" />
+                </Div>
+
+                <Button Clicked="@(()=>isExpanded = !isExpanded)">
+                    <Icon Name="@("fa-chevron-down")" />
+                </Button>
+                <Button>
+                    <Icon Name="@("fa-plus")" />
+                </Button>
             </CollapseHeader>
             <CollapseBody>
                 <Accordion>
@@ -29,9 +46,38 @@
 }
 
 @code {
-    
+
     [Parameter]
     public TreeItem Item { get; set; }
+
+
+    private String GetIcon(TreeItem item)
+    {
+
+        Console.WriteLine(item.Entity);
+
+        if (item.Entity is ISource sourceItem)
+        {
+            switch (sourceItem.SourceType)
+            {
+                case SourceType.Battery: return "fa-battery-full";
+                case SourceType.PowerGridSupplier: return "fa-bolt";
+                case SourceType.PVE: return "fa-solar-panel";
+            }
+
+        }
+        else if (item.Entity is IConsumer consumerItem)
+        {
+            switch (consumerItem.ConsumerType)
+            {
+                case ConsumerType.GroupNetwork: return "fa-city";
+                case ConsumerType.DevicesGroup: return "fa-building";
+                case ConsumerType.Device: return "fa-table";
+            }
+        }
+        return "fa-diamond";
+    }
+
 
     private bool isExpanded;
 }
