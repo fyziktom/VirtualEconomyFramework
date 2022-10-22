@@ -195,7 +195,7 @@ namespace TestVEDriversLite
                                                                                                   false,
                                                                                                   "",
                                                                                                   "",
-                                                                                                  "tdds[0]").ToList();
+                                                                                                  consumption.Id).ToList();
 
                             // add day consumption blocks to the device in Frist Measure Spot entity
                             eGrid.AddBlocksToEntity(firstmeasurespotDevice.Id, consumptionblocks);
@@ -234,7 +234,7 @@ namespace TestVEDriversLite
                                                                                                    false,
                                                                                                    "",
                                                                                                    "",
-                                                                                                   "tdds[1]").ToList();
+                                                                                                   consumption1.Id).ToList();
                             // add day consumption blocks to the device1 in devicegroup
                             eGrid.AddBlocksToEntity(device.Id, consumptionblocks1);
 
@@ -251,7 +251,7 @@ namespace TestVEDriversLite
                                                                                                    false,
                                                                                                    "",
                                                                                                    "",
-                                                                                                   "tdds[2]").ToList();
+                                                                                                   consumption2.Id).ToList();
                             // add day consumption blocks to the device3 in devicegroup1
                             eGrid.AddBlocksToEntity(device3.Id, consumptionblocks2);
 
