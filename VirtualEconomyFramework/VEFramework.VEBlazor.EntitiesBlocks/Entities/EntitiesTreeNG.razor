@@ -12,7 +12,7 @@
                     <Accordion>
                         @foreach (var item in Tree.GetChilds())
                         {
-                            <EntitiesTreeNGItem Item="@item"></EntitiesTreeNGItem>
+                            <EntitiesTreeNGItem Item="@item" ItemSelected="@ItemSelected"></EntitiesTreeNGItem>
                         }
                     </Accordion>
                 </CascadingValue>
@@ -29,10 +29,12 @@
 
     [Parameter]
     public bool DisplayRefreshButton { get; set; } = false;
-
+    
     [Parameter]
     public string? RootItemId { get; set; }
-
+    
+    [Parameter]
+    public EventCallback<TreeItem> ItemSelected { get; set; }
 
     IList<TreeItem> ExpandedNodes = new List<TreeItem>();
 
@@ -51,7 +53,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-
+        
         await base.OnInitializedAsync();
     }
 
@@ -118,8 +120,8 @@
 
     private async Task OnChanged()
     {
-        Console.WriteLine("Item changed");
-        await LoadData(rootItemId);
+       Console.WriteLine("Item changed");
+       await LoadData(rootItemId);
     }
 
 }

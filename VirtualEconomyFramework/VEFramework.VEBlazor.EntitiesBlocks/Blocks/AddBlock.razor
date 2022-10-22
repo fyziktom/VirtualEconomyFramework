@@ -1,10 +1,10 @@
 ﻿@inherits EntitiesBlocksComponentBase
 @inject AppData AppData
 
-<Modal @ref="AddBlockModal">
-    <ModalContent Centered Size="ModalSize.ExtraLarge">
+<Modal @ref="@AddBlockModal">
+    <ModalContent Centered Size="ModalSize.Large">
         <ModalHeader>
-            <ModalTitle>@(!blockChange ? "Add" : "Change") Block</ModalTitle>
+            <ModalTitle>@(!blockChange? "Přidat" : "Změnit") blok</ModalTitle>
             <CloseButton />
         </ModalHeader>
         <ModalBody>
@@ -13,21 +13,21 @@
             <Row>
                 <Column>
                     <Field>
-                        <FieldLabel>Name</FieldLabel>
-                        <TextEdit Placeholder="Block Name" @bind-Text="@Block.Name" />
+                        <FieldLabel>Název</FieldLabel>
+                        <TextEdit Placeholder="Název bloku" @bind-Text="@Block.Name" />
                     </Field>
                     <Field>
-                        <FieldLabel>Description</FieldLabel>
-                        <TextEdit Placeholder="Block Description" @bind-Text="@Block.Description" />
+                        <FieldLabel>Popis</FieldLabel>
+                        <TextEdit Placeholder="Popis bloku" @bind-Text="@Block.Description" />
                     </Field>
                     <StartEndDaySelector StartTime="@Block.StartTime" 
                                          EndTime="@Block.EndTime" 
                                          StartTimeChanged="@startDateChanged"
                                          EndTimeChanged="@endDateChanged"
-                                         StartDayLabel="Start of the Block"
-                                         EndDayLabel="End of the Block" />
+                                         StartDayLabel="Začátek bloku"
+                                         EndDayLabel="Konec bloku" />
 
-                    <Check TValue="bool" Checked="@repetitiveBlock" CheckedChanged="@OnRepetitiveBlockCheckedChanged">Repetitive Block</Check>
+                    <Check TValue="bool" Checked="@repetitiveBlock" CheckedChanged="@OnRepetitiveBlockCheckedChanged">Opakovaný blokk</Check>
                     
                     @if (repetitiveBlock)
                     {
@@ -50,11 +50,11 @@
                 <Column>
                     @if (blockChange)
                     {
-                    <Button Color="Color.Primary" Outline Clicked="@changeBlock">Change Block</Button>
+                    <Button Color="Color.Primary" Outline Clicked="@changeBlock">Upravit blok</Button>
                     }
                     else
                     {
-                    <Button Color="Color.Primary" Outline Clicked="@addBlock">Add Block</Button>
+                    <Button Color="Color.Primary" Outline Clicked="@addBlock">Změnit blok</Button>
                     }
                 </Column>
             </Row>
@@ -63,7 +63,7 @@
             {
                 <Row>
                     <Column>
-                        <Span>Please select the Entity to add new block. Click to entity in the Tree.</Span>
+                        <Span>Prosím vyberte entitu</Span>
                     </Column>
                 </Row>
             }
@@ -104,7 +104,7 @@
     [Parameter]
     public bool WithButtonText { get; set; } = false;
     [Parameter]
-    public string ButtonText { get; set; } = "Add Block";
+    public string ButtonText { get; set; } = "Přidat blok";
 
     Modal? AddBlockModal;
     bool basedOnTotalPower = true;
