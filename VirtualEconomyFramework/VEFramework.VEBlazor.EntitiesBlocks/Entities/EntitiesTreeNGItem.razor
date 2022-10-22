@@ -1,0 +1,105 @@
+﻿@{
+    var children = Item.GetChilds();
+    if (!children.Any())
+    {
+
+    <Div Flex="Flex.JustifyContent.Center.AlignItems.Center">
+                <Heading Size="HeadingSize.Is5" Margin="Margin.Is0" TextAlignment="TextAlignment.Center" Padding="Padding.Is1.OnY.Is2.OnX">
+                    @Item.Name
+                </Heading>
+
+                <Div Margin="Margin.Is3.FromEnd">
+                    <Icon Name="@GetIcon(Item)" />
+                </Div>
+    </Div>
+    }
+    else
+    {
+    <Collapse Visible="@isExpanded" Overflow="Overflow.Visible">
+                <CollapseHeader Flex="Flex.JustifyContent.Center.AlignItems.Center">
+                    <Heading Margin="Margin.Is0" Size="HeadingSize.Is5" Padding="Padding.Is2.OnX">
+                        @Item.Name
+                    </Heading>
+
+                    <Div Margin="Margin.Is3.FromEnd">
+                        <Icon Name="@GetIcon(Item)" />
+                    </Div>
+
+                    <Button Clicked="@(()=>isExpanded = !isExpanded)">
+                        <Icon Name="@("fa-chevron-down")" />
+                    </Button>
+
+                    <Collapse Visible="@isAddBlockExpanded" Flex="Flex.AlignItems.Center.Row" Border="Border.Is0" Position="Position.Relative">
+                        <CollapseHeader Flex="Flex.JustifyContent.Center.AlignItems.Center" Padding="Padding.Is0.OnY.Is2.OnX" Border="Border.Is0">
+                            <Button Clicked="@(()=>isAddBlockExpanded = !isAddBlockExpanded)">
+                                <Icon Name="@("fa-plus")" />
+                            </Button>
+                        </CollapseHeader>
+                        <CollapseBody Class="card-body-wrapper" Position="Position.Absolute.Top.Is100.Start.Is50.Translate.MiddleX" Padding="Padding.Is0" Style="z-index: 20;">
+                            <Buttons Padding="Padding.Is0" Background="Background.White">
+                                <Button Color="Color.Dark" Outline> <Icon Name="@("fa-table")" /></Button>
+                                <Button Color="Color.Dark" Outline> <Icon Name="@("fa-solar-panel")" /></Button>
+                                <Button Color="Color.Dark" Outline Flex="Flex.AlignItems.Center.JustifyContent.Center.Wrap">
+                                  <Div Border="Border.Is2.Dark" Padding="Padding.Is1">
+                                        <Icon Name="@("fa-solar-panel")" />
+                                    </Div>
+                                </Button>
+                                <Button Color="Color.Dark" Outline> <Icon Name="@("fa-battery-full")" /></Button>
+
+                                <Button Color="Color.Dark" Outline> <Icon Name="@("fa-building")" /></Button>
+
+                            </Buttons>
+                        </CollapseBody>
+                    </Collapse>
+
+                </CollapseHeader>
+                <CollapseBody>
+                    <Accordion>
+                        @foreach (var subItem in children)
+                    {
+
+                            <EntitiesTreeNGItem Item="@subItem"></EntitiesTreeNGItem>
+                    }
+                    </Accordion>
+                </CollapseBody>
+    </Collapse>
+    }
+}
+
+@code {
+
+    [Parameter]
+    public TreeItem Item { get; set; }
+
+
+    private String GetIcon(TreeItem item)
+    {
+
+        Console.WriteLine(item.Entity);
+
+        if (item.Entity is ISource sourceItem)
+        {
+            switch (sourceItem.SourceType)
+            {
+                case SourceType.Battery: return "fa-battery-full";
+                case SourceType.PowerGridSupplier: return "fa-bolt";
+                case SourceType.PVE: return "fa-solar-panel";
+            }
+
+        }
+        else if (item.Entity is IConsumer consumerItem)
+        {
+            switch (consumerItem.ConsumerType)
+            {
+                case ConsumerType.GroupNetwork: return "fa-city";
+                case ConsumerType.DevicesGroup: return "fa-building";
+                case ConsumerType.Device: return "fa-table";
+            }
+        }
+        return "fa-diamond";
+    }
+
+
+    private bool isExpanded;
+    private bool isAddBlockExpanded;
+}

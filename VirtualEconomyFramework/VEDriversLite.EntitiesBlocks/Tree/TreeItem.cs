@@ -38,6 +38,8 @@ namespace VEDriversLite.EntitiesBlocks.Tree
         /// </summary>
         public EntityType Type { get; set; }
 
+        public IEntity Entity { get; set; }
+
         /// <summary>
         /// Get Enumerable of all childs
         /// </summary>

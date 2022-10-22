@@ -2,6 +2,7 @@
     position: relative;
     display: flex;
     flex-direction: column;
+
 }
 
 main {
@@ -54,9 +55,12 @@ main {
     .page {
         flex-direction: row;
     }
-
+    main{
+        width: 80%;
+    }
     .sidebar {
         width: 250px;
+        width: 20%;
         height: 100vh;
         position: sticky;
         top: 0;
