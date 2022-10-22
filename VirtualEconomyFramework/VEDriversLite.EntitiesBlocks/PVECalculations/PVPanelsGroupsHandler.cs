@@ -582,7 +582,13 @@ namespace VEDriversLite.EntitiesBlocks.PVECalculations
         /// <param name="coord">Coordinates on planet</param>
         /// <param name="weatherFactor">Weather efficiency factor</param>
         /// <returns>Peak energy in specific datetime in form of List of IBlock for whole one year</returns>
-        public IEnumerable<IBlock> GetTotalPeakPowerInTimeframeBlocks(DateTime start, DateTime end, Coordinates coord, double weatherFactor)
+        public IEnumerable<IBlock> GetTotalPeakPowerInTimeframeBlocks(DateTime start, 
+                                                                      DateTime end, 
+                                                                      Coordinates coord, 
+                                                                      double weatherFactor, 
+                                                                      string parentId = "", 
+                                                                      string sourceId = "", 
+                                                                      string name = "")
         {
             if (end < start)
                 throw new Exception("Wrong input of the start and end. End cannot be earlier than start.");
@@ -613,15 +619,22 @@ namespace VEDriversLite.EntitiesBlocks.PVECalculations
                 var effectiverise = rise.AddSeconds((set - rise).TotalSeconds * 0.1);
                 var effectiveset = set.AddSeconds(-(set - rise).TotalSeconds * 0.1);
 
+                if (string.IsNullOrEmpty(sourceId))
+                    sourceId = Id;
+                if (string.IsNullOrEmpty(parentId))
+                    parentId = Id;
+                if (string.IsNullOrEmpty(name))
+                    name = Name;
+
                 var rblock = block.GetBlock(BlockType.Simulated,
                                             BlockDirection.Created,
                                             effectiverise,
                                             effectiveset - effectiverise,
                                             amount,
-                                            Id,
-                                            Name,
+                                            sourceId,
+                                            name,
                                             null,
-                                            Id);
+                                            parentId);
 
                 rblock.IsInDayOnly = true;
                 if (string.IsNullOrEmpty(firstBlockId))
@@ -631,6 +644,74 @@ namespace VEDriversLite.EntitiesBlocks.PVECalculations
 
                 yield return rblock;
                 tmp = tmp.AddDays(1);
+            }
+        }
+
+        /// <summary>
+        /// Get total peak power across all groups and panels in the handler based on the start-end datetime and return as list of IBlock.
+        /// For each day in timeframe there will be one block created.
+        /// </summary>
+        /// <param name="start">Start DateTime</param>
+        /// <param name="end">End DateTime</param>
+        /// <param name="coord">Coordinates on planet</param>
+        /// <param name="weatherFactor">Weather efficiency factor</param>
+        /// <returns>Peak energy in specific datetime in form of List of IBlock for whole one year</returns>
+        public IEnumerable<IBlock> GetTotalPeakPowerInHourTimeframeBlocks(DateTime start,
+                                                                          DateTime end,
+                                                                          Coordinates coord,
+                                                                          double weatherFactor,
+                                                                          string parentId = "",
+                                                                          string sourceId = "",
+                                                                          string name = "")
+        {
+            if (end < start)
+                throw new Exception("Wrong input of the start and end. End cannot be earlier than start.");
+
+            var block = new BaseBlock();
+
+            start = start.AddHours(-start.Hour).AddMinutes(-start.Minute).AddSeconds(-start.Second);
+            end = end.AddHours(-end.Hour).AddMinutes(-end.Minute).AddSeconds(-end.Second);
+            var tmp = start;
+            var firstBlockId = string.Empty;
+
+            var timeframe = BlockTimeframe.Hour;
+            var ts = BlockHelpers.GetTimeSpanBasedOntimeframe(timeframe, start);
+
+            while (tmp < end)
+            {
+                var amount = 0.0;
+
+                foreach (var group in PVPanelsGroups.Values)
+                    amount += group.GetGroupPeakPowerInDateTime(tmp, coord, weatherFactor);
+                
+                
+                if (string.IsNullOrEmpty(sourceId))
+                    sourceId = Id;
+                if (string.IsNullOrEmpty(parentId))
+                    parentId = Id;
+                if (string.IsNullOrEmpty(name))
+                    name = Name;
+
+                var rblock = block.GetBlock(BlockType.Simulated,
+                                            BlockDirection.Created,
+                                            tmp,
+                                            ts,
+                                            amount,
+                                            sourceId,
+                                            name,
+                                            null,
+                                            parentId);
+
+                rblock.IsInDayOnly = true;
+                if (string.IsNullOrEmpty(firstBlockId))
+                    firstBlockId = rblock.Id;
+                else
+                    rblock.RepetitiveSourceBlockId = firstBlockId;
+
+                yield return rblock;
+
+                tmp = tmp.Add(ts);
+                ts = BlockHelpers.GetTimeSpanBasedOntimeframe(timeframe, tmp);
             }
         }
 
@@ -649,5 +730,6 @@ namespace VEDriversLite.EntitiesBlocks.PVECalculations
                 result += group.GetGroupPeakPowerInDateTime(start, coord, weatherFactor);
             return result;
         }
+
     }
 }

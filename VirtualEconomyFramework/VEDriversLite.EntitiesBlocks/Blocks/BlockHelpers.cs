@@ -88,6 +88,28 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
             return blocks;
         }
 
+        public static IEnumerable<IBlock> CloneBlocks(List<IBlock> inputBlocks, 
+                                                      bool chainIds, 
+                                                      bool setType = false, 
+                                                      BlockType type = BlockType.Mix, 
+                                                      bool setDirection = false, 
+                                                      BlockDirection direction = BlockDirection.Mix)
+        {
+            foreach(var block in inputBlocks)
+            {
+                var b = new BaseBlock();
+                b.Fill(block);
+                b.Id = Guid.NewGuid().ToString();
+                b.SourceId = block.Id;
+                if (setType)
+                    b.Type = type;
+                if (setDirection)
+                    b.Direction = direction;
+
+                yield return b;
+            }
+        }
+
         public static TimeSpan GetTimeSpanBasedOntimeframe(BlockTimeframe timeframesteps, DateTime starttime)
         {
             var tmpdate = starttime;
