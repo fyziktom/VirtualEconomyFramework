@@ -63,9 +63,8 @@
         }
 
 @media (min-width: 1024px) {
-
     .logo {
-        max-width: 80px
+        max-width: 60px;
     }
 
     .navbar-toggler {
@@ -76,4 +75,13 @@
         /* Never collapse the sidebar for wide screens */
         display: block;
     }
+}
+
+@media (min-width: 1280px) {
+
+    .logo {
+        max-width: 70px
+    }
+
+ 
 }

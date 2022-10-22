@@ -8,15 +8,22 @@ h1:focus {
     outline: none;
 }
 
+.logo-wrapper {
+    max-width: 140px;
+}
+
 a, .btn-link {
     color: #0071c1;
 }
-.blocks-graph .row>*{
+
+.blocks-graph .row > * {
     padding: 0;
 }
-.blocks-graph  * {
-   border-radius: 0;
+
+.blocks-graph * {
+    border-radius: 0;
 }
+
 .blocks-graph .row {
     padding: 0;
     margin: 0
@@ -31,9 +38,11 @@ a, .btn-link {
     border-right: 1px #888 dashed;
     background-color: transparent;
 }
+
 .card-body-wrapper .card-body {
     padding: 0;
 }
+
 .btn-primary {
     color: #fff;
     background-color: #1b6ec2;
@@ -84,3 +93,14 @@ a, .btn-link {
     .blazor-error-boundary::after {
         content: "An error has occurred."
     }
+
+.logo-wrapper {
+    max-width: 140px;
+}
+
+@media (min-width: 1024px) {
+
+    .logo-wrapper { 
+        max-width: 180px;
+    }
+}
