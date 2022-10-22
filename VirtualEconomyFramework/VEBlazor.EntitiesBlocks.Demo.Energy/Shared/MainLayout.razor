@@ -1,4 +1,5 @@
 ﻿@inherits LayoutComponentBase
+@inject AppData AppData
 
 <div class="page">
     <div class="sidebar">
@@ -6,8 +7,9 @@
     </div>
 
     <main>
-        <article class="content px-4">
+        <Div Class="context" Padding="Padding.Is3.OnX.Is4.OnX.OnTablet.Is2.OnY">
             @Body
-        </article>
+
+        </Div>
     </main>
 </div>

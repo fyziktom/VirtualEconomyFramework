@@ -1,0 +1,27 @@
+﻿@page "/analytics"
+@using VEFramework.VEBlazor.EntitiesBlocks.Analytics
+@inject AppData AppData
+@inject HttpClient Http
+
+<Calculation RootItemId="@rootItemId" />
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        AppData.RootItemId = "7b27c442-ad40-4679-b6d5-8873d9763996";
+        AppData.RootItemName = "network";
+        var storeddata = await Http.GetStringAsync("sampledata.json");
+        if (storeddata != null)
+            AppData.StoredConfig = storeddata;
+
+        var res = AppData.EntitiesHandler.LoadFromConfig(AppData.StoredConfig);
+        if (res.Item1)
+        {
+            rootItemId = AppData.RootItemId;
+        }
+        
+        await base.OnInitializedAsync();
+    }
+
+    private string rootItemId;
+}

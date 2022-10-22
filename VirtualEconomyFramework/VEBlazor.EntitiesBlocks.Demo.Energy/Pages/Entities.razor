@@ -3,7 +3,9 @@
 @inject AppData AppData
 @inject HttpClient Http
 
-<EntitiesTreeNG @ref="@entitiesTree" ItemChanged="@OnItemChanged" DisplayRefreshButton="true" RootItemId="@rootItemId" />
+<EntitiesTreeNG @ref="@entitiesTree" ItemChanged="@OnItemChanged" DisplayRefreshButton="true" RootItemId="@rootItemId" ItemSelected="@OnItemSelected" />
+
+<BlocksTimeGraphNG Item="@selectedItem"></BlocksTimeGraphNG>
 
 @code {
 
@@ -17,9 +19,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        
-    
-            AppData.RootItemId = "7b27c442-ad40-4679-b6d5-8873d9763996";
+        AppData.RootItemId = "7b27c442-ad40-4679-b6d5-8873d9763996";
             AppData.RootItemName = "network";
             var storeddata = await Http.GetStringAsync("sampledata.json");
             if (storeddata != null)
@@ -37,4 +37,13 @@
     public TreeItem Item { get; set; }
 
     private string? rootItemId;
+
+    private void OnItemSelected(TreeItem item)
+    {
+        Console.WriteLine($"Selected item {item.Name}");
+        selectedItem = item;
+        StateHasChanged();
+    }
+
+    private TreeItem? selectedItem;
 }

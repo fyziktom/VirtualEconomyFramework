@@ -11,7 +11,7 @@
                     <Icon Name="@GetIcon(Item)" />
                 </Div>
                 <Heading Size="HeadingSize.Is5" Margin="Margin.Is0" TextAlignment="TextAlignment.Center" Padding="Padding.Is0">
-                    @Item.Name
+                    <Button Clicked="ItemClicked">@Item.Name</Button>
                 </Heading>
             </Div>
 
@@ -28,7 +28,7 @@
                         <Icon Name="@GetIcon(Item)" />
                     </Div>
                     <Heading Margin="Margin.Is0" Size="HeadingSize.Is5" Padding="Padding.Is2.OnX">
-                        @Item.Name
+                        <Button Clicked="ItemClicked">@Item.Name</Button>
                     </Heading>
 
                 </Div>
@@ -65,8 +65,7 @@
                     <Div Flex="Flex.Row.Wrap.JustifyContent.Center">
                         @foreach (var subItem in children)
                         {
-
-                            <EntitiesTreeNGItem Item="@subItem"></EntitiesTreeNGItem>
+                            <EntitiesTreeNGItem Item="@subItem" ItemSelected="@ItemSelected"></EntitiesTreeNGItem>
                         }
                     </Div>
                 </Accordion>
@@ -82,6 +81,9 @@
 
     [CascadingParameter(Name = "AddDialog")]
     public AddEntityNG AddDialogRef { get; set; }
+    
+    [Parameter]
+    public EventCallback<TreeItem> ItemSelected { get; set; }
 
     private String GetIcon(TreeItem item)
     {
@@ -113,12 +115,18 @@
 
     private void AddConsumerClicked(ConsumerType consumerType)
     {
-        AddDialogRef.AddEntity(ConsumerFactory.GetConsumer(consumerType, "", Item.Id ?? ""));
+        AddDialogRef.AddEntity(ConsumerFactory.GetConsumer(consumerType, "", Item.Id??""));
     }
-
+    
     private void AddProducerClicked(SourceType sourceType)
     {
-        AddDialogRef.AddEntity(SourceFactory.GetSource(sourceType, "", Item.Id ?? ""));
+        AddDialogRef.AddEntity(SourceFactory.GetSource(sourceType, "", Item.Id??""));
+    }
+
+    private async Task ItemClicked()
+    {
+        Console.WriteLine($"Item clicked, event={ItemSelected}");
+        await ItemSelected.InvokeAsync(Item);
     }
 
 }
