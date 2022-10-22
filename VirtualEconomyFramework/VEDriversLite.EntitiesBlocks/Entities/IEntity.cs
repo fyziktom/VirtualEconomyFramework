@@ -84,6 +84,16 @@ namespace VEDriversLite.EntitiesBlocks.Entities
         /// <param name="direction"></param>
         void ChangeAllBlocksDirection(BlockDirection direction, List<string> ids, BlockDirection originalDirection = BlockDirection.Mix);
         /// <summary>
+        /// Change Blocks type all blocks in entity
+        /// </summary>
+        /// <param name="type"></param>
+        void ChangeAllBlocksType(BlockType type, BlockType originalType = BlockType.Simulated);
+        /// <summary>
+        /// Change Blocks type specified blocks in entity
+        /// </summary>
+        /// <param name="type"></param>
+        void ChangeAllBlocksType(BlockType type, List<string> ids, BlockType originalType = BlockType.Simulated);
+        /// <summary>
         /// Change block parameters to the consumer. 
         /// </summary>
         /// <param name="id">Id of the consumer</param>
@@ -109,7 +119,8 @@ namespace VEDriversLite.EntitiesBlocks.Entities
                                     DateTime starttime,
                                     DateTime endtime,
                                     bool takeConsumptionAsInvert = false,
-                                    List<BlockDirection> justThisDirections = null);
+                                    List<BlockDirection> justThisDirections = null,
+                                    List<BlockType> justThisType = null);
 
         /// <summary>
         /// Optimized Get list of the blocks based on setup timespan and step and specific timegrame
@@ -125,7 +136,8 @@ namespace VEDriversLite.EntitiesBlocks.Entities
                                              DateTime starttime,
                                              DateTime endtime,
                                              bool takeConsumptionAsInvert = false,
-                                             List<BlockDirection> justThisDirections = null);
+                                             List<BlockDirection> justThisDirections = null,
+                                             List<BlockType> justThisType = null);
 
         /// <summary>
         /// Get list of the repetitive blocks based on setup timespan and step and specific timegrame
@@ -140,7 +152,8 @@ namespace VEDriversLite.EntitiesBlocks.Entities
                                                       DateTime starttime,
                                                       DateTime endtime,
                                                       bool takeConsumptionAsInvert = false,
-                                                      List<BlockDirection> justThisDirections = null);
+                                                      List<BlockDirection> justThisDirections = null,
+                                                      List<BlockType> justThisType = null);
 
         /// <summary>
         /// Get list of the blocks based on setup timespan and step and specific timegrame and window
@@ -163,7 +176,8 @@ namespace VEDriversLite.EntitiesBlocks.Entities
                                                   DateTime blockwindowendtime,
                                                   bool invertWindow = false,
                                                   bool takeConsumptionAsInvert = false,
-                                                  List<BlockDirection> justThisDirections = null);
+                                                  List<BlockDirection> justThisDirections = null,
+                                                  List<BlockType> justThisType = null);
         /// <summary>
         /// Get total consumption over all blocks
         /// </summary>

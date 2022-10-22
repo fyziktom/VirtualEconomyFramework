@@ -86,6 +86,26 @@ namespace VEDriversLite.EntitiesBlocks.Consumers
             return result;
         }
 
+        public static (List<IBlock>, DataProfile) GetConsumptionBlocksBasedOnTDD(DataProfile tdd, DateTime start, DateTime end, BlockTimeframe timeframe, string parentId)
+        {
+            var data = GetConsumptionBasedOnTDD(tdd, start, end, timeframe);
+            if (data != null)
+            {
+                var list = DataProfileHelpers.ConvertDataProfileToBlocks(data,
+                                                                         BlockDirection.Consumed,
+                                                                         BlockType.Simulated,
+                                                                         parentId,
+                                                                         0,
+                                                                         false,
+                                                                         "",
+                                                                         "",
+                                                                         data.Id).ToList();
+
+                return (list, data);
+            }
+            return (new List<IBlock>(), new DataProfile());
+        }
+
         public static DataProfile GetConsumptionBasedOnTDD(DataProfile tdd, DateTime start, DateTime end, BlockTimeframe timeframe)
         {
             var result = new DataProfile();

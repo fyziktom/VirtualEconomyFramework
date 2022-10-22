@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using VEDriversLite.EntitiesBlocks.Blocks;
+using static System.Reflection.Metadata.BlobBuilder;
 
 namespace VEDriversLite.EntitiesBlocks.Entities
 {
@@ -239,6 +240,28 @@ namespace VEDriversLite.EntitiesBlocks.Entities
                         block.Direction = direction;
         }
 
+        /// <summary>
+        /// Change Blocks type all blocks in entity
+        /// </summary>
+        /// <param name="type"></param>
+        public virtual void ChangeAllBlocksType(BlockType type, BlockType originalType = BlockType.Simulated)
+        {
+            foreach (var block in Blocks.Values)
+                if (block.Type == originalType || originalType == BlockType.Mix)
+                    block.Type = type;
+        }
+        /// <summary>
+        /// Change Blocks type specified blocks in entity
+        /// </summary>
+        /// <param name="type"></param>
+        public virtual void ChangeAllBlocksType(BlockType type, List<string> ids, BlockType originalType = BlockType.Simulated)
+        {
+            foreach (var id in ids)
+                if (Blocks.TryGetValue(id, out var block))
+                    if (block.Type == originalType || originalType == BlockType.Mix)
+                        block.Type = type;
+        }
+
 
         /// <summary>
         /// Get list of the blocks based on setup timespan and step and specific timegrame
@@ -253,7 +276,8 @@ namespace VEDriversLite.EntitiesBlocks.Entities
                                                         DateTime starttime,
                                                         DateTime endtime,
                                                         bool takeConsumptionAsInvert = false,
-                                                        List<BlockDirection> justThisDirections = null)
+                                                        List<BlockDirection> justThisDirections = null,
+                                                        List<BlockType> justThisType = null)
         {
             var result = BlockHelpers.GetResultBlocks(timeframesteps, starttime, endtime, ParentId);
 
@@ -262,9 +286,10 @@ namespace VEDriversLite.EntitiesBlocks.Entities
                                             .OrderBy(b => b.StartTime);
 
             if (justThisDirections != null && justThisDirections.Count > 0)
-            {
                 blocks = blocks.Where(b => justThisDirections.Contains(b.Direction)).OrderBy(b => b.StartTime);
-            }
+            
+            if (justThisType != null && justThisType.Count > 0)
+                blocks = blocks.Where(b => justThisType.Contains(b.Type)).OrderBy(b => b.StartTime);
 
             var counter = 0;
             foreach (var block in blocks)
@@ -317,7 +342,8 @@ namespace VEDriversLite.EntitiesBlocks.Entities
                                                                  DateTime starttime,
                                                                  DateTime endtime,
                                                                  bool takeConsumptionAsInvert = false,
-                                                                 List<BlockDirection> justThisDirections = null)
+                                                                 List<BlockDirection> justThisDirections = null,
+                                                                 List<BlockType> justThisType = null)
         {
             var result = BlockHelpers.GetResultBlocks(timeframesteps, starttime, endtime, ParentId);
 
@@ -326,9 +352,10 @@ namespace VEDriversLite.EntitiesBlocks.Entities
                                             .OrderBy(b => b.StartTime);
 
             if (justThisDirections != null && justThisDirections.Count > 0)
-            {
                 blocks = blocks.Where(b => justThisDirections.Contains(b.Direction)).OrderBy(b => b.StartTime);
-            }
+
+            if (justThisType != null && justThisType.Count > 0)
+                blocks = blocks.Where(b => justThisType.Contains(b.Type)).OrderBy(b => b.StartTime);
 
             var repblocksresult = GetSummedValuesOfRepetitiveBlocks(timeframesteps, starttime, endtime, takeConsumptionAsInvert);
 
@@ -391,7 +418,8 @@ namespace VEDriversLite.EntitiesBlocks.Entities
                                                                           DateTime starttime,
                                                                           DateTime endtime,
                                                                           bool takeConsumptionAsInvert = false,
-                                                                          List<BlockDirection> justThisDirections = null)
+                                                                          List<BlockDirection> justThisDirections = null,
+                                                                          List<BlockType> justThisType = null)
         {
             var result = BlockHelpers.GetResultBlocks(timeframesteps, starttime, endtime, ParentId);
 
@@ -401,9 +429,10 @@ namespace VEDriversLite.EntitiesBlocks.Entities
                                                              .OrderBy(b => b.StartTime);
 
             if (justThisDirections != null && justThisDirections.Count > 0)
-            {
                 repetitiveBlocksSources = repetitiveBlocksSources.Where(b => justThisDirections.Contains(b.Direction)).OrderBy(b => b.StartTime);
-            }
+            
+            if (justThisType != null && justThisType.Count > 0)
+                repetitiveBlocksSources = repetitiveBlocksSources.Where(b => justThisType.Contains(b.Type)).OrderBy(b => b.StartTime);
 
             foreach (var block in repetitiveBlocksSources)
             {
@@ -531,11 +560,12 @@ namespace VEDriversLite.EntitiesBlocks.Entities
                                                                       DateTime blockwindowendtime,
                                                                       bool invertWindow = false,
                                                                       bool takeConsumptionAsInvert = false,
-                                                                      List<BlockDirection> justThisDirections = null)
+                                                                      List<BlockDirection> justThisDirections = null,
+                                                                      List<BlockType> justThisType = null)
         {
             var result = BlockHelpers.GetResultBlocks(timeframesteps, starttime, endtime, ParentId);
 
-            var input = GetSummedValuesOptimized(BlockTimeframe.Hour, starttime, endtime, takeConsumptionAsInvert, justThisDirections);
+            var input = GetSummedValuesOptimized(BlockTimeframe.Hour, starttime, endtime, takeConsumptionAsInvert, justThisDirections, justThisType);
             if (input == null)
                 return new List<IBlock>();
             if (input.Count == 0)

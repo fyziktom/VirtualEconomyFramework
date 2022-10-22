@@ -22,7 +22,15 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
     {
         Simulated,
         Calculated,
-        Real
+        Real,
+        Record,
+        Forwarded,
+        Over,
+        Received,
+        Sold,
+        Bought,
+        Rent,
+        Mix
     }
     public enum BlockDirection
     {

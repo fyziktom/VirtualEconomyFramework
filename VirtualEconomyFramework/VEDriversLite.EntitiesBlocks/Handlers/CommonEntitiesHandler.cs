@@ -470,14 +470,14 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
         /// <param name="type">type of Block</param>
         /// <returns></returns>
         public virtual (bool, string) ChangEntityBlockParameters(string id,
-                                                         string blockId,
-                                                         string name = null,
-                                                         string description = null,
-                                                         BlockType? type = null,
-                                                         double? amount = null,
-                                                         BlockDirection? direction = null,
-                                                         DateTime? startTime = null,
-                                                         TimeSpan? timeframe = null)
+                                                                 string blockId,
+                                                                 string name = null,
+                                                                 string description = null,
+                                                                 BlockType? type = null,
+                                                                 double? amount = null,
+                                                                 BlockDirection? direction = null,
+                                                                 DateTime? startTime = null,
+                                                                 TimeSpan? timeframe = null)
         {
             if (string.IsNullOrEmpty(id))
                 return (false, "Cannot change blocks to the consumer. Consumer id cannot be empty.");
@@ -612,7 +612,8 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
                                                                 DateTime endtime, 
                                                                 bool withSubConsumers = true, 
                                                                 bool takeConsumptionAsInvert = false,
-                                                                List<BlockDirection> justThisDirections = null)
+                                                                List<BlockDirection> justThisDirections = null,
+                                                                List < BlockType > justThisType = null)
         {
 
             if (string.IsNullOrEmpty(entityId))
@@ -620,7 +621,7 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
 
             if (Entities.TryGetValue(entityId, out var entity))
             {
-                var mainres = entity.GetSummedValuesOptimized(timeframesteps, starttime, endtime, takeConsumptionAsInvert, justThisDirections);
+                var mainres = entity.GetSummedValuesOptimized(timeframesteps, starttime, endtime, takeConsumptionAsInvert, justThisDirections, justThisType);
 
                 if (withSubConsumers && mainres != null)
                 {
@@ -649,7 +650,7 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
                         }
                     }
 
-                    var re = tmpEntity.GetSummedValuesOptimized(timeframesteps, starttime, endtime, takeConsumptionAsInvert, justThisDirections);
+                    var re = tmpEntity.GetSummedValuesOptimized(timeframesteps, starttime, endtime, takeConsumptionAsInvert, justThisDirections, justThisType);
                     if (re != null)
                     {
                         foreach(var block in re.Where(r => r.Amount > 0 || r.Amount < 0))
@@ -731,7 +732,8 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
                                                                           bool invertWindow = false,
                                                                           bool withSubConsumers = true, 
                                                                           bool takeConsumptionAsInvert = false,
-                                                                          List<BlockDirection> justThisDirections = null)
+                                                                          List<BlockDirection> justThisDirections = null,
+                                                                          List<BlockType> justThisType = null)
         {
 
             if (string.IsNullOrEmpty(entityId))
@@ -746,7 +748,8 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
                                                                   blockwindowendtime, 
                                                                   invertWindow, 
                                                                   takeConsumptionAsInvert, 
-                                                                  justThisDirections);
+                                                                  justThisDirections,
+                                                                  justThisType);
 
                 if (withSubConsumers && mainres != null)
                 {
@@ -783,7 +786,8 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
                                                                     blockwindowendtime,
                                                                     invertWindow,
                                                                     takeConsumptionAsInvert, 
-                                                                    justThisDirections);
+                                                                    justThisDirections,
+                                                                    justThisType);
                     if (re != null)
                     {
                         foreach (var block in re.Where(r => r.Amount > 0 || r.Amount < 0))
@@ -959,6 +963,29 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
                     entity.ChangeAllBlocksDirection(direction, originalDirection);
                 else 
                     entity.ChangeAllBlocksDirection(direction, ids, originalDirection);
+            }
+        }
+        /// <summary>
+        /// Change Blocks type all blocks in entity
+        /// </summary>
+        /// <param name="type"></param>
+        public virtual void ChangeAllBlocksType(string id, BlockType type, BlockType originalType = BlockType.Simulated)
+        {
+            if (Entities.TryGetValue(id, out var entity))
+                entity.ChangeAllBlocksType(type, originalType);
+        }
+        /// <summary>
+        /// Change Blocks type specified blocks in entity
+        /// </summary>
+        /// <param name="type"></param>
+        public virtual void ChangeAllBlocksType(string id, BlockType type, List<string> ids, BlockType originalType = BlockType.Simulated)
+        {
+            if (Entities.TryGetValue(id, out var entity))
+            {
+                if (ids == null)
+                    entity.ChangeAllBlocksType(type, originalType);
+                else
+                    entity.ChangeAllBlocksType(type, ids, originalType);
             }
         }
 
