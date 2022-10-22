@@ -11,7 +11,26 @@ h1:focus {
 a, .btn-link {
     color: #0071c1;
 }
+.blocks-graph .row>*{
+    padding: 0;
+}
+.blocks-graph  * {
+   border-radius: 0;
+}
+.blocks-graph .row {
+    padding: 0;
+    margin: 0
+}
 
+.blocks-graph .line {
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    width: 3px;
+    border-right: 1px #888 dashed;
+    background-color: transparent;
+}
 .card-body-wrapper .card-body {
     padding: 0;
 }

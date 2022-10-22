@@ -7,53 +7,49 @@
                 <CardTitle>Battery Storage - @Name</CardTitle>
             </Column>
             <Column>
-                <AddBatteryBlock @ref=addBatteryBlockModal 
+                <AddBatteryBlock @ref=addBatteryBlockModal
                                  Battery="@getBlock()"
-                                 WithButton="true" 
+                                 WithButton="true"
                                  BlockButton="false"
-                                 FloatButton="Float.End" 
-                                 WithButtonIcon="true" 
+                                 FloatButton="Float.End"
+                                 WithButtonIcon="true"
                                  WithButtonText="false"
-                                 Added="@onBatteryBlockAdded"/>
+                                 Added="@onBatteryBlockAdded" />
             </Column>
         </Row>
     </CardHeader>
-    <CardBody>
-    @if (BatteryBlocks != null)
-    {
-        <Row>
-            <Column>
-                <Table>
-                    <TableHeader>
-                        <TableHeaderCell>Name</TableHeaderCell>
-                        <TableHeaderCell>Capacity</TableHeaderCell>
-                        <TableHeaderCell>MaxCharge</TableHeaderCell>
-                        <TableHeaderCell>MaxDischarge</TableHeaderCell>
-                        <TableHeaderCell>Action</TableHeaderCell>
-                    </TableHeader>
-                    <TableBody>
-                        @foreach (var bblock in BatteryBlocks)
-                        {
-                            <TableRow>
-                                <TableRowCell>@bblock.Name</TableRowCell>
-                                <TableRowCell>@bblock.Capacity</TableRowCell>
-                                <TableRowCell>@bblock.MaximumChargePower </TableRowCell>
-                                <TableRowCell>@bblock.MaximumDischargePower</TableRowCell>
-                                <TableRowCell>
-                                    <RemoveBatteryBlock Battery="@bblock"
-                                                        Removed="@onRemovedBatteryBlock"
-                                                        WithButton="true"
-                                                        WithButtonText="false" 
-                                                        WithButtonIcon="true" 
-                                                        FloatButton="Float.End"/>
-                                </TableRowCell>
-                            </TableRow>
-                        }
-                    </TableBody>
-                </Table>
-            </Column>
-        </Row>
-    }
+    <CardBody Padding="Padding.Is0" Overflow="Overflow.Auto">
+        @if (BatteryBlocks != null)
+        {
+            <Table>
+                <TableHeader>
+                    <TableHeaderCell>Name</TableHeaderCell>
+                    <TableHeaderCell>Capacity</TableHeaderCell>
+                    <TableHeaderCell>MaxCharge</TableHeaderCell>
+                    <TableHeaderCell>MaxDischarge</TableHeaderCell>
+                    <TableHeaderCell>Action</TableHeaderCell>
+                </TableHeader>
+                <TableBody>
+                    @foreach (var bblock in BatteryBlocks)
+                    {
+                        <TableRow>
+                            <TableRowCell>@bblock.Name</TableRowCell>
+                            <TableRowCell>@bblock.Capacity</TableRowCell>
+                            <TableRowCell>@bblock.MaximumChargePower </TableRowCell>
+                            <TableRowCell>@bblock.MaximumDischargePower</TableRowCell>
+                            <TableRowCell>
+                                <RemoveBatteryBlock Battery="@bblock"
+                                            Removed="@onRemovedBatteryBlock"
+                                            WithButton="true"
+                                            WithButtonText="false"
+                                            WithButtonIcon="true"
+                                            FloatButton="Float.End" />
+                            </TableRowCell>
+                        </TableRow>
+                    }
+                </TableBody>
+            </Table>
+        }
     </CardBody>
 </Card>
 

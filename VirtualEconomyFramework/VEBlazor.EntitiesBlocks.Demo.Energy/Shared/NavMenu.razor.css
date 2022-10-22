@@ -1,5 +1,5 @@
 .navbar-toggler {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: #261B62;
 }
 
 .top-row {
@@ -16,6 +16,18 @@
     font-size: 1.1rem;
     vertical-align: text-top;
     top: -2px;
+}
+
+.logo img {
+    width: 100%
+}
+
+.logo {
+    max-width: 50px
+}
+
+.navbar {
+    background-color: #fff;
 }
 
 .nav-item {
@@ -40,17 +52,22 @@
         line-height: 3rem;
     }
 
-.nav-item ::deep a.active {
-    background-color: rgba(255,255,255,0.25);
-    color: white;
-}
+        .nav-item ::deep a.active {
+            background-color: rgba(255,255,255,0.25);
+            color: white;
+        }
 
-.nav-item ::deep a:hover {
-    background-color: rgba(255,255,255,0.1);
-    color: white;
-}
+        .nav-item ::deep a:hover {
+            background-color: rgba(255,255,255,0.1);
+            color: white;
+        }
 
-@media (min-width: 641px) {
+@media (min-width: 1024px) {
+
+    .logo {
+        max-width: 80px
+    }
+
     .navbar-toggler {
         display: none;
     }

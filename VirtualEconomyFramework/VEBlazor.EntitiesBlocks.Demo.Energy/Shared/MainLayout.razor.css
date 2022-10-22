@@ -2,7 +2,6 @@
     position: relative;
     display: flex;
     flex-direction: column;
-
 }
 
 main {
@@ -10,7 +9,7 @@ main {
 }
 
 .sidebar {
-    background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
+    color: #000;
 }
 
 .top-row {
@@ -28,16 +27,16 @@ main {
         text-decoration: none;
     }
 
-    .top-row ::deep a:hover, .top-row ::deep .btn-link:hover {
-        text-decoration: underline;
-    }
+        .top-row ::deep a:hover, .top-row ::deep .btn-link:hover {
+            text-decoration: underline;
+        }
 
-    .top-row ::deep a:first-child {
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
+        .top-row ::deep a:first-child {
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
 
-@media (max-width: 640.98px) {
+@media (max-width: 1023.98px) {
     .top-row:not(.auth) {
         display: none;
     }
@@ -51,13 +50,15 @@ main {
     }
 }
 
-@media (min-width: 641px) {
+@media (min-width: 1024px) {
     .page {
         flex-direction: row;
     }
-    main{
+
+    main {
         width: 80%;
     }
+
     .sidebar {
         width: 250px;
         width: 20%;
@@ -72,11 +73,11 @@ main {
         z-index: 1;
     }
 
-    .top-row.auth ::deep a:first-child {
-        flex: 1;
-        text-align: right;
-        width: 0;
-    }
+        .top-row.auth ::deep a:first-child {
+            flex: 1;
+            text-align: right;
+            width: 0;
+        }
 
     .top-row, article {
         padding-left: 2rem !important;

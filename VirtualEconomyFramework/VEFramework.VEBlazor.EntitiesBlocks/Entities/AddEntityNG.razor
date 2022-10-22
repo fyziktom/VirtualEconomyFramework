@@ -1,0 +1,136 @@
+﻿@using System.Text.Json
+@inherits EntitiesBlocksComponentBase
+@inject AppData AppData
+
+<Modal @ref="AddEntityModal">
+    <ModalContent Centered Size="ModalSize.Small">
+        <ModalHeader>
+            <ModalTitle>
+                @{
+                    var operationString = entityChange ? "Upravit" : "Přidat";
+                    var entityString = entity switch 
+                    {
+                        ISource {SourceType: SourceType.Battery} source => "baterii",
+                        ISource {SourceType: SourceType.PVE} source => "FVE",
+                        IConsumer {ConsumerType: ConsumerType.DevicesGroup} consumer => "bytový dům",
+                        IConsumer {ConsumerType: ConsumerType.Device} consumer => "bytovou jednotku",
+                        _ => ""
+                        };
+                }
+                @($"{operationString} {entityString}")
+            </ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            @if (entity != null && entity.ParentId != null)
+            {
+                <Row>
+                    <Column>
+                        <Field>
+                            <FieldLabel>Name</FieldLabel>
+                            <TextEdit Placeholder="Název" @bind-Text="@entity.Name" />
+                        </Field>
+                        <Field>
+                            <FieldLabel>Description</FieldLabel>
+                            <TextEdit Placeholder="Popis" @bind-Text="@entity.Description" />
+                        </Field>
+                    </Column>
+                </Row>
+                <Row>
+                    <Column>
+                        @if (entityChange)
+                        {
+                            <Button Color="Color.Primary" Outline Clicked="@changeEntity">Uložit změny</Button>
+                        }
+                        else
+                        {
+                            <Button Color="Color.Primary" Outline Clicked="@addEntity">Uložit</Button>
+                        }
+                    </Column>
+                </Row>
+            }
+            else
+            {
+                <Row>
+                    <Column>
+                        <Span>Please select the Entity to add new entity. Click to entity in the Tree.</Span>
+                    </Column>
+                </Row>
+            }
+        </ModalBody>
+    </ModalContent>
+</Modal>
+
+@code {
+
+    Modal? AddEntityModal;
+    bool entityChange = false;
+    IEntity entity = new BaseEntity();
+
+    [Inject] INotificationService NotificationService { get; set; }
+
+    public async Task LoadEntity(IEntity input)
+    {
+        if (input != null)
+            entity = input;
+        if (AddEntityModal != null)
+            await AddEntityModal.Show();
+        entityChange = true;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public void AddEntity(IEntity entity)
+    {
+        this.entity = entity;
+        AddEntityModal?.Show();
+    }
+
+    private async Task openAddEntity()
+    {
+        if (AddEntityModal != null)
+        {
+            entityChange = false;
+            await AddEntityModal.Show();
+        }
+    }
+
+    private async Task onTypeChanged(EntityType e)
+    {
+        if (e == EntityType.Source && !(entity is ISource))
+        {
+            var source = SourceFactory.GetSource(SourceType.PVE, entity.Name, entity.ParentId, entity.Id);
+            entity = source;
+        }
+        else if (e == EntityType.Consumer && !(entity is IConsumer))
+        {
+            var consumer = ConsumerFactory.GetConsumer(ConsumerType.Device, entity.Name, entity.ParentId, entity.Id);
+            entity = consumer;
+        }
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task addEntity()
+    {
+            Console.WriteLine("Adding new entity");
+            if (string.IsNullOrEmpty(entity.Name))
+            {
+                await NotificationService.Error("Není zadán název", "Chyba");
+                return;
+            }
+
+            var (r, message) = AppData.EntitiesHandler.AddEntity(entity, entity.Name, entity.ParentId);
+        
+            Console.WriteLine(r);
+            Console.WriteLine(string.Format(message.Item1, message.Item2));
+
+            if (AddEntityModal != null)
+                await AddEntityModal.Hide();
+            await ItemChanged.InvokeAsync(Item);
+       
+    }
+
+    async Task changeEntity()
+    {
+
+    }
+}
