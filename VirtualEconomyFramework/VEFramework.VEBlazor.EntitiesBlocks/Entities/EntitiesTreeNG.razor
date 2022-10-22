@@ -4,36 +4,24 @@
 
 @if (Item != null)
 {
-   <Card Margin="Margin.Is2.FromTop">
-        <CardHeader>
-            <Row>
-                <Column>
-                    <Span>Komunitní strom</Span>
-                </Column>
-            </Row>
-        </CardHeader>
-        <CardBody Margin="Margin.Is2.FromTop">
-            
-            <Row Margin="Margin.Is2.FromTop">
-                <Column>
-                    @if (Tree != null)
-                    {
-                        <CascadingValue Value="@addDialog" Name="AddDialog">
-                            <Accordion>
-                                @foreach (var item in Tree.GetChilds())
-                                {
-                                    <EntitiesTreeNGItem Item="@item"></EntitiesTreeNGItem>
-                                }
-                            </Accordion>
-                        </CascadingValue>
-                    }
-                </Column>
-            </Row>
-        </CardBody>
-    </Card>
+    <Row Margin="Margin.Is2.FromTop">
+        <Column>
+            @if (Tree != null)
+            {
+                <CascadingValue Value="@addDialog" Name="AddDialog">
+                    <Accordion>
+                        @foreach (var item in Tree.GetChilds())
+                        {
+                            <EntitiesTreeNGItem Item="@item"></EntitiesTreeNGItem>
+                        }
+                    </Accordion>
+                </CascadingValue>
+            }
+        </Column>
+    </Row>
 }
 
-<AddEntityNG @ref="@addDialog" ItemChanged="@OnChanged" ></AddEntityNG>
+<AddEntityNG @ref="@addDialog" ItemChanged="@OnChanged"></AddEntityNG>
 
 @code {
     [Parameter]
@@ -41,10 +29,10 @@
 
     [Parameter]
     public bool DisplayRefreshButton { get; set; } = false;
-    
+
     [Parameter]
     public string? RootItemId { get; set; }
-    
+
 
     IList<TreeItem> ExpandedNodes = new List<TreeItem>();
 
@@ -63,7 +51,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        
+
         await base.OnInitializedAsync();
     }
 
@@ -130,8 +118,8 @@
 
     private async Task OnChanged()
     {
-       Console.WriteLine("Item changed");
-       await LoadData(rootItemId);
+        Console.WriteLine("Item changed");
+        await LoadData(rootItemId);
     }
 
 }

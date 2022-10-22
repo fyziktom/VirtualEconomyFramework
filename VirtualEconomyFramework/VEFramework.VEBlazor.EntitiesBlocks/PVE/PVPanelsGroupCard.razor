@@ -20,11 +20,9 @@
             </Column>
         </Row>
     </CardHeader>
-    <CardBody>
+    <CardBody Overflow="Overflow.Auto" Padding="Padding.Is0">
     @if (Panels != null)
     {
-        <Row>
-            <Column>
                 <Table>
                     <TableHeader>
                         <TableHeaderCell>Name</TableHeaderCell>
@@ -57,8 +55,6 @@
                         }
                     </TableBody>
                 </Table>
-            </Column>
-        </Row>
     }
     </CardBody>
 </Card>

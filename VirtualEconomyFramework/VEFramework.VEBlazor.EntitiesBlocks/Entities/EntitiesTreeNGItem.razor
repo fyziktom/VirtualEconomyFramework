@@ -4,29 +4,36 @@
     if (!children.Any())
     {
 
-    <Div Flex="Flex.JustifyContent.Center.AlignItems.Center">
-                <Heading Size="HeadingSize.Is5" Margin="Margin.Is0" TextAlignment="TextAlignment.Center" Padding="Padding.Is1.OnY.Is2.OnX">
-                    @Item.Name
-                </Heading>
+        <Div Flex="Flex.JustifyContent.Center.AlignItems.Center" Margin="Margin.Is3.FromBottom.Is3.OnX">
 
-                <Div Margin="Margin.Is3.FromEnd">
+            <Div Flex="Flex.AlignItems.Center">
+                <Div Margin="Margin.Is2.FromEnd" Style="width: 20px">
                     <Icon Name="@GetIcon(Item)" />
                 </Div>
-    </Div>
+                <Heading Size="HeadingSize.Is5" Margin="Margin.Is0" TextAlignment="TextAlignment.Center" Padding="Padding.Is0">
+                    @Item.Name
+                </Heading>
+            </Div>
+
+
+        </Div>
     }
     else
     {
-    <Collapse Visible="@isExpanded" Overflow="Overflow.Visible">
-                <CollapseHeader Flex="Flex.JustifyContent.Center.AlignItems.Center">
+        <Collapse Visible="@isExpanded" Overflow="Overflow.Visible" Width="Width.Is100" Flex="Flex.Column.Order.Is10">
+            <CollapseHeader Flex="Flex.JustifyContent.Center.AlignItems.Center" Background="Background.Transparent">
+
+                <Div Width="Width.Is25" Flex="Flex.AlignItems.Center">
+                    <Div Style="width: 20px">
+                        <Icon Name="@GetIcon(Item)" />
+                    </Div>
                     <Heading Margin="Margin.Is0" Size="HeadingSize.Is5" Padding="Padding.Is2.OnX">
                         @Item.Name
                     </Heading>
 
-                    <Div Margin="Margin.Is3.FromEnd">
-                        <Icon Name="@GetIcon(Item)" />
-                    </Div>
-
-                    <Button Clicked="@(()=>isExpanded = !isExpanded)">
+                </Div>
+                <Div Margin="Margin.IsAuto.FromStart" Flex="Flex.AlignItems.Center">
+                    <Button Clicked="@(()=>isExpanded = !isExpanded)" Margin="Margin.Is1.OnX">
                         <Icon Name="@("fa-chevron-down")" />
                     </Button>
 
@@ -39,7 +46,7 @@
                         <CollapseBody Class="card-body-wrapper" Position="Position.Absolute.Top.Is100.Start.Is50.Translate.MiddleX" Padding="Padding.Is0" Style="z-index: 20;">
                             <Buttons Padding="Padding.Is0" Background="Background.White">
                                 <Button Color="Color.Dark" Outline Clicked="@(()=>AddConsumerClicked(ConsumerType.Device))"> <Icon Name="@("fa-table")" /></Button>
-                                <Button Color="Color.Dark" Outline  Clicked="@(()=>AddProducerClicked(SourceType.PVE))"> <Icon Name="@("fa-solar-panel")" /></Button>
+                                <Button Color="Color.Dark" Outline Clicked="@(()=>AddProducerClicked(SourceType.PVE))"> <Icon Name="@("fa-solar-panel")" /></Button>
                                 @* <Button Color="Color.Dark" Outline  Clicked="@(()=>AddProducerClicked(SourceType.PVE))" Flex="Flex.AlignItems.Center.JustifyContent.Center.Wrap"> *@
                                 @*   <Div Border="Border.Is2.Dark" Padding="Padding.Is1"> *@
                                 @*         <Icon Name="@("fa-solar-panel")" /> *@
@@ -50,18 +57,21 @@
                             </Buttons>
                         </CollapseBody>
                     </Collapse>
+                </Div>
 
-                </CollapseHeader>
-                <CollapseBody>
-                    <Accordion>
+            </CollapseHeader>
+            <CollapseBody>
+                <Accordion>
+                    <Div Flex="Flex.Row.Wrap.JustifyContent.Center">
                         @foreach (var subItem in children)
-                    {
+                        {
 
                             <EntitiesTreeNGItem Item="@subItem"></EntitiesTreeNGItem>
-                    }
-                    </Accordion>
-                </CollapseBody>
-    </Collapse>
+                        }
+                    </Div>
+                </Accordion>
+            </CollapseBody>
+        </Collapse>
     }
 }
 
@@ -103,12 +113,12 @@
 
     private void AddConsumerClicked(ConsumerType consumerType)
     {
-        AddDialogRef.AddEntity(ConsumerFactory.GetConsumer(consumerType, "", Item.Id??""));
+        AddDialogRef.AddEntity(ConsumerFactory.GetConsumer(consumerType, "", Item.Id ?? ""));
     }
-    
+
     private void AddProducerClicked(SourceType sourceType)
     {
-        AddDialogRef.AddEntity(SourceFactory.GetSource(sourceType, "", Item.Id??""));
+        AddDialogRef.AddEntity(SourceFactory.GetSource(sourceType, "", Item.Id ?? ""));
     }
 
 }
