@@ -72,16 +72,19 @@
                                     </TableRowCell>
                                     <TableRowCell TextAlignment="TextAlignment.Center">
                                         <Div Style="width: 100px;" Margin="Margin.IsAuto">
-                                            <Field Margin="Margin.Is0">
-                                                <Addons>
-                                                    <Addon AddonType="AddonType.Body">
-                                                        <TextEdit />
-                                                    </Addon>
-                                                    <Addon AddonType="AddonType.End">
-                                                        <AddonLabel>%</AddonLabel>
-                                                    </Addon>
-                                                </Addons>
-                                            </Field>
+                                            @if (entity.Entity is IConsumer {ConsumerType: ConsumerType.Device } && !entity.HasChildren)
+                                            {
+                                                <Field Margin="Margin.Is0">
+                                                    <Addons>
+                                                        <Addon AddonType="AddonType.Body">
+                                                            <TextEdit/>
+                                                        </Addon>
+                                                        <Addon AddonType="AddonType.End">
+                                                            <AddonLabel>%</AddonLabel>
+                                                        </Addon>
+                                                    </Addons>
+                                                </Field>
+                                            }
                                         </Div>
                                     </TableRowCell>
                                     <TableRowCell>1000Kč</TableRowCell>
@@ -134,13 +137,22 @@
                 leading.AllocationKey = 0;
             }
         }
+        if (item.Entity is IConsumer)
+        {
+            var parent = CalculationEntities.FirstOrDefault(e => e.Entity.Id == item.Entity.ParentId);
+            if (parent is not null)
+            {
+                parent.HasChildren = true;
+            }
+        }
         
         CalculationEntities.Add(new CalculationEntity
         {
             Name = item.Name,
             Icon = GetIcon(item),
             Depth = depth,
-            Entity = item.Entity
+            Entity = item.Entity,
+            
         });
 
         var children = item.GetChilds();
@@ -165,12 +177,17 @@
         }
         else if (item.Entity is IConsumer consumerItem)
         {
+            if (consumerItem.ConsumerType == ConsumerType.Device && item.GetChilds().Any())
+            {
+                consumerItem.ConsumerType = ConsumerType.GroupNetwork;
+            }
             switch (consumerItem.ConsumerType)
             {
                 case ConsumerType.GroupNetwork: return "fa-city";
                 case ConsumerType.DevicesGroup: return "fa-building";
                 case ConsumerType.Device: return "fa-table";
             }
+            
         }
         return "fa-diamond";
     }
@@ -189,6 +206,7 @@
         public double ResultCostsBefore { get; set; }
         public double ResultCostsAfter { get; set; }
         public double AllocationKey { get; set; }
+        public bool HasChildren { get; set; }
     }
 
     private void SetEntitySelected(CalculationEntity item, bool b)
