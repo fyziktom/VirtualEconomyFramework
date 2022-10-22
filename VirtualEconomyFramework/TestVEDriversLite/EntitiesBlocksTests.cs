@@ -207,8 +207,8 @@ namespace TestVEDriversLite
                             var firstmeasuredspotPhase1 = GetEntityBalanceBlocksAfterAlocationOfPVEBlocks(firstmeasurespot, eGrid, dtmp);
 
                             // change temporary blocks from pvesource and firstmeasurespot device to "Records" direction - not used in calcs
-                            eGrid.ChangeAllEntityBlocksDirection(firstmeasurespotDevice.Id, BlockDirection.ConsumedRecord, BlockDirection.Consumed);
-                            eGrid.ChangeAllEntityBlocksDirection(pvesource.Id, BlockDirection.CreatedRecord, BlockDirection.Created);
+                            eGrid.ChangeAllBlocksType(firstmeasurespotDevice.Id, BlockType.Record, BlockType.Simulated);
+                            eGrid.ChangeAllBlocksType(pvesource.Id, BlockType.Record, BlockType.Simulated);
 
                             // add day consumption blocks to the device in Frist Measure Spot entity after the consumption is covered by PVE in first entity
                             eGrid.AddBlocksToEntity(firstmeasurespotDevice.Id, firstmeasuredspotPhase1.Item2);
@@ -242,6 +242,7 @@ namespace TestVEDriversLite
                                                                                          dtmp,
                                                                                          dtmp.AddDays(1),
                                                                                          BlockTimeframe.Hour);
+
                             // convert consumption by TDD dataprofile to blocks
                             var consumptionblocks2 = DataProfileHelpers.ConvertDataProfileToBlocks(consumption,
                                                                                                    BlockDirection.Consumed,
@@ -262,16 +263,16 @@ namespace TestVEDriversLite
 
                             var devicePhase2 = GetEntityBalanceBlocksAfterAlocationOfPVEBlocks(device, eGrid, dtmp);
                             // change temporary blocks in device to "Records" direction - not used in calcs
-                            eGrid.ChangeAllEntityBlocksDirection(device.Id, BlockDirection.ConsumedRecord, BlockDirection.Consumed);
-                            eGrid.ChangeAllEntityBlocksDirection(device.Id, BlockDirection.CreatedRecord, BlockDirection.Created);
+                            eGrid.ChangeAllBlocksType(device.Id, BlockType.Record, BlockType.Simulated);
+                            eGrid.ChangeAllBlocksType(device.Id, BlockType.Record, BlockType.Simulated);
                             eGrid.AddBlocksToEntity(device.Id, devicePhase2.Item2);
                             // add rest of PVE production after consumption to network
                             eGrid.AddBlocksToEntity(network.Id, devicePhase2.Item1);
 
                             var device3Phase2 = GetEntityBalanceBlocksAfterAlocationOfPVEBlocks(device3, eGrid, dtmp);
                             // change temporary blocks in device to "Records" direction - not used in calcs
-                            eGrid.ChangeAllEntityBlocksDirection(device3.Id, BlockDirection.ConsumedRecord, BlockDirection.Consumed);
-                            eGrid.ChangeAllEntityBlocksDirection(device3.Id, BlockDirection.CreatedRecord, BlockDirection.Created);
+                            eGrid.ChangeAllBlocksType(device3.Id, BlockType.Record, BlockType.Simulated);
+                            eGrid.ChangeAllBlocksType(device3.Id, BlockType.Record, BlockType.Simulated);
                             eGrid.AddBlocksToEntity(device3.Id, device3Phase2.Item2);
                             // add rest of PVE production after consumption to network
                             eGrid.AddBlocksToEntity(network.Id, device3Phase2.Item1);
@@ -286,7 +287,8 @@ namespace TestVEDriversLite
                                                                                 dtmp.AddDays(1),
                                                                                 true,
                                                                                 true,
-                                                                                new List<BlockDirection>() { BlockDirection.Created });
+                                                                                new List<BlockDirection>() { BlockDirection.Created },
+                                                                                new List<BlockType>() { BlockType.Simulated, BlockType.Calculated, BlockType.Real });
 
                             var productionPhase3Profile = DataProfileHelpers.ConvertBlocksToDataProfile(productionPhase3);
 
@@ -297,7 +299,8 @@ namespace TestVEDriversLite
                                                                                  dtmp.AddDays(1),
                                                                                  true,
                                                                                  true,
-                                                                                 new List<BlockDirection>() { BlockDirection.Consumed });
+                                                                                 new List<BlockDirection>() { BlockDirection.Consumed },
+                                                                                 new List<BlockType>() { BlockType.Simulated, BlockType.Calculated, BlockType.Real });
 
                             var consumptionPhase3Profile = DataProfileHelpers.ConvertBlocksToDataProfile(consumptionPhase3);
 
@@ -345,7 +348,8 @@ namespace TestVEDriversLite
                                                                             dtmp.AddDays(1),
                                                                             true,
                                                                             true,
-                                                                            new List<BlockDirection>() { BlockDirection.Created, BlockDirection.Consumed });
+                                                                            new List<BlockDirection>() { BlockDirection.Created, BlockDirection.Consumed },
+                                                                            new List<BlockType>() { BlockType.Simulated, BlockType.Calculated, BlockType.Real });
 
                                     // get consumption of the whole network in the day in window of Day Tariff
                                     var netwDT = eGrid.GetConsumptionOfEntityWithWindow(network.Id,
@@ -369,7 +373,8 @@ namespace TestVEDriversLite
                                                                                         true,
                                                                                         true,
                                                                                         true,
-                                                                                        new List<BlockDirection>() { BlockDirection.Created, BlockDirection.Consumed });
+                                                                                        new List<BlockDirection>() { BlockDirection.Created, BlockDirection.Consumed },
+                                                                                        new List<BlockType>() { BlockType.Simulated, BlockType.Calculated, BlockType.Real });
 
                                     ////////////// whole day stats
                                     // total needed from Day tariff
@@ -475,7 +480,8 @@ namespace TestVEDriversLite
                                                     dtmp.AddDays(1),
                                                     true,
                                                     true,
-                                                    new List<BlockDirection>() { BlockDirection.Created, BlockDirection.Consumed });
+                                                    new List<BlockDirection>() { BlockDirection.Created, BlockDirection.Consumed },
+                                                    new List<BlockType>() { BlockType.Simulated, BlockType.Calculated, BlockType.Real });
 
             var consprof = DataProfileHelpers.ConvertBlocksToDataProfile(cons);
             // get production after some part was consumed with sun-day consumption

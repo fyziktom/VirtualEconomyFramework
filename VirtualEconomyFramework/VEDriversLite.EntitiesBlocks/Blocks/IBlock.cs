@@ -37,10 +37,7 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
         Created,
         Stored,
         Consumed,
-        Mix,
-        CreatedRecord,
-        ConsumedRecord,
-        StoredRecord
+        Mix
     }
     public interface IBlock
     {
