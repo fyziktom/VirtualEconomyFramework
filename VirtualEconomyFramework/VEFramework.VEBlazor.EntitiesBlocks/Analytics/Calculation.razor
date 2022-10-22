@@ -33,12 +33,12 @@
             </Field>
         </Row>
         <Row>
-            <Table Hoverable>
+            <Table Hoverable Class="entities-table">
                 <TableHeader>
                     <TableRow>
                         <TableHeaderCell>Místa</TableHeaderCell>
-                        <TableHeaderCell>Povoleno</TableHeaderCell>
-                        <TableHeaderCell>AK</TableHeaderCell>
+                        <TableHeaderCell TextAlignment="TextAlignment.Center">Povoleno</TableHeaderCell>
+                        <TableHeaderCell TextAlignment="TextAlignment.Center">AK</TableHeaderCell>
                         <TableHeaderCell>Bilance</TableHeaderCell>
                     </TableRow>
                 </TableHeader>
@@ -48,32 +48,33 @@
                         @foreach (var entity in CalculationEntities)
                         {
                             <TableRow>
-                            <TableRowCell>
-                            
-                                    <Span style="@($"padding-left: {entity.Depth}rem")"></Span>
-                                    @if (entity.IsLeading)
-                                    {
-                                        <Span Padding="Padding.Is1" Background="Background.Info">
-                                            <Icon Name="@(entity.Icon)"/>
-                                        </Span>
-                                    }
-                                    else
-                                    {
-                                        <Span Padding="Padding.Is1">
-                                            <Icon Name="@(entity.Icon)"/>
-                                        </Span>
-                                    }
-                                    <Span>@entity.Name</Span>
+                                <TableRowCell style="@($"padding-left: {entity.Depth}rem")">
+                                    <Div Flex="Flex.AlignItems.Center">
+
+                                        @if (entity.IsLeading)
+                                        {
+                                            <Div Flex="Flex.AlignItems.Center.JustifyContent.Center" Padding="Padding.Is1" Style="width:25px; height:25px;" Margin="Margin.Is1.FromEnd" Border="Border.RoundedCircle" Background="Background.Info">
+                                                <Icon Name="@(entity.Icon)" />
+                                            </Div>
+                                        }
+                                        else
+                                        {
+                                            <Div  Flex="Flex.AlignItems.Center.JustifyContent.Center" Padding="Padding.Is1" Margin="Margin.Is1.FromEnd">
+                                                <Icon Name="@(entity.Icon)" />
+                                            </Div>
+                                        }
+                                        <Span>@entity.Name</Span>
+                                    </Div>
                                 </TableRowCell>
-                                <TableRowCell>
-                                    <Check TValue="bool" CheckedChanged="b => SetEntitySelected(entity, b)" Checked="@entity.IsSelected"/>
+                                <TableRowCell TextAlignment="TextAlignment.Center">
+                                    <Check TValue="bool" CheckedChanged="b => SetEntitySelected(entity, b)" Checked="@entity.IsSelected" />
                                 </TableRowCell>
-                                <TableRowCell>
-                                    <Div Style="width: 100px;">
-                                        <Field>
+                                <TableRowCell TextAlignment="TextAlignment.Center">
+                                    <Div Style="width: 100px;" Margin="Margin.IsAuto">
+                                        <Field Margin="Margin.Is0">
                                             <Addons>
                                                 <Addon AddonType="AddonType.Body">
-                                                    <TextEdit/>
+                                                    <TextEdit />
                                                 </Addon>
                                                 <Addon AddonType="AddonType.End">
                                                     <AddonLabel>%</AddonLabel>
@@ -86,74 +87,7 @@
                             </TableRow>
                         }
                     }
-                    <TableRow>
-                        <TableRowCell> <Icon Name="@("fa-city")"/> Název</TableRowCell>
-                        <TableRowCell><Check TValue="bool"></Check></TableRowCell>
-                        <TableRowCell>
-                            <Div Style="width: 100px;">
-                                <Field>
-                                    <Addons>
-                                        <Addon AddonType="AddonType.Body">
-                                            <TextEdit/>
-                                        </Addon>
-                                        <Addon AddonType="AddonType.End">
-                                            <AddonLabel>%</AddonLabel>
-                                        </Addon>
-                                    </Addons>
-                    
-                                </Field>
-                            </Div>
-                        </TableRowCell>
-                        <TableRowCell>1000Kč</TableRowCell>
-                    </TableRow>
-                    <TableRow>
-                        <TableRowCell>
-                            <Span Padding="Padding.Is4.FromStart">
-                                <Icon Name="@("fa-building")"/> Název
-                            </Span>
-                        </TableRowCell>
-                        <TableRowCell><Check TValue="bool"></Check></TableRowCell>
-                        <TableRowCell>
-                            <Div Style="width: 100px;">
-                                <Field>
-                                    <Addons>
-                                        <Addon AddonType="AddonType.Body">
-                                            <TextEdit/>
-                                        </Addon>
-                                        <Addon AddonType="AddonType.End">
-                                            <AddonLabel>%</AddonLabel>
-                                        </Addon>
-                                    </Addons>
 
-                                </Field>
-                            </Div>
-                        </TableRowCell>
-                        <TableRowCell>1000Kč</TableRowCell>
-                    </TableRow>
-                    <TableRow>
-                        <TableRowCell>
-                            <Span Padding="Padding.Is4.FromStart">
-                                <Icon Name="@("fa-building")"/> Název
-                            </Span>
-                        </TableRowCell>
-                        <TableRowCell><Check TValue="bool"></Check></TableRowCell>
-                        <TableRowCell>
-                            <Div Style="width: 100px;">
-                                <Field>
-                                    <Addons>
-                                        <Addon AddonType="AddonType.Body">
-                                            <TextEdit/>
-                                        </Addon>
-                                        <Addon AddonType="AddonType.End">
-                                            <AddonLabel>%</AddonLabel>
-                                        </Addon>
-                                    </Addons>
-
-                                </Field>
-                            </Div>
-                        </TableRowCell>
-                        <TableRowCell>1000Kč</TableRowCell>
-                    </TableRow>
                 </TableBody>
             </Table>
         </Row>
@@ -163,9 +97,9 @@
 @code {
     [Parameter]
     public string RootItemId { get; set; }
-    
+
     private List<CalculationEntity>? CalculationEntities { get; set; }
-    
+
     protected override void OnParametersSet()
     {
         if (RootItemId != rootItemId)
@@ -186,18 +120,18 @@
 
     private void AddItemToList(TreeItem item, int depth = 0)
     {
-        if (item.Entity is ISource {SourceType: SourceType.PVE })
+        if (item.Entity is ISource { SourceType: SourceType.PVE })
         {
             CalculationEntities.Last().IsLeading = true;
         }
-        
+
         CalculationEntities.Add(new CalculationEntity
-        {
-            Name = item.Name,
-            Icon = GetIcon(item),
-            Depth = depth,
-            Entity = item.Entity
-        });
+            {
+                Name = item.Name,
+                Icon = GetIcon(item),
+                Depth = depth,
+                Entity = item.Entity
+            });
 
         var children = item.GetChilds();
         foreach (var child in children)
@@ -206,7 +140,7 @@
         }
         StateHasChanged();
     }
-    
+
     private String GetIcon(TreeItem item)
     {
         if (item.Entity is ISource sourceItem)
@@ -232,8 +166,8 @@
     }
 
     private string rootItemId;
-    
-    
+
+
     public class CalculationEntity
     {
         public string? Name { get; set; }

@@ -7,10 +7,29 @@ html, body {
 h1:focus {
     outline: none;
 }
-
+.entities-table td {
+    vertical-align: middle;
+}
 .logo-wrapper {
     max-width: 140px;
 }
+
+
+.entities-table .custom-control-label {
+    top: 5px;
+}
+
+.entities-table .custom-control-label::before {
+    width: 1.5rem;
+    height: 1.5rem;
+    top: -0.25rem;
+}
+
+.entities-table .custom-control-label::after {
+    top: 0rem;
+    left: -1.25rem;
+}
+
 
 a, .btn-link {
     color: #0071c1;
