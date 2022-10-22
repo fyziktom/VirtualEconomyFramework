@@ -1,5 +1,5 @@
 ﻿<Card Margin="Margin.Is4.FromBottom">
-    
+
     <CardHeader><CardTitle>Výpočet</CardTitle></CardHeader>
     <CardBody>
         <Row>
@@ -7,13 +7,13 @@
                 <FieldLabel>Rozpočet</FieldLabel>
                 <Addons>
                     <Addon AddonType="AddonType.Body">
-                        <TextEdit Placeholder="Rozpočet"/>
+                        <TextEdit Placeholder="Rozpočet" />
                     </Addon>
                     <Addon AddonType="AddonType.End">
                         <AddonLabel VerticalAlignment="VerticalAlignment.Baseline">Kč</AddonLabel>
                     </Addon>
                 </Addons>
-                
+
             </Field>
         </Row>
         <Row>
@@ -21,18 +21,100 @@
                 <FieldLabel>Úroková sazba</FieldLabel>
                 <Addons>
                     <Addon AddonType="AddonType.Body">
-                        <TextEdit Placeholder="Úroková sazba"/>
+                        <TextEdit Placeholder="Úroková sazba" />
                     </Addon>
                     <Addon AddonType="AddonType.End">
                         <AddonLabel>%</AddonLabel>
                     </Addon>
                 </Addons>
-                
+
             </Field>
+        </Row>
+        <Row>
+            <Table Hoverable>
+                <TableHeader>
+                    <TableRow>
+                        <TableHeaderCell>Místa</TableHeaderCell>
+                        <TableHeaderCell>Povoleno</TableHeaderCell>
+                        <TableHeaderCell>AK</TableHeaderCell>
+                        <TableHeaderCell>Bilance</TableHeaderCell>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    <TableRow>
+                        <TableRowCell>   <Icon Name="@("fa-city")" /> Název</TableRowCell>
+                        <TableRowCell><Check TValue="bool"></Check></TableRowCell>
+                        <TableRowCell>
+                            <Div Style="width: 100px;">
+                                <Field>
+                                    <Addons>
+                                        <Addon AddonType="AddonType.Body">
+                                            <TextEdit />
+                                        </Addon>
+                                        <Addon AddonType="AddonType.End">
+                                            <AddonLabel>%</AddonLabel>
+                                        </Addon>
+                                    </Addons>
+
+                                </Field>
+                            </Div>
+                        </TableRowCell>
+                        <TableRowCell>1000Kč</TableRowCell>
+                    </TableRow>
+                    <TableRow>
+                        <TableRowCell>
+                            <Span Padding="Padding.Is4.FromStart">
+                                <Icon Name="@("fa-building")" /> Název
+                            </Span>
+                        </TableRowCell>
+                        <TableRowCell><Check TValue="bool"></Check></TableRowCell>
+                        <TableRowCell>
+                            <Div Style="width: 100px;">
+                                <Field>
+                                    <Addons>
+                                        <Addon AddonType="AddonType.Body">
+                                            <TextEdit />
+                                        </Addon>
+                                        <Addon AddonType="AddonType.End">
+                                            <AddonLabel>%</AddonLabel>
+                                        </Addon>
+                                    </Addons>
+
+                                </Field>
+                            </Div>
+                        </TableRowCell>
+                        <TableRowCell>1000Kč</TableRowCell>
+                    </TableRow>
+                    <TableRow>
+                        <TableRowCell>
+                            <Span Padding="Padding.Is4.FromStart">
+                                <Icon Name="@("fa-building")" /> Název
+                            </Span>
+                        </TableRowCell>
+                        <TableRowCell><Check TValue="bool"></Check></TableRowCell>
+                        <TableRowCell>
+                            <Div Style="width: 100px;">
+                                <Field>
+                                    <Addons>
+                                        <Addon AddonType="AddonType.Body">
+                                            <TextEdit />
+                                        </Addon>
+                                        <Addon AddonType="AddonType.End">
+                                            <AddonLabel>%</AddonLabel>
+                                        </Addon>
+                                    </Addons>
+
+                                </Field>
+                            </Div>
+                        </TableRowCell>
+                        <TableRowCell>1000Kč</TableRowCell>
+                    </TableRow>
+                </TableBody>
+            </Table>
         </Row>
     </CardBody>
 </Card>
 
 @code {
-    
+
 }
