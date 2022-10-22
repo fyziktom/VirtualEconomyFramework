@@ -57,7 +57,7 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
                 if (baseload != null)
                 {
                     if (baseload.AlocationSchemes != null)
-                        foreach(var scheme in baseload.AlocationSchemes)
+                        foreach (var scheme in baseload.AlocationSchemes)
                             AlocationSchemes.TryAdd(scheme.Key, scheme.Value);
 
                     foreach (var item in baseload.Sources)
@@ -189,14 +189,14 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
                     var sc = src as ISource;
                     if (sc == null) continue;
                     s.Load(sc);
-                    
+
                     var repetitiveToRemove = src.Blocks.Values.Where(b => b.IsRepetitiveChild).Select(b => b.Id).ToList();
                     foreach (var block in repetitiveToRemove)
                     {
                         if (s.Blocks.ContainsKey(block))
                             s.Blocks.TryRemove(block, out var blk);
                     }
-                    
+
                     resultobj.Sources.Add(s);
                 }
                 var cnss = new List<ConsumerConfigDto>();
@@ -314,6 +314,47 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
         }
 
         /// <summary>
+        /// Add block to the entity. 
+        /// This param override of AddBlockToEntity will split block based on AlocationScheme to several entities
+        /// </summary>
+        /// <param name="id">Id of the consumer</param>
+        /// <param name="block">Block</param>
+        /// <param name="alocationSchemeId">Alocation Scheme Id</param>
+        /// <returns></returns>
+        public virtual (bool, string) AddBlockToEntity(string id, IBlock block, string alocationSchemeId)
+        {
+            if (string.IsNullOrEmpty(id))
+                return (false, "Cannot add block to the entity. Entity id cannot be empty.");
+            if (block == null)
+                return (false, $"Cannot add block to the entity {id}, block cannot be empty.");
+
+
+            if (AlocationSchemes.TryGetValue(alocationSchemeId, out var scheme))
+            {
+                foreach (var peer in scheme.DepositPeers)
+                {
+                    if (Entities.TryGetValue(id, out var entity))
+                    {
+                        var b = new BaseBlock();
+                        b.Fill(block);
+                        b.Amount = block.Amount * (peer.Value.Percentage / 100);
+
+                        if (entity.AddBlocks(new List<IBlock>() { block }))
+                            return (true, $"Block added to the entity {entity.Name} - {id}.");
+                        else
+                            return (true, $"Cannot add block to the entity {entity.Name} - {id}.");
+                    }
+                }
+
+            }
+            else
+            {
+                return (true, $"Cannot add block to the entity {id}. Cannot find Alocation Scheme {alocationSchemeId}.");
+            }
+            return (true, $"Cannot add block {block.Id} to the entity {id}.");
+        }
+
+        /// <summary>
         /// Add blocks to the entity. 
         /// </summary>
         /// <param name="id">Id of the consumer</param>
@@ -335,6 +376,51 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
             }
             else
                 return (false, $"Cannot add blocks to the entity. Entity {id} is not in Entities list. Add the entity first please.");
+        }
+
+        /// <summary>
+        /// Add blocks to the entity. 
+        /// This param override of AddBlockToEntity will split block based on AlocationScheme to several entities
+        /// </summary>
+        /// <param name="id">Id of the consumer</param>
+        /// <param name="block">Block</param>
+        /// <param name="alocationSchemeId">Alocation Scheme Id</param>
+        /// <returns></returns>
+        public virtual (bool, string) AddBlocksToEntity(string id, List<IBlock> blocks, string alocationSchemeId)
+        {
+            if (string.IsNullOrEmpty(id))
+                return (false, "Cannot add blocks to the entity. Entity id cannot be empty.");
+            if (blocks == null)
+                return (false, $"Cannot add blocks to the entity {id}, block cannot be empty.");
+
+            if (AlocationSchemes.TryGetValue(alocationSchemeId, out var scheme))
+            {
+                foreach (var peer in scheme.DepositPeers)
+                {
+                    if (Entities.TryGetValue(id, out var entity))
+                    {
+                        var blks = new List<IBlock>();
+
+                        foreach (var block in blocks)
+                        {
+                            var b = new BaseBlock();
+                            b.Fill(block);
+                            b.Amount = block.Amount * (peer.Value.Percentage / 100);
+                            blks.Add(b);
+                        }
+
+                        if (entity.AddBlocks(blks))
+                            return (true, $"Block added to the entity {entity.Name} - {id}.");
+                        else
+                            return (true, $"Cannot add block to the entity {entity.Name} - {id}.");
+                    }
+                }
+            }
+            else
+            {
+                return (true, $"Cannot add block to the entity {id}. Cannot find Alocation Scheme {alocationSchemeId}.");
+            }
+            return (true, $"Cannot add block to the entity {id}.");
         }
 
         /// <summary>
