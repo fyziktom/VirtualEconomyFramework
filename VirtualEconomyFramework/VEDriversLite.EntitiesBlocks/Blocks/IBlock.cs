@@ -14,7 +14,9 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
         Day,
         Week,
         Month,
-        Year
+        Year,
+        QuaterHour,
+        QuaterYear
     }
     public enum BlockType
     {
@@ -27,7 +29,10 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
         Created,
         Stored,
         Consumed,
-        Mix
+        Mix,
+        CreatedRecord,
+        ConsumedRecord,
+        StoredRecord
     }
     public interface IBlock
     {
@@ -52,6 +57,10 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
         /// </summary>
         string ParentId { get; set; }
         /// <summary>
+        /// Alocation Scheme Id
+        /// </summary>
+        string AllocationSchemeId { get; set; }
+        /// <summary>
         /// Set when this block is parent of some repetitive blocks group.
         /// It means based on this block other was created and refers to its Id
         /// </summary>
@@ -60,6 +69,10 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
         /// First Block of repetitive blocks Id
         /// </summary>
         string RepetitiveSourceBlockId { get; set; }
+        /// <summary>
+        /// DataProfile Id for creating repetitive line
+        /// </summary>
+        string RepetitiveSourceDataProfileId { get; set; }
         /// <summary>
         /// Indicate if this block is related to some repetitive block
         /// </summary>

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using VEDriversLite.EntitiesBlocks.Blocks;
+using VEDriversLite.EntitiesBlocks.Blocks.Dto;
 using VEDriversLite.EntitiesBlocks.Entities;
 using VEDriversLite.EntitiesBlocks.Tree;
 
@@ -24,6 +25,11 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
         /// dictionary of all entities in the network, where the key is the uniue Id of the entity
         /// </summary>
         ConcurrentDictionary<string, IEntity> Entities { get; set; }
+
+        /// <summary>
+        /// Alocation schemes for split the amount of some block (for example automatic split shared PVE source between flats).
+        /// </summary>
+        ConcurrentDictionary<string, AlocationScheme> AlocationSchemes { get; set; }
 
         /// <summary>
         /// Label of the unit of the Amount. For example "kWh" for energy application
@@ -99,6 +105,17 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
         /// <param name="subentityId"></param>
         /// <returns></returns>
         (bool, string) RemoveSubEntityFromEntity(string entityId, string subentityId);
+        /// <summary>
+        /// Change Blocks direction all blocks in entity
+        /// </summary>
+        /// <param name="id"></param>
+        void ChangeAllEntityBlocksDirection(string id, BlockDirection direction, BlockDirection originalDirection = BlockDirection.Mix);
+        /// <summary>
+        /// Change Blocks direction all blocks in entity
+        /// </summary>
+        /// <param name="id"></param>
+        void ChangeAllEntityBlocksDirection(string id, BlockDirection direction, List<string> ids, BlockDirection originalDirection = BlockDirection.Mix);
+
         /// <summary>
         /// Get recalculated power consumption represented as list of Blocks split based on setted timegrame
         /// </summary>

@@ -115,6 +115,12 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
                 case BlockTimeframe.Year:
                     ts = tmpdate.AddYears(1) - starttime;
                     break;
+                case BlockTimeframe.QuaterHour:
+                    ts = tmpdate.AddMinutes(15) - starttime;
+                    break;
+                case BlockTimeframe.QuaterYear:
+                    ts = tmpdate.AddMonths(3) - starttime;
+                    break;
                 default:
                     ts = tmpdate.AddDays(1) - starttime;
                     break;

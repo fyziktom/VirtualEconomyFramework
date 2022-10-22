@@ -99,9 +99,12 @@ namespace VEDriversLite.EntitiesBlocks.Entities
         public virtual bool AddBlock(IBlock block)
         {
             if (block == null) return false;
-            
+
             if (!Blocks.ContainsKey(block.Id))
+            {
+                block.ParentId = Id;
                 Blocks.TryAdd(block.Id, block);
+            }
             
             LastChange = DateTime.UtcNow;
             return true;
@@ -117,7 +120,10 @@ namespace VEDriversLite.EntitiesBlocks.Entities
             foreach (var block in blocks)
             {
                 if (!Blocks.ContainsKey(block.Id))
+                {
+                    block.ParentId = Id;
                     Blocks.TryAdd(block.Id, block);
+                }
             }
             LastChange = DateTime.UtcNow;
             return true;
@@ -208,6 +214,29 @@ namespace VEDriversLite.EntitiesBlocks.Entities
             else
                 return (true, $"Cannot add blocks to the consumer {Name} - {Id}.");
 
+        }
+
+        /// <summary>
+        /// Change Blocks direction all blocks in entity
+        /// </summary>
+        /// <param name="direction"></param>
+        public virtual void ChangeAllBlocksDirection(BlockDirection direction, BlockDirection originalDirection = BlockDirection.Mix)
+        {
+            foreach(var block in Blocks.Values)
+                if (block.Direction == originalDirection || originalDirection == BlockDirection.Mix)
+                    block.Direction = direction;
+        }
+
+        /// <summary>
+        /// Change Blocks direction specified blocks in entity
+        /// </summary>
+        /// <param name="direction"></param>
+        public virtual void ChangeAllBlocksDirection(BlockDirection direction, List<string> ids, BlockDirection originalDirection = BlockDirection.Mix)
+        {
+            foreach (var id in ids)
+                if (Blocks.TryGetValue(id, out var block))
+                    if (block.Direction == originalDirection || originalDirection == BlockDirection.Mix)
+                        block.Direction = direction;
         }
 
 

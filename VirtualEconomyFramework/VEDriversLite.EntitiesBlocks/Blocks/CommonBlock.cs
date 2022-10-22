@@ -29,6 +29,10 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
         /// </summary>
         public string ParentId { get; set; } = string.Empty;
         /// <summary>
+        /// Alocation Scheme Id
+        /// </summary>
+        public string AllocationSchemeId { get; set; } = string.Empty;
+        /// <summary>
         /// Set when this block is parent of some repetitive blocks group.
         /// It means based on this block other was created and refers to its Id
         /// </summary>
@@ -37,6 +41,10 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
         /// First Block of repetitive blocks Id
         /// </summary>
         public string RepetitiveSourceBlockId { get; set; } = string.Empty;
+        /// <summary>
+        /// DataProfile Id for creating repetitive line
+        /// </summary>
+        public string RepetitiveSourceDataProfileId { get; set; } = string.Empty;
         /// <summary>
         /// Indicate if this block is related to some repetitive block
         /// </summary>

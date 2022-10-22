@@ -36,6 +36,10 @@ namespace VEDriversLite.EntitiesBlocks.Blocks.Dto
         /// </summary>
         public string Name { get; set; } = string.Empty;
         /// <summary>
+        /// Id of Data profile
+        /// </summary>
+        public string Id { get; set; } = Guid.NewGuid().ToString();
+        /// <summary>
         /// Type of the profile data action
         /// </summary>
         public DataProfileType Type { get; set; } = DataProfileType.Default;

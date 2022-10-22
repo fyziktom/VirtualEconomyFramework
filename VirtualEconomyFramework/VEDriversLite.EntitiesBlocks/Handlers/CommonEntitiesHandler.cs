@@ -16,6 +16,7 @@ using VEDriversLite.EntitiesBlocks.Sources.Dto;
 using VEDriversLite.EntitiesBlocks.Sources;
 using Newtonsoft.Json;
 using VEDriversLite.EntitiesBlocks.Handlers.Dto;
+using VEDriversLite.EntitiesBlocks.Blocks.Dto;
 
 namespace VEDriversLite.EntitiesBlocks.Handlers
 {
@@ -33,7 +34,10 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
         /// dictionary of all entities in the network, where the key is the uniue Id of the entity
         /// </summary>
         public ConcurrentDictionary<string, IEntity> Entities { get; set; } = new ConcurrentDictionary<string, IEntity>();
-
+        /// <summary>
+        /// Alocation schemes for split the amount of some block (for example automatic split shared PVE source between flats).
+        /// </summary>
+        public ConcurrentDictionary<string, AlocationScheme> AlocationSchemes { get; set; } = new ConcurrentDictionary<string, AlocationScheme>();
         /// <summary>
         /// Label of the unit of the Amount. For example "kWh" for energy application
         /// </summary>
@@ -52,6 +56,10 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
 
                 if (baseload != null)
                 {
+                    if (baseload.AlocationSchemes != null)
+                        foreach (var scheme in baseload.AlocationSchemes)
+                            AlocationSchemes.TryAdd(scheme.Key, scheme.Value);
+
                     foreach (var item in baseload.Sources)
                     {
                         if (item != null)
@@ -171,20 +179,24 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
             try
             {
                 var resultobj = new CompleteConfigDto();
+
+                foreach (var scheme in AlocationSchemes)
+                    resultobj.AlocationSchemes.TryAdd(scheme.Key, scheme.Value);
+
                 foreach (var src in Sources)
                 {
                     var s = new SourceConfigDto();
                     var sc = src as ISource;
                     if (sc == null) continue;
                     s.Load(sc);
-                    
+
                     var repetitiveToRemove = src.Blocks.Values.Where(b => b.IsRepetitiveChild).Select(b => b.Id).ToList();
                     foreach (var block in repetitiveToRemove)
                     {
                         if (s.Blocks.ContainsKey(block))
                             s.Blocks.TryRemove(block, out var blk);
                     }
-                    
+
                     resultobj.Sources.Add(s);
                 }
                 var cnss = new List<ConsumerConfigDto>();
@@ -302,6 +314,63 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
         }
 
         /// <summary>
+        /// Add block to the entity. 
+        /// This param override of AddBlockToEntity will split block based on AlocationScheme to several entities
+        /// </summary>
+        /// <param name="id">Id of the consumer</param>
+        /// <param name="block">Block</param>
+        /// <param name="alocationSchemeId">Alocation Scheme Id</param>
+        /// <returns></returns>
+        public virtual (bool, string) AddBlockToEntity(string id, IBlock block, string alocationSchemeId)
+        {
+            if (string.IsNullOrEmpty(id))
+                return (false, "Cannot add block to the entity. Entity id cannot be empty.");
+            if (block == null)
+                return (false, $"Cannot add block to the entity {id}, block cannot be empty.");
+
+
+            if (AlocationSchemes.TryGetValue(alocationSchemeId, out var scheme))
+            {
+                var percentageRest = 0.0;
+                var percentageSum = scheme.DepositPeers.Values.Where(p => p.Percentage > 0).Select(p => p.Percentage).Sum();
+                if (percentageSum > 100)
+                    return (false, $"Wrong deposit scheme {alocationSchemeId}. More than 100% of the alocation.");
+                else if (percentageSum < 100)
+                {
+                    percentageRest = 100 - percentageSum;
+                    if (Entities.TryGetValue(id, out var mainentity))
+                    {
+                        var b = new BaseBlock();
+                        b.Fill(block);
+                        b.Amount = block.Amount * (percentageRest / 100);
+
+                        mainentity.AddBlocks(new List<IBlock>() { block });
+                    }
+                }
+
+                foreach (var peer in scheme.DepositPeers)
+                {
+                    if (Entities.TryGetValue(peer.Value.PeerId, out var entity))
+                    {
+                        var b = new BaseBlock();
+                        b.Fill(block);
+                        b.Amount = block.Amount * (peer.Value.Percentage / 100);
+
+                        if (entity.AddBlocks(new List<IBlock>() { block }))
+                            return (true, $"Block added to the entity {entity.Name} - {id}.");
+                        else
+                            return (true, $"Cannot add block to the entity {entity.Name} - {id}.");
+                    }
+                }
+            }
+            else
+            {
+                return (true, $"Cannot add block to the entity {id}. Cannot find Alocation Scheme {alocationSchemeId}.");
+            }
+            return (true, $"Cannot add block {block.Id} to the entity {id}.");
+        }
+
+        /// <summary>
         /// Add blocks to the entity. 
         /// </summary>
         /// <param name="id">Id of the consumer</param>
@@ -323,6 +392,75 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
             }
             else
                 return (false, $"Cannot add blocks to the entity. Entity {id} is not in Entities list. Add the entity first please.");
+        }
+
+        /// <summary>
+        /// Add blocks to the entity. 
+        /// This param override of AddBlockToEntity will split block based on AlocationScheme to several entities
+        /// </summary>
+        /// <param name="id">Id of the consumer</param>
+        /// <param name="block">Block</param>
+        /// <param name="alocationSchemeId">Alocation Scheme Id</param>
+        /// <returns></returns>
+        public virtual (bool, string) AddBlocksToEntity(string id, List<IBlock> blocks, string alocationSchemeId)
+        {
+            if (string.IsNullOrEmpty(id))
+                return (false, "Cannot add blocks to the entity. Entity id cannot be empty.");
+            if (blocks == null)
+                return (false, $"Cannot add blocks to the entity {id}, block cannot be empty.");
+
+            if (AlocationSchemes.TryGetValue(alocationSchemeId, out var scheme))
+            {
+                var percentageRest = 0.0;
+                var percentageSum = scheme.DepositPeers.Values.Where(p => p.Percentage > 0).Select(p => p.Percentage).Sum();
+                if (percentageSum > 100)
+                    return (false, $"Wrong deposit scheme {alocationSchemeId}. More than 100% of the alocation.");
+
+                else if (percentageSum < 100)
+                {
+                    percentageRest = 100 - percentageSum;
+                    if (Entities.TryGetValue(id, out var mainentity))
+                    {
+                        var blks = new List<IBlock>();
+
+                        foreach (var block in blocks)
+                        {
+                            var b = new BaseBlock();
+                            b.Fill(block);
+                            b.Amount = block.Amount * (percentageRest / 100);
+                            blks.Add(b);
+                        }
+
+                        mainentity.AddBlocks(blks);
+                    }
+                }
+
+                foreach (var peer in scheme.DepositPeers)
+                {
+                    if (Entities.TryGetValue(peer.Value.PeerId, out var entity))
+                    {
+                        var blks = new List<IBlock>();
+
+                        foreach (var block in blocks)
+                        {
+                            var b = new BaseBlock();
+                            b.Fill(block);
+                            b.Amount = block.Amount * (peer.Value.Percentage / 100);
+                            blks.Add(b);
+                        }
+
+                        if (entity.AddBlocks(blks))
+                            return (true, $"Block added to the entity {entity.Name} - {id}.");
+                        else
+                            return (true, $"Cannot add block to the entity {entity.Name} - {id}.");
+                    }
+                }
+            }
+            else
+            {
+                return (true, $"Cannot add block to the entity {id}. Cannot find Alocation Scheme {alocationSchemeId}.");
+            }
+            return (true, $"Cannot add block to the entity {id}.");
         }
 
         /// <summary>
@@ -798,6 +936,30 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
         {
             if (Entities.TryGetValue(id, out var entity))
                 entity.Blocks.Clear();
+        }
+
+        /// <summary>
+        /// Change Blocks direction all blocks in entity
+        /// </summary>
+        /// <param name="id"></param>
+        public virtual void ChangeAllEntityBlocksDirection(string id, BlockDirection direction, BlockDirection originalDirection = BlockDirection.Mix)
+        {
+            if (Entities.TryGetValue(id, out var entity))
+                entity.ChangeAllBlocksDirection(direction, originalDirection);
+        }
+        /// <summary>
+        /// Change Blocks direction all blocks in entity
+        /// </summary>
+        /// <param name="id"></param>
+        public virtual void ChangeAllEntityBlocksDirection(string id, BlockDirection direction, List<string> ids, BlockDirection originalDirection = BlockDirection.Mix)
+        {
+            if (Entities.TryGetValue(id, out var entity))
+            {
+                if (ids == null)
+                    entity.ChangeAllBlocksDirection(direction, originalDirection);
+                else 
+                    entity.ChangeAllBlocksDirection(direction, ids, originalDirection);
+            }
         }
 
         public class TreeQueue

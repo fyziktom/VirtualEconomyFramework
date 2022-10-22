@@ -763,5 +763,65 @@ namespace VEFrameworkUnitTest.BlockEntities
             }
 
         }
+
+        [Fact]
+        public void GetPowerConsumptionOfEntityQuaterHourTimeframe()
+        {
+            var entity = new BaseEntity();
+
+            // add some custom blocks of simulated consumption
+            var blockstoadd = new List<IBlock>();
+            var starttime = new DateTime(2022, 1, 1, 0, 0, 0);
+            var timeframe = new TimeSpan(168, 0, 0);
+            var endtime = starttime + timeframe;
+
+            var timeframe2 = new TimeSpan(336, 0, 0);
+
+            var Block = new BaseBlock();
+            var consumption = 1;
+            var consumption2 = 2;
+
+            //device which consume 1kW and run 168 hours, started on 1st of January in 0:00, for example PC
+            blockstoadd.Add(Block.GetBlockByPower(BlockType.Simulated,
+                                                  BlockDirection.Consumed,
+                                                  starttime,
+                                                  timeframe,
+                                                  consumption,
+                                                  ebth.sourceName,
+                                                  ebth.device2Id));
+
+            //device which consume 1kW and run 336 hours, started on 3rd of January in 0:00, for example PC
+            blockstoadd.Add(Block.GetBlockByPower(BlockType.Simulated,
+                                                  BlockDirection.Consumed,
+                                                  starttime.AddDays(3),
+                                                  timeframe2,
+                                                  consumption2,
+                                                  ebth.sourceName,
+                                                  ebth.device2Id));
+
+            entity.AddBlocks(blockstoadd);
+
+            if (entity != null)
+            {
+                var hours = 4;
+                var res = entity.GetSummedValues(BlockTimeframe.QuaterHour, starttime, starttime.AddHours(hours));
+                var total = 0.0;
+                foreach (var b in res)
+                    total += b.Amount;
+                Assert.Equal(4, total);
+                Assert.Equal(hours * 4, res.Count());
+            }
+
+            if (entity != null)
+            {
+                var hours = 168;
+                var res = entity.GetSummedValues(BlockTimeframe.QuaterHour, starttime, starttime.AddHours(hours));
+                var total = 0.0;
+                foreach (var b in res)
+                    total += b.Amount;
+                Assert.Equal(hours * consumption + (hours - 3 * 24) * consumption2, total);
+                Assert.Equal(hours * 4, res.Count());
+            }
+        }
     }
 }
