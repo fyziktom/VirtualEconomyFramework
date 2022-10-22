@@ -1,4 +1,5 @@
-﻿@{
+﻿@using System.Text.Json
+@{
     var children = Item.GetChilds();
     if (!children.Any())
     {
@@ -37,17 +38,15 @@
                         </CollapseHeader>
                         <CollapseBody Class="card-body-wrapper" Position="Position.Absolute.Top.Is100.Start.Is50.Translate.MiddleX" Padding="Padding.Is0" Style="z-index: 20;">
                             <Buttons Padding="Padding.Is0" Background="Background.White">
-                                <Button Color="Color.Dark" Outline> <Icon Name="@("fa-table")" /></Button>
-                                <Button Color="Color.Dark" Outline> <Icon Name="@("fa-solar-panel")" /></Button>
-                                <Button Color="Color.Dark" Outline Flex="Flex.AlignItems.Center.JustifyContent.Center.Wrap">
-                                  <Div Border="Border.Is2.Dark" Padding="Padding.Is1">
-                                        <Icon Name="@("fa-solar-panel")" />
-                                    </Div>
-                                </Button>
-                                <Button Color="Color.Dark" Outline> <Icon Name="@("fa-battery-full")" /></Button>
-
-                                <Button Color="Color.Dark" Outline> <Icon Name="@("fa-building")" /></Button>
-
+                                <Button Color="Color.Dark" Outline Clicked="@(()=>AddConsumerClicked(ConsumerType.Device))"> <Icon Name="@("fa-table")" /></Button>
+                                <Button Color="Color.Dark" Outline  Clicked="@(()=>AddProducerClicked(SourceType.PVE))"> <Icon Name="@("fa-solar-panel")" /></Button>
+                                @* <Button Color="Color.Dark" Outline  Clicked="@(()=>AddProducerClicked(SourceType.PVE))" Flex="Flex.AlignItems.Center.JustifyContent.Center.Wrap"> *@
+                                @*   <Div Border="Border.Is2.Dark" Padding="Padding.Is1"> *@
+                                @*         <Icon Name="@("fa-solar-panel")" /> *@
+                                @*     </Div> *@
+                                @* </Button> *@
+                                <Button Color="Color.Dark" Outline Clicked="@(()=>AddProducerClicked(SourceType.Battery))"> <Icon Name="@("fa-battery-full")" /></Button>
+                                <Button Color="Color.Dark" Outline Clicked="@(()=>AddConsumerClicked(ConsumerType.DevicesGroup))"> <Icon Name="@("fa-building")" /></Button>
                             </Buttons>
                         </CollapseBody>
                     </Collapse>
@@ -71,12 +70,11 @@
     [Parameter]
     public TreeItem Item { get; set; }
 
+    [CascadingParameter(Name = "AddDialog")]
+    public AddEntityNG AddDialogRef { get; set; }
 
     private String GetIcon(TreeItem item)
     {
-
-        Console.WriteLine(item.Entity);
-
         if (item.Entity is ISource sourceItem)
         {
             switch (sourceItem.SourceType)
@@ -100,6 +98,17 @@
     }
 
 
-    private bool isExpanded;
+    private bool isExpanded = true;
     private bool isAddBlockExpanded;
+
+    private void AddConsumerClicked(ConsumerType consumerType)
+    {
+        AddDialogRef.AddEntity(ConsumerFactory.GetConsumer(consumerType, "", Item.Id??""));
+    }
+    
+    private void AddProducerClicked(SourceType sourceType)
+    {
+        AddDialogRef.AddEntity(SourceFactory.GetSource(sourceType, "", Item.Id??""));
+    }
+
 }
