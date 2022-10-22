@@ -106,6 +106,17 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
         /// <returns></returns>
         (bool, string) RemoveSubEntityFromEntity(string entityId, string subentityId);
         /// <summary>
+        /// Change Blocks direction all blocks in entity
+        /// </summary>
+        /// <param name="id"></param>
+        void ChangeAllEntityBlocksDirection(string id, BlockDirection direction, BlockDirection originalDirection = BlockDirection.Mix);
+        /// <summary>
+        /// Change Blocks direction all blocks in entity
+        /// </summary>
+        /// <param name="id"></param>
+        void ChangeAllEntityBlocksDirection(string id, BlockDirection direction, List<string> ids, BlockDirection originalDirection = BlockDirection.Mix);
+
+        /// <summary>
         /// Get recalculated power consumption represented as list of Blocks split based on setted timegrame
         /// </summary>
         /// <param name="entityId">consumer Id</param>

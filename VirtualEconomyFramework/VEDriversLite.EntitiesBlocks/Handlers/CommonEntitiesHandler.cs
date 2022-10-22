@@ -331,9 +331,26 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
 
             if (AlocationSchemes.TryGetValue(alocationSchemeId, out var scheme))
             {
+                var percentageRest = 0.0;
+                var percentageSum = scheme.DepositPeers.Values.Where(p => p.Percentage > 0).Select(p => p.Percentage).Sum();
+                if (percentageSum > 100)
+                    return (false, $"Wrong deposit scheme {alocationSchemeId}. More than 100% of the alocation.");
+                else if (percentageSum < 100)
+                {
+                    percentageRest = 100 - percentageSum;
+                    if (Entities.TryGetValue(id, out var mainentity))
+                    {
+                        var b = new BaseBlock();
+                        b.Fill(block);
+                        b.Amount = block.Amount * (percentageRest / 100);
+
+                        mainentity.AddBlocks(new List<IBlock>() { block });
+                    }
+                }
+
                 foreach (var peer in scheme.DepositPeers)
                 {
-                    if (Entities.TryGetValue(id, out var entity))
+                    if (Entities.TryGetValue(peer.Value.PeerId, out var entity))
                     {
                         var b = new BaseBlock();
                         b.Fill(block);
@@ -345,7 +362,6 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
                             return (true, $"Cannot add block to the entity {entity.Name} - {id}.");
                     }
                 }
-
             }
             else
             {
@@ -395,9 +411,33 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
 
             if (AlocationSchemes.TryGetValue(alocationSchemeId, out var scheme))
             {
+                var percentageRest = 0.0;
+                var percentageSum = scheme.DepositPeers.Values.Where(p => p.Percentage > 0).Select(p => p.Percentage).Sum();
+                if (percentageSum > 100)
+                    return (false, $"Wrong deposit scheme {alocationSchemeId}. More than 100% of the alocation.");
+
+                else if (percentageSum < 100)
+                {
+                    percentageRest = 100 - percentageSum;
+                    if (Entities.TryGetValue(id, out var mainentity))
+                    {
+                        var blks = new List<IBlock>();
+
+                        foreach (var block in blocks)
+                        {
+                            var b = new BaseBlock();
+                            b.Fill(block);
+                            b.Amount = block.Amount * (percentageRest / 100);
+                            blks.Add(b);
+                        }
+
+                        mainentity.AddBlocks(blks);
+                    }
+                }
+
                 foreach (var peer in scheme.DepositPeers)
                 {
-                    if (Entities.TryGetValue(id, out var entity))
+                    if (Entities.TryGetValue(peer.Value.PeerId, out var entity))
                     {
                         var blks = new List<IBlock>();
 
@@ -896,6 +936,30 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
         {
             if (Entities.TryGetValue(id, out var entity))
                 entity.Blocks.Clear();
+        }
+
+        /// <summary>
+        /// Change Blocks direction all blocks in entity
+        /// </summary>
+        /// <param name="id"></param>
+        public virtual void ChangeAllEntityBlocksDirection(string id, BlockDirection direction, BlockDirection originalDirection = BlockDirection.Mix)
+        {
+            if (Entities.TryGetValue(id, out var entity))
+                entity.ChangeAllBlocksDirection(direction, originalDirection);
+        }
+        /// <summary>
+        /// Change Blocks direction all blocks in entity
+        /// </summary>
+        /// <param name="id"></param>
+        public virtual void ChangeAllEntityBlocksDirection(string id, BlockDirection direction, List<string> ids, BlockDirection originalDirection = BlockDirection.Mix)
+        {
+            if (Entities.TryGetValue(id, out var entity))
+            {
+                if (ids == null)
+                    entity.ChangeAllBlocksDirection(direction, originalDirection);
+                else 
+                    entity.ChangeAllBlocksDirection(direction, ids, originalDirection);
+            }
         }
 
         public class TreeQueue

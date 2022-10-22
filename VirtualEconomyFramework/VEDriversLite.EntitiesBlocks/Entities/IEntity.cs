@@ -74,6 +74,16 @@ namespace VEDriversLite.EntitiesBlocks.Entities
         /// <returns></returns>
         bool RemoveRepetitiveBlocksLine(string firstBlockId);
         /// <summary>
+        /// Change Blocks direction all blocks in entity
+        /// </summary>
+        /// <param name="direction"></param>
+        void ChangeAllBlocksDirection(BlockDirection direction, BlockDirection originalDirection = BlockDirection.Mix);
+        /// <summary>
+        /// Change Blocks direction specified blocks in entity
+        /// </summary>
+        /// <param name="direction"></param>
+        void ChangeAllBlocksDirection(BlockDirection direction, List<string> ids, BlockDirection originalDirection = BlockDirection.Mix);
+        /// <summary>
         /// Change block parameters to the consumer. 
         /// </summary>
         /// <param name="id">Id of the consumer</param>

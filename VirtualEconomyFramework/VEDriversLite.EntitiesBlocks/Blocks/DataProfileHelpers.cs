@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -181,7 +182,15 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
         /// <param name="type">type of final blocks</param>
         /// <param name="parentId">parentId of final blocks</param>
         /// <returns></returns>
-        public static IEnumerable<IBlock> ConvertDataProfileToBlocks(DataProfile input, BlockDirection direction, BlockType type, string parentId, double divideEachValue = 0, bool withoutNullValueBlocks = false)
+        public static IEnumerable<IBlock> ConvertDataProfileToBlocks(DataProfile input, 
+                                                                     BlockDirection direction, 
+                                                                     BlockType type, 
+                                                                     string parentId, 
+                                                                     double divideEachValue = 0, 
+                                                                     bool withoutNullValueBlocks = false, 
+                                                                     string name = "", 
+                                                                     string description = "", 
+                                                                     string repetitiveSourceDataProfileId = "")
         {
             var result = new List<IBlock>();
             
@@ -215,6 +224,9 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
 
                     var b = new BaseBlock()
                     {
+                        Name = name,
+                        Description = description,
+                        RepetitiveSourceDataProfileId = repetitiveSourceDataProfileId,
                         Amount = v,
                         Direction = direction,
                         ParentId = !string.IsNullOrEmpty(parentId) ? parentId : string.Empty,

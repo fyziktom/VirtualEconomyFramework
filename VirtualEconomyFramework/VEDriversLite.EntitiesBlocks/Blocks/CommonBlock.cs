@@ -42,6 +42,10 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
         /// </summary>
         public string RepetitiveSourceBlockId { get; set; } = string.Empty;
         /// <summary>
+        /// DataProfile Id for creating repetitive line
+        /// </summary>
+        public string RepetitiveSourceDataProfileId { get; set; } = string.Empty;
+        /// <summary>
         /// Indicate if this block is related to some repetitive block
         /// </summary>
         public bool IsRepetitiveChild { get; set; } //=> !string.IsNullOrEmpty(RepetitiveSourceBlockId); }

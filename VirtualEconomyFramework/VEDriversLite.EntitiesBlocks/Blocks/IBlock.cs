@@ -29,7 +29,10 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
         Created,
         Stored,
         Consumed,
-        Mix
+        Mix,
+        CreatedRecord,
+        ConsumedRecord,
+        StoredRecord
     }
     public interface IBlock
     {
@@ -66,6 +69,10 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
         /// First Block of repetitive blocks Id
         /// </summary>
         string RepetitiveSourceBlockId { get; set; }
+        /// <summary>
+        /// DataProfile Id for creating repetitive line
+        /// </summary>
+        string RepetitiveSourceDataProfileId { get; set; }
         /// <summary>
         /// Indicate if this block is related to some repetitive block
         /// </summary>
