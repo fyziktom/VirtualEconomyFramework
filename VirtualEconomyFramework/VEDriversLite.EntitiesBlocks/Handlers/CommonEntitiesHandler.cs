@@ -819,7 +819,7 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
             var entity = GetEntity(rootId, EntityType.Both);
             if (entity == null) return null;
 
-            var result = new TreeItem() { Name = entity.Name, Id = entity.Id, Type = entity.Type, Depth = 0 };
+            var result = new TreeItem() { Name = entity.Name, Id = entity.Id, Type = entity.Type, Depth = 0, Entity  = entity };
 
             Queue<TreeQueue> queue = new Queue<TreeQueue>();
             foreach (var se in entity.Children)
@@ -835,7 +835,11 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
                 var q = queue.Dequeue();
                 if (q != null && q.Parent != null && q.Entity != null)
                 {
-                    var child = new TreeItem() { Name = q.Entity.Name, Id = q.Entity.Id, Type = q.Entity.Type, Depth = q.Parent.Depth + 1, Parent = q.Parent };
+                    var child = new TreeItem()
+                    {
+                        Name = q.Entity.Name, Id = q.Entity.Id, Type = q.Entity.Type, Depth = q.Parent.Depth + 1, Parent = q.Parent,
+                        Entity = q.Entity
+                    };
                     q.Parent.AddChild(child);
 
                     foreach (var se in q.Entity.Children)
