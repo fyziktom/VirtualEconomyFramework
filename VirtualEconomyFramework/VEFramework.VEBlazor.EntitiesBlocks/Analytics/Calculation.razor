@@ -32,64 +32,66 @@
 
             </Field>
         </Row>
-        <Row>
-            <Table Hoverable Class="entities-table">
-                <TableHeader>
-                    <TableRow>
-                        <TableHeaderCell>Místa</TableHeaderCell>
-                        <TableHeaderCell TextAlignment="TextAlignment.Center">Povoleno</TableHeaderCell>
-                        <TableHeaderCell TextAlignment="TextAlignment.Center">AK</TableHeaderCell>
-                        <TableHeaderCell>Bilance</TableHeaderCell>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    @if (CalculationEntities != null)
-                    {
-                        @foreach (var entity in CalculationEntities)
+        <Row Overflow="Overflow.Auto">
+         <Column>
+                <Table Hoverable Class="entities-table" Style="max-width: 100%;">
+                    <TableHeader>
+                        <TableRow>
+                            <TableHeaderCell>Místa</TableHeaderCell>
+                            <TableHeaderCell TextAlignment="TextAlignment.Center">Povoleno</TableHeaderCell>
+                            <TableHeaderCell TextAlignment="TextAlignment.Center">AK</TableHeaderCell>
+                            <TableHeaderCell>Bilance</TableHeaderCell>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        @if (CalculationEntities != null)
                         {
-                            <TableRow>
-                                <TableRowCell style="@($"padding-left: {entity.Depth}rem")">
-                                    <Div Flex="Flex.AlignItems.Center">
+                            @foreach (var entity in CalculationEntities)
+                            {
+                                <TableRow>
+                                    <TableRowCell style="@($"padding-left: {entity.Depth}rem")">
+                                        <Div Flex="Flex.AlignItems.Center">
 
-                                        @if (entity.IsLeading)
-                                        {
-                                            <Div Flex="Flex.AlignItems.Center.JustifyContent.Center" Padding="Padding.Is1" Style="width:25px; height:25px;" Margin="Margin.Is1.FromEnd" Border="Border.RoundedCircle" Background="Background.Info">
-                                                <Icon Name="@(entity.Icon)" />
-                                            </Div>
-                                        }
-                                        else
-                                        {
-                                            <Div  Flex="Flex.AlignItems.Center.JustifyContent.Center" Padding="Padding.Is1" Margin="Margin.Is1.FromEnd">
-                                                <Icon Name="@(entity.Icon)" />
-                                            </Div>
-                                        }
-                                        <Span>@entity.Name</Span>
-                                    </Div>
-                                </TableRowCell>
-                                <TableRowCell TextAlignment="TextAlignment.Center">
-                                    <Check TValue="bool" CheckedChanged="b => SetEntitySelected(entity, b)" Checked="@entity.IsSelected" />
-                                </TableRowCell>
-                                <TableRowCell TextAlignment="TextAlignment.Center">
-                                    <Div Style="width: 100px;" Margin="Margin.IsAuto">
-                                        <Field Margin="Margin.Is0">
-                                            <Addons>
-                                                <Addon AddonType="AddonType.Body">
-                                                    <TextEdit />
-                                                </Addon>
-                                                <Addon AddonType="AddonType.End">
-                                                    <AddonLabel>%</AddonLabel>
-                                                </Addon>
-                                            </Addons>
-                                        </Field>
-                                    </Div>
-                                </TableRowCell>
-                                <TableRowCell>1000Kč</TableRowCell>
-                            </TableRow>
+                                            @if (entity.IsLeading)
+                                            {
+                                                <Div Flex="Flex.AlignItems.Center.JustifyContent.Center" Padding="Padding.Is1" Style="width:25px; height:25px;" Margin="Margin.Is1.FromEnd" Border="Border.RoundedCircle" Background="Background.Info">
+                                                    <Icon Name="@(entity.Icon)" />
+                                                </Div>
+                                            }
+                                            else
+                                            {
+                                                <Div Flex="Flex.AlignItems.Center.JustifyContent.Center" Padding="Padding.Is1" Margin="Margin.Is1.FromEnd">
+                                                    <Icon Name="@(entity.Icon)" />
+                                                </Div>
+                                            }
+                                            <Span>@entity.Name</Span>
+                                        </Div>
+                                    </TableRowCell>
+                                    <TableRowCell TextAlignment="TextAlignment.Center">
+                                        <Check TValue="bool" CheckedChanged="b => SetEntitySelected(entity, b)" Checked="@entity.IsSelected" />
+                                    </TableRowCell>
+                                    <TableRowCell TextAlignment="TextAlignment.Center">
+                                        <Div Style="width: 100px;" Margin="Margin.IsAuto">
+                                            <Field Margin="Margin.Is0">
+                                                <Addons>
+                                                    <Addon AddonType="AddonType.Body">
+                                                        <TextEdit />
+                                                    </Addon>
+                                                    <Addon AddonType="AddonType.End">
+                                                        <AddonLabel>%</AddonLabel>
+                                                    </Addon>
+                                                </Addons>
+                                            </Field>
+                                        </Div>
+                                    </TableRowCell>
+                                    <TableRowCell>1000Kč</TableRowCell>
+                                </TableRow>
+                            }
                         }
-                    }
 
-                </TableBody>
-            </Table>
+                    </TableBody>
+                </Table>
+         </Column>
         </Row>
     </CardBody>
 </Card>
