@@ -16,6 +16,7 @@ using VEDriversLite.EntitiesBlocks.Sources.Dto;
 using VEDriversLite.EntitiesBlocks.Sources;
 using Newtonsoft.Json;
 using VEDriversLite.EntitiesBlocks.Handlers.Dto;
+using VEDriversLite.EntitiesBlocks.Blocks.Dto;
 
 namespace VEDriversLite.EntitiesBlocks.Handlers
 {
@@ -33,7 +34,10 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
         /// dictionary of all entities in the network, where the key is the uniue Id of the entity
         /// </summary>
         public ConcurrentDictionary<string, IEntity> Entities { get; set; } = new ConcurrentDictionary<string, IEntity>();
-
+        /// <summary>
+        /// Alocation schemes for split the amount of some block (for example automatic split shared PVE source between flats).
+        /// </summary>
+        public ConcurrentDictionary<string, AlocationScheme> AlocationSchemes { get; set; } = new ConcurrentDictionary<string, AlocationScheme>();
         /// <summary>
         /// Label of the unit of the Amount. For example "kWh" for energy application
         /// </summary>
@@ -52,6 +56,10 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
 
                 if (baseload != null)
                 {
+                    if (baseload.AlocationSchemes != null)
+                        foreach(var scheme in baseload.AlocationSchemes)
+                            AlocationSchemes.TryAdd(scheme.Key, scheme.Value);
+
                     foreach (var item in baseload.Sources)
                     {
                         if (item != null)
@@ -171,6 +179,10 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
             try
             {
                 var resultobj = new CompleteConfigDto();
+
+                foreach (var scheme in AlocationSchemes)
+                    resultobj.AlocationSchemes.TryAdd(scheme.Key, scheme.Value);
+
                 foreach (var src in Sources)
                 {
                     var s = new SourceConfigDto();

@@ -54,6 +54,10 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
         /// </summary>
         string ParentId { get; set; }
         /// <summary>
+        /// Alocation Scheme Id
+        /// </summary>
+        string AllocationSchemeId { get; set; }
+        /// <summary>
         /// Set when this block is parent of some repetitive blocks group.
         /// It means based on this block other was created and refers to its Id
         /// </summary>

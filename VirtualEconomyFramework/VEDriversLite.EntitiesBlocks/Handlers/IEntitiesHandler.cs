@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using VEDriversLite.EntitiesBlocks.Blocks;
+using VEDriversLite.EntitiesBlocks.Blocks.Dto;
 using VEDriversLite.EntitiesBlocks.Entities;
 using VEDriversLite.EntitiesBlocks.Tree;
 
@@ -24,6 +25,11 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
         /// dictionary of all entities in the network, where the key is the uniue Id of the entity
         /// </summary>
         ConcurrentDictionary<string, IEntity> Entities { get; set; }
+
+        /// <summary>
+        /// Alocation schemes for split the amount of some block (for example automatic split shared PVE source between flats).
+        /// </summary>
+        ConcurrentDictionary<string, AlocationScheme> AlocationSchemes { get; set; }
 
         /// <summary>
         /// Label of the unit of the Amount. For example "kWh" for energy application
