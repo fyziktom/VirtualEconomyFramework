@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using VEDriversLite.Common;
 using VEDriversLite.Common.Calendar;
+using VEDriversLite.EntitiesBlocks.Financial;
 
 namespace VEDriversLite.EntitiesBlocks.PVECalculations
 {

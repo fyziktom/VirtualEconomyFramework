@@ -190,7 +190,8 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
                                                                      bool withoutNullValueBlocks = false, 
                                                                      string name = "", 
                                                                      string description = "", 
-                                                                     string repetitiveSourceDataProfileId = "")
+                                                                     string repetitiveSourceDataProfileId = "",
+                                                                     string sourceId = "")
         {
             var result = new List<IBlock>();
             
@@ -233,6 +234,7 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
                         StartTime = k,
                         Timeframe = (TimeSpan)(k1 - k),
                         Used = false,
+                        SourceId = sourceId,
                         RepetitiveSourceBlockId = isChild ? repetitiveParentId : string.Empty,
                         Type = type,
                         Id = id

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using VEDriversLite.EntitiesBlocks.Blocks.Dto;
+using VEDriversLite.EntitiesBlocks.Financial;
 using VEDriversLite.EntitiesBlocks.PVECalculations;
 using VEDriversLite.EntitiesBlocks.PVECalculations.Dto;
 using VEDriversLite.EntitiesBlocks.StorageCalculations.Dto;
@@ -139,6 +140,14 @@ namespace VEDriversLite.EntitiesBlocks.StorageCalculations
         /// Template battery for this Battery Group
         /// </summary>
         public BatteryBlock CommonBattery { get; set; } = new BatteryBlock();
+        /// <summary>
+        /// Financial info about the whole Storage
+        /// </summary>
+        public FinancialInfo FinancialInfo { get; set; } = new FinancialInfo();
+        /// <summary>
+        /// Get total investment based on total power capacity of storage in time based on actual time and specified discont
+        /// </summary>
+        public double TotalInvestmentBasedOnPeakPower { get => FinancialInfo.DiscontedPrice; }
 
         /// <summary>
         /// Set parameters for the Common battery template
@@ -148,6 +157,32 @@ namespace VEDriversLite.EntitiesBlocks.StorageCalculations
         {
             CommonBattery = batteryblock.Clone();
             CommonBattery.GroupId = Id;
+        }
+
+        /// <summary>
+        /// Set discont of financial info
+        /// </summary>
+        /// <param name="discont"></param>
+        public void SetDiscont(double discont)
+        {
+            FinancialInfo.Discont.DiscontInPercentagePerYear = discont;
+        }
+
+        /// <summary>
+        /// Function will refresh some internal stats which relates on number of battery blocks, etc.
+        /// </summary>
+        public void Refresh()
+        {
+            FinancialInfo.InitialUnitPrice = FinancialInfoHelpers.AvgPricePerWCapacityForStorage * TotalCapacity;
+        }
+        /// <summary>
+        /// Get disconted value of the investment in time
+        /// </summary>
+        /// <param name="end">End time when the disconted price is requested</param>
+        /// <returns></returns>
+        public double GetInvestmentDiscontedInTime(DateTime end)
+        {
+            return FinancialInfo.GetDiscontedValue(end);
         }
 
         /// <summary>
@@ -221,7 +256,8 @@ namespace VEDriversLite.EntitiesBlocks.StorageCalculations
 
             foreach (var block in config.BatteryBlocks.Values)
                 BatteryBlocks.TryAdd(block.Id, block);
-                
+
+            Refresh();
             return true;
         }
 
@@ -471,6 +507,9 @@ namespace VEDriversLite.EntitiesBlocks.StorageCalculations
 
             var lastConsumedData = new List<DateTime>();
 
+            if (loaded <= 0.0)
+                loaded = 0.000001;
+
             if (consumptionData.ProfileData.Count > 1)
                 laststeptime = starttime - (consumptionData.ProfileData.Keys.Skip(1).Take(1).ToList().First() - starttime);
 
@@ -551,7 +590,7 @@ namespace VEDriversLite.EntitiesBlocks.StorageCalculations
             var dischargestarted = false;
             var avgmaxcharge = AverageMaxChargePower;
             var lastval = 0.0;
-            var unloaded = 0.0;
+            var unloaded = 0.0000001;
             if (consumptionData.ProfileData.Count > 1)
                 laststeptime = starttime - (consumptionData.ProfileData.Keys.Skip(1).Take(1).ToList().First() - starttime);
 
@@ -572,7 +611,7 @@ namespace VEDriversLite.EntitiesBlocks.StorageCalculations
 
                         if (dischargestarted)
                         {
-                            var value = step.Value;
+                            var value = Math.Abs(step.Value);
                             if (inputInkWh)
                                 value *= 1000;
 
