@@ -294,6 +294,8 @@ namespace VEDriversLite.EntitiesBlocks.PVECalculations
                 PVPanelsGroups.TryAdd(group.Id, gr);
             }
 
+            Refresh();
+
             return true;
         }
 

@@ -24,7 +24,7 @@ namespace VEDriversLite.EntitiesBlocks.Financial
         /// <summary>
         /// Time when the item has been bought
         /// </summary>
-        public DateTime BuyDate { get; set; } = DateTime.MinValue;
+        public DateTime BuyDate { get; set; } = DateTime.UtcNow;
         /// <summary>
         /// Discont value.
         /// 3%/y default value

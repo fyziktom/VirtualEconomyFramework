@@ -256,7 +256,8 @@ namespace VEDriversLite.EntitiesBlocks.StorageCalculations
 
             foreach (var block in config.BatteryBlocks.Values)
                 BatteryBlocks.TryAdd(block.Id, block);
-                
+
+            Refresh();
             return true;
         }
 

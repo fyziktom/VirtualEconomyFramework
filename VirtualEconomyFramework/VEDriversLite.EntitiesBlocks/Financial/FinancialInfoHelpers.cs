@@ -18,7 +18,7 @@ namespace VEDriversLite.EntitiesBlocks.Financial
         /// <summary>
         /// Statistic value of price for calculation costs of the Storage per W capacity
         /// </summary>
-        public static double AvgPricePerWCapacityForStorage { get; set; } = 0.1;
+        public static double AvgPricePerWCapacityForStorage { get; set; } = 0.2;
 
 
         /// <summary>

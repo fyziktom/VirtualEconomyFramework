@@ -127,6 +127,14 @@ namespace TestVEDriversLite
                     var firstmeasurespotDevice = eGrid.FindEntityByName("firstspotdevice");
                     var mainbattery = eGrid.FindEntityByName("mainbattery");
 
+
+                    var pveInvestment = PVESim.TotalInvestmentBasedOnPeakPower;
+                    var storageInvestment = StorageSim.TotalInvestmentBasedOnPeakPower;
+
+                    StorageSim.BatteryBlocks.Clear();
+                    var bat = StorageSim.CommonBattery.Clone();
+                    bat.Capacity = 10;
+                    StorageSim.AddBatteryBlock(bat).ToList();
                     // create alocation scheme
                     var alocationScheme = new AlocationScheme()
                     {
@@ -413,14 +421,20 @@ namespace TestVEDriversLite
                                     var totalUsedFromStorage = Math.Round(ddisch.ProfileData.Values.Sum() / 1000, 4);
 
 
+                                    // total consumption from first measure spot (base on tdd here)
+                                    var totalConsumptionFirstMeasureSpot = Math.Round(consumptionblocks.Item2.DataSum, 4);
                                     // device not consumed and forwarded up
                                     var totalfirstmeasurespotForwardedSourceBlocks = Math.Round(firstmeasuredspotPhase1.Item1.Where(b => b.Amount != 0).Select(b => b.Amount).Sum(), 4);
                                     // device not covered
                                     var totalfirstmeasureSpotNotCoveredConsuptionBlocks = Math.Round(firstmeasuredspotPhase1.Item2.Where(b => b.Amount != 0).Select(b => b.Amount).Sum(), 4);
+                                    // total consumption on device 
+                                    var totalConsumptionDevice = Math.Round(consumptionblocks1.Item2.DataSum, 4);
                                     // device not consumed and forwarded up
                                     var totalDeviceForwardedSourceBlocks = Math.Round(devicePhase2.Item1.Where(b => b.Amount != 0).Select(b => b.Amount).Sum(), 4);
                                     // device not covered
                                     var totaldeviceNotCoveredConsuptionBlocks = Math.Round(devicePhase2.Item2.Where(b => b.Amount != 0).Select(b => b.Amount).Sum(), 4);
+                                    // total consumption on device3
+                                    var totalConsumptionDevice3 = Math.Round(consumptionblocks2.Item2.DataSum, 4);
                                     // device3 not consumed and forwarded up
                                     var totalDevice3ForwardedSourceBlocks = Math.Round(device3Phase2.Item1.Where(b => b.Amount != 0).Select(b => b.Amount).Sum(), 4);
                                     // device3 not covered
@@ -441,10 +455,13 @@ namespace TestVEDriversLite
                                                      $"{totalOverProducedAfterConsumedImmediately}\t" +
                                                      $"{totalStored}\t" + 
                                                      $"{totalUsedFromStorage}\t" + 
+                                                     $"{totalConsumptionFirstMeasureSpot}\t" + 
                                                      $"{totalfirstmeasurespotForwardedSourceBlocks}\t" + 
                                                      $"{totalfirstmeasureSpotNotCoveredConsuptionBlocks}\t" + 
+                                                     $"{totalConsumptionDevice}\t" + 
                                                      $"{totalDeviceForwardedSourceBlocks}\t" + 
                                                      $"{totaldeviceNotCoveredConsuptionBlocks}\t" + 
+                                                     $"{totalConsumptionDevice3}\t" + 
                                                      $"{totalDevice3ForwardedSourceBlocks}\t" + 
                                                      $"{totaldevice3NotCoveredConsuptionBlocks}");
 
@@ -474,10 +491,13 @@ namespace TestVEDriversLite
                              "totalOverProducedAfterConsumedImmediately\t" +
                              "totalStored\t" +
                              "totalUsedFromStorage\t" +
+                             "totalConsumptionFirstMeasureSpot\t" +
                              "totalfirstmeasurespotForwardedSourceBlocks\t" +
                              "totalfirstmeasureSpotNotCoveredConsuptionBlocks\t" +
+                             "totalConsumptionDevice\t" +
                              "totalDeviceForwardedSourceBlocks\t" +
                              "totaldeviceNotCoveredConsuptionBlocks\t" +
+                             "totalConsumptionDevice3\t" +
                              "totalDevice3ForwardedSourceBlocks\t" +
                              "totaldevice3NotCoveredConsuptionBlocks";
 
