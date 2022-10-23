@@ -7,7 +7,7 @@
         <CardHeader>
             <Row>
                 <Column>
-                    <Span>Entities Tree</Span>
+                    <Heading Size="HeadingSize.Is5" Margin="Margin.Is0">Strom Entit</Heading>
                 </Column>
                 @if (DisplayRefreshButton && Tree != null && Tree.Id != null)
                 {
@@ -19,9 +19,8 @@
                 }
             </Row>
         </CardHeader>
-        <CardBody Margin="Margin.Is2.FromTop">
-            
-            <Row Margin="Margin.Is2.FromTop">
+        <CardBody>
+            <Row>
                 <Column>
                     @if (Tree != null)
                     {
@@ -34,7 +33,14 @@
                                   SelectedNodeChanged="SelectedNodeChangedHandler"
                                   @bind-ExpandedNodes="ExpandedNodes">
                             <NodeContent>
-                                @((context.Type == EntityType.Source ? "Source: " : "Consumer: ") + $"{context.Name}")
+                                @if (false)
+                                {
+                                    @((context.Type == EntityType.Source ? "Source: " : "Consumer: ") + $"{context.Name}")
+                                }
+                                else
+                                {
+                                    @context.Name
+                                }
                             </NodeContent>
                         </TreeView>
                     }

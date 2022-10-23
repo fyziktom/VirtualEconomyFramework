@@ -6,8 +6,8 @@
     {
         <CardHeader>
             <Row>
-                <Column>
-                    <CardTitle>@(Item.Type.ToString()) - @Item.Name</CardTitle>
+                <Column Flex="Flex.AlignItems.Center">
+                    <Heading Size="HeadingSize.Is5" Margin="Margin.Is0">@Item.Name</Heading>
                 </Column>
                 <Column>
                     <AddBlock Item="@Item"
@@ -20,19 +20,23 @@
             </Row>
         </CardHeader>
         <CardBody>
+            <Div Margin="Margin.Is2.FromBottom">
+               Časové hranice
+            </Div>
             <StartEndDaySelector StartTime="@StartTime"
                              EndTime="@EndTime"
                              StartTimeChanged="@startTimeDateChanged"
                              EndTimeChanged="@endTimeDateChanged"
-                             StartDayLabel="First run of the block line"
-                             EndDayLabel="Last run of the block line"
+                             StartDayLabel="Začatek"
+                             EndDayLabel="Konec"
                              ShowDatesAsLabels="false" />
         </CardBody>
-        <CardBody>
-            <EntityTotalBalance @ref=entityTotalBalance />
-        </CardBody>
+          
         <CardBody>
             <Row>
+                <Column ColumnSize="ColumnSize.Is9.OnDesktop.Is12">
+                      <EntityTotalBalance @ref=entityTotalBalance />
+                </Column>
                 <Column>
                     <Button Color="Color.Light" Clicked="@zoomReset" Float="Float.End">
                         <Icon Name="IconName.Undo" />
@@ -46,8 +50,9 @@
                 </Column>
             </Row>
         </CardBody>
-        <CardBody Overflow="Overflow.Scroll">
-            <Div Style="max-width:100%" Overflow="Overflow.Auto">
+        <CardBody Overflow="Overflow.Scroll" Padding="Padding.Is0.FromTop">
+          @if(false){
+                <Div Style="max-width:100%" Overflow="Overflow.Auto">
                 <Div Class="blocks-graph" Style="width:200%" Overflow="Overflow.Hidden">
                     <Row Position="Position.Relative" Style="z-index: 20;" TextAlignment="TextAlignment.End">
 
@@ -167,6 +172,7 @@
                     </Row>
                 </Div>
             </Div>
+          }
             <Row>
                 <Column>
 

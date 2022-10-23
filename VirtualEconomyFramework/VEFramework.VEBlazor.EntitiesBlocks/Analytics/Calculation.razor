@@ -1,4 +1,6 @@
-﻿@inject AppData AppData
+﻿@using VEFramework.VEBlazor.EntitiesBlocks.Model
+@inject AppData AppData
+@inject ICalculationService CalculationService
 
 <Card Margin="Margin.Is4.FromBottom" >
 
@@ -9,7 +11,7 @@
                 <FieldLabel>Rozpočet</FieldLabel>
                 <Addons Width="Width.Is25" Style="min-width: 15rem">
                     <Addon AddonType="AddonType.Body">
-                        <TextEdit Placeholder="Rozpočet" />
+                        <NumericEdit TValue="decimal" Placeholder="Rozpočet" @bind-Value="budget" />
                     </Addon>
                     <Addon AddonType="AddonType.End">
                         <AddonLabel >Kč</AddonLabel>
@@ -23,7 +25,7 @@
                 <FieldLabel>Úroková sazba</FieldLabel>
                 <Addons Width="Width.Is25" Style="min-width: 15rem">
                     <Addon AddonType="AddonType.Body">
-                        <TextEdit Placeholder="Úroková sazba" />
+                        <NumericEdit TValue="decimal" Placeholder="Úroková sazba" @bind-Value="interestRate" />
                     </Addon>
                     <Addon AddonType="AddonType.End">
                         <AddonLabel>%</AddonLabel>
@@ -68,7 +70,10 @@
                                         </Div>
                                     </TableRowCell>
                                     <TableRowCell TextAlignment="TextAlignment.Center">
-                                        <Check TValue="bool" CheckedChanged="b => SetEntitySelected(entity, b)" Checked="@entity.IsSelected" />
+                                        @if (!entity.HasChildren)
+                                        {
+                                            <Check TValue="bool" CheckedChanged="b => SetEntitySelected(entity, b)" Checked="@entity.IsSelected"/>
+                                        }
                                     </TableRowCell>
                                     <TableRowCell TextAlignment="TextAlignment.Center">
                                         <Div Style="width: 100px;" Margin="Margin.IsAuto">
@@ -77,7 +82,7 @@
                                                 <Field Margin="Margin.Is0">
                                                     <Addons>
                                                         <Addon AddonType="AddonType.Body">
-                                                            <TextEdit/>
+                                                            <NumericEdit TValue="int" ValueChanged="v => SetEntityAllocationKey(entity, v)"  />
                                                         </Addon>
                                                         <Addon AddonType="AddonType.End">
                                                             <AddonLabel>%</AddonLabel>
@@ -98,7 +103,7 @@
         </Row>
     </CardBody>
     <CardFooter>
-        <Button Clicked="@OnCalculate">Přepočítat</Button>
+        <Button Color="Color.Primary" Clicked="@OnCalculate">Přepočítat</Button>
     </CardFooter>
 </Card>
 
@@ -152,7 +157,7 @@
             Icon = GetIcon(item),
             Depth = depth,
             Entity = item.Entity,
-            
+            IsSelected = true
         });
 
         var children = item.GetChilds();
@@ -195,19 +200,7 @@
     private string rootItemId;
     
     
-    public class CalculationEntity
-    {
-        public string? Name { get; set; }
-        public string Icon { get; set; }
-        public int Depth { get; set; }
-        public bool IsLeading { get; set; }
-        public IEntity Entity { get; set; }
-        public bool IsSelected { get; set; }
-        public double ResultCostsBefore { get; set; }
-        public double ResultCostsAfter { get; set; }
-        public double AllocationKey { get; set; }
-        public bool HasChildren { get; set; }
-    }
+    
 
     private void SetEntitySelected(CalculationEntity item, bool b)
     {
@@ -216,7 +209,15 @@
 
     private void OnCalculate()
     {
-       
+        CalculationService.RunCalculation(CalculationEntities, budget, interestRate);
+    }
+
+    private decimal budget = 0;
+    private decimal interestRate = 0;
+
+    private void SetEntityAllocationKey(CalculationEntity item, int i)
+    {
+        item.AllocationKey = i;
     }
 
 }

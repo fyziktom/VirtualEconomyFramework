@@ -9,7 +9,7 @@
     <Column ColumnSize="ColumnSize.Is12">
         <Tabs SelectedTab="@sidebarSelectedTab" SelectedTabChanged="@OnSidebarSelectedTabChanged">
             <Items>
-                <Tab Name="tree">Tree</Tab>
+                <Tab Name="tree">Strom</Tab>
                 <Tab Name="backup">Backup</Tab>
             </Items>
             <Content>
@@ -22,7 +22,7 @@
                                        FloatButton="Float.Start" 
                                        WithButtonText="true" 
                                        WithButtonIcon="true" 
-                                       ButtonText=" Entity" />
+                                       ButtonText="Entita" />
                         </Column>
                         <Column>
                             <RemoveEntity Item="@Item" 
@@ -31,7 +31,7 @@
                                           FloatButton="Float.End" 
                                           WithButtonText="true" 
                                           WithButtonIcon="true" 
-                                          ButtonText=" Entity" />
+                                          ButtonText="Entita" />
                         </Column>
                     </Row>
                     <Row>
@@ -51,9 +51,9 @@
             <Column>
                 <Tabs SelectedTab="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged">
                     <Items>
-                        <Tab Name="blockstimegraph">Blocks time Graph</Tab>
-                        <Tab Name="balancetimegraph">Balance time Graph</Tab>
-                        <Tab Name="blockslist">Blocks List</Tab>
+                        <Tab Name="blockstimegraph">Časový diagram bloků</Tab>
+                        <Tab Name="balancetimegraph">Bilanční časový graf</Tab>
+                        <Tab Name="blockslist">Seznam bloků</Tab>
                     </Items>
                     <Content>
                         <TabPanel Name="blockstimegraph">

@@ -9,15 +9,11 @@
     </Row>
 }
 <Row>
-    <Column>
-        <Field>
-            <FieldLabel>@StartDayLabel</FieldLabel>
+    <Column ColumnSize="ColumnSize.Is4.OnFullHD.Is6.OnDesktop">
+        <Field Flex="Flex.AlignItems.Center">
+            <FieldLabel Margin="Margin.Is0.FromBottom.Is2.FromEnd">@StartDayLabel</FieldLabel>
             <Addons>
-                <Addon AddonType="AddonType.Start">
-                    <Button Color="Color.Light" Clicked="@(()=>datePickerStartTime.ToggleAsync())">
-                        <Icon Name="IconName.CalendarDay" />
-                    </Button>
-                </Addon>
+              
                 <Addon AddonType="AddonType.Body">
                     <DatePicker @ref="@datePickerStartTime"
                                 InputMode="DateInputMode.DateTime"
@@ -28,15 +24,11 @@
             </Addons>
         </Field>
     </Column>
-    <Column>
-        <Field>
-            <FieldLabel>@EndDayLabel</FieldLabel>
+    <Column ColumnSize="ColumnSize.Is4.OnFullHD.Is6.OnDesktop">
+        <Field Flex="Flex.AlignItems.Center">
+            <FieldLabel Margin="Margin.Is0.FromBottom.Is2.FromEnd">@EndDayLabel</FieldLabel>
             <Addons>
-                <Addon AddonType="AddonType.Start">
-                    <Button Color="Color.Light" Clicked="@(()=>datePickerEndTime.ToggleAsync())">
-                        <Icon Name="IconName.CalendarDay" />
-                    </Button>
-                </Addon>
+              
                 <Addon AddonType="AddonType.Body">
                     <DatePicker @ref="@datePickerEndTime"
                                 InputMode="DateInputMode.DateTime"

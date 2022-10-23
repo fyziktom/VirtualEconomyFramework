@@ -4,12 +4,22 @@
 
 <Row>
     <Column>
-        <Span>Total Created: @(Math.Round(totalCreated, 4)) @(AppData.EntitiesHandler.UnitLabel)</Span>
-            <Span>Total Stored: @(Math.Round(totalStored, 4)) @(AppData.EntitiesHandler.UnitLabel)</Span>
-        <Span TextColor="TextColor.Danger">Total Consumed: @(Math.Round(totalConsumed, 4)) @(AppData.EntitiesHandler.UnitLabel)</Span>
-        <Span TextColor="@(totalTotal < 0 ? TextColor.Danger : TextColor.Primary)">
-                Total Bilance: @(Math.Round(totalTotal, 4)) @(AppData.EntitiesHandler.UnitLabel)
-        </Span>
+        <Row>
+            <Column>
+                <Span>Celkem vyrobeno: @(Math.Round(totalCreated, 4)) @(AppData.EntitiesHandler.UnitLabel)</Span>
+                    <Span>Celkem uloženo: @(Math.Round(totalStored, 4)) @(AppData.EntitiesHandler.UnitLabel)</Span>
+                </Column>
+            </Row>
+
+            <Row>
+                <Column>
+                    <Span TextColor="TextColor.Danger">Celkem spotřebováno: @(Math.Round(totalConsumed, 4)) @(AppData.EntitiesHandler.UnitLabel)</Span>
+                    <Span TextColor="@(totalTotal < 0 ? TextColor.Danger : TextColor.Primary)">
+                        Celková bilance: @(Math.Round(totalTotal, 4)) @(AppData.EntitiesHandler.UnitLabel)
+                </Span>
+            </Column>
+        </Row>
+
     </Column>
 </Row>
 
