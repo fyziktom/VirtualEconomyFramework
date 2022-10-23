@@ -11,7 +11,7 @@
                 <FieldLabel>Rozpočet</FieldLabel>
                 <Addons Width="Width.Is25" Style="min-width: 15rem">
                     <Addon AddonType="AddonType.Body">
-                        <NumericEdit TValue="decimal" Placeholder="Rozpočet" @bind-Value="budget" />
+                        <NumericEdit Step="100000" TValue="decimal" Placeholder="Rozpočet" @bind-Value="budget" Min="0"/>
                     </Addon>
                     <Addon AddonType="AddonType.End">
                         <AddonLabel >Kč</AddonLabel>
@@ -25,7 +25,7 @@
                 <FieldLabel>Úroková sazba</FieldLabel>
                 <Addons Width="Width.Is25" Style="min-width: 15rem">
                     <Addon AddonType="AddonType.Body">
-                        <NumericEdit TValue="decimal" Placeholder="Úroková sazba" @bind-Value="interestRate" />
+                        <NumericEdit Step="0.1m" TValue="decimal" Placeholder="Úroková sazba" @bind-Value="interestRate" />
                     </Addon>
                     <Addon AddonType="AddonType.End">
                         <AddonLabel>%</AddonLabel>
@@ -77,13 +77,14 @@
                                         }
                                     </TableRowCell>
                                     <TableRowCell TextAlignment="TextAlignment.Center">
-                                        <Div Style="width: 100px;" Margin="Margin.IsAuto">
-                                            @if (entity.Entity is IConsumer { ConsumerType: ConsumerType.Device } && !entity.HasChildren)
+                                        <Div Style="width: 150px;" Margin="Margin.IsAuto">
+                                            @if (entity.Entity is IConsumer { ConsumerType: ConsumerType.Device } && !entity.HasChildren && entity.IsSelected)
                                             {
                                                 <Field Margin="Margin.Is0">
                                                     <Addons>
                                                         <Addon AddonType="AddonType.Body">
-                                                            <NumericEdit TValue="int" Step="1000000" ValueChanged="v => SetEntityAllocationKey(entity, v)"  />
+                                                            <NumericEdit TValue="double" Step="10" ValueChanged="v => SetEntityAllocationKey(entity, v)" 
+                                                                         Value="entity.AllocationKey" Min="0"/>
                                                         </Addon>
                                                         <Addon AddonType="AddonType.End">
                                                             <AddonLabel>%</AddonLabel>
@@ -94,13 +95,12 @@
                                         </Div>
                                     </TableRowCell>
                                     <TableRowCell>1000Kč</TableRowCell>
-                                    <TableRowCell>-500Kč</TableRowCell>
+                                    <TableRowCell>500Kč</TableRowCell>
 
 
                                 </TableRow>
                             }
                         }
-
                     </TableBody>
                 </Table>
             </Column>
@@ -109,10 +109,10 @@
     <CardFooter>
         <Row>
             <Column ColumnSize="ColumnSize.Is12.IsAuto.OnTablet" Flex="Flex.AlignItems.Center">
-                <Button Color="Color.Primary" Clicked="@OnCalculate" Disabled="!isCalculationEnabled">Přepočítat</Button>
+                <Button Color="Color.Primary" Clicked="@OnCalculate" Disabled="!isOk">Přepočítat</Button>
             </Column>
             <Column ColumnSize="ColumnSize.Is12.IsAuto.OnTablet"  Flex="Flex.AlignItems.Center">
-                <Alert Color="Color.Danger" Width="Width.Is100" TextAlignment="TextAlignment.Center" Visible="!isCalculationEnabled" Margin="Margin.Is0.FromBottom.Is2.FromTop.Is0.FromTop.OnTablet" Style="padding: 0.5rem;">
+                <Alert Color="Color.Danger" Width="Width.Is100" TextAlignment="TextAlignment.Center" Visible="!isOk" Margin="Margin.Is0.FromBottom.Is2.FromTop.Is0.FromTop.OnTablet" Style="padding: 0.5rem;">
                     <AlertMessage>Pozor!</AlertMessage>
                     <AlertDescription>Součet alokačních klíčů ma být 100%</AlertDescription>
                 </Alert>
@@ -127,7 +127,7 @@
 
     private List<CalculationEntity>? CalculationEntities { get; set; }
 
-    private bool isCalculationEnabled = true;
+    private bool isOk;
 
     protected override void OnParametersSet()
     {
@@ -145,6 +145,7 @@
         CalculationEntities = new List<CalculationEntity>();
 
         AddItemToList(root);
+        ValidateForm();
     }
 
     private void AddItemToList(TreeItem item, int depth = 0)
@@ -220,7 +221,24 @@
 
     private void SetEntitySelected(CalculationEntity item, bool b)
     {
+        Console.WriteLine($"Setting entity {item.Name} IsSelected={b}");
         item.IsSelected = b;
+
+        var children = CalculationEntities.Where(e => e.Entity.ParentId == item.Entity.Id);
+        foreach (var child in children)
+        {
+            child.IsSelected = b;
+            if (!b)
+            {
+                child.AllocationKey = 0;
+            }
+        }
+        
+        if (!b)
+        {
+            item.AllocationKey = 0;
+        }
+        ValidateForm();
     }
 
     private void OnCalculate()
@@ -231,9 +249,20 @@
     private decimal budget = 0;
     private decimal interestRate = 0;
 
-    private void SetEntityAllocationKey(CalculationEntity item, int i)
+    private void SetEntityAllocationKey(CalculationEntity item, double i)
     {
         item.AllocationKey = i;
+        ValidateForm();
     }
 
+    private void ValidateForm()
+    {
+        var keySum = CalculationEntities.Where(d => d.IsSelected).Sum(d => d.AllocationKey);
+        Console.WriteLine("keySum="+keySum);
+        isOk = keySum == 100;
+        
+       
+            StateHasChanged();
+        
+    }
 }
