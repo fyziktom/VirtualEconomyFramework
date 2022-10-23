@@ -113,6 +113,8 @@
 
     private List<CalculationEntity>? CalculationEntities { get; set; }
 
+    private bool isCalculationEnabled = true;
+
     protected override void OnParametersSet()
     {
         if (RootItemId != rootItemId)
