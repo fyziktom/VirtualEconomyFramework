@@ -6,7 +6,7 @@
             <Column ColumnSize="ColumnSize.Is9" Flex="Flex.AlignItems.Center">
                 <CardTitle Flex="Flex.AlignItems.Center" Class="entity-group-title">
                     <Span Margin="Margin.Is1.FromEnd">
-                        PV Panels Group -
+                        Skupina panelů -
                     </Span>
                     <Editable Item="@getGroup()" ParameterName="@(nameof(panelsGroup.Name))" TItem="PVPanelsGroup" ItemChanged="@OnPanelsGroupNameChanged" />
                 </CardTitle>
@@ -28,12 +28,12 @@
     {
                 <Table>
                     <TableHeader>
-                        <TableHeaderCell>Name</TableHeaderCell>
-                        <TableHeaderCell>Power</TableHeaderCell>
-                        <TableHeaderCell>Azimuth</TableHeaderCell>
+                        <TableHeaderCell>Název</TableHeaderCell>
+                    <TableHeaderCell>Energie</TableHeaderCell>
+                        <TableHeaderCell>Azimut</TableHeaderCell>
                         <TableHeaderCell>Latitude</TableHeaderCell>
                         <TableHeaderCell>Longitude</TableHeaderCell>
-                        <TableHeaderCell>Action</TableHeaderCell>
+                        <TableHeaderCell>Akce</TableHeaderCell>
                     </TableHeader>
                     <TableBody>
                         @foreach (var panel in Panels)
