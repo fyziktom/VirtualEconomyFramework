@@ -3,32 +3,11 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using VEDriversLite.Common.Enums;
 using VEDriversLite.Cryptocurrencies.Dto;
 
 namespace VEDriversLite.Cryptocurrencies
 {
-    /// <summary>
-    /// Types of supported currencies
-    /// </summary>
-    public enum CurrencyTypes
-    {
-        /// <summary>
-        /// Neblio
-        /// </summary>
-        NEBL,
-        /// <summary>
-        /// Dogecoin
-        /// </summary>
-        DOGE,
-        /// <summary>
-        /// United States Dollar
-        /// </summary>
-        USD,
-        /// <summary>
-        /// Czech Crown
-        /// </summary>
-        CZK
-    }
     /// <summary>
     /// Api exchange rates providers
     /// </summary>

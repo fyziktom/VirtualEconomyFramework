@@ -6,6 +6,7 @@ using VEDriversLite.Cryptocurrencies;
 using VEDriversLite.Dto;
 using VEDriversLite.Bookmarks;
 using VEDriversLite.NeblioAPI;
+using VEDriversLite.Common.Enums;
 
 public class AppData
 {

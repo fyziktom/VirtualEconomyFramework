@@ -115,6 +115,16 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
         /// </summary>
         /// <param name="id"></param>
         void ChangeAllEntityBlocksDirection(string id, BlockDirection direction, List<string> ids, BlockDirection originalDirection = BlockDirection.Mix);
+        /// <summary>
+        /// Change Blocks type all blocks in entity
+        /// </summary>
+        /// <param name="type"></param>
+        void ChangeAllBlocksType(string id, BlockType type, BlockType originalType = BlockType.Simulated);
+        /// <summary>
+        /// Change Blocks type specified blocks in entity
+        /// </summary>
+        /// <param name="type"></param>
+        void ChangeAllBlocksType(string id, BlockType type, List<string> ids, BlockType originalType = BlockType.Simulated);
 
         /// <summary>
         /// Get recalculated power consumption represented as list of Blocks split based on setted timegrame
@@ -131,7 +141,8 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
                                             DateTime endtime,
                                             bool withSubConsumers = true,
                                             bool takeConsumptionAsInvert = false,
-                                            List<BlockDirection> justThisDirections = null);
+                                            List<BlockDirection> justThisDirections = null, 
+                                            List<BlockType> justThisType = null);
         /// <summary>
         /// Get all Blocks with the all childern blocks
         /// </summary>
@@ -163,7 +174,8 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
                                                       bool invertWindow = false,
                                                       bool withSubConsumers = true,
                                                       bool takeConsumptionAsInvert = false,
-                                                      List<BlockDirection> justThisDirections = null);
+                                                      List<BlockDirection> justThisDirections = null,
+                                                      List<BlockType> justThisType = null);
         /// <summary>
         /// Get recalculated power consumption represented as list of Blocks split based on setted timegrame
         /// </summary>

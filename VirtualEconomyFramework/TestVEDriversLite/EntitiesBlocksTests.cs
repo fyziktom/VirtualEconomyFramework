@@ -127,6 +127,14 @@ namespace TestVEDriversLite
                     var firstmeasurespotDevice = eGrid.FindEntityByName("firstspotdevice");
                     var mainbattery = eGrid.FindEntityByName("mainbattery");
 
+
+                    var pveInvestment = PVESim.TotalInvestmentBasedOnPeakPower;
+                    var storageInvestment = StorageSim.TotalInvestmentBasedOnPeakPower;
+
+                    StorageSim.BatteryBlocks.Clear();
+                    var bat = StorageSim.CommonBattery.Clone();
+                    bat.Capacity = 10;
+                    StorageSim.AddBatteryBlock(bat).ToList();
                     // create alocation scheme
                     var alocationScheme = new AlocationScheme()
                     {
@@ -138,13 +146,13 @@ namespace TestVEDriversLite
                     {
                         PeerId = device.Id,
                         Name = device.Name,
-                        Percentage = 20
+                        Percentage = 40
                     });
-                    alocationScheme.DepositPeers.TryAdd(device.Id, new DepositPeer()
+                    alocationScheme.DepositPeers.TryAdd(device3.Id, new DepositPeer()
                     {
                         PeerId = device3.Id,
                         Name = device3.Name,
-                        Percentage = 20
+                        Percentage = 40
                     });
                     eGrid.AlocationSchemes.TryAdd(alocationScheme.Id, alocationScheme);
 
@@ -160,45 +168,24 @@ namespace TestVEDriversLite
                         {
                             Console.WriteLine($"Analysing {dtmp} Day {day} of {totalDays} total Days to analyze...");
                             // simulate production for each hour of day
-                            var production = new DataProfile();
-                            var tmp = dtmp;
-                            var tmpend = dtmp.AddDays(1);
-
-                            while (tmp < tmpend)
-                            {
-                                production.ProfileData.TryAdd(tmp, PVESim.GetTotalPowerInDateTime(tmp, coord, 1));
-                                tmp = tmp.AddHours(1);
-                            }
-
-                            // convert simulated PVE production dataprofile to blocks
-                            var productionblocks = DataProfileHelpers.ConvertDataProfileToBlocks(production,
-                                                                                                 BlockDirection.Created,
-                                                                                                 BlockType.Simulated,
+                            var productionblocks = PVESim.GetTotalPeakPowerInHourTimeframeBlocks(dtmp, 
+                                                                                                 dtmp.AddDays(1), 
+                                                                                                 coord, 1.0, 
                                                                                                  pvesource.Id).ToList();
-
+                            
                             // add day production blocks to the mainPVE entity
                             eGrid.AddBlocksToEntity(pvesource.Id, productionblocks);
 
                             // get consumption based on TDD for MeasureSpot1 (place where the PVE is connected through)
                             // it will cover whole consumption of this entity. 
-                            var consumption = ConsumersHelpers.GetConsumptionBasedOnTDD(tdds[0],
-                                                                                        dtmp,
-                                                                                        dtmp.AddDays(1),
-                                                                                        BlockTimeframe.Hour);
-
-                            // convert consumption by TDD dataprofile to blocks
-                            var consumptionblocks = DataProfileHelpers.ConvertDataProfileToBlocks(consumption,
-                                                                                                  BlockDirection.Consumed,
-                                                                                                  BlockType.Simulated,
-                                                                                                  firstmeasurespotDevice.Id,
-                                                                                                  0,
-                                                                                                  false,
-                                                                                                  "",
-                                                                                                  "",
-                                                                                                  consumption.Id).ToList();
+                            var consumptionblocks = ConsumersHelpers.GetConsumptionBlocksBasedOnTDD(tdds[0],
+                                                                                                    dtmp,
+                                                                                                    dtmp.AddDays(1),
+                                                                                                    BlockTimeframe.Hour,
+                                                                                                    firstmeasurespotDevice.Id);
 
                             // add day consumption blocks to the device in Frist Measure Spot entity
-                            eGrid.AddBlocksToEntity(firstmeasurespotDevice.Id, consumptionblocks);
+                            eGrid.AddBlocksToEntity(firstmeasurespotDevice.Id, consumptionblocks.Item1);
 
                             // get two list of blocks after first phase of calculation,
                             // when first measured spot (connection place for PVE) consume imediatelly what it can
@@ -206,13 +193,30 @@ namespace TestVEDriversLite
                             // the second list contains rest of the consumption which cannot be covered by the PVE.
                             var firstmeasuredspotPhase1 = GetEntityBalanceBlocksAfterAlocationOfPVEBlocks(firstmeasurespot, eGrid, dtmp);
 
+                            // keep Id connection between source and rest blocks
+                            foreach (var b in firstmeasuredspotPhase1.Item1)
+                            {
+                                var bs = productionblocks.Where(bl => bl.StartTime == b.StartTime).FirstOrDefault();
+                                if (bs != null)
+                                    b.Id = bs.Id;
+                            }
+                            // create clone of blocks to keep record after forward of blocks
+                            var forwardedProductionClone = BlockHelpers.CloneBlocks(firstmeasuredspotPhase1.Item1, true, true, BlockType.Forwarded).ToList();
+                            // var firstmeasuredSpotNotCovered = BlockHelpers.CloneBlocks(firstmeasuredspotPhase1.Item2, true, true, BlockType.NotCovered).ToList();
+
                             // change temporary blocks from pvesource and firstmeasurespot device to "Records" direction - not used in calcs
-                            eGrid.ChangeAllEntityBlocksDirection(firstmeasurespotDevice.Id, BlockDirection.ConsumedRecord, BlockDirection.Consumed);
-                            eGrid.ChangeAllEntityBlocksDirection(pvesource.Id, BlockDirection.CreatedRecord, BlockDirection.Created);
+                            //eGrid.ChangeAllBlocksType(firstmeasurespotDevice.Id, BlockType.Record, BlockType.Simulated);
+                            //eGrid.ChangeAllBlocksType(pvesource.Id, BlockType.Record, BlockType.Simulated);
+                            eGrid.RemoveAllEntityBlocks(firstmeasurespotDevice.Id);
+                            eGrid.RemoveAllEntityBlocks(pvesource.Id);
 
                             // add day consumption blocks to the device in Frist Measure Spot entity after the consumption is covered by PVE in first entity
                             eGrid.AddBlocksToEntity(firstmeasurespotDevice.Id, firstmeasuredspotPhase1.Item2);
-                            
+                            // keep record about forwarded blocks in entity
+                            // eGrid.AddBlocksToEntity(firstmeasurespotDevice.Id, forwardedProductionClone);
+                            // keep record about not covered consumption
+                            // eGrid.AddBlocksToEntity(firstmeasurespotDevice.Id, firstmeasuredSpotNotCovered);
+
                             // add day production blocks to the mainPVE entity based on allocation scheme
                             // if there is something over the alocation scheme peers values it is stored in network entity
                             eGrid.AddBlocksToEntity(network.Id, firstmeasuredspotPhase1.Item1, alocationScheme.Id);
@@ -220,40 +224,22 @@ namespace TestVEDriversLite
 
                             /////////////////////////
                             // add another consumptions to the entities
-
-                            var consumption1 = ConsumersHelpers.GetConsumptionBasedOnTDD(tdds[1],
-                                                                                         dtmp,
-                                                                                         dtmp.AddDays(1),
-                                                                                         BlockTimeframe.Hour);
-                            // convert consumption by TDD dataprofile to blocks
-                            var consumptionblocks1 = DataProfileHelpers.ConvertDataProfileToBlocks(consumption,
-                                                                                                   BlockDirection.Consumed,
-                                                                                                   BlockType.Simulated,
-                                                                                                   device.Id,
-                                                                                                   0,
-                                                                                                   false,
-                                                                                                   "",
-                                                                                                   "",
-                                                                                                   consumption1.Id).ToList();
+                            var consumptionblocks1 = ConsumersHelpers.GetConsumptionBlocksBasedOnTDD(tdds[1],
+                                                                                                     dtmp,
+                                                                                                     dtmp.AddDays(1),
+                                                                                                     BlockTimeframe.Hour,
+                                                                                                     device.Id);
                             // add day consumption blocks to the device1 in devicegroup
-                            eGrid.AddBlocksToEntity(device.Id, consumptionblocks1);
+                            eGrid.AddBlocksToEntity(device.Id, consumptionblocks1.Item1);
 
-                            var consumption2 = ConsumersHelpers.GetConsumptionBasedOnTDD(tdds[2],
-                                                                                         dtmp,
-                                                                                         dtmp.AddDays(1),
-                                                                                         BlockTimeframe.Hour);
-                            // convert consumption by TDD dataprofile to blocks
-                            var consumptionblocks2 = DataProfileHelpers.ConvertDataProfileToBlocks(consumption,
-                                                                                                   BlockDirection.Consumed,
-                                                                                                   BlockType.Simulated,
-                                                                                                   device.Id,
-                                                                                                   0,
-                                                                                                   false,
-                                                                                                   "",
-                                                                                                   "",
-                                                                                                   consumption2.Id).ToList();
+                            var consumptionblocks2 = ConsumersHelpers.GetConsumptionBlocksBasedOnTDD(tdds[2],
+                                                                                                     dtmp,
+                                                                                                     dtmp.AddDays(1),
+                                                                                                     BlockTimeframe.Hour,
+                                                                                                     device3.Id);
+                            
                             // add day consumption blocks to the device3 in devicegroup1
-                            eGrid.AddBlocksToEntity(device3.Id, consumptionblocks2);
+                            eGrid.AddBlocksToEntity(device3.Id, consumptionblocks2.Item1);
 
                             //////////////////////////
 
@@ -261,18 +247,55 @@ namespace TestVEDriversLite
                             // calculate the rests for the entities and cover their consumption based on the alocation
 
                             var devicePhase2 = GetEntityBalanceBlocksAfterAlocationOfPVEBlocks(device, eGrid, dtmp);
+
+                            // keep Id connection between source and rest blocks
+                            foreach (var b in devicePhase2.Item1)
+                            {
+                                var bs = consumptionblocks1.Item1.Where(bl => bl.StartTime == b.StartTime).FirstOrDefault();
+                                if (bs != null)
+                                    b.Id = bs.Id;
+                            }
+                            // create clone of blocks to keep record after forward of blocks
+                            var device2ForwardedClone = BlockHelpers.CloneBlocks(devicePhase2.Item1, true, true, BlockType.Forwarded).ToList();
+                            // var device2NotCoveredClone = BlockHelpers.CloneBlocks(devicePhase2.Item2, true, true, BlockType.NotCovered).ToList();
+
                             // change temporary blocks in device to "Records" direction - not used in calcs
-                            eGrid.ChangeAllEntityBlocksDirection(device.Id, BlockDirection.ConsumedRecord, BlockDirection.Consumed);
-                            eGrid.ChangeAllEntityBlocksDirection(device.Id, BlockDirection.CreatedRecord, BlockDirection.Created);
+                            // eGrid.ChangeAllBlocksType(device.Id, BlockType.Record, BlockType.Simulated);
+                            // eGrid.ChangeAllBlocksType(device.Id, BlockType.Record, BlockType.Simulated);
+                            eGrid.RemoveAllEntityBlocks(device.Id);
+
                             eGrid.AddBlocksToEntity(device.Id, devicePhase2.Item2);
+                            // keep record about forward of source blocks
+                            // eGrid.AddBlocksToEntity(device.Id,device2ForwardedClone);
+                            // keep record about not covered consumption
+                            // eGrid.AddBlocksToEntity(device.Id, device2NotCoveredClone);
                             // add rest of PVE production after consumption to network
                             eGrid.AddBlocksToEntity(network.Id, devicePhase2.Item1);
 
                             var device3Phase2 = GetEntityBalanceBlocksAfterAlocationOfPVEBlocks(device3, eGrid, dtmp);
-                            // change temporary blocks in device to "Records" direction - not used in calcs
-                            eGrid.ChangeAllEntityBlocksDirection(device3.Id, BlockDirection.ConsumedRecord, BlockDirection.Consumed);
-                            eGrid.ChangeAllEntityBlocksDirection(device3.Id, BlockDirection.CreatedRecord, BlockDirection.Created);
+
+                            // keep Id connection between source and rest blocks
+                            foreach (var b in device3Phase2.Item1)
+                            {
+                                var bs = consumptionblocks2.Item1.Where(bl => bl.StartTime == b.StartTime).FirstOrDefault();
+                                if (bs != null)
+                                    b.Id = bs.Id;
+                            }
+                            // create clone of blocks to keep record after forward of blocks
+                            var device3ForwardedClone = BlockHelpers.CloneBlocks(device3Phase2.Item1, true, true, BlockType.Forwarded).ToList();
+                            //var device3NotCoveredClone = BlockHelpers.CloneBlocks(device3Phase2.Item2, true, true, BlockType.NotCovered).ToList();
+
+                            // change temporary blocks in device to "Records" direction
+                            // eGrid.ChangeAllBlocksType(device3.Id, BlockType.Record, BlockType.Simulated);
+                            // eGrid.ChangeAllBlocksType(device3.Id, BlockType.Record, BlockType.Simulated);
+                            eGrid.RemoveAllEntityBlocks(device3.Id);
+
                             eGrid.AddBlocksToEntity(device3.Id, device3Phase2.Item2);
+                            // keep record about forward of source blocks
+                            // eGrid.AddBlocksToEntity(device3.Id, device3ForwardedClone);
+                            // keep record about not covered consumption
+                            // eGrid.AddBlocksToEntity(device3.Id, device3NotCoveredClone);
+
                             // add rest of PVE production after consumption to network
                             eGrid.AddBlocksToEntity(network.Id, device3Phase2.Item1);
 
@@ -286,7 +309,8 @@ namespace TestVEDriversLite
                                                                                 dtmp.AddDays(1),
                                                                                 true,
                                                                                 true,
-                                                                                new List<BlockDirection>() { BlockDirection.Created });
+                                                                                new List<BlockDirection>() { BlockDirection.Created },
+                                                                                new List<BlockType>() { BlockType.Simulated });
 
                             var productionPhase3Profile = DataProfileHelpers.ConvertBlocksToDataProfile(productionPhase3);
 
@@ -297,7 +321,8 @@ namespace TestVEDriversLite
                                                                                  dtmp.AddDays(1),
                                                                                  true,
                                                                                  true,
-                                                                                 new List<BlockDirection>() { BlockDirection.Consumed });
+                                                                                 new List<BlockDirection>() { BlockDirection.Consumed },
+                                                                                 new List<BlockType>() { BlockType.Simulated });
 
                             var consumptionPhase3Profile = DataProfileHelpers.ConvertBlocksToDataProfile(consumptionPhase3);
 
@@ -345,7 +370,8 @@ namespace TestVEDriversLite
                                                                             dtmp.AddDays(1),
                                                                             true,
                                                                             true,
-                                                                            new List<BlockDirection>() { BlockDirection.Created, BlockDirection.Consumed });
+                                                                            new List<BlockDirection>() { BlockDirection.Created, BlockDirection.Consumed },
+                                                                            new List<BlockType>() { BlockType.Simulated, BlockType.Calculated, BlockType.Real });
 
                                     // get consumption of the whole network in the day in window of Day Tariff
                                     var netwDT = eGrid.GetConsumptionOfEntityWithWindow(network.Id,
@@ -357,7 +383,8 @@ namespace TestVEDriversLite
                                                                                         false,
                                                                                         true,
                                                                                         true,
-                                                                                        new List<BlockDirection>() { BlockDirection.Created, BlockDirection.Consumed });
+                                                                                        new List<BlockDirection>() { BlockDirection.Created, BlockDirection.Consumed },
+                                                                                        new List<BlockType>() { BlockType.Simulated, BlockType.Calculated, BlockType.Real });
 
                                     // get consumption of the whole network in the day in window of Night Tariff (set invertWindow parameter as true)
                                     var netwNT = eGrid.GetConsumptionOfEntityWithWindow(network.Id,
@@ -369,8 +396,11 @@ namespace TestVEDriversLite
                                                                                         true,
                                                                                         true,
                                                                                         true,
-                                                                                        new List<BlockDirection>() { BlockDirection.Created, BlockDirection.Consumed });
+                                                                                        new List<BlockDirection>() { BlockDirection.Created, BlockDirection.Consumed },
+                                                                                        new List<BlockType>() { BlockType.Simulated, BlockType.Calculated, BlockType.Real });
 
+
+                                    
                                     ////////////// whole day stats
                                     // total needed from Day tariff
                                     var totalDT = Math.Round(netwDT.Where(b => b.Amount < 0).Select(b => b.Amount).Sum(),4);
@@ -382,14 +412,34 @@ namespace TestVEDriversLite
                                     var totalNTOverProduction = Math.Round(netwNT.Where(b => b.Amount > 0).Select(b => b.Amount).Sum(), 4);
 
                                     // total produced from own PVE
-                                    var totalproduced = Math.Round(production.ProfileData.Values.Sum(), 4);
+                                    var totalproduced = Math.Round(productionblocks.Where(b => b.Amount > 0).Select(b => b.Amount).Sum(), 4);
                                     // total produced from own PVE over the consumption during the production phase of PVE
                                     var totalOverProducedAfterConsumedImmediately = Math.Round(productionPhase3Profile.ProfileData.Values.Sum(), 4);
                                     // total stored in storage from PVE production
                                     var totalStored = Math.Round(dch.ProfileData.Values.Sum(), 4);
                                     // total used from storage for consumption 
                                     var totalUsedFromStorage = Math.Round(ddisch.ProfileData.Values.Sum() / 1000, 4);
-                                    
+
+
+                                    // total consumption from first measure spot (base on tdd here)
+                                    var totalConsumptionFirstMeasureSpot = Math.Round(consumptionblocks.Item2.DataSum, 4);
+                                    // device not consumed and forwarded up
+                                    var totalfirstmeasurespotForwardedSourceBlocks = Math.Round(firstmeasuredspotPhase1.Item1.Where(b => b.Amount != 0).Select(b => b.Amount).Sum(), 4);
+                                    // device not covered
+                                    var totalfirstmeasureSpotNotCoveredConsuptionBlocks = Math.Round(firstmeasuredspotPhase1.Item2.Where(b => b.Amount != 0).Select(b => b.Amount).Sum(), 4);
+                                    // total consumption on device 
+                                    var totalConsumptionDevice = Math.Round(consumptionblocks1.Item2.DataSum, 4);
+                                    // device not consumed and forwarded up
+                                    var totalDeviceForwardedSourceBlocks = Math.Round(devicePhase2.Item1.Where(b => b.Amount != 0).Select(b => b.Amount).Sum(), 4);
+                                    // device not covered
+                                    var totaldeviceNotCoveredConsuptionBlocks = Math.Round(devicePhase2.Item2.Where(b => b.Amount != 0).Select(b => b.Amount).Sum(), 4);
+                                    // total consumption on device3
+                                    var totalConsumptionDevice3 = Math.Round(consumptionblocks2.Item2.DataSum, 4);
+                                    // device3 not consumed and forwarded up
+                                    var totalDevice3ForwardedSourceBlocks = Math.Round(device3Phase2.Item1.Where(b => b.Amount != 0).Select(b => b.Amount).Sum(), 4);
+                                    // device3 not covered
+                                    var totaldevice3NotCoveredConsuptionBlocks = Math.Round(device3Phase2.Item2.Where(b => b.Amount != 0).Select(b => b.Amount).Sum(), 4);
+
                                     // get rest in batery to load it next day morning as overstored from last day
                                     // it is inserted in charge and discharge profiles calculations
                                     if (bil.ProfileData.TryGetValue(bil.LastDate, out var val))
@@ -404,7 +454,16 @@ namespace TestVEDriversLite
                                                      $"{totalproduced}\t" +
                                                      $"{totalOverProducedAfterConsumedImmediately}\t" +
                                                      $"{totalStored}\t" + 
-                                                     $"{totalUsedFromStorage}");
+                                                     $"{totalUsedFromStorage}\t" + 
+                                                     $"{totalConsumptionFirstMeasureSpot}\t" + 
+                                                     $"{totalfirstmeasurespotForwardedSourceBlocks}\t" + 
+                                                     $"{totalfirstmeasureSpotNotCoveredConsuptionBlocks}\t" + 
+                                                     $"{totalConsumptionDevice}\t" + 
+                                                     $"{totalDeviceForwardedSourceBlocks}\t" + 
+                                                     $"{totaldeviceNotCoveredConsuptionBlocks}\t" + 
+                                                     $"{totalConsumptionDevice3}\t" + 
+                                                     $"{totalDevice3ForwardedSourceBlocks}\t" + 
+                                                     $"{totaldevice3NotCoveredConsuptionBlocks}");
 
                                     // create line for export
                                     var line = $"{dtmp}";
@@ -431,7 +490,16 @@ namespace TestVEDriversLite
                              "totalproduced\t" +
                              "totalOverProducedAfterConsumedImmediately\t" +
                              "totalStored\t" +
-                             "totalUsedFromStorage";
+                             "totalUsedFromStorage\t" +
+                             "totalConsumptionFirstMeasureSpot\t" +
+                             "totalfirstmeasurespotForwardedSourceBlocks\t" +
+                             "totalfirstmeasureSpotNotCoveredConsuptionBlocks\t" +
+                             "totalConsumptionDevice\t" +
+                             "totalDeviceForwardedSourceBlocks\t" +
+                             "totaldeviceNotCoveredConsuptionBlocks\t" +
+                             "totalConsumptionDevice3\t" +
+                             "totalDevice3ForwardedSourceBlocks\t" +
+                             "totaldevice3NotCoveredConsuptionBlocks";
 
                 FileHelpers.AppendLineToTextFile(header, filenameBilance);
                 foreach (var line in linesBilance)
@@ -456,7 +524,7 @@ namespace TestVEDriversLite
                                                                                       BlockType.Simulated,
                                                                                       entity.Id).ToList();
 
-                var productionblocks = DataProfileHelpers.ConvertDataProfileToBlocks(res.Item2,
+                var productionblocks = DataProfileHelpers.ConvertDataProfileToBlocks(res.Item1,
                                                                                      BlockDirection.Created,
                                                                                      BlockType.Simulated,
                                                                                      entity.Id).ToList();
@@ -475,7 +543,8 @@ namespace TestVEDriversLite
                                                     dtmp.AddDays(1),
                                                     true,
                                                     true,
-                                                    new List<BlockDirection>() { BlockDirection.Created, BlockDirection.Consumed });
+                                                    new List<BlockDirection>() { BlockDirection.Created, BlockDirection.Consumed },
+                                                    new List<BlockType>() { BlockType.Simulated });
 
             var consprof = DataProfileHelpers.ConvertBlocksToDataProfile(cons);
             // get production after some part was consumed with sun-day consumption
