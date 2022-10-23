@@ -34,7 +34,14 @@
                                   SelectedNodeChanged="SelectedNodeChangedHandler"
                                   @bind-ExpandedNodes="ExpandedNodes">
                             <NodeContent>
-                                @((context.Type == EntityType.Source ? "Source: " : "Consumer: ") + $"{context.Name}")
+                                @if (false)
+                                {
+                                    @((context.Type == EntityType.Source ? "Source: " : "Consumer: ") + $"{context.Name}")
+                                }
+                                else
+                                {
+                                    @context.Name
+                                }
                             </NodeContent>
                         </TreeView>
                     }
