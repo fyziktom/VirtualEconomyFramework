@@ -10,13 +10,15 @@ public partial class CalculationService
     : ICalculationService
 {
     private readonly AppData appData;
+    private readonly HttpClient httpClient;
 
     public CalculationService(IServiceProvider serviceProvider)
     {
         appData = serviceProvider.GetRequiredService<AppData>();
+        httpClient = serviceProvider.GetRequiredService<HttpClient>();
     }
 
-    public Task RunCalculation(IEnumerable<CalculationEntity> calculationEntities,
+    public async Task RunCalculation(IEnumerable<CalculationEntity> calculationEntities,
         decimal budget, decimal interestRate)
     {
         var (_, oldEntitiesConfig) = appData.EntitiesHandler.ExportToConfig();
@@ -32,8 +34,8 @@ public partial class CalculationService
             var (_, filteredEntitiesConfig) = appData.EntitiesHandler.ExportToConfig();
             var filteredPveConfig = appData.PVEGrid.ExportSettingsToJSON();
             var filteredStorageConfig = appData.BatteryStorage.ExportSettingsToJSON();
-            DoCalculation(filteredEntitiesConfig, filteredPveConfig, filteredStorageConfig,
-                budget, interestRate, new DateTime(2022,1,1), deviceLeadingMap );
+            await DoCalculation(filteredEntitiesConfig, filteredPveConfig, filteredStorageConfig,
+                                budget, interestRate, new DateTime(2022,1,1), deviceLeadingMap );
         }
         finally
         {
@@ -42,7 +44,7 @@ public partial class CalculationService
             appData.BatteryStorage.ImportConfigFromJson(oldEntitiesConfig);
         }
         
-        return Task.CompletedTask;
+        return;
     }
 
     private void FilterStorage(IEnumerable<CalculationEntity> calculationEntities)

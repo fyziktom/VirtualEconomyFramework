@@ -15,10 +15,7 @@ namespace VEFramework.VEBlazor.EntitiesBlocks.Services;
 
 public partial class CalculationService
 {
-    [Inject]
-    public HttpClient Http { get; set; }
-
-    private Task DoCalculation(string filteredEntitiesConfig, string filteredPveConfig, string filteredStorageConfig,
+    private async Task DoCalculation(string filteredEntitiesConfig, string filteredPveConfig, string filteredStorageConfig,
         decimal budget, decimal interestRate, DateTime endDate, IDictionary<string, bool> deviceLeadingMap)
     {
         // SET start of Day tariff
@@ -47,9 +44,9 @@ public partial class CalculationService
             alocationScheme = new AlocationScheme();
 
         // load simulators
-        if (!eGrid.LoadFromConfig(filteredEntitiesConfig).Item1) return Task.CompletedTask;
-        if (!PVESim.ImportConfigFromJson(filteredPveConfig)) return Task.CompletedTask;
-        if (!StorageSim.ImportConfigFromJson(filteredStorageConfig)) return Task.CompletedTask;
+        if (!eGrid.LoadFromConfig(filteredEntitiesConfig).Item1) return;
+        if (!PVESim.ImportConfigFromJson(filteredPveConfig)) return;
+        if (!StorageSim.ImportConfigFromJson(filteredStorageConfig)) return;
 
         var network = eGrid.GetEntity("7b27c442-ad40-4679-b6d5-8873d9763996", EntityType.Consumer);
         eGrid.RemoveAllEntityBlocks(network.Id);
@@ -62,19 +59,20 @@ public partial class CalculationService
 
         //var firstmeasurespotDevice = eGrid.FindEntityByName("firstspotdevice");
         var mainbattery = eGrid.GetEntity("d29a0515-a112-4ca1-9e57-373cace32330", EntityType.Source);
-        eGrid.RemoveAllEntityBlocks(mainbattery.Id);
+        if (mainbattery != null)
+            eGrid.RemoveAllEntityBlocks(mainbattery.Id);
 
         var pveInvestment = PVESim.TotalInvestmentBasedOnPeakPower;
         var storageInvestment = StorageSim.TotalInvestmentBasedOnPeakPower;
 
         var coord = new Coordinates(PVESim.MedianLatitude, PVESim.MedianLongitude);
 
-        var tddfromfile = Http.GetStringAsync("tdd.csv").GetAwaiter().GetResult();
+        var tddfromfile = await httpClient.GetStringAsync("tdd.csv");
         var tdds = new List<DataProfile>();
         if (tddfromfile != null)
             tdds = ConsumersHelpers.LoadTDDs(tddfromfile);
 
-        if (pvesource != null && mainbattery != null)
+        if (pvesource != null)
         {
             var dtmp = start;
             var dend = endDate;
@@ -335,7 +333,7 @@ public partial class CalculationService
         }
 
         Console.WriteLine("Running calculation");
-        return Task.CompletedTask;
+        return;
     }
 
     public static (List<IBlock>, List<IBlock>) GetEntityBalanceBlocksAfterAlocationOfPVEBlocks(IEntity entity, IEntitiesHandler eGrid, DateTime dtmp)
