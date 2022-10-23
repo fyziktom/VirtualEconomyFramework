@@ -32,10 +32,10 @@
                              ShowDatesAsLabels="false" />
         </CardBody>
         <CardBody>
-            <EntityTotalBalance @ref=entityTotalBalance />
-        </CardBody>
-        <CardBody>
             <Row>
+                <Column ColumnSize="ColumnSize.Is9.OnDesktop.Is12">
+                      <EntityTotalBalance @ref=entityTotalBalance />
+                </Column>
                 <Column>
                     <Button Color="Color.Light" Clicked="@zoomReset" Float="Float.End">
                         <Icon Name="IconName.Undo" />

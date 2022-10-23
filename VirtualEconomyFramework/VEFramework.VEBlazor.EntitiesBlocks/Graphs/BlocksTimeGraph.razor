@@ -34,7 +34,7 @@
           
         <CardBody>
             <Row>
-                <Column>
+                <Column ColumnSize="ColumnSize.Is9.OnDesktop.Is12">
                       <EntityTotalBalance @ref=entityTotalBalance />
                 </Column>
                 <Column>
@@ -50,7 +50,7 @@
                 </Column>
             </Row>
         </CardBody>
-        <CardBody Overflow="Overflow.Scroll">
+        <CardBody Overflow="Overflow.Scroll" Padding="Padding.Is0.FromTop">
           @if(false){
                 <Div Style="max-width:100%" Overflow="Overflow.Auto">
                 <Div Class="blocks-graph" Style="width:200%" Overflow="Overflow.Hidden">
