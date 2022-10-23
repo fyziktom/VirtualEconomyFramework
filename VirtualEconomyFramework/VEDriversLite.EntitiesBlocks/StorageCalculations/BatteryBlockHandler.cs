@@ -507,6 +507,9 @@ namespace VEDriversLite.EntitiesBlocks.StorageCalculations
 
             var lastConsumedData = new List<DateTime>();
 
+            if (loaded <= 0.0)
+                loaded = 0.000001;
+
             if (consumptionData.ProfileData.Count > 1)
                 laststeptime = starttime - (consumptionData.ProfileData.Keys.Skip(1).Take(1).ToList().First() - starttime);
 
@@ -587,7 +590,7 @@ namespace VEDriversLite.EntitiesBlocks.StorageCalculations
             var dischargestarted = false;
             var avgmaxcharge = AverageMaxChargePower;
             var lastval = 0.0;
-            var unloaded = 0.0;
+            var unloaded = 0.0000001;
             if (consumptionData.ProfileData.Count > 1)
                 laststeptime = starttime - (consumptionData.ProfileData.Keys.Skip(1).Take(1).ToList().First() - starttime);
 
