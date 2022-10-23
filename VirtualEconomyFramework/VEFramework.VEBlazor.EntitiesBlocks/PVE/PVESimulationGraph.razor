@@ -2,23 +2,23 @@
 
 <Card Margin="Margin.Is4.FromBottom">
     <CardHeader>
-        <CardTitle>PVE Simulation - @AppData.PVEGrid.Name</CardTitle>
+        <CardTitle>FVE Simulace - @AppData.PVEGrid.Name</CardTitle>
     </CardHeader>
     <CardBody>
         <Row Margin="Margin.Is1.FromTop">
             <Column>
-                <Button Color="Color.Primary" Outline Clicked="@(async () => await Refresh())">Redraw Simulation</Button>
+                <Button Color="Color.Primary" Outline Clicked="@(async () => await Refresh())">Spustit simulace</Button>
             </Column>
         </Row>
         <Row Margin="Margin.Is2.FromTop">
             <Column>
-                <Span>Selected Date: @(Start.ToString("dd.MM.yyyy")) </Span>
+                <Span>Zvolené datum: @(Start.ToString("dd.MM.yyyy")) </Span>
             </Column>
         </Row>
         <Row Margin="Margin.Is2.FromTop">
             <Column>
                 <Slider @ref=slider TValue="int" Step="1" Value="sliderValue" Max="365" ValueChanged="@OnsliderValueChanged" />
-                <Small>Change slider for different day</Small>
+                <Small>Posunte slider pro výběr pro výběr dalšího dne</Small>
             </Column>
         </Row>
         <Row Margin="Margin.Is4.FromTop">

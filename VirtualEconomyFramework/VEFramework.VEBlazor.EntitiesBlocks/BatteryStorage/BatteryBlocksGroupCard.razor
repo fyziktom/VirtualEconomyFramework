@@ -4,7 +4,7 @@
     <CardHeader>
         <Row>
             <Column>
-                <CardTitle>Battery Storage - @Name</CardTitle>
+                <CardTitle>Bateriové úložiště - @Name</CardTitle>
             </Column>
             <Column>
                 <AddBatteryBlock @ref=addBatteryBlockModal
@@ -23,11 +23,11 @@
         {
             <Table>
                 <TableHeader>
-                    <TableHeaderCell>Name</TableHeaderCell>
-                    <TableHeaderCell>Capacity</TableHeaderCell>
-                    <TableHeaderCell>MaxCharge</TableHeaderCell>
-                    <TableHeaderCell>MaxDischarge</TableHeaderCell>
-                    <TableHeaderCell>Action</TableHeaderCell>
+                    <TableHeaderCell>Název</TableHeaderCell>
+                    <TableHeaderCell>Kapacita</TableHeaderCell>
+                    <TableHeaderCell>Max nabíjení</TableHeaderCell>
+                    <TableHeaderCell>Max vybíjení</TableHeaderCell>
+                    <TableHeaderCell>Akce</TableHeaderCell>
                 </TableHeader>
                 <TableBody>
                     @foreach (var bblock in BatteryBlocks)

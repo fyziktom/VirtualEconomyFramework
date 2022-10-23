@@ -2,22 +2,22 @@
 
 <Card Margin="Margin.Is4.FromBottom">
     <CardHeader>
-        <CardTitle>PVE Year Graph - @AppData.PVEGrid.Name</CardTitle>
+        <CardTitle>FVE roční graf - @AppData.PVEGrid.Name</CardTitle>
     </CardHeader>
     <CardBody>
         <Row Margin="Margin.Is1.FromTop">
             <Column>
-                <Button Color="Color.Primary" Outline Clicked="@(async () => await Refresh())">Redraw Simulation</Button>
+                <Button Color="Color.Primary" Outline Clicked="@(async () => await Refresh())">Spustit simulace</Button>
             </Column>
         </Row>
         <Row Margin="Margin.Is2.FromTop">
             <Column>
-                <Span>Selected Date: @(Start.ToString("dd.MM.yyyy")) </Span>
+                <Span>Zvolené datum: @(Start.ToString("dd.MM.yyyy")) </Span>
             </Column>
         </Row>
         <Row Margin="Margin.Is2.FromTop">
             <Column>
-                <Span>Year Total Power: @YearTotalPower kWh </Span>
+                <Span>Celková roční energie: @YearTotalPower kWh </Span>
             </Column>
         </Row>
         @if (FinalBlocksForPlan != null && FinalBlocksForPlan.Count > 0 && AppData.SelectedItem != null)
