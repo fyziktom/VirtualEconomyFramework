@@ -607,7 +607,7 @@ namespace VEDriversLite.EntitiesBlocks.StorageCalculations
 
                         if (dischargestarted)
                         {
-                            var value = step.Value;
+                            var value = Math.Abs(step.Value);
                             if (inputInkWh)
                                 value *= 1000;
 

@@ -449,12 +449,11 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
                             blks.Add(b);
                         }
 
-                        if (entity.AddBlocks(blks))
-                            return (true, $"Block added to the entity {entity.Name} - {id}.");
-                        else
-                            return (true, $"Cannot add block to the entity {entity.Name} - {id}.");
+                        entity.AddBlocks(blks);
                     }
                 }
+
+                return (true, $"Blocks added to the entity - {id}.");
             }
             else
             {

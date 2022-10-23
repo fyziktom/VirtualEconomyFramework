@@ -359,7 +359,7 @@ namespace VEDriversLite.EntitiesBlocks.Entities
             else if (justThisType != null && justThisType.Count > 0 && justThisDirections != null && justThisDirections.Count > 0)
                 blocks = blocks.Where(b => justThisType.Contains(b.Type) && justThisDirections.Contains(b.Direction)).OrderBy(b => b.StartTime);
 
-            var repblocksresult = GetSummedValuesOfRepetitiveBlocks(timeframesteps, starttime, endtime, takeConsumptionAsInvert);
+            var repblocksresult = GetSummedValuesOfRepetitiveBlocks(timeframesteps, starttime, endtime, takeConsumptionAsInvert, justThisDirections, justThisType);
 
             var counter = 0;
             foreach (var block in blocks)
@@ -430,9 +430,9 @@ namespace VEDriversLite.EntitiesBlocks.Entities
             var repetitiveBlocksSources = Blocks.Values.Where(b => !b.IsRepetitiveChild && b.IsRepetitiveSource && b.StartTime < endtime)
                                                              .OrderBy(b => b.StartTime);
 
-            if (justThisDirections != null && justThisDirections.Count > 0)
+            if (justThisDirections != null && justThisDirections.Count > 0 && justThisType == null)
                 repetitiveBlocksSources = repetitiveBlocksSources.Where(b => justThisDirections.Contains(b.Direction)).OrderBy(b => b.StartTime);            
-            else if (justThisType != null && justThisType.Count > 0)
+            else if (justThisType != null && justThisType.Count > 0 && justThisDirections == null)
                 repetitiveBlocksSources = repetitiveBlocksSources.Where(b => justThisType.Contains(b.Type)).OrderBy(b => b.StartTime);
             else if (justThisType != null && justThisType.Count > 0 && justThisDirections != null && justThisDirections.Count > 0)
                 repetitiveBlocksSources = repetitiveBlocksSources.Where(b => justThisType.Contains(b.Type) && justThisDirections.Contains(b.Direction)).OrderBy(b => b.StartTime);

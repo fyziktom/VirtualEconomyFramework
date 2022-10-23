@@ -66,7 +66,7 @@ namespace TestVEDriversLite
             // SET Start of the simulation
             var start = new DateTime(2022, 1, 1);
             // SET Number of days which you want to simulate
-            var daysOfSimulation = 30;
+            var daysOfSimulation = 365;
             // SET start of Day tariff
             var startOfDT = new TimeSpan(6, 0, 0);
             // SET start of Night tariff
@@ -138,13 +138,13 @@ namespace TestVEDriversLite
                     {
                         PeerId = device.Id,
                         Name = device.Name,
-                        Percentage = 20
+                        Percentage = 40
                     });
-                    alocationScheme.DepositPeers.TryAdd(device.Id, new DepositPeer()
+                    alocationScheme.DepositPeers.TryAdd(device3.Id, new DepositPeer()
                     {
                         PeerId = device3.Id,
                         Name = device3.Name,
-                        Percentage = 20
+                        Percentage = 40
                     });
                     eGrid.AlocationSchemes.TryAdd(alocationScheme.Id, alocationScheme);
 
@@ -197,13 +197,15 @@ namespace TestVEDriversLite
                             // var firstmeasuredSpotNotCovered = BlockHelpers.CloneBlocks(firstmeasuredspotPhase1.Item2, true, true, BlockType.NotCovered).ToList();
 
                             // change temporary blocks from pvesource and firstmeasurespot device to "Records" direction - not used in calcs
-                            eGrid.ChangeAllBlocksType(firstmeasurespotDevice.Id, BlockType.Record, BlockType.Simulated);
-                            eGrid.ChangeAllBlocksType(pvesource.Id, BlockType.Record, BlockType.Simulated);
+                            //eGrid.ChangeAllBlocksType(firstmeasurespotDevice.Id, BlockType.Record, BlockType.Simulated);
+                            //eGrid.ChangeAllBlocksType(pvesource.Id, BlockType.Record, BlockType.Simulated);
+                            eGrid.RemoveAllEntityBlocks(firstmeasurespotDevice.Id);
+                            eGrid.RemoveAllEntityBlocks(pvesource.Id);
 
                             // add day consumption blocks to the device in Frist Measure Spot entity after the consumption is covered by PVE in first entity
                             eGrid.AddBlocksToEntity(firstmeasurespotDevice.Id, firstmeasuredspotPhase1.Item2);
                             // keep record about forwarded blocks in entity
-                            eGrid.AddBlocksToEntity(firstmeasurespotDevice.Id, forwardedProductionClone);
+                            // eGrid.AddBlocksToEntity(firstmeasurespotDevice.Id, forwardedProductionClone);
                             // keep record about not covered consumption
                             // eGrid.AddBlocksToEntity(firstmeasurespotDevice.Id, firstmeasuredSpotNotCovered);
 
@@ -250,11 +252,13 @@ namespace TestVEDriversLite
                             // var device2NotCoveredClone = BlockHelpers.CloneBlocks(devicePhase2.Item2, true, true, BlockType.NotCovered).ToList();
 
                             // change temporary blocks in device to "Records" direction - not used in calcs
-                            eGrid.ChangeAllBlocksType(device.Id, BlockType.Record, BlockType.Simulated);
-                            eGrid.ChangeAllBlocksType(device.Id, BlockType.Record, BlockType.Simulated);
+                            // eGrid.ChangeAllBlocksType(device.Id, BlockType.Record, BlockType.Simulated);
+                            // eGrid.ChangeAllBlocksType(device.Id, BlockType.Record, BlockType.Simulated);
+                            eGrid.RemoveAllEntityBlocks(device.Id);
+
                             eGrid.AddBlocksToEntity(device.Id, devicePhase2.Item2);
                             // keep record about forward of source blocks
-                            eGrid.AddBlocksToEntity(device.Id,device2ForwardedClone);
+                            // eGrid.AddBlocksToEntity(device.Id,device2ForwardedClone);
                             // keep record about not covered consumption
                             // eGrid.AddBlocksToEntity(device.Id, device2NotCoveredClone);
                             // add rest of PVE production after consumption to network
@@ -274,11 +278,13 @@ namespace TestVEDriversLite
                             //var device3NotCoveredClone = BlockHelpers.CloneBlocks(device3Phase2.Item2, true, true, BlockType.NotCovered).ToList();
 
                             // change temporary blocks in device to "Records" direction
-                            eGrid.ChangeAllBlocksType(device3.Id, BlockType.Record, BlockType.Simulated);
-                            eGrid.ChangeAllBlocksType(device3.Id, BlockType.Record, BlockType.Simulated);
+                            // eGrid.ChangeAllBlocksType(device3.Id, BlockType.Record, BlockType.Simulated);
+                            // eGrid.ChangeAllBlocksType(device3.Id, BlockType.Record, BlockType.Simulated);
+                            eGrid.RemoveAllEntityBlocks(device3.Id);
+
                             eGrid.AddBlocksToEntity(device3.Id, device3Phase2.Item2);
                             // keep record about forward of source blocks
-                            eGrid.AddBlocksToEntity(device3.Id, device3ForwardedClone);
+                            // eGrid.AddBlocksToEntity(device3.Id, device3ForwardedClone);
                             // keep record about not covered consumption
                             // eGrid.AddBlocksToEntity(device3.Id, device3NotCoveredClone);
 
@@ -408,17 +414,17 @@ namespace TestVEDriversLite
 
 
                                     // device not consumed and forwarded up
-                                    var totalfirstmeasurespotForwardedSourceBlocks = Math.Round(firstmeasuredspotPhase1.Item1.Where(b => b.Amount > 0).Select(b => b.Amount).Sum(), 4);
+                                    var totalfirstmeasurespotForwardedSourceBlocks = Math.Round(firstmeasuredspotPhase1.Item1.Where(b => b.Amount != 0).Select(b => b.Amount).Sum(), 4);
                                     // device not covered
-                                    var totalfirstmeasureSpotNotCoveredConsuptionBlocks = Math.Round(firstmeasuredspotPhase1.Item2.Where(b => b.Amount < 0).Select(b => b.Amount).Sum(), 4);
+                                    var totalfirstmeasureSpotNotCoveredConsuptionBlocks = Math.Round(firstmeasuredspotPhase1.Item2.Where(b => b.Amount != 0).Select(b => b.Amount).Sum(), 4);
                                     // device not consumed and forwarded up
-                                    var totalDeviceForwardedSourceBlocks = Math.Round(devicePhase2.Item1.Where(b => b.Amount > 0).Select(b => b.Amount).Sum(), 4);
+                                    var totalDeviceForwardedSourceBlocks = Math.Round(devicePhase2.Item1.Where(b => b.Amount != 0).Select(b => b.Amount).Sum(), 4);
                                     // device not covered
-                                    var totaldeviceNotCoveredConsuptionBlocks = Math.Round(devicePhase2.Item2.Where(b => b.Amount < 0).Select(b => b.Amount).Sum(), 4);
+                                    var totaldeviceNotCoveredConsuptionBlocks = Math.Round(devicePhase2.Item2.Where(b => b.Amount != 0).Select(b => b.Amount).Sum(), 4);
                                     // device3 not consumed and forwarded up
-                                    var totalDevice3ForwardedSourceBlocks = Math.Round(device3Phase2.Item1.Where(b => b.Amount > 0).Select(b => b.Amount).Sum(), 4);
+                                    var totalDevice3ForwardedSourceBlocks = Math.Round(device3Phase2.Item1.Where(b => b.Amount != 0).Select(b => b.Amount).Sum(), 4);
                                     // device3 not covered
-                                    var totaldevice3NotCoveredConsuptionBlocks = Math.Round(device3Phase2.Item2.Where(b => b.Amount < 0).Select(b => b.Amount).Sum(), 4);
+                                    var totaldevice3NotCoveredConsuptionBlocks = Math.Round(device3Phase2.Item2.Where(b => b.Amount != 0).Select(b => b.Amount).Sum(), 4);
 
                                     // get rest in batery to load it next day morning as overstored from last day
                                     // it is inserted in charge and discharge profiles calculations
@@ -498,7 +504,7 @@ namespace TestVEDriversLite
                                                                                       BlockType.Simulated,
                                                                                       entity.Id).ToList();
 
-                var productionblocks = DataProfileHelpers.ConvertDataProfileToBlocks(res.Item2,
+                var productionblocks = DataProfileHelpers.ConvertDataProfileToBlocks(res.Item1,
                                                                                      BlockDirection.Created,
                                                                                      BlockType.Simulated,
                                                                                      entity.Id).ToList();
@@ -518,7 +524,7 @@ namespace TestVEDriversLite
                                                     true,
                                                     true,
                                                     new List<BlockDirection>() { BlockDirection.Created, BlockDirection.Consumed },
-                                                    new List<BlockType>() { BlockType.Simulated, BlockType.Calculated, BlockType.Real });
+                                                    new List<BlockType>() { BlockType.Simulated });
 
             var consprof = DataProfileHelpers.ConvertBlocksToDataProfile(cons);
             // get production after some part was consumed with sun-day consumption
