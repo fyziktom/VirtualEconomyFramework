@@ -2,7 +2,7 @@
 @inject AppData AppData
 @inject ICalculationService CalculationService
 
-<Card Margin="Margin.Is4.FromBottom" >
+<Card Margin="Margin.Is4.FromBottom">
 
     <CardHeader><CardTitle>Výpočet</CardTitle></CardHeader>
     <CardBody>
@@ -35,7 +35,7 @@
             </Field>
         </Row>
         <Row Overflow="Overflow.Auto">
-         <Column>
+            <Column>
                 <Table Hoverable Class="entities-table" Style="max-width: 100%;">
                     <TableHeader>
                         <TableRow>
@@ -72,17 +72,17 @@
                                     <TableRowCell TextAlignment="TextAlignment.Center">
                                         @if (!entity.HasChildren)
                                         {
-                                            <Check TValue="bool" CheckedChanged="b => SetEntitySelected(entity, b)" Checked="@entity.IsSelected"/>
+                                            <Check TValue="bool" CheckedChanged="b => SetEntitySelected(entity, b)" Checked="@entity.IsSelected" />
                                         }
                                     </TableRowCell>
                                     <TableRowCell TextAlignment="TextAlignment.Center">
                                         <Div Style="width: 100px;" Margin="Margin.IsAuto">
-                                            @if (entity.Entity is IConsumer {ConsumerType: ConsumerType.Device } && !entity.HasChildren)
+                                            @if (entity.Entity is IConsumer { ConsumerType: ConsumerType.Device } && !entity.HasChildren)
                                             {
                                                 <Field Margin="Margin.Is0">
                                                     <Addons>
                                                         <Addon AddonType="AddonType.Body">
-                                                            <NumericEdit TValue="int" ValueChanged="v => SetEntityAllocationKey(entity, v)"  />
+                                                            <NumericEdit TValue="int" Step="1000000" ValueChanged="v => SetEntityAllocationKey(entity, v)"  />
                                                         </Addon>
                                                         <Addon AddonType="AddonType.End">
                                                             <AddonLabel>%</AddonLabel>
@@ -99,11 +99,21 @@
 
                     </TableBody>
                 </Table>
-         </Column>
+            </Column>
         </Row>
     </CardBody>
     <CardFooter>
-        <Button Color="Color.Primary" Clicked="@OnCalculate">Přepočítat</Button>
+        <Row>
+            <Column ColumnSize="ColumnSize.Is12.IsAuto.OnTablet" Flex="Flex.AlignItems.Center">
+                <Button Color="Color.Primary" Clicked="@OnCalculate" Disabled="!isCalculationEnabled">Přepočítat</Button>
+            </Column>
+            <Column ColumnSize="ColumnSize.Is12.IsAuto.OnTablet"  Flex="Flex.AlignItems.Center">
+                <Alert Color="Color.Danger" Width="Width.Is100" TextAlignment="TextAlignment.Center" Visible="!isCalculationEnabled" Margin="Margin.Is0.FromBottom.Is2.FromTop.Is0.FromTop.OnTablet" Style="padding: 0.5rem;">
+                    <AlertMessage>Pozor!</AlertMessage>
+                    <AlertDescription>Součet alokačních klíčů ma být 100%</AlertDescription>
+                </Alert>
+            </Column>
+        </Row>
     </CardFooter>
 </Card>
 
@@ -112,6 +122,8 @@
     public string RootItemId { get; set; }
 
     private List<CalculationEntity>? CalculationEntities { get; set; }
+
+    private bool isCalculationEnabled = true;
 
     protected override void OnParametersSet()
     {
@@ -133,7 +145,7 @@
 
     private void AddItemToList(TreeItem item, int depth = 0)
     {
-        if (item.Entity is ISource {SourceType: SourceType.PVE })
+        if (item.Entity is ISource { SourceType: SourceType.PVE })
         {
             var leading = CalculationEntities.FirstOrDefault(e => e.Entity.Id == item.Entity.ParentId);
             if (leading is not null)
@@ -150,15 +162,15 @@
                 parent.HasChildren = true;
             }
         }
-        
+
         CalculationEntities.Add(new CalculationEntity
-        {
-            Name = item.Name,
-            Icon = GetIcon(item),
-            Depth = depth,
-            Entity = item.Entity,
-            IsSelected = true
-        });
+            {
+                Name = item.Name,
+                Icon = GetIcon(item),
+                Depth = depth,
+                Entity = item.Entity,
+                IsSelected = true
+            });
 
         var children = item.GetChilds();
         foreach (var child in children)
@@ -167,7 +179,7 @@
         }
         StateHasChanged();
     }
-    
+
     private String GetIcon(TreeItem item)
     {
         if (item.Entity is ISource sourceItem)
@@ -192,15 +204,15 @@
                 case ConsumerType.DevicesGroup: return "fa-building";
                 case ConsumerType.Device: return "fa-table";
             }
-            
+
         }
         return "fa-diamond";
     }
 
     private string rootItemId;
-    
-    
-    
+
+
+
 
     private void SetEntitySelected(CalculationEntity item, bool b)
     {
