@@ -2,9 +2,12 @@
 
 <Card Margin="Margin.Is4.FromBottom" Style="min-width:300px;">
     <CardHeader>
-        <Row>
-            <Column>
-                <CardTitle>PV Panels Group - 
+        <Row Flex="Flex.AlignItems.Center">
+            <Column ColumnSize="ColumnSize.Is9" Flex="Flex.AlignItems.Center">
+                <CardTitle Flex="Flex.AlignItems.Center" Class="entity-group-title">
+                    <Span Margin="Margin.Is1.FromEnd">
+                        PV Panels Group -
+                    </Span>
                     <Editable Item="@getGroup()" ParameterName="@(nameof(panelsGroup.Name))" TItem="PVPanelsGroup" ItemChanged="@OnPanelsGroupNameChanged" />
                 </CardTitle>
             </Column>

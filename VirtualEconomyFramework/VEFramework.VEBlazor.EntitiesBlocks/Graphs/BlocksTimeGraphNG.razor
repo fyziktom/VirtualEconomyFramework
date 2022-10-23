@@ -11,21 +11,24 @@
                 </Column>
                 <Column>
                     <AddBlockNG Item="@Item"
-                          WithButton="true"
-                          BlockButton="false"
-                          FloatButton="Float.End"
-                          WithButtonIcon="true"
-                          WithButtonText="true" />
+                            WithButton="true"
+                            BlockButton="false"
+                            FloatButton="Float.End"
+                            WithButtonIcon="true"
+                            WithButtonText="true" />
                 </Column>
             </Row>
         </CardHeader>
         <CardBody>
+             <Div Margin="Margin.Is2.FromBottom">
+               Časové hranice
+            </Div>
             <StartEndDaySelector StartTime="@StartTime"
                              EndTime="@EndTime"
                              StartTimeChanged="@startTimeDateChanged"
                              EndTimeChanged="@endTimeDateChanged"
-                             StartDayLabel="First run of the block line"
-                             EndDayLabel="Last run of the block line"
+                             StartDayLabel="Začatek"
+                             EndDayLabel="Konec"
                              ShowDatesAsLabels="false" />
         </CardBody>
         <CardBody>
@@ -47,141 +50,143 @@
             </Row>
         </CardBody>
         <CardBody Overflow="Overflow.Scroll">
-            <Div Style="max-width:100%" Overflow="Overflow.Auto">
-                <Div Class="blocks-graph" Style="width:200%" Overflow="Overflow.Hidden">
-                    <Slider @ref=slider2 TValue="int" Step="1" Value="sliderValue2" ValueChanged="@OnsliderValueChanged2" />
-                    <Row Position="Position.Relative" Style="z-index: 20;" TextAlignment="TextAlignment.End">
+         @if(false){
+                <Div Style="max-width:100%" Overflow="Overflow.Auto">
+                    <Div Class="blocks-graph" Style="width:200%" Overflow="Overflow.Hidden">
+                        <Slider @ref=slider2 TValue="int" Step="1" Value="sliderValue2" ValueChanged="@OnsliderValueChanged2" />
+                        <Row Position="Position.Relative" Style="z-index: 20;" TextAlignment="TextAlignment.End">
 
-                        <Column ColumnSize="ColumnSize.Is1" Position="Position.Relative">
-                            <Alert Color="Color.Primary" Border="Border.Is0" Visible>
-                                <Div Flex="Flex.JustifyContent.Between">
-                                    <Span>
-                                        0
-                                    </Span>
-                                    <Span>
-                                        2
-                                    </Span>
-                                </Div>
-                                <Span Class="line"></Span>
-                            </Alert>
-                        </Column>
-                        <Column ColumnSize="ColumnSize.Is1" Position="Position.Relative">
-                            <Alert Color="Color.Primary" Border="Border.Is0" Visible>
-                                4
-                                <Span Class="line"></Span>
-                            </Alert>
-                        </Column>
-                        <Column ColumnSize="ColumnSize.Is1" Position="Position.Relative">
-                            <Alert Color="Color.Primary" Border="Border.Is0" Visible>
-                                6
-                                <Span Class="line"></Span>
-                            </Alert>
-                        </Column>
-                        <Column ColumnSize="ColumnSize.Is1" Position="Position.Relative">
-                            <Alert Color="Color.Primary" Border="Border.Is0" Visible>
-                                8
-                                <Span Class="line"></Span>
-                            </Alert>
-                        </Column>
-                        <Column ColumnSize="ColumnSize.Is1" Position="Position.Relative">
-                            <Alert Color="Color.Primary" Border="Border.Is0" Visible>
-                                10
-                                <Span Class="line"></Span>
-                            </Alert>
-                        </Column>
-                        <Column ColumnSize="ColumnSize.Is1" Position="Position.Relative">
-                            <Alert Color="Color.Primary" Border="Border.Is0" Visible>
-                                12
-                                <Span Class="line"></Span>
-                            </Alert>
-                        </Column>
-                        <Column ColumnSize="ColumnSize.Is1" Position="Position.Relative">
-                            <Alert Color="Color.Primary" Border="Border.Is0" Visible>
-                                14
-                                <Span Class="line"></Span>
-                            </Alert>
-                        </Column>
-                        <Column ColumnSize="ColumnSize.Is1" Position="Position.Relative">
-                            <Alert Color="Color.Primary" Border="Border.Is0" Visible>
-                                16
-                                <Span Class="line"></Span>
-                            </Alert>
-                        </Column>
-                        <Column ColumnSize="ColumnSize.Is1" Position="Position.Relative">
-                            <Alert Color="Color.Primary" Border="Border.Is0" Visible>
-                                18
-                                <Span Class="line"></Span>
-                            </Alert>
-                        </Column>
-                        <Column ColumnSize="ColumnSize.Is1" Position="Position.Relative">
-                            <Alert Color="Color.Primary" Border="Border.Is0" Visible>
-                                20
-                                <Span Class="line"></Span>
-                            </Alert>
-                        </Column>
-                        <Column ColumnSize="ColumnSize.Is1" Position="Position.Relative">
-                            <Alert Color="Color.Primary" Border="Border.Is0" Visible>
-                                22
-                                <Span Class="line"></Span>
-                            </Alert>
-                        </Column>
-                        <Column ColumnSize="ColumnSize.Is1" Position="Position.Relative">
-                            <Alert Color="Color.Primary" Border="Border.Is0" Visible>
-                                24
-                                <Span Class="line"></Span>
-                            </Alert>
-                        </Column>
-                    </Row>
-                    @{
-                        var blocksLookupByRepetition = Blocks.Where(b=>b.StartTime.Date == (gridDate))
-                            .ToLookup(b => b.RepetitiveSourceBlockId ?? "", b => b);
-                        foreach (var blocksChunk in blocksLookupByRepetition)
-                        {
-                            Console.WriteLine($"Rendering repetitive block id={blocksChunk}");
-                            <Row>
-                                @foreach (var block in blocksLookupByRepetition[blocksChunk.Key])
-                                {
-                                    Console.WriteLine($"Rendering block {block.StartTime} - {block.EndTime}");
-                                    var startHour = block.StartTime.Hour;
-                                    var startMinute = block.StartTime.Minute;
-
-                                    var endHour = block.EndTime.Hour;
-                                    var endMinuteMinute = block.EndTime.Minute;
-
-                                    var columnOffset = startHour / 2;
-                                    var columnWidth = (endHour - startHour) / 2 + 1;
-
-                                    Console.WriteLine($@"columnOffset {columnOffset}, columnWidth {columnWidth}");
-
-                                    var columnSize = new FluentColumn()
-                                        .WithColumnSize((ColumnWidth)columnWidth);
-                                    
-                                    var minuteOffset = ((startHour % 2 * 15 + startMinute) / 15) * 6.25d;
-                                    var quarterMinutes = (block.EndTime - block.StartTime).TotalMinutes / 15;
-                                    var minuteWidth = 100 - 6.25d * (int)Math.Floor(quarterMinutes) % 4;
-
-                                    <Column ColumnSize="@columnSize">
-                                        <Div Style="@($"width: {minuteWidth}%; margin-left:{minuteOffset}%")">
-                                            <Alert Color="Color.Primary" Visible>
-                                                @($"{block.StartTime} - {block.EndTime}")
-                                            </Alert>
-                                        </Div>
-                                    </Column>
-                                }
-                            </Row>
-                        }
-                    }
-                    <Row>
-                        <Column ColumnSize="ColumnSize.Is2.Is6.WithOffset">
-                            <Div Style="width: 87.5%; margin-left:6.25%">
-                                <Alert Color="Color.Primary" Visible>
-                                    12.15 - 15.45
+                            <Column ColumnSize="ColumnSize.Is1" Position="Position.Relative">
+                                <Alert Color="Color.Primary" Border="Border.Is0" Visible>
+                                    <Div Flex="Flex.JustifyContent.Between">
+                                        <Span>
+                                            0
+                                        </Span>
+                                        <Span>
+                                            2
+                                        </Span>
+                                    </Div>
+                                    <Span Class="line"></Span>
                                 </Alert>
-                            </Div>
-                        </Column>
-                    </Row>
+                            </Column>
+                            <Column ColumnSize="ColumnSize.Is1" Position="Position.Relative">
+                                <Alert Color="Color.Primary" Border="Border.Is0" Visible>
+                                    4
+                                    <Span Class="line"></Span>
+                                </Alert>
+                            </Column>
+                            <Column ColumnSize="ColumnSize.Is1" Position="Position.Relative">
+                                <Alert Color="Color.Primary" Border="Border.Is0" Visible>
+                                    6
+                                    <Span Class="line"></Span>
+                                </Alert>
+                            </Column>
+                            <Column ColumnSize="ColumnSize.Is1" Position="Position.Relative">
+                                <Alert Color="Color.Primary" Border="Border.Is0" Visible>
+                                    8
+                                    <Span Class="line"></Span>
+                                </Alert>
+                            </Column>
+                            <Column ColumnSize="ColumnSize.Is1" Position="Position.Relative">
+                                <Alert Color="Color.Primary" Border="Border.Is0" Visible>
+                                    10
+                                    <Span Class="line"></Span>
+                                </Alert>
+                            </Column>
+                            <Column ColumnSize="ColumnSize.Is1" Position="Position.Relative">
+                                <Alert Color="Color.Primary" Border="Border.Is0" Visible>
+                                    12
+                                    <Span Class="line"></Span>
+                                </Alert>
+                            </Column>
+                            <Column ColumnSize="ColumnSize.Is1" Position="Position.Relative">
+                                <Alert Color="Color.Primary" Border="Border.Is0" Visible>
+                                    14
+                                    <Span Class="line"></Span>
+                                </Alert>
+                            </Column>
+                            <Column ColumnSize="ColumnSize.Is1" Position="Position.Relative">
+                                <Alert Color="Color.Primary" Border="Border.Is0" Visible>
+                                    16
+                                    <Span Class="line"></Span>
+                                </Alert>
+                            </Column>
+                            <Column ColumnSize="ColumnSize.Is1" Position="Position.Relative">
+                                <Alert Color="Color.Primary" Border="Border.Is0" Visible>
+                                    18
+                                    <Span Class="line"></Span>
+                                </Alert>
+                            </Column>
+                            <Column ColumnSize="ColumnSize.Is1" Position="Position.Relative">
+                                <Alert Color="Color.Primary" Border="Border.Is0" Visible>
+                                    20
+                                    <Span Class="line"></Span>
+                                </Alert>
+                            </Column>
+                            <Column ColumnSize="ColumnSize.Is1" Position="Position.Relative">
+                                <Alert Color="Color.Primary" Border="Border.Is0" Visible>
+                                    22
+                                    <Span Class="line"></Span>
+                                </Alert>
+                            </Column>
+                            <Column ColumnSize="ColumnSize.Is1" Position="Position.Relative">
+                                <Alert Color="Color.Primary" Border="Border.Is0" Visible>
+                                    24
+                                    <Span Class="line"></Span>
+                                </Alert>
+                            </Column>
+                        </Row>
+                        @{
+                            var blocksLookupByRepetition = Blocks.Where(b => b.StartTime.Date == (gridDate))
+                            .ToLookup(b => b.RepetitiveSourceBlockId ?? "", b => b);
+                            foreach (var blocksChunk in blocksLookupByRepetition)
+                            {
+                                Console.WriteLine($"Rendering repetitive block id={blocksChunk}");
+                                <Row>
+                                    @foreach (var block in blocksLookupByRepetition[blocksChunk.Key])
+                                    {
+                                        Console.WriteLine($"Rendering block {block.StartTime} - {block.EndTime}");
+                                        var startHour = block.StartTime.Hour;
+                                        var startMinute = block.StartTime.Minute;
+
+                                        var endHour = block.EndTime.Hour;
+                                        var endMinuteMinute = block.EndTime.Minute;
+
+                                        var columnOffset = startHour / 2;
+                                        var columnWidth = (endHour - startHour) / 2 + 1;
+
+                                        Console.WriteLine($@"columnOffset {columnOffset}, columnWidth {columnWidth}");
+
+                                        var columnSize = new FluentColumn()
+                                        .WithColumnSize((ColumnWidth)columnWidth);
+
+                                        var minuteOffset = ((startHour % 2 * 15 + startMinute) / 15) * 6.25d;
+                                        var quarterMinutes = (block.EndTime - block.StartTime).TotalMinutes / 15;
+                                        var minuteWidth = 100 - 6.25d * (int)Math.Floor(quarterMinutes) % 4;
+
+                                        <Column ColumnSize="@columnSize">
+                                            <Div Style="@($"width: {minuteWidth}%; margin-left:{minuteOffset}%")">
+                                                <Alert Color="Color.Primary" Visible>
+                                                    @($"{block.StartTime} - {block.EndTime}")
+                                                </Alert>
+                                            </Div>
+                                        </Column>
+                                    }
+                                </Row>
+                            }
+                        }
+                        <Row>
+                            <Column ColumnSize="ColumnSize.Is2.Is6.WithOffset">
+                                <Div Style="width: 87.5%; margin-left:6.25%">
+                                    <Alert Color="Color.Primary" Visible>
+                                        12.15 - 15.45
+                                    </Alert>
+                                </Div>
+                            </Column>
+                        </Row>
+                    </Div>
                 </Div>
-            </Div>
+         }
             <Row>
                 <Column>
 
@@ -207,7 +212,7 @@
                                 <text x="@ygraphOffset" y="@((blockUnitHeight + 1) * BlocksCount - 1)">@(BlocksCount) blocks</text>
                             </g>
 
-                            
+
                             @for (var i = 0; i < Blocks.Count; i++)
                             {
                                 var block = Blocks[i];
@@ -266,7 +271,7 @@
     public int MaxWidth { get; set; } = 1600;
     [Parameter]
     public int MaxHeight { get; set; } = 2500;
-    
+
 
     [Inject] INotificationService NotificationService { get; set; }
 
