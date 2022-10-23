@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
+using VEDriversLite.EntitiesBlocks.Blocks.Dto;
 using VEFramework.VEBlazor.EntitiesBlocks.Analytics;
 using VEFramework.VEBlazor.EntitiesBlocks.Model;
 
@@ -25,14 +26,14 @@ public partial class CalculationService
 
         try
         {
-            FilterEntities(calculationEntities);
+            FilterEntities(calculationEntities, out var deviceLeadingMap);
             FilterPve(calculationEntities);
             FilterStorage(calculationEntities);
             var (_, filteredEntitiesConfig) = appData.EntitiesHandler.ExportToConfig();
             var filteredPveConfig = appData.PVEGrid.ExportSettingsToJSON();
             var filteredStorageConfig = appData.BatteryStorage.ExportSettingsToJSON();
             DoCalculation(filteredEntitiesConfig, filteredPveConfig, filteredStorageConfig,
-                budget, interestRate);
+                budget, interestRate, new DateTime(2022,1,1), deviceLeadingMap );
         }
         finally
         {
@@ -54,8 +55,17 @@ public partial class CalculationService
         
     }
 
-    private void FilterEntities(IEnumerable<CalculationEntity> calculationEntities)
+    private void FilterEntities(IEnumerable<CalculationEntity> calculationEntities, out IDictionary<string, bool> deviceLeadingMap)
     {
+        var allocationScheme = new AlocationScheme()
+        {
+            Id = System.Guid.NewGuid().ToString(),
+            IsActive = true,
+            Name = "Main Scheme"
+        };
+
+        deviceLeadingMap = new Dictionary<string, bool>();
+        
         foreach (var calcEntity in calculationEntities)
         {
             if (!calcEntity.IsSelected)
@@ -65,10 +75,19 @@ public partial class CalculationService
             }
             else
             {
-                // TODO: Update allocation key
-                var blocks = appData.EntitiesHandler.GetEntityBlocks(calcEntity.Entity.Id);
+                allocationScheme.DepositPeers.TryAdd(calcEntity.Entity.Id, new DepositPeer()
+                {
+                    PeerId = calcEntity.Entity.Id,
+                    Name = calcEntity.Entity.Name,
+                    Percentage = calcEntity.AllocationKey
+                });
+                
+                deviceLeadingMap.Add(calcEntity.Entity.Id, calcEntity.IsLeading);
             }
+            
+            
         }
+        appData.EntitiesHandler.AlocationSchemes.TryAdd(allocationScheme.Id, allocationScheme);
     }
 
     // public static async Task EB_LoadTDDAndCalcBalanceAsync(string param)
