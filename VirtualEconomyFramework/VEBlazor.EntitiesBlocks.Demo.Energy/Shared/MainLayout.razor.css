@@ -10,7 +10,12 @@ main {
 
 .sidebar {
     color: #000;
+    background: url("../images/bgr.svg") center center/cover no-repeat;
+    background-color: #261B62;
 }
+
+
+
 
 .top-row {
     background-color: #f7f7f7;
