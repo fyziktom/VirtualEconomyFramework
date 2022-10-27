@@ -124,7 +124,8 @@ namespace VEDriversLite.EntitiesBlocks.Entities
                                     DateTime endtime,
                                     bool takeConsumptionAsInvert = false,
                                     List<BlockDirection> justThisDirections = null,
-                                    List<BlockType> justThisType = null);
+                                    List<BlockType> justThisType = null,
+                                    bool addSimulators = true);
 
         /// <summary>
         /// Optimized Get list of the blocks based on setup timespan and step and specific timegrame
@@ -141,7 +142,8 @@ namespace VEDriversLite.EntitiesBlocks.Entities
                                              DateTime endtime,
                                              bool takeConsumptionAsInvert = false,
                                              List<BlockDirection> justThisDirections = null,
-                                             List<BlockType> justThisType = null);
+                                             List<BlockType> justThisType = null,
+                                             bool addSimulators = true);
 
         /// <summary>
         /// Get list of the repetitive blocks based on setup timespan and step and specific timegrame
@@ -157,7 +159,8 @@ namespace VEDriversLite.EntitiesBlocks.Entities
                                                       DateTime endtime,
                                                       bool takeConsumptionAsInvert = false,
                                                       List<BlockDirection> justThisDirections = null,
-                                                      List<BlockType> justThisType = null);
+                                                      List<BlockType> justThisType = null, 
+                                                      bool addSimulators = true);
 
         /// <summary>
         /// Get list of the blocks based on setup timespan and step and specific timegrame and window
@@ -181,7 +184,8 @@ namespace VEDriversLite.EntitiesBlocks.Entities
                                                   bool invertWindow = false,
                                                   bool takeConsumptionAsInvert = false,
                                                   List<BlockDirection> justThisDirections = null,
-                                                  List<BlockType> justThisType = null);
+                                                  List<BlockType> justThisType = null,
+                                                  bool addSimulators = true);
         /// <summary>
         /// Get total consumption over all blocks
         /// </summary>

@@ -308,6 +308,65 @@ namespace VEDriversLite.EntitiesBlocks.Entities
         }
 
 
+        public List<IBlock> GetSimulatorsBlocks(BlockTimeframe timeframe, 
+                                                DateTime start,
+                                                DateTime end)
+        {
+            var res = new List<IBlock>();
+
+            foreach (var simulator in Simulators.Values)
+            {                
+                var blocks = simulator.GetBlocks(timeframe, start, end, null, null, new Dictionary<string, object>()
+                {
+                    {"weatherFactor", 1.0 }, // weatherFactor is not used in Tddsimulator, but it does not cause the trouble there, thats why it can be shared function like this
+                    {"parentId", Id } // parentId is common for creating blocks in multiple simulators (for example PVE and TDD Consumption)
+                });
+
+                if (blocks != null)
+                    foreach (var b in blocks)
+                        res.Add(b);
+            }
+
+            return res;
+        }
+
+
+        private List<IBlock> GetResultBlocks(BlockTimeframe timeframe, DateTime start, DateTime end, bool takeConsumptionAsInvert, bool addSimulators)
+        {
+            var result = BlockHelpers.GetResultBlocks(timeframe, start, end, ParentId);
+
+            if (addSimulators)
+            {
+                var simulated = GetSimulatorsBlocks(timeframe, start, end);
+
+                if (simulated != null && simulated.Count > 0)
+                {
+                    foreach (var block in simulated)
+                    {
+                        var res = result.FirstOrDefault(b => b.StartTime == block.StartTime);
+                        if (res != null)
+                        {
+                            if (takeConsumptionAsInvert)
+                            {
+                                if (block.Direction == BlockDirection.Consumed)
+                                    res.Amount -= block.Amount;
+                                else if (block.Direction == BlockDirection.Created)
+                                    res.Amount += block.Amount;
+                                else if (block.Direction == BlockDirection.Stored)
+                                    res.Amount += block.Amount;
+                            }
+                            else
+                            {
+                                res.Amount += block.Amount;
+                            }
+                        }
+                    }
+                }
+            }
+
+            return result;
+        }
+
         /// <summary>
         /// Get list of the blocks based on setup timespan and step and specific timegrame
         /// Timeframe will cause recalculation of the blocks of entity to timeframe like "hours", "days", "months" etc.
@@ -322,9 +381,10 @@ namespace VEDriversLite.EntitiesBlocks.Entities
                                                         DateTime endtime,
                                                         bool takeConsumptionAsInvert = false,
                                                         List<BlockDirection> justThisDirections = null,
-                                                        List<BlockType> justThisType = null)
+                                                        List<BlockType> justThisType = null,
+                                                        bool addSimulators = true)
         {
-            var result = BlockHelpers.GetResultBlocks(timeframesteps, starttime, endtime, ParentId);
+            var result = GetResultBlocks(timeframesteps, starttime, endtime, takeConsumptionAsInvert, addSimulators);
 
             var invert = 1;
             var blocks = Blocks.Values.Where(b => b.StartTime < endtime)
@@ -389,9 +449,10 @@ namespace VEDriversLite.EntitiesBlocks.Entities
                                                                  DateTime endtime,
                                                                  bool takeConsumptionAsInvert = false,
                                                                  List<BlockDirection> justThisDirections = null,
-                                                                 List<BlockType> justThisType = null)
+                                                                 List<BlockType> justThisType = null,
+                                                                 bool addSimulators = true)
         {
-            var result = BlockHelpers.GetResultBlocks(timeframesteps, starttime, endtime, ParentId);
+            var result = GetResultBlocks(timeframesteps, starttime, endtime, takeConsumptionAsInvert, addSimulators);
 
             var invert = 1;
             var blocks = Blocks.Values.Where(b => !b.IsRepetitiveSource && !b.IsRepetitiveChild && !b.IsOffPeriodRepetitive && b.StartTime < endtime)
@@ -466,9 +527,10 @@ namespace VEDriversLite.EntitiesBlocks.Entities
                                                                           DateTime endtime,
                                                                           bool takeConsumptionAsInvert = false,
                                                                           List<BlockDirection> justThisDirections = null,
-                                                                          List<BlockType> justThisType = null)
+                                                                          List<BlockType> justThisType = null,
+                                                                          bool addSimulators = true)
         {
-            var result = BlockHelpers.GetResultBlocks(timeframesteps, starttime, endtime, ParentId);
+            var result = GetResultBlocks(timeframesteps, starttime, endtime, takeConsumptionAsInvert, addSimulators);
 
             var invert = 1;
 
@@ -609,9 +671,10 @@ namespace VEDriversLite.EntitiesBlocks.Entities
                                                                       bool invertWindow = false,
                                                                       bool takeConsumptionAsInvert = false,
                                                                       List<BlockDirection> justThisDirections = null,
-                                                                      List<BlockType> justThisType = null)
+                                                                      List<BlockType> justThisType = null,
+                                                                      bool addSimulators = true)
         {
-            var result = BlockHelpers.GetResultBlocks(timeframesteps, starttime, endtime, ParentId);
+            var result = GetResultBlocks(timeframesteps, starttime, endtime, takeConsumptionAsInvert, addSimulators);
 
             var input = GetSummedValuesOptimized(BlockTimeframe.Hour, starttime, endtime, takeConsumptionAsInvert, justThisDirections, justThisType);
             if (input == null)

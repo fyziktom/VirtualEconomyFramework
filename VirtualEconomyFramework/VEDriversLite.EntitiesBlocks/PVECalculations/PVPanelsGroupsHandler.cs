@@ -27,6 +27,10 @@ namespace VEDriversLite.EntitiesBlocks.PVECalculations
     /// </summary>
     public class PVPanelsGroupsHandler : CommonSimulator
     {
+        public PVPanelsGroupsHandler()
+        {
+            Type = SimulatorTypes.PVE;
+        }
         /// <summary>
         /// Name of the PV Panels Groups = whole PVE block
         /// </summary>
@@ -755,11 +759,6 @@ namespace VEDriversLite.EntitiesBlocks.PVECalculations
             var name = $"Block-{Name}";
             if (options.TryGetValue("name", out var n))
                 name = n as string;
-            var coord = new Coordinates(49.194103, 16.608998);
-            if (options.TryGetValue("latitude", out var lt))
-                coord.Latitude = (double)lt;
-            if (options.TryGetValue("longitude", out var lg))
-                coord.Longitude = (double)lg;
             var weatherFactor = 0.0;
             if (options.TryGetValue("weatherFactor", out var wf))
                weatherFactor = (double)wf;
@@ -781,7 +780,10 @@ namespace VEDriversLite.EntitiesBlocks.PVECalculations
                 {
                     var tot = 0.0;
                     foreach (var group in PVPanelsGroups.Values)
-                        tot += group.GetGroupPeakPowerInDateTime(htmp, coord, weatherFactor);
+                        tot += group.GetGroupPeakPowerInDateTime(htmp, 
+                                                                 new Coordinates(group.MedianLatitude, 
+                                                                                 group.MedianLongitude), 
+                                                                 weatherFactor);
 
                     if (htmp.AddHours(1) < hend)
                         amount += tot;

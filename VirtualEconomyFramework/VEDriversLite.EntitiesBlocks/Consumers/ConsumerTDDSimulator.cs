@@ -15,6 +15,10 @@ namespace VEDriversLite.EntitiesBlocks.Consumers
 {
     public class ConsumerTDDSimulator : CommonSimulator
     {
+        public ConsumerTDDSimulator()
+        {
+            Type = SimulatorTypes.TDDConsumption;
+        }
         public List<DataProfile> TDDs { get; set; } = new List<DataProfile>();
 
         public string Name { get; set; } = string.Empty;
@@ -122,7 +126,7 @@ namespace VEDriversLite.EntitiesBlocks.Consumers
                     name = Name;
 
                 var rblock = block.GetBlock(BlockType.Simulated,
-                                            BlockDirection.Created,
+                                            BlockDirection.Consumed,
                                             tmp,
                                             ts,
                                             amount,
