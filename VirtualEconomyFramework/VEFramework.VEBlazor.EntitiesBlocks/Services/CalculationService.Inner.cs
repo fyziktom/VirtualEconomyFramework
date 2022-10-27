@@ -10,14 +10,21 @@ using VEDriversLite.EntitiesBlocks.StorageCalculations;
 using VEDriversLite.Common.Calendar;
 using Microsoft.AspNetCore.Components;
 using VEDriversLite.EntitiesBlocks.Entities;
+using VEFramework.VEBlazor.EntitiesBlocks.Model;
 
 namespace VEFramework.VEBlazor.EntitiesBlocks.Services;
 
 public partial class CalculationService
 {
-    private async Task DoCalculation(string filteredEntitiesConfig, string filteredPveConfig, string filteredStorageConfig,
+    [Inject]
+    public HttpClient Http { get; set; }
+
+    private async Task<Dictionary<string, List<CalculationResult>>> DoCalculation(string filteredEntitiesConfig, string filteredPveConfig, string filteredStorageConfig,
         decimal budget, decimal interestRate, DateTime endDate, IDictionary<string, bool> deviceLeadingMap)
     {
+        Console.WriteLine("Running calculation");
+        var result = new Dictionary<string, List<CalculationResult>>();
+        
         // SET start of Day tariff
         var startOfDT = new TimeSpan(6, 0, 0);
         // SET start of Night tariff
@@ -44,9 +51,9 @@ public partial class CalculationService
             alocationScheme = new AlocationScheme();
 
         // load simulators
-        if (!eGrid.LoadFromConfig(filteredEntitiesConfig).Item1) return;
-        if (!PVESim.ImportConfigFromJson(filteredPveConfig)) return;
-        if (!StorageSim.ImportConfigFromJson(filteredStorageConfig)) return;
+        if (!eGrid.LoadFromConfig(filteredEntitiesConfig).Item1) return null;
+        if (!PVESim.ImportConfigFromJson(filteredPveConfig)) return null;
+        if (!StorageSim.ImportConfigFromJson(filteredStorageConfig)) return null;
 
         var network = eGrid.GetEntity("7b27c442-ad40-4679-b6d5-8873d9763996", EntityType.Consumer);
         eGrid.RemoveAllEntityBlocks(network.Id);
@@ -297,6 +304,23 @@ public partial class CalculationService
                                 var consumedByDevice = Math.Round(data.Value.Item2.DataSum, 4);
                                 var forwardedByDevice = Math.Round(phasedata.Item1.Where(b => b.Amount != 0).Select(b => b.Amount).Sum(), 4);
                                 var notCoveredByPVEInDevice = Math.Round(phasedata.Item2.Where(b => b.Amount != 0).Select(b => b.Amount).Sum(), 4);
+                                
+                                var calculationResult = new CalculationResult()
+                                {
+                                    Date = dtmp,
+                                    ConsumedFromFVE = consumedByDevice,
+                                    OverProductionFromFVE = forwardedByDevice,
+                                    Deficiency = notCoveredByPVEInDevice
+                                };
+                                
+                                if (result.ContainsKey(data.Key))
+                                {
+                                    result[data.Key].Add(calculationResult);
+                                }
+                                else
+                                {
+                                    result.Add(data.Key, new List<CalculationResult>() { calculationResult });
+                                }
                             }
                         }
 
@@ -332,8 +356,8 @@ public partial class CalculationService
             }
         }
 
-        Console.WriteLine("Running calculation");
-        return;
+
+        return result;
     }
 
     public static (List<IBlock>, List<IBlock>) GetEntityBalanceBlocksAfterAlocationOfPVEBlocks(IEntity entity, IEntitiesHandler eGrid, DateTime dtmp)
