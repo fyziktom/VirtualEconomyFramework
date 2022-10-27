@@ -93,6 +93,51 @@ namespace VEDriversLite.EntitiesBlocks.Entities
         public DateTime LastChange { get; set; } = DateTime.UtcNow;
 
         /// <summary>
+        /// Dictionary of simulators
+        /// </summary>
+        public ConcurrentDictionary<string, ISimulator> Simulators { get; set; } = new ConcurrentDictionary<string, ISimulator>();
+
+        /// <summary>
+        /// dd simulator to entity
+        /// </summary>
+        /// <param name="simulator"></param>
+        /// <param name="simulatorId"></param>
+        /// <returns></returns>
+        public virtual (bool,string) AddSimulator(ISimulator simulator)
+        {
+            if (simulator == null) return (false, "Simulator object cannot be null.");
+
+            if (string.IsNullOrEmpty(simulator.Id))
+                simulator.Id = Guid.NewGuid().ToString();
+
+            if (!Simulators.ContainsKey(simulator.Id))
+            {
+                simulator.ParentId = Id;
+                Simulators.TryAdd(simulator.Id, simulator);
+            }
+
+            LastChange = DateTime.UtcNow;
+            return (true, simulator.Id);
+        }
+
+        /// <summary>
+        /// Remove simulator from dictionary of Simulators
+        /// </summary>
+        /// <param name="simulators">List of Ids of blocks</param>
+        /// <returns></returns>
+        public virtual (bool,string) RemoveSimulator(List<string> simulatorIds)
+        {
+            if (simulatorIds == null) return (false,string.Empty);
+            foreach (var simulator in simulatorIds)
+            {
+                if (Simulators.ContainsKey(simulator))
+                    Simulators.TryRemove(simulator, out var sim);
+            }
+            LastChange = DateTime.UtcNow;
+            return (true, string.Empty);
+        }
+
+        /// <summary>
         /// Try to add the block to the Blocks dictionary. Block must have unique hashs
         /// </summary>
         /// <param name="block"></param>

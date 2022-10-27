@@ -160,11 +160,11 @@ namespace VEFrameworkUnitTest.Energy.PVESimulator
             AddPanelToGroup(southPanelsId, panelAzimuthS, true, 6);
             AddPanelToGroup(westPanelsId, panelAzimuthW, true, 8);
 
-            var config = PVEGrid.ExportSettingsToJSON();
+            var config = PVEGrid.ExportConfig();
 
             PVEGrid = new PVPanelsGroupsHandler();
 
-            PVEGrid.ImportConfigFromJson(config);
+            PVEGrid.ImportConfig(config.Item2);
 
             Assert.Equal(17, PVEGrid.PanelCount);
             Assert.Equal(49.194103, PVEGrid.MedianLatitude);

@@ -68,6 +68,19 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
         /// <returns></returns>
         (bool, string) AddBlocksToEntity(string id, List<IBlock> blocks);
         /// <summary>
+        /// Add simulator to specific entity
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="simulator"></param>
+        /// <returns></returns>
+        (bool, string) AddSimulatorToEntity(string id, ISimulator simulator);
+        /// <summary>
+        /// Remove simulators from entity. You can add multiple Ids in one command
+        /// </summary>
+        /// <param name="simulatorIds"></param>
+        /// <returns></returns>
+        (bool, string) RemoveSimulatorsFromEntity(string id, List<string> simulatorIds);
+        /// <summary>
         /// Change block parameters to the consumer. 
         /// </summary>
         /// <param name="id">Id of the consumer</param>

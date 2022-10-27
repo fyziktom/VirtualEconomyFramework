@@ -113,8 +113,8 @@ namespace TestVEDriversLite
 
                     // load simulators
                     if (!eGrid.LoadFromConfig(cgrid).Item1) return;
-                    if (!PVESim.ImportConfigFromJson(cpve)) return;
-                    if (!StorageSim.ImportConfigFromJson(cstorage)) return;
+                    if (!PVESim.ImportConfig(cpve).Item1) return;
+                    if (!StorageSim.ImportConfig(cstorage).Item1) return;
 
                     var lastStorageLoadedEndState = 0.0;
 
@@ -143,7 +143,8 @@ namespace TestVEDriversLite
                     {
                         Id = System.Guid.NewGuid().ToString(),
                         IsActive = true,
-                        Name = "Main Scheme"
+                        Name = "Main Scheme",
+                        MainDepositPeerId = network.Id
                     };
                     alocationScheme.DepositPeers.TryAdd(device.Id, new DepositPeer()
                     {
@@ -222,8 +223,9 @@ namespace TestVEDriversLite
 
                             // add day production blocks to the mainPVE entity based on allocation scheme
                             // if there is something over the alocation scheme peers values it is stored in network entity
-                            eGrid.AddBlocksToEntity(network.Id, firstmeasuredspotPhase1.Item1, alocationScheme.Id);
-
+                            eGrid.AddBlocksToEntity(alocationScheme.MainDepositPeerId, 
+                                                    firstmeasuredspotPhase1.Item1, 
+                                                    alocationScheme.Id);
 
                             /////////////////////////
                             // add another consumptions to the entities

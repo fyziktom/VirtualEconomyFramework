@@ -16,9 +16,6 @@ namespace VEFramework.VEBlazor.EntitiesBlocks.Services;
 
 public partial class CalculationService
 {
-    [Inject]
-    public HttpClient Http { get; set; }
-
     private async Task<Dictionary<string, List<CalculationResult>>> DoCalculation(string filteredEntitiesConfig, string filteredPveConfig, string filteredStorageConfig,
         decimal budget, decimal interestRate, DateTime endDate, IDictionary<string, bool> deviceLeadingMap)
     {
@@ -52,8 +49,8 @@ public partial class CalculationService
 
         // load simulators
         if (!eGrid.LoadFromConfig(filteredEntitiesConfig).Item1) return null;
-        if (!PVESim.ImportConfigFromJson(filteredPveConfig)) return null;
-        if (!StorageSim.ImportConfigFromJson(filteredStorageConfig)) return null;
+        if (!PVESim.ImportConfig(filteredPveConfig).Item1) return null;
+        if (!StorageSim.ImportConfig(filteredStorageConfig).Item1) return null;
 
         var network = eGrid.GetEntity("7b27c442-ad40-4679-b6d5-8873d9763996", EntityType.Consumer);
         eGrid.RemoveAllEntityBlocks(network.Id);

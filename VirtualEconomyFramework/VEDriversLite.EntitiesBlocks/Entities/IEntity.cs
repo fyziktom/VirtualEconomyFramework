@@ -50,6 +50,10 @@ namespace VEDriversLite.EntitiesBlocks.Entities
         /// </summary>
         DateTime LastChange { get; set; }
         /// <summary>
+        /// Dictionary of simulators
+        /// </summary>
+        ConcurrentDictionary<string, ISimulator> Simulators { get; set; }
+        /// <summary>
         /// Try to add the block to the Blocks dictionary. Block must have unique hashs
         /// </summary>
         /// <param name="blocks"></param>
@@ -183,5 +187,17 @@ namespace VEDriversLite.EntitiesBlocks.Entities
         /// </summary>
         /// <returns></returns>
         double GetTotalSummedValue(bool includeNotConsumedYet = true);
+        /// <summary>
+        /// Add simulator to entity
+        /// </summary>
+        /// <param name="simulator"></param>
+        /// <returns></returns>
+        (bool,string) AddSimulator(ISimulator simulator);
+        /// <summary>
+        /// Remove simulator
+        /// </summary>
+        /// <param name="simulatorIds"></param>
+        /// <returns></returns>
+        (bool,string) RemoveSimulator(List<string> simulatorIds);
     }
 }

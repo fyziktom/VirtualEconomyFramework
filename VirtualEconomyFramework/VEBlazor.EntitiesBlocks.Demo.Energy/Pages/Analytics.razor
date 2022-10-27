@@ -26,7 +26,7 @@
             if (storagedata != null)
                 AppData.StoredBatteryStorageConfig = storagedata;
 
-            if (storagedata != null && !AppData.BatteryStorage.ImportConfigFromJson(storagedata))
+            if (storagedata != null && !AppData.BatteryStorage.ImportConfig(storagedata).Item1)
             {
                 setCommonBattery();
                 AppData.BatteryStorage.AddBatteryBlock(AppData.BatteryStorage.CommonBattery).ToList();
@@ -44,7 +44,7 @@
                 AppData.StoredPVEConfig = storeddata;
 
             if (storeddata != null)
-                AppData.PVEGrid.ImportConfigFromJson(storeddata);
+                AppData.PVEGrid.ImportConfig(storeddata);
 
             AppData.PVESimulatorLoaded = true;
             await InvokeAsync(StateHasChanged);

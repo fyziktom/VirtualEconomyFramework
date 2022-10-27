@@ -22,8 +22,8 @@ public partial class CalculationService
         decimal budget, decimal interestRate)
     {
         var (_, oldEntitiesConfig) = appData.EntitiesHandler.ExportToConfig();
-        var oldPveConfig = appData.PVEGrid.ExportSettingsToJSON();
-        var oldStorageConfig = appData.BatteryStorage.ExportSettingsToJSON();
+        var oldPveConfig = appData.PVEGrid.ExportConfig().Item2;
+        var oldStorageConfig = appData.BatteryStorage.ExportConfig().Item2;
 
 
         try
@@ -32,16 +32,16 @@ public partial class CalculationService
             FilterPve(calculationEntities);
             FilterStorage(calculationEntities);
             var (_, filteredEntitiesConfig) = appData.EntitiesHandler.ExportToConfig();
-            var filteredPveConfig = appData.PVEGrid.ExportSettingsToJSON();
-            var filteredStorageConfig = appData.BatteryStorage.ExportSettingsToJSON();
+            var filteredPveConfig = appData.PVEGrid.ExportConfig().Item2;
+            var filteredStorageConfig = appData.BatteryStorage.ExportConfig().Item2;
             await DoCalculation(filteredEntitiesConfig, filteredPveConfig, filteredStorageConfig,
                                 budget, interestRate, new DateTime(2022,1,1), deviceLeadingMap );
         }
         finally
         {
             appData.EntitiesHandler.LoadFromConfig(oldEntitiesConfig);
-            appData.PVEGrid.ImportConfigFromJson(oldEntitiesConfig);
-            appData.BatteryStorage.ImportConfigFromJson(oldEntitiesConfig);
+            appData.PVEGrid.ImportConfig(oldEntitiesConfig);
+            appData.BatteryStorage.ImportConfig(oldEntitiesConfig);
         }
         
         return;

@@ -53,7 +53,7 @@
             if (storeddata != null)
                 AppData.StoredBatteryStorageConfig = storeddata;
 
-            if (storeddata != null && !AppData.BatteryStorage.ImportConfigFromJson(storeddata))
+            if (storeddata != null && !AppData.BatteryStorage.ImportConfig(storeddata).Item1)
             {
                 setCommonBattery();
                 AppData.BatteryStorage.AddBatteryBlock(AppData.BatteryStorage.CommonBattery).ToList();
@@ -74,7 +74,7 @@
             if (storeddata != null)
                 AppData.StoredPVEConfig = storeddata;
 
-            if (storeddata != null && !AppData.PVEGrid.ImportConfigFromJson(storeddata))
+            if (storeddata != null && !AppData.PVEGrid.ImportConfig(storeddata).Item1)
             {
                 panelAzimuthE = MathHelpers.DegreeToRadians(-40);
                 panelAzimuthS = MathHelpers.DegreeToRadians(0);
