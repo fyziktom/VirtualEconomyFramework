@@ -143,7 +143,7 @@ namespace VEFrameworkUnitTest.BlockEntities
                 foreach (var cons in consumption)
                     total += cons.Amount;
 
-                Assert.Equal(consumptionPerHour * 24 * days, total);
+                Assert.Equal(-consumptionPerHour * 24 * days, total);
             }
         }
 
@@ -175,7 +175,7 @@ namespace VEFrameworkUnitTest.BlockEntities
                 foreach (var cons in consumption)
                     total += cons.Amount;
 
-                Assert.Equal((consumptionPerHour + consumptionPerHour2) * 24 * days, total);
+                Assert.Equal(-(consumptionPerHour + consumptionPerHour2) * 24 * days, total);
             }
         }
 

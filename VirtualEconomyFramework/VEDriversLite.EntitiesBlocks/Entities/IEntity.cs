@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VEDriversLite.Common.Calendar;
 using VEDriversLite.EntitiesBlocks.Blocks;
 
 namespace VEDriversLite.EntitiesBlocks.Entities
@@ -27,7 +28,14 @@ namespace VEDriversLite.EntitiesBlocks.Entities
         /// Name of the entity
         /// </summary>
         string Name { get; set; }
+        /// <summary>
+        /// Entity description
+        /// </summary>
         string Description { get; set; }
+        /// <summary>
+        /// Entity location
+        /// </summary>
+        Coordinates Coords { get; set; }
         /// <summary>
         /// Parent Id of the entity
         /// </summary>
@@ -111,6 +119,26 @@ namespace VEDriversLite.EntitiesBlocks.Entities
                                              BlockDirection? direction = null,
                                              DateTime? startTime = null,
                                              TimeSpan? timeframe = null);
+
+        /// <summary>
+        /// Get blocks from simulators for specific timerage and timeframe
+        /// </summary>
+        /// <param name="timeframe"></param>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <returns></returns>
+        List<IBlock> GetSimulatorsBlocks(BlockTimeframe timeframe,
+                                         DateTime start,
+                                         DateTime end);
+
+        /// <summary>
+        /// Get blocks filtered based on Directions or Types
+        /// </summary>
+        /// <param name="justThisDirections">List of all allowed Direction of blocks</param>
+        /// <param name="justThisType">List of all Types of blocks</param>
+        /// <returns></returns>
+        IEnumerable<IBlock> GetBlocks(List<BlockDirection> justThisDirections = null,
+                                      List<BlockType> justThisType = null);
 
         /// <summary>
         /// Get summed values as list of the blocks based on setup timespan and step.
