@@ -155,7 +155,8 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
                                             bool withSubConsumers = true,
                                             bool takeConsumptionAsInvert = false,
                                             List<BlockDirection> justThisDirections = null, 
-                                            List<BlockType> justThisType = null);
+                                            List<BlockType> justThisType = null,
+                                            bool addSimulators = true);
         /// <summary>
         /// Get all Blocks with the all childern blocks
         /// </summary>
@@ -188,7 +189,8 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
                                                       bool withSubConsumers = true,
                                                       bool takeConsumptionAsInvert = false,
                                                       List<BlockDirection> justThisDirections = null,
-                                                      List<BlockType> justThisType = null);
+                                                      List<BlockType> justThisType = null,
+                                                      bool addSimulators = true);
         /// <summary>
         /// Get recalculated power consumption represented as list of Blocks split based on setted timegrame
         /// </summary>

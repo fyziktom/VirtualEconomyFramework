@@ -19,6 +19,13 @@ namespace VEDriversLite.EntitiesBlocks.Consumers
         {
             Type = SimulatorTypes.TDDConsumption;
         }
+
+        public ConsumerTDDSimulator(List<DataProfile> tDDs)
+        {
+            Type = SimulatorTypes.TDDConsumption;
+            TDDs = tDDs;
+        }
+
         public List<DataProfile> TDDs { get; set; } = new List<DataProfile>();
 
         public string Name { get; set; } = string.Empty;

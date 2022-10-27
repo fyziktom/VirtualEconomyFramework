@@ -662,7 +662,8 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
                                                                 bool withSubConsumers = true, 
                                                                 bool takeConsumptionAsInvert = false,
                                                                 List<BlockDirection> justThisDirections = null,
-                                                                List < BlockType > justThisType = null)
+                                                                List < BlockType > justThisType = null,
+                                                                bool addSimulators = true)
         {
 
             if (string.IsNullOrEmpty(entityId))
@@ -670,7 +671,13 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
 
             if (Entities.TryGetValue(entityId, out var entity))
             {
-                var mainres = entity.GetSummedValuesOptimized(timeframesteps, starttime, endtime, takeConsumptionAsInvert, justThisDirections, justThisType);
+                var mainres = entity.GetSummedValuesOptimized(timeframesteps, 
+                                                              starttime, 
+                                                              endtime, 
+                                                              takeConsumptionAsInvert, 
+                                                              justThisDirections, 
+                                                              justThisType, 
+                                                              addSimulators);
 
                 if (withSubConsumers && mainres != null)
                 {
@@ -686,20 +693,24 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
                         {
                             foreach (var childId in e.Children)
                             {
+                                if (Entities.TryGetValue(childId, out var sbc))
                                 {
-                                    if (Entities.TryGetValue(childId, out var sbc))
-                                    {
-                                        tmpEntity.AddBlocks(sbc.BlocksOrderByTime.ToList());
+                                    tmpEntity.AddBlocks(sbc.BlocksOrderByTime.ToList());
 
-                                        if (sbc.IsParent)
-                                            queue.Enqueue(sbc);
-                                    }
+                                    if (sbc.IsParent)
+                                        queue.Enqueue(sbc);
                                 }
                             }
                         }
                     }
 
-                    var re = tmpEntity.GetSummedValuesOptimized(timeframesteps, starttime, endtime, takeConsumptionAsInvert, justThisDirections, justThisType);
+                    var re = tmpEntity.GetSummedValuesOptimized(timeframesteps, 
+                                                                starttime, 
+                                                                endtime, 
+                                                                takeConsumptionAsInvert, 
+                                                                justThisDirections, 
+                                                                justThisType, 
+                                                                addSimulators);
                     if (re != null)
                     {
                         foreach(var block in re.Where(r => r.Amount > 0 || r.Amount < 0))
@@ -782,7 +793,8 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
                                                                           bool withSubConsumers = true, 
                                                                           bool takeConsumptionAsInvert = false,
                                                                           List<BlockDirection> justThisDirections = null,
-                                                                          List<BlockType> justThisType = null)
+                                                                          List<BlockType> justThisType = null,
+                                                                          bool addSimulators = true)
         {
 
             if (string.IsNullOrEmpty(entityId))
@@ -798,7 +810,8 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
                                                                   invertWindow, 
                                                                   takeConsumptionAsInvert, 
                                                                   justThisDirections,
-                                                                  justThisType);
+                                                                  justThisType,
+                                                                  addSimulators);
 
                 if (withSubConsumers && mainres != null)
                 {
@@ -836,7 +849,8 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
                                                                     invertWindow,
                                                                     takeConsumptionAsInvert, 
                                                                     justThisDirections,
-                                                                    justThisType);
+                                                                    justThisType, 
+                                                                    addSimulators);
                     if (re != null)
                     {
                         foreach (var block in re.Where(r => r.Amount > 0 || r.Amount < 0))
