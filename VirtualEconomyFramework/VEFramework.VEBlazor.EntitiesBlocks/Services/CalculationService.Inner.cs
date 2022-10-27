@@ -66,19 +66,20 @@ public partial class CalculationService
 
         //var firstmeasurespotDevice = eGrid.FindEntityByName("firstspotdevice");
         var mainbattery = eGrid.GetEntity("d29a0515-a112-4ca1-9e57-373cace32330", EntityType.Source);
-        eGrid.RemoveAllEntityBlocks(mainbattery.Id);
+        if (mainbattery != null)
+            eGrid.RemoveAllEntityBlocks(mainbattery.Id);
 
         var pveInvestment = PVESim.TotalInvestmentBasedOnPeakPower;
         var storageInvestment = StorageSim.TotalInvestmentBasedOnPeakPower;
 
         var coord = new Coordinates(PVESim.MedianLatitude, PVESim.MedianLongitude);
 
-        var tddfromfile = Http.GetStringAsync("tdd.csv").GetAwaiter().GetResult();
+        var tddfromfile = await httpClient.GetStringAsync("tdd.csv");
         var tdds = new List<DataProfile>();
         if (tddfromfile != null)
             tdds = ConsumersHelpers.LoadTDDs(tddfromfile);
 
-        if (pvesource != null && mainbattery != null)
+        if (pvesource != null)
         {
             var dtmp = start;
             var dend = endDate;

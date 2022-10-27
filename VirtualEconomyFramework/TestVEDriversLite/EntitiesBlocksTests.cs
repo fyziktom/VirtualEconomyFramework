@@ -131,10 +131,13 @@ namespace TestVEDriversLite
                     var pveInvestment = PVESim.TotalInvestmentBasedOnPeakPower;
                     var storageInvestment = StorageSim.TotalInvestmentBasedOnPeakPower;
 
+                    /*
                     StorageSim.BatteryBlocks.Clear();
                     var bat = StorageSim.CommonBattery.Clone();
                     bat.Capacity = 10;
                     StorageSim.AddBatteryBlock(bat).ToList();
+                    */
+
                     // create alocation scheme
                     var alocationScheme = new AlocationScheme()
                     {
@@ -198,7 +201,7 @@ namespace TestVEDriversLite
                             {
                                 var bs = productionblocks.Where(bl => bl.StartTime == b.StartTime).FirstOrDefault();
                                 if (bs != null)
-                                    b.Id = bs.Id;
+                                    b.SourceId = bs.Id;
                             }
                             // create clone of blocks to keep record after forward of blocks
                             var forwardedProductionClone = BlockHelpers.CloneBlocks(firstmeasuredspotPhase1.Item1, true, true, BlockType.Forwarded).ToList();
@@ -224,7 +227,7 @@ namespace TestVEDriversLite
 
                             /////////////////////////
                             // add another consumptions to the entities
-                            var consumptionblocks1 = ConsumersHelpers.GetConsumptionBlocksBasedOnTDD(tdds[1],
+                            var consumptionblocks1 = ConsumersHelpers.GetConsumptionBlocksBasedOnTDD(tdds[0],
                                                                                                      dtmp,
                                                                                                      dtmp.AddDays(1),
                                                                                                      BlockTimeframe.Hour,
@@ -232,7 +235,7 @@ namespace TestVEDriversLite
                             // add day consumption blocks to the device1 in devicegroup
                             eGrid.AddBlocksToEntity(device.Id, consumptionblocks1.Item1);
 
-                            var consumptionblocks2 = ConsumersHelpers.GetConsumptionBlocksBasedOnTDD(tdds[2],
+                            var consumptionblocks2 = ConsumersHelpers.GetConsumptionBlocksBasedOnTDD(tdds[0],
                                                                                                      dtmp,
                                                                                                      dtmp.AddDays(1),
                                                                                                      BlockTimeframe.Hour,
@@ -253,7 +256,7 @@ namespace TestVEDriversLite
                             {
                                 var bs = consumptionblocks1.Item1.Where(bl => bl.StartTime == b.StartTime).FirstOrDefault();
                                 if (bs != null)
-                                    b.Id = bs.Id;
+                                    b.SourceId = bs.Id;
                             }
                             // create clone of blocks to keep record after forward of blocks
                             var device2ForwardedClone = BlockHelpers.CloneBlocks(devicePhase2.Item1, true, true, BlockType.Forwarded).ToList();
@@ -279,7 +282,7 @@ namespace TestVEDriversLite
                             {
                                 var bs = consumptionblocks2.Item1.Where(bl => bl.StartTime == b.StartTime).FirstOrDefault();
                                 if (bs != null)
-                                    b.Id = bs.Id;
+                                    b.SourceId = bs.Id;
                             }
                             // create clone of blocks to keep record after forward of blocks
                             var device3ForwardedClone = BlockHelpers.CloneBlocks(device3Phase2.Item1, true, true, BlockType.Forwarded).ToList();
@@ -302,13 +305,15 @@ namespace TestVEDriversLite
                             /////////////////////////////
                             // calculate rest for charge and discharge storage
 
+                            var productionPhase3tmp = GetEntityBalanceBlocksAfterAlocationOfPVEBlocks(network, eGrid, dtmp);
+
                             // calculate actual PVE rest in network
                             var productionPhase3 = eGrid.GetConsumptionOfEntity(network.Id,
                                                                                 BlockTimeframe.Hour,
                                                                                 dtmp,
                                                                                 dtmp.AddDays(1),
                                                                                 true,
-                                                                                true,
+                                                                                false,
                                                                                 new List<BlockDirection>() { BlockDirection.Created },
                                                                                 new List<BlockType>() { BlockType.Simulated });
 
@@ -320,7 +325,7 @@ namespace TestVEDriversLite
                                                                                  dtmp,
                                                                                  dtmp.AddDays(1),
                                                                                  true,
-                                                                                 true,
+                                                                                 false,
                                                                                  new List<BlockDirection>() { BlockDirection.Consumed },
                                                                                  new List<BlockType>() { BlockType.Simulated });
 

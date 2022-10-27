@@ -241,9 +241,9 @@
         ValidateForm();
     }
 
-    private void OnCalculate()
+    private async Task OnCalculate()
     {
-        CalculationService.RunCalculation(CalculationEntities, budget, interestRate);
+        await CalculationService.RunCalculation(CalculationEntities, budget, interestRate);
     }
 
     private decimal budget = 0;
