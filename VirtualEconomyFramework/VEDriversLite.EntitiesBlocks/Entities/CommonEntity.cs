@@ -405,9 +405,9 @@ namespace VEDriversLite.EntitiesBlocks.Entities
         public virtual IEnumerable<IBlock> GetBlocks(List<BlockDirection> justThisDirections = null,
                                               List<BlockType> justThisType = null)
         {
-            if (justThisDirections != null && justThisDirections.Count > 0)
+            if (justThisDirections != null && justThisDirections.Count > 0 && justThisType == null)
                 return Blocks.Values.Where(b => justThisDirections.Contains(b.Direction)).OrderBy(b => b.StartTime);
-            else if (justThisType != null && justThisType.Count > 0)
+            else if (justThisType != null && justThisType.Count > 0 && justThisDirections == null)
                 return Blocks.Values.Where(b => justThisType.Contains(b.Type)).OrderBy(b => b.StartTime);
             else if (justThisType != null && justThisType.Count > 0 && justThisDirections != null && justThisDirections.Count > 0)
                 return Blocks.Values.Where(b => justThisType.Contains(b.Type) && justThisDirections.Contains(b.Direction)).OrderBy(b => b.StartTime);

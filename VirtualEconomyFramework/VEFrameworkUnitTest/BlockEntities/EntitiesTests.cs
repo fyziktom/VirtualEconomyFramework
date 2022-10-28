@@ -823,5 +823,271 @@ namespace VEFrameworkUnitTest.BlockEntities
                 Assert.Equal(hours * 4, res.Count());
             }
         }
+
+
+        [Fact]
+        public void GetPowerConsumptionOfEntitySpecifiedBlockTypes()
+        {
+            var entity = new BaseEntity();
+
+            // add some custom blocks of simulated consumption
+            var blockstoadd = new List<IBlock>();
+            var starttime = new DateTime(2022, 1, 1, 0, 0, 0);
+            var timeframe = new TimeSpan(168, 0, 0);
+            var endtime = starttime + timeframe;
+
+            var timeframe2 = new TimeSpan(336, 0, 0);
+
+            var Block = new BaseBlock();
+            var consumption = 1;
+            var consumption2 = 2;
+
+            //device which consume 1kW and run 168 hours, started on 1st of January in 0:00, for example PC
+            blockstoadd.Add(Block.GetBlockByPower(BlockType.Simulated,
+                                                  BlockDirection.Consumed,
+                                                  starttime,
+                                                  timeframe,
+                                                  consumption,
+                                                  ebth.sourceName,
+                                                  ebth.device2Id));
+
+            //device which consume 1kW and run 336 hours, started on 3rd of January in 0:00, for example PC
+            blockstoadd.Add(Block.GetBlockByPower(BlockType.Forwarded,
+                                                  BlockDirection.Consumed,
+                                                  starttime.AddDays(3),
+                                                  timeframe2,
+                                                  consumption2,
+                                                  ebth.sourceName,
+                                                  ebth.device2Id));
+
+            entity.AddBlocks(blockstoadd);
+
+            if (entity != null)
+            {
+                var hours = 4;
+                var res = entity.GetSummedValues(BlockTimeframe.Hour, starttime, starttime.AddHours(hours));
+                var total = 0.0;
+                foreach (var b in res)
+                    total += b.Amount;
+                Assert.Equal(4, total);
+                Assert.Equal(hours, res.Count());
+            }
+
+            if (entity != null)
+            {
+                var hours = 168;
+                var res = entity.GetSummedValues(BlockTimeframe.Hour,
+                                                 starttime,
+                                                 starttime.AddHours(hours),
+                                                 false,
+                                                 new List<BlockDirection>(),
+                                                 new List<BlockType>() { BlockType.Simulated, BlockType.Forwarded });
+                var total = 0.0;
+                foreach (var b in res)
+                    total += b.Amount;
+                Assert.Equal(hours * consumption + (hours - 3 * 24) * consumption2, total);
+                Assert.Equal(hours, res.Count());
+            }
+
+            if (entity != null)
+            {
+                var hours = 168;
+                var res = entity.GetSummedValues(BlockTimeframe.Hour, 
+                                                 starttime, 
+                                                 starttime.AddHours(hours), 
+                                                 false, 
+                                                 new List<BlockDirection>(), 
+                                                 new List<BlockType>() {  BlockType.Simulated });
+                var total = 0.0;
+                foreach (var b in res)
+                    total += b.Amount;
+                Assert.Equal(hours * consumption, total);
+                Assert.Equal(hours, res.Count());
+            }
+        }
+
+        [Fact]
+        public void GetPowerConsumptionOfEntitySpecifiedBlockDirections()
+        {
+            var entity = new BaseEntity();
+
+            // add some custom blocks of simulated consumption
+            var blockstoadd = new List<IBlock>();
+            var starttime = new DateTime(2022, 1, 1, 0, 0, 0);
+            var timeframe = new TimeSpan(168, 0, 0);
+            var endtime = starttime + timeframe;
+
+            var timeframe2 = new TimeSpan(336, 0, 0);
+
+            var Block = new BaseBlock();
+            var consumption = 1;
+            var consumption2 = 2;
+
+            //device which consume 1kW and run 168 hours, started on 1st of January in 0:00, for example PC
+            blockstoadd.Add(Block.GetBlockByPower(BlockType.Simulated,
+                                                  BlockDirection.Consumed,
+                                                  starttime,
+                                                  timeframe,
+                                                  consumption,
+                                                  ebth.sourceName,
+                                                  ebth.device2Id));
+
+            //device which consume 1kW and run 336 hours, started on 3rd of January in 0:00, for example PC
+            blockstoadd.Add(Block.GetBlockByPower(BlockType.Simulated,
+                                                  BlockDirection.Created,
+                                                  starttime.AddDays(3),
+                                                  timeframe2,
+                                                  consumption2,
+                                                  ebth.sourceName,
+                                                  ebth.device2Id));
+
+            entity.AddBlocks(blockstoadd);
+
+            if (entity != null)
+            {
+                var hours = 4;
+                var res = entity.GetSummedValues(BlockTimeframe.Hour, starttime, starttime.AddHours(hours));
+                var total = 0.0;
+                foreach (var b in res)
+                    total += b.Amount;
+                Assert.Equal(4, total);
+                Assert.Equal(hours, res.Count());
+            }
+
+            if (entity != null)
+            {
+                var hours = 168;
+                var res = entity.GetSummedValues(BlockTimeframe.Hour,
+                                                 starttime,
+                                                 starttime.AddHours(hours),
+                                                 false,
+                                                 new List<BlockDirection>() {  BlockDirection.Consumed, BlockDirection.Created });
+                var total = 0.0;
+                foreach (var b in res)
+                    total += b.Amount;
+                Assert.Equal(hours * consumption + (hours - 3 * 24) * consumption2, total);
+                Assert.Equal(hours, res.Count());
+            }
+
+            if (entity != null)
+            {
+                var hours = 168;
+                var res = entity.GetSummedValues(BlockTimeframe.Hour,
+                                                 starttime,
+                                                 starttime.AddHours(hours),
+                                                 false,
+                                                 new List<BlockDirection>() { BlockDirection.Consumed});
+                var total = 0.0;
+                foreach (var b in res)
+                    total += b.Amount;
+                Assert.Equal(hours * consumption, total);
+                Assert.Equal(hours, res.Count());
+            }
+        }
+
+        [Fact]
+        public void GetPowerConsumptionOfEntitySpecifiedBlockTypeAndDirections()
+        {
+            var entity = new BaseEntity();
+
+            // add some custom blocks of simulated consumption
+            var blockstoadd = new List<IBlock>();
+            var starttime = new DateTime(2022, 1, 1, 0, 0, 0);
+            var timeframe = new TimeSpan(168, 0, 0);
+            var endtime = starttime + timeframe;
+
+            var timeframe2 = new TimeSpan(336, 0, 0);
+
+            var Block = new BaseBlock();
+            var consumption = 1;
+            var consumption2 = 2;
+
+            //device which consume 1kW and run 168 hours, started on 1st of January in 0:00, for example PC
+            blockstoadd.Add(Block.GetBlockByPower(BlockType.Simulated,
+                                                  BlockDirection.Consumed,
+                                                  starttime,
+                                                  timeframe,
+                                                  consumption,
+                                                  ebth.sourceName,
+                                                  ebth.device2Id));
+
+            //device which consume 1kW and run 336 hours, started on 3rd of January in 0:00, for example PC
+            blockstoadd.Add(Block.GetBlockByPower(BlockType.Forwarded,
+                                                  BlockDirection.Created,
+                                                  starttime.AddDays(3),
+                                                  timeframe2,
+                                                  consumption2,
+                                                  ebth.sourceName,
+                                                  ebth.device2Id));
+
+            blockstoadd.Add(Block.GetBlockByPower(BlockType.NotCovered,
+                                                  BlockDirection.Created,
+                                                  starttime.AddDays(3),
+                                                  timeframe2,
+                                                  consumption2,
+                                                  ebth.sourceName,
+                                                  ebth.device2Id));
+
+            entity.AddBlocks(blockstoadd);
+
+            if (entity != null)
+            {
+                var hours = 4;
+                var res = entity.GetSummedValues(BlockTimeframe.Hour, starttime, starttime.AddHours(hours));
+                var total = 0.0;
+                foreach (var b in res)
+                    total += b.Amount;
+                Assert.Equal(4, total);
+                Assert.Equal(hours, res.Count());
+            }
+
+            if (entity != null)
+            {
+                var hours = 168;
+                var res = entity.GetSummedValues(BlockTimeframe.Hour,
+                                                 starttime,
+                                                 starttime.AddHours(hours),
+                                                 false,
+                                                 new List<BlockDirection>() { BlockDirection.Consumed, BlockDirection.Created },
+                                                 new List<BlockType>() { BlockType.Simulated, BlockType.Forwarded, BlockType.NotCovered });
+                var total = 0.0;
+                foreach (var b in res)
+                    total += b.Amount;
+                Assert.Equal(hours * consumption + 2 * (hours - 3 * 24) * consumption2, total);
+                Assert.Equal(hours, res.Count());
+            }
+
+            if (entity != null)
+            {
+                var hours = 168;
+                var res = entity.GetSummedValues(BlockTimeframe.Hour,
+                                                 starttime,
+                                                 starttime.AddHours(hours),
+                                                 false,
+                                                 new List<BlockDirection>() { BlockDirection.Consumed, BlockDirection.Created },
+                                                 new List<BlockType>() { BlockType.Simulated, BlockType.Forwarded });
+                var total = 0.0;
+                foreach (var b in res)
+                    total += b.Amount;
+                Assert.Equal(hours * consumption + (hours - 3 * 24) * consumption2, total);
+                Assert.Equal(hours, res.Count());
+            }
+
+            if (entity != null)
+            {
+                var hours = 168;
+                var res = entity.GetSummedValues(BlockTimeframe.Hour,
+                                                 starttime,
+                                                 starttime.AddHours(hours),
+                                                 false,
+                                                 new List<BlockDirection>() { BlockDirection.Consumed },
+                                                 new List<BlockType>() { BlockType.Simulated });
+                var total = 0.0;
+                foreach (var b in res)
+                    total += b.Amount;
+                Assert.Equal(hours * consumption, total);
+                Assert.Equal(hours, res.Count());
+            }
+        }
     }
 }
