@@ -63,8 +63,8 @@ public partial class CalculationService
         var pvesource = eGrid.GetEntity("617132c1-2f70-4d98-bdb1-18f9f01c29ef", EntityType.Source);
         eGrid.RemoveAllEntityBlocks(pvesource.Id);
 
-        var fmsId = deviceLeadingMap.Where(d => d.Value).FirstOrDefault();
-        var firstmeasurespot = eGrid.GetEntity(fmsId.Key, EntityType.Consumer);
+        //var fmsId = deviceLeadingMap.Where(d => d.Value).FirstOrDefault();
+        var firstmeasurespot = eGrid.GetEntity(pvesource.ParentId, EntityType.Consumer);
         eGrid.RemoveAllEntityBlocks(firstmeasurespot.Id);
 
         //var firstmeasurespotDevice = eGrid.FindEntityByName("firstspotdevice");
@@ -77,7 +77,7 @@ public partial class CalculationService
 
         var coord = new Coordinates(PVESim.MedianLatitude, PVESim.MedianLongitude);
 
-        if (pvesource != null)
+        if (network != null && pvesource != null && firstmeasurespot != null && mainbattery != null)
         {
             // add PVE simulator to entity
             eGrid.AddSimulatorToEntity(pvesource.Id, PVESim);
