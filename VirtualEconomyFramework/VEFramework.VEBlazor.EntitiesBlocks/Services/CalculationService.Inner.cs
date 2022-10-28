@@ -128,6 +128,7 @@ public partial class CalculationService
                         var ent = eGrid.GetEntity(om.Key, EntityType.Consumer);
                         if (ent != null)
                         {
+                            Console.WriteLine($"Adding TDD simulator to entity {ent.Name}...");
                             eGrid.AddSimulatorToEntity(ent.Id,
                                        new ConsumerTDDSimulator(new List<DataProfile>() { appData.TDDs[0] }));
 
@@ -301,9 +302,9 @@ public partial class CalculationService
 
                                     if (devicephase.TryGetValue(om.Key, out var phasedata))
                                     {
-                                        var consumedByDevice = Math.Round(firstmeasurespot.GetSimulatorsBlocks(BlockTimeframe.Hour, dtmp, dtmp.AddDays(1))
-                                                                                          .Where(b => b.Amount > 0)
-                                                                                          .Select(b => b.Amount).Sum(), 4);
+                                        var consumedByDevice = Math.Round(ent.GetSimulatorsBlocks(BlockTimeframe.Hour, dtmp, dtmp.AddDays(1))
+                                                                                .Where(b => b.Amount != 0)
+                                                                                .Select(b => b.Amount).Sum(), 4);
 
                                         var forwardedByDevice = Math.Round(phasedata.Item1.Where(b => b.Amount != 0).Select(b => b.Amount).Sum(), 4);
                                         var notCoveredByPVEInDevice = Math.Round(phasedata.Item2.Where(b => b.Amount != 0).Select(b => b.Amount).Sum(), 4);
@@ -315,6 +316,7 @@ public partial class CalculationService
                                             OverProductionFromFVE = forwardedByDevice,
                                             Deficiency = notCoveredByPVEInDevice
                                         };
+                                        Console.WriteLine($"{Newtonsoft.Json.JsonConvert.SerializeObject(calculationResult, Newtonsoft.Json.Formatting.Indented)}");
 
                                         if (result.ContainsKey(om.Key))
                                         {

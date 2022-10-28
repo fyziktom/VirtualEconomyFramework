@@ -35,7 +35,7 @@ public partial class CalculationService
             var filteredPveConfig = appData.PVEGrid.ExportConfig().Item2;
             var filteredStorageConfig = appData.BatteryStorage.ExportConfig().Item2;
             await DoCalculation(filteredEntitiesConfig, filteredPveConfig, filteredStorageConfig,
-                                budget, interestRate, new DateTime(2022,1,1), deviceLeadingMap );
+                                budget, interestRate, new DateTime(2022,1,2), deviceLeadingMap );
         }
         finally
         {
