@@ -68,6 +68,19 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
         /// <returns></returns>
         (bool, string) AddBlocksToEntity(string id, List<IBlock> blocks);
         /// <summary>
+        /// Add simulator to specific entity
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="simulator"></param>
+        /// <returns></returns>
+        (bool, string) AddSimulatorToEntity(string id, ISimulator simulator);
+        /// <summary>
+        /// Remove simulators from entity. You can add multiple Ids in one command
+        /// </summary>
+        /// <param name="simulatorIds"></param>
+        /// <returns></returns>
+        (bool, string) RemoveSimulatorsFromEntity(string id, List<string> simulatorIds);
+        /// <summary>
         /// Change block parameters to the consumer. 
         /// </summary>
         /// <param name="id">Id of the consumer</param>
@@ -142,7 +155,8 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
                                             bool withSubConsumers = true,
                                             bool takeConsumptionAsInvert = false,
                                             List<BlockDirection> justThisDirections = null, 
-                                            List<BlockType> justThisType = null);
+                                            List<BlockType> justThisType = null,
+                                            bool addSimulators = true);
         /// <summary>
         /// Get all Blocks with the all childern blocks
         /// </summary>
@@ -175,7 +189,8 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
                                                       bool withSubConsumers = true,
                                                       bool takeConsumptionAsInvert = false,
                                                       List<BlockDirection> justThisDirections = null,
-                                                      List<BlockType> justThisType = null);
+                                                      List<BlockType> justThisType = null,
+                                                      bool addSimulators = true);
         /// <summary>
         /// Get recalculated power consumption represented as list of Blocks split based on setted timegrame
         /// </summary>

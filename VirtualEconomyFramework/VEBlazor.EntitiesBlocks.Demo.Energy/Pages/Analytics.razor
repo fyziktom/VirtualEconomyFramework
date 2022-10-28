@@ -19,52 +19,8 @@
         {
             rootItemId = AppData.RootItemId;
         }
-
-        if (!AppData.BatteryStorageSimulatorLoaded)
-        {
-            var storagedata = await Http.GetStringAsync("samplestorage.json");
-            if (storagedata != null)
-                AppData.StoredBatteryStorageConfig = storagedata;
-
-            if (storagedata != null && !AppData.BatteryStorage.ImportConfigFromJson(storagedata))
-            {
-                setCommonBattery();
-                AppData.BatteryStorage.AddBatteryBlock(AppData.BatteryStorage.CommonBattery).ToList();
-                AppData.BatteryStorage.AddBatteryBlock(AppData.BatteryStorage.CommonBattery).ToList();
-
-                AppData.BatteryStorageSimulatorLoaded = true;
-            }
-
-        }
-
-        if (!AppData.PVESimulatorLoaded)
-        {
-            storeddata = await Http.GetStringAsync("samplepve.json");
-            if (storeddata != null)
-                AppData.StoredPVEConfig = storeddata;
-
-            if (storeddata != null)
-                AppData.PVEGrid.ImportConfigFromJson(storeddata);
-
-            AppData.PVESimulatorLoaded = true;
-            await InvokeAsync(StateHasChanged);
-            await Task.Delay(1);
-        }
         
         await base.OnInitializedAsync();
-    }
-
-
-    private void setCommonBattery()
-    {
-        AppData.BatteryStorage.SetCommonBattery(new BatteryBlock()
-            {
-                Id = Guid.NewGuid().ToString(),
-                Capacity = 10000,
-                InternalResistance = 0.1,
-                MaximumChargePower = 2000,
-                MaximumDischargePower = 2000
-            });
     }
 
     private string rootItemId;

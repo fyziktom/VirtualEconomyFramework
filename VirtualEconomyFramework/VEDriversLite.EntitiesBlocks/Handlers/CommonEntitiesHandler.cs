@@ -290,9 +290,59 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
         }
 
         /// <summary>
+        /// Add simulator to specific entity
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="simulator"></param>
+        /// <returns></returns>
+        public virtual (bool, string) AddSimulatorToEntity(string id, ISimulator simulator)
+        {
+            if (string.IsNullOrEmpty(id))
+                return (false, "Cannot add simulator to the entity. Entity id cannot be empty.");
+            if (simulator == null)
+                return (false, $"Cannot add simulator to the entity {id}, block cannot be empty.");
+
+            if (Entities.TryGetValue(id, out var entity))
+            {
+                var res = entity.AddSimulator(simulator);
+                if (res.Item1)
+                    return (true, $"Simulator {res.Item2} added to the entity {entity.Name} - {id}.");
+                else
+                    return (true, $"Cannot add simulator to the entity {entity.Name} - {id}. Error: {res.Item2}");
+            }
+            else
+                return (false, $"Cannot add simulator to the entity. Entity {id} is not in Entities list. Add the entity first please.");
+
+        }
+        /// <summary>
+        /// Remove simulators from entity. You can add multiple Ids in one command
+        /// </summary>
+        /// <param name="simulatorIds"></param>
+        /// <returns></returns>
+        public virtual (bool, string) RemoveSimulatorsFromEntity(string id, List<string> simulatorIds)
+        {
+            if (string.IsNullOrEmpty(id))
+                return (false, "Cannot remove simulator from the entity. Entity id cannot be empty.");
+            if (simulatorIds == null)
+                return (false, $"Cannot remove simulator from the entity {id}, simulators ids cannot be empty.");
+
+            if (Entities.TryGetValue(id, out var entity))
+            {
+                var res = entity.RemoveSimulator(simulatorIds);
+                if (res.Item1)
+                    return (true, $"Simulators removed from the entity {entity.Name} - {id}.");
+                else
+                    return (true, $"Cannot remove simulators from the entity {entity.Name} - {id}.");
+            }
+            else
+                return (false, $"Cannot remove simulators from the entity. Source {id} is not in Entities list. Add the consumer first please.");
+
+        }
+
+        /// <summary>
         /// Add block to the entity. 
         /// </summary>
-        /// <param name="id">Id of the consumer</param>
+        /// <param name="id">Id of the entity</param>
         /// <param name="block">Block</param>
         /// <returns></returns>
         public virtual (bool, string) AddBlockToEntity(string id, IBlock block)
@@ -317,7 +367,7 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
         /// Add block to the entity. 
         /// This param override of AddBlockToEntity will split block based on AlocationScheme to several entities
         /// </summary>
-        /// <param name="id">Id of the consumer</param>
+        /// <param name="id">Id of the entity</param>
         /// <param name="block">Block</param>
         /// <param name="alocationSchemeId">Alocation Scheme Id</param>
         /// <returns></returns>
@@ -373,7 +423,7 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
         /// <summary>
         /// Add blocks to the entity. 
         /// </summary>
-        /// <param name="id">Id of the consumer</param>
+        /// <param name="id">Id of the entity</param>
         /// <param name="blocks">list of the Blocks</param>
         /// <returns></returns>
         public virtual (bool, string) AddBlocksToEntity(string id, List<IBlock> blocks)
@@ -398,7 +448,7 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
         /// Add blocks to the entity. 
         /// This param override of AddBlockToEntity will split block based on AlocationScheme to several entities
         /// </summary>
-        /// <param name="id">Id of the consumer</param>
+        /// <param name="id">Id of the entity</param>
         /// <param name="block">Block</param>
         /// <param name="alocationSchemeId">Alocation Scheme Id</param>
         /// <returns></returns>
@@ -463,9 +513,9 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
         }
 
         /// <summary>
-        /// Change block parameters to the consumer. 
+        /// Change block parameters to the entity. 
         /// </summary>
-        /// <param name="id">Id of the consumer</param>
+        /// <param name="id">Id of the entity</param>
         /// <param name="type">type of Block</param>
         /// <returns></returns>
         public virtual (bool, string) ChangEntityBlockParameters(string id,
@@ -479,9 +529,9 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
                                                                  TimeSpan? timeframe = null)
         {
             if (string.IsNullOrEmpty(id))
-                return (false, "Cannot change blocks to the consumer. Consumer id cannot be empty.");
+                return (false, "Cannot change blocks to the entity. Entity id cannot be empty.");
             if (string.IsNullOrEmpty(blockId))
-                return (false, "Cannot change blocks to the consumer. Block id cannot be empty.");
+                return (false, "Cannot change blocks to the entity. Block id cannot be empty.");
 
             if (Entities.TryGetValue(id, out var entity))
             {
@@ -490,35 +540,35 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
                     return (true, $"Block {blockId} in {entity.Name} - {id} paramters changed.");
                 }
                 else
-                    return (true, $"Cannot add blocks to the consumer {entity.Name} - {id}");
+                    return (true, $"Cannot add blocks to the entity {entity.Name} - {id}");
             }
             else
-                return (false, $"Cannot add blocks to the consumer. Consumer {id} is not in Consumers list. Add the consumer first please.");
+                return (false, $"Cannot add blocks to the consumer. Entity {id} is not in entities list. Add the consumer first please.");
         }
 
 
         /// <summary>
         /// Remove blocks from the entity. 
         /// </summary>
-        /// <param name="id">Id of the consumer</param>
+        /// <param name="id">Id of the entity</param>
         /// <param name="blocks">list of the Ids of the Blocks</param>
         /// <returns></returns>
         public virtual (bool, string) RemoveBlocksFromEntity(string id, List<string> blocks)
         {
             if (string.IsNullOrEmpty(id))
-                return (false, "Cannot remove blocks from the consumer. Consumer id cannot be empty.");
+                return (false, "Cannot remove blocks from the entity. Entity id cannot be empty.");
             if (blocks == null)
-                return (false, $"Cannot remove blocks from the consumer {id}, blocks cannot be empty.");
+                return (false, $"Cannot remove blocks from the entity {id}, blocks cannot be empty.");
 
             if (Entities.TryGetValue(id, out var entity))
             {
                 if (entity.RemoveBlocks(blocks))
-                    return (true, $"Blocks removed from the consumer {entity.Name} - {id}.");
+                    return (true, $"Blocks removed from the entity {entity.Name} - {id}.");
                 else
-                    return (true, $"Cannot remove blocks from the consumer {entity.Name} - {id}.");
+                    return (true, $"Cannot remove blocks from the entity {entity.Name} - {id}.");
             }
             else
-                return (false, $"Cannot remove blocks from the consumer. Source {id} is not in Consumers list. Add the consumer first please.");
+                return (false, $"Cannot remove blocks from the entity. Source {id} is not in Entities list. Add the consumer first please.");
         }
 
         /// <summary>
@@ -612,7 +662,8 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
                                                                 bool withSubConsumers = true, 
                                                                 bool takeConsumptionAsInvert = false,
                                                                 List<BlockDirection> justThisDirections = null,
-                                                                List < BlockType > justThisType = null)
+                                                                List < BlockType > justThisType = null,
+                                                                bool addSimulators = true)
         {
 
             if (string.IsNullOrEmpty(entityId))
@@ -620,7 +671,13 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
 
             if (Entities.TryGetValue(entityId, out var entity))
             {
-                var mainres = entity.GetSummedValuesOptimized(timeframesteps, starttime, endtime, takeConsumptionAsInvert, justThisDirections, justThisType);
+                var mainres = entity.GetSummedValuesOptimized(timeframesteps, 
+                                                              starttime, 
+                                                              endtime, 
+                                                              takeConsumptionAsInvert, 
+                                                              justThisDirections, 
+                                                              justThisType, 
+                                                              addSimulators);
 
                 if (withSubConsumers && mainres != null)
                 {
@@ -636,20 +693,24 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
                         {
                             foreach (var childId in e.Children)
                             {
+                                if (Entities.TryGetValue(childId, out var sbc))
                                 {
-                                    if (Entities.TryGetValue(childId, out var sbc))
-                                    {
-                                        tmpEntity.AddBlocks(sbc.BlocksOrderByTime.ToList());
+                                    tmpEntity.AddBlocks(sbc.BlocksOrderByTime.ToList());
 
-                                        if (sbc.IsParent)
-                                            queue.Enqueue(sbc);
-                                    }
+                                    if (sbc.IsParent)
+                                        queue.Enqueue(sbc);
                                 }
                             }
                         }
                     }
 
-                    var re = tmpEntity.GetSummedValuesOptimized(timeframesteps, starttime, endtime, takeConsumptionAsInvert, justThisDirections, justThisType);
+                    var re = tmpEntity.GetSummedValuesOptimized(timeframesteps, 
+                                                                starttime, 
+                                                                endtime, 
+                                                                takeConsumptionAsInvert, 
+                                                                justThisDirections, 
+                                                                justThisType, 
+                                                                addSimulators);
                     if (re != null)
                     {
                         foreach(var block in re.Where(r => r.Amount > 0 || r.Amount < 0))
@@ -732,7 +793,8 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
                                                                           bool withSubConsumers = true, 
                                                                           bool takeConsumptionAsInvert = false,
                                                                           List<BlockDirection> justThisDirections = null,
-                                                                          List<BlockType> justThisType = null)
+                                                                          List<BlockType> justThisType = null,
+                                                                          bool addSimulators = true)
         {
 
             if (string.IsNullOrEmpty(entityId))
@@ -748,7 +810,8 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
                                                                   invertWindow, 
                                                                   takeConsumptionAsInvert, 
                                                                   justThisDirections,
-                                                                  justThisType);
+                                                                  justThisType,
+                                                                  addSimulators);
 
                 if (withSubConsumers && mainres != null)
                 {
@@ -786,7 +849,8 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
                                                                     invertWindow,
                                                                     takeConsumptionAsInvert, 
                                                                     justThisDirections,
-                                                                    justThisType);
+                                                                    justThisType, 
+                                                                    addSimulators);
                     if (re != null)
                     {
                         foreach (var block in re.Where(r => r.Amount > 0 || r.Amount < 0))

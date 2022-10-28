@@ -16,9 +16,6 @@ namespace VEFramework.VEBlazor.EntitiesBlocks.Services;
 
 public partial class CalculationService
 {
-    [Inject]
-    public HttpClient Http { get; set; }
-
     private async Task<Dictionary<string, List<CalculationResult>>> DoCalculation(string filteredEntitiesConfig, string filteredPveConfig, string filteredStorageConfig,
         decimal budget, decimal interestRate, DateTime endDate, IDictionary<string, bool> deviceLeadingMap)
     {
@@ -52,16 +49,22 @@ public partial class CalculationService
 
         // load simulators
         if (!eGrid.LoadFromConfig(filteredEntitiesConfig).Item1) return null;
-        if (!PVESim.ImportConfigFromJson(filteredPveConfig)) return null;
-        if (!StorageSim.ImportConfigFromJson(filteredStorageConfig)) return null;
+        if (!PVESim.ImportConfig(filteredPveConfig).Item1) return null;
+        if (!StorageSim.ImportConfig(filteredStorageConfig).Item1) return null;
+
+        // load financial info
+        PVESim.FinancialInfo.Discont.DiscontInPercentagePerYear = (double)interestRate;
+        PVESim.FinancialInfo.BuyDate = new DateTime(2022,1,1);
+        StorageSim.FinancialInfo.Discont.DiscontInPercentagePerYear = (double)interestRate;
+        StorageSim.FinancialInfo.BuyDate = new DateTime(2022, 1, 1);
 
         var network = eGrid.GetEntity("7b27c442-ad40-4679-b6d5-8873d9763996", EntityType.Consumer);
         eGrid.RemoveAllEntityBlocks(network.Id);
         var pvesource = eGrid.GetEntity("617132c1-2f70-4d98-bdb1-18f9f01c29ef", EntityType.Source);
         eGrid.RemoveAllEntityBlocks(pvesource.Id);
 
-        var fmsId = deviceLeadingMap.Where(d => d.Value).FirstOrDefault();
-        var firstmeasurespot = eGrid.GetEntity(fmsId.Key, EntityType.Consumer);
+        //var fmsId = deviceLeadingMap.Where(d => d.Value).FirstOrDefault();
+        var firstmeasurespot = eGrid.GetEntity(pvesource.ParentId, EntityType.Consumer);
         eGrid.RemoveAllEntityBlocks(firstmeasurespot.Id);
 
         //var firstmeasurespotDevice = eGrid.FindEntityByName("firstspotdevice");
@@ -74,13 +77,15 @@ public partial class CalculationService
 
         var coord = new Coordinates(PVESim.MedianLatitude, PVESim.MedianLongitude);
 
-        var tddfromfile = await httpClient.GetStringAsync("tdd.csv");
-        var tdds = new List<DataProfile>();
-        if (tddfromfile != null)
-            tdds = ConsumersHelpers.LoadTDDs(tddfromfile);
-
-        if (pvesource != null)
+        if (network != null && pvesource != null && firstmeasurespot != null && mainbattery != null)
         {
+            // add PVE simulator to entity
+            eGrid.AddSimulatorToEntity(pvesource.Id, PVESim);
+
+            // add TDD Consumption simulators to entities
+            eGrid.AddSimulatorToEntity(firstmeasurespot.Id,
+                                       new ConsumerTDDSimulator(new List<DataProfile>() { appData.TDDs[0] }));
+            
             var dtmp = start;
             var dend = endDate;
 
@@ -90,26 +95,7 @@ public partial class CalculationService
             while (dtmp < dend)
             {
                 Console.WriteLine($"Analysing {dtmp} Day {day} of {totalDays} total Days to analyze...");
-                // simulate production for each hour of day
-                var productionblocks = PVESim.GetTotalPeakPowerInHourTimeframeBlocks(dtmp,
-                                                                                     dtmp.AddDays(1),
-                                                                                     coord, 1.0,
-                                                                                     pvesource.Id).ToList();
-
-                // add day production blocks to the mainPVE entity
-                eGrid.AddBlocksToEntity(pvesource.Id, productionblocks);
-
-                // get consumption based on TDD for MeasureSpot1 (place where the PVE is connected through)
-                // it will cover whole consumption of this entity. 
-                var consumptionblocks = ConsumersHelpers.GetConsumptionBlocksBasedOnTDD(tdds[0],
-                                                                                        dtmp,
-                                                                                        dtmp.AddDays(1),
-                                                                                        BlockTimeframe.Hour,
-                                                                                        firstmeasurespot.Id);
-
-                // add day consumption blocks to the device in Frist Measure Spot entity
-                eGrid.AddBlocksToEntity(firstmeasurespot.Id, consumptionblocks.Item1);
-
+                
                 // get two list of blocks after first phase of calculation,
                 // when first measured spot (connection place for PVE) consume imediatelly what it can
                 // the first list contains rest of the production after the consumption by entity.
@@ -119,16 +105,18 @@ public partial class CalculationService
                 // keep Id connection between source and rest blocks
                 foreach (var b in firstmeasuredspotPhase1.Item1)
                 {
-                    var bs = productionblocks.Where(bl => bl.StartTime == b.StartTime).FirstOrDefault();
+                    var bs = pvesource.Blocks.Values.Where(bl => bl.StartTime == b.StartTime).FirstOrDefault();
                     if (bs != null)
                         b.Id = bs.Id;
                 }
 
-                eGrid.RemoveAllEntityBlocks(firstmeasurespot.Id);
-                eGrid.RemoveAllEntityBlocks(pvesource.Id);
-
+                // add rest of consumption
                 eGrid.AddBlocksToEntity(firstmeasurespot.Id, firstmeasuredspotPhase1.Item2);
+                // add receipts blocks
+                eGrid.AddBlocksToEntity(firstmeasurespot.Id, BlockHelpers.CloneBlocks(firstmeasuredspotPhase1.Item1, true, true, BlockType.Forwarded).ToList());
+                eGrid.AddBlocksToEntity(firstmeasurespot.Id, BlockHelpers.CloneBlocks(firstmeasuredspotPhase1.Item2, true, true, BlockType.NotCovered).ToList());
 
+                // add rest of production
                 eGrid.AddBlocksToEntity(network.Id, firstmeasuredspotPhase1.Item1, alocationScheme.Id);
 
                 var consumptions = new Dictionary<string, (List<IBlock>, DataProfile)>();
@@ -140,30 +128,28 @@ public partial class CalculationService
                         var ent = eGrid.GetEntity(om.Key, EntityType.Consumer);
                         if (ent != null)
                         {
-                            eGrid.RemoveAllEntityBlocks(ent.Id);
-
-                            var conblks = ConsumersHelpers.GetConsumptionBlocksBasedOnTDD(tdds[0],
-                                                                                         dtmp,
-                                                                                         dtmp.AddDays(1),
-                                                                                         BlockTimeframe.Hour,
-                                                                                         ent.Id);
-
-                            eGrid.AddBlocksToEntity(ent.Id, conblks.Item1);
-                            consumptions.TryAdd(ent.Id, conblks);
+                            Console.WriteLine($"Adding TDD simulator to entity {ent.Name}...");
+                            eGrid.AddSimulatorToEntity(ent.Id,
+                                       new ConsumerTDDSimulator(new List<DataProfile>() { appData.TDDs[0] }));
 
                             var devicePhase = GetEntityBalanceBlocksAfterAlocationOfPVEBlocks(ent, eGrid, dtmp);
                             foreach (var b in devicePhase.Item1)
                             {
-                                var bs = consumptionblocks.Item1.Where(bl => bl.StartTime == b.StartTime).FirstOrDefault();
+                                var bs = ent.Blocks.Values.Where(bl => bl.StartTime == b.StartTime).FirstOrDefault();
                                 if (bs != null)
                                     b.Id = bs.Id;
                             }
+
                             devicephase.TryAdd(ent.Id, devicePhase);
 
-                            eGrid.RemoveAllEntityBlocks(ent.Id);
+                            // add rest of consumption to entity
                             eGrid.AddBlocksToEntity(ent.Id, devicePhase.Item2);
-                            eGrid.AddBlocksToEntity(network.Id, devicePhase.Item1);
+                            // add receipts blocks
+                            eGrid.AddBlocksToEntity(ent.Id, BlockHelpers.CloneBlocks(devicePhase.Item1, true, true, BlockType.Forwarded).ToList());
+                            eGrid.AddBlocksToEntity(ent.Id, BlockHelpers.CloneBlocks(devicePhase.Item2, true, true, BlockType.NotCovered).ToList());
 
+                            // add rest of overproduced to network
+                            eGrid.AddBlocksToEntity(network.Id, devicePhase.Item1);
                         }
                     }
                 }
@@ -177,7 +163,8 @@ public partial class CalculationService
                                                                     true,
                                                                     true,
                                                                     new List<BlockDirection>() { BlockDirection.Created },
-                                                                    new List<BlockType>() { BlockType.Simulated });
+                                                                    new List<BlockType>() { BlockType.Simulated },
+                                                                    false);
 
                 var productionPhase3Profile = DataProfileHelpers.ConvertBlocksToDataProfile(productionPhase3);
 
@@ -189,7 +176,8 @@ public partial class CalculationService
                                                                      true,
                                                                      true,
                                                                      new List<BlockDirection>() { BlockDirection.Consumed },
-                                                                     new List<BlockType>() { BlockType.Simulated });
+                                                                     new List<BlockType>() { BlockType.Simulated },
+                                                                     false);
 
                 var consumptionPhase3Profile = DataProfileHelpers.ConvertBlocksToDataProfile(consumptionPhase3);
 
@@ -238,7 +226,8 @@ public partial class CalculationService
                                                                 true,
                                                                 true,
                                                                 new List<BlockDirection>() { BlockDirection.Created, BlockDirection.Consumed },
-                                                                new List<BlockType>() { BlockType.Simulated, BlockType.Calculated, BlockType.Real });
+                                                                new List<BlockType>() { BlockType.Simulated, BlockType.Calculated, BlockType.Real },
+                                                                false);
 
                         // get consumption of the whole network in the day in window of Day Tariff
                         var netwDT = eGrid.GetConsumptionOfEntityWithWindow(network.Id,
@@ -251,7 +240,8 @@ public partial class CalculationService
                                                                             true,
                                                                             true,
                                                                             new List<BlockDirection>() { BlockDirection.Created, BlockDirection.Consumed },
-                                                                            new List<BlockType>() { BlockType.Simulated, BlockType.Calculated, BlockType.Real });
+                                                                            new List<BlockType>() { BlockType.Simulated, BlockType.Calculated, BlockType.Real },
+                                                                            false);
 
                         // get consumption of the whole network in the day in window of Night Tariff (set invertWindow parameter as true)
                         var netwNT = eGrid.GetConsumptionOfEntityWithWindow(network.Id,
@@ -264,7 +254,8 @@ public partial class CalculationService
                                                                             true,
                                                                             true,
                                                                             new List<BlockDirection>() { BlockDirection.Created, BlockDirection.Consumed },
-                                                                            new List<BlockType>() { BlockType.Simulated, BlockType.Calculated, BlockType.Real });
+                                                                            new List<BlockType>() { BlockType.Simulated, BlockType.Calculated, BlockType.Real },
+                                                                            false);
 
 
 
@@ -279,47 +270,63 @@ public partial class CalculationService
                         var totalNTOverProduction = Math.Round(netwNT.Where(b => b.Amount > 0).Select(b => b.Amount).Sum(), 4);
 
                         // total produced from own PVE
-                        var totalproduced = Math.Round(productionblocks.Where(b => b.Amount > 0).Select(b => b.Amount).Sum(), 4);
-                        // total produced from own PVE over the consumption during the production phase of PVE
+                        var pveproduced = pvesource.GetSimulatorsBlocks(BlockTimeframe.Hour, dtmp, dtmp.AddDays(1))
+                                                               .Where(b => b.Amount > 0)
+                                                               .Select(b => b.Amount);
+                        var totalproduced = Math.Round(pveproduced.Sum(), 4);// total produced from own PVE over the consumption during the production phase of PVE
                         var totalOverProducedAfterConsumedImmediately = Math.Round(productionPhase3Profile.ProfileData.Values.Sum(), 4);
                         // total stored in storage from PVE production
                         var totalStored = Math.Round(dch.ProfileData.Values.Sum(), 4);
                         // total used from storage for consumption 
                         var totalUsedFromStorage = Math.Round(ddisch.ProfileData.Values.Sum() / 1000, 4);
 
-
                         // total consumption from first measure spot (base on tdd here)
-                        var totalConsumptionFirstMeasureSpot = Math.Round(consumptionblocks.Item2.DataSum, 4);
+                        var consumedFirstMS = firstmeasurespot.GetSimulatorsBlocks(BlockTimeframe.Hour, dtmp, dtmp.AddDays(1))
+                                                              .Where(b => b.Amount > 0)
+                                                              .Select(b => b.Amount);
+                        var totalConsumptionFirstMeasureSpot = Math.Round(consumedFirstMS.Sum(), 4);
                         // device not consumed and forwarded up
                         var totalfirstmeasurespotForwardedSourceBlocks = Math.Round(firstmeasuredspotPhase1.Item1.Where(b => b.Amount != 0).Select(b => b.Amount).Sum(), 4);
                         // device not covered
                         var totalfirstmeasureSpotNotCoveredConsuptionBlocks = Math.Round(firstmeasuredspotPhase1.Item2.Where(b => b.Amount != 0).Select(b => b.Amount).Sum(), 4);
                         // total consumption on device 
 
-                        foreach(var data in consumptions)
+                        foreach(var om in deviceLeadingMap)
                         {
-                            Console.WriteLine($"Device Id: {data.Key}.");
-                            if (devicephase.TryGetValue(data.Key, out var phasedata))
+                            if (!om.Value)
                             {
-                                var consumedByDevice = Math.Round(data.Value.Item2.DataSum, 4);
-                                var forwardedByDevice = Math.Round(phasedata.Item1.Where(b => b.Amount != 0).Select(b => b.Amount).Sum(), 4);
-                                var notCoveredByPVEInDevice = Math.Round(phasedata.Item2.Where(b => b.Amount != 0).Select(b => b.Amount).Sum(), 4);
-                                
-                                var calculationResult = new CalculationResult()
+                                var ent = eGrid.GetEntity(om.Key, EntityType.Consumer);
+                                if (ent != null)
                                 {
-                                    Date = dtmp,
-                                    ConsumedFromFVE = consumedByDevice,
-                                    OverProductionFromFVE = forwardedByDevice,
-                                    Deficiency = notCoveredByPVEInDevice
-                                };
-                                
-                                if (result.ContainsKey(data.Key))
-                                {
-                                    result[data.Key].Add(calculationResult);
-                                }
-                                else
-                                {
-                                    result.Add(data.Key, new List<CalculationResult>() { calculationResult });
+                                    Console.WriteLine($"Device Id: {om.Key}.");
+
+                                    if (devicephase.TryGetValue(om.Key, out var phasedata))
+                                    {
+                                        var consumedByDevice = Math.Round(ent.GetSimulatorsBlocks(BlockTimeframe.Hour, dtmp, dtmp.AddDays(1))
+                                                                                .Where(b => b.Amount != 0)
+                                                                                .Select(b => b.Amount).Sum(), 4);
+
+                                        var forwardedByDevice = Math.Round(phasedata.Item1.Where(b => b.Amount != 0).Select(b => b.Amount).Sum(), 4);
+                                        var notCoveredByPVEInDevice = Math.Round(phasedata.Item2.Where(b => b.Amount != 0).Select(b => b.Amount).Sum(), 4);
+
+                                        var calculationResult = new CalculationResult()
+                                        {
+                                            Date = dtmp,
+                                            ConsumedFromFVE = consumedByDevice,
+                                            OverProductionFromFVE = forwardedByDevice,
+                                            Deficiency = notCoveredByPVEInDevice
+                                        };
+                                        Console.WriteLine($"{Newtonsoft.Json.JsonConvert.SerializeObject(calculationResult, Newtonsoft.Json.Formatting.Indented)}");
+
+                                        if (result.ContainsKey(om.Key))
+                                        {
+                                            result[om.Key].Add(calculationResult);
+                                        }
+                                        else
+                                        {
+                                            result.Add(om.Key, new List<CalculationResult>() { calculationResult });
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -392,7 +399,8 @@ public partial class CalculationService
                                                 true,
                                                 true,
                                                 new List<BlockDirection>() { BlockDirection.Created, BlockDirection.Consumed },
-                                                new List<BlockType>() { BlockType.Simulated });
+                                                new List<BlockType>() { BlockType.Simulated },
+                                                true);
 
         var consprof = DataProfileHelpers.ConvertBlocksToDataProfile(cons);
         // get production after some part was consumed with sun-day consumption

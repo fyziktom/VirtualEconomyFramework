@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VEDriversLite.Common.Calendar;
 using VEDriversLite.EntitiesBlocks.Blocks;
 
 namespace VEDriversLite.EntitiesBlocks.Entities
@@ -27,7 +28,14 @@ namespace VEDriversLite.EntitiesBlocks.Entities
         /// Name of the entity
         /// </summary>
         string Name { get; set; }
+        /// <summary>
+        /// Entity description
+        /// </summary>
         string Description { get; set; }
+        /// <summary>
+        /// Entity location
+        /// </summary>
+        Coordinates Coords { get; set; }
         /// <summary>
         /// Parent Id of the entity
         /// </summary>
@@ -49,6 +57,10 @@ namespace VEDriversLite.EntitiesBlocks.Entities
         /// Last change of the parameters of the entity
         /// </summary>
         DateTime LastChange { get; set; }
+        /// <summary>
+        /// Dictionary of simulators
+        /// </summary>
+        ConcurrentDictionary<string, ISimulator> Simulators { get; set; }
         /// <summary>
         /// Try to add the block to the Blocks dictionary. Block must have unique hashs
         /// </summary>
@@ -109,6 +121,26 @@ namespace VEDriversLite.EntitiesBlocks.Entities
                                              TimeSpan? timeframe = null);
 
         /// <summary>
+        /// Get blocks from simulators for specific timerage and timeframe
+        /// </summary>
+        /// <param name="timeframe"></param>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <returns></returns>
+        List<IBlock> GetSimulatorsBlocks(BlockTimeframe timeframe,
+                                         DateTime start,
+                                         DateTime end);
+
+        /// <summary>
+        /// Get blocks filtered based on Directions or Types
+        /// </summary>
+        /// <param name="justThisDirections">List of all allowed Direction of blocks</param>
+        /// <param name="justThisType">List of all Types of blocks</param>
+        /// <returns></returns>
+        IEnumerable<IBlock> GetBlocks(List<BlockDirection> justThisDirections = null,
+                                      List<BlockType> justThisType = null);
+
+        /// <summary>
         /// Get summed values as list of the blocks based on setup timespan and step.
         /// </summary>
         /// <param name="timeframesteps">timeframe step (for example "month")</param>
@@ -120,7 +152,8 @@ namespace VEDriversLite.EntitiesBlocks.Entities
                                     DateTime endtime,
                                     bool takeConsumptionAsInvert = false,
                                     List<BlockDirection> justThisDirections = null,
-                                    List<BlockType> justThisType = null);
+                                    List<BlockType> justThisType = null,
+                                    bool addSimulators = true);
 
         /// <summary>
         /// Optimized Get list of the blocks based on setup timespan and step and specific timegrame
@@ -137,7 +170,8 @@ namespace VEDriversLite.EntitiesBlocks.Entities
                                              DateTime endtime,
                                              bool takeConsumptionAsInvert = false,
                                              List<BlockDirection> justThisDirections = null,
-                                             List<BlockType> justThisType = null);
+                                             List<BlockType> justThisType = null,
+                                             bool addSimulators = true);
 
         /// <summary>
         /// Get list of the repetitive blocks based on setup timespan and step and specific timegrame
@@ -153,7 +187,8 @@ namespace VEDriversLite.EntitiesBlocks.Entities
                                                       DateTime endtime,
                                                       bool takeConsumptionAsInvert = false,
                                                       List<BlockDirection> justThisDirections = null,
-                                                      List<BlockType> justThisType = null);
+                                                      List<BlockType> justThisType = null, 
+                                                      bool addSimulators = true);
 
         /// <summary>
         /// Get list of the blocks based on setup timespan and step and specific timegrame and window
@@ -177,11 +212,24 @@ namespace VEDriversLite.EntitiesBlocks.Entities
                                                   bool invertWindow = false,
                                                   bool takeConsumptionAsInvert = false,
                                                   List<BlockDirection> justThisDirections = null,
-                                                  List<BlockType> justThisType = null);
+                                                  List<BlockType> justThisType = null,
+                                                  bool addSimulators = true);
         /// <summary>
         /// Get total consumption over all blocks
         /// </summary>
         /// <returns></returns>
         double GetTotalSummedValue(bool includeNotConsumedYet = true);
+        /// <summary>
+        /// Add simulator to entity
+        /// </summary>
+        /// <param name="simulator"></param>
+        /// <returns></returns>
+        (bool,string) AddSimulator(ISimulator simulator);
+        /// <summary>
+        /// Remove simulator
+        /// </summary>
+        /// <param name="simulatorIds"></param>
+        /// <returns></returns>
+        (bool,string) RemoveSimulator(List<string> simulatorIds);
     }
 }

@@ -219,13 +219,13 @@ namespace VEFrameworkUnitTest.Energy.StorageSimulator
                 MaximumDischargePower = 2000
             }).ToList();
 
-            var export = storage.ExportSettingsToJSON();
+            var export = storage.ExportConfig().Item2;
 
             var storage1 = CreateStorage();
             storage1.Id = "";
             storage1.Name = "";
 
-            if (storage1.ImportConfigFromJson(export))
+            if (storage1.ImportConfig(export).Item1)
             {
                 Assert.Equal("mainbattery", storage1.Name);
                 Assert.Equal(20000, storage1.TotalCapacity);

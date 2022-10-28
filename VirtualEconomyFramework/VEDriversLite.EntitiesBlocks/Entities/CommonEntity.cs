@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using VEDriversLite.Common.Calendar;
 using VEDriversLite.EntitiesBlocks.Blocks;
 using static System.Reflection.Metadata.BlobBuilder;
 
@@ -53,6 +54,20 @@ namespace VEDriversLite.EntitiesBlocks.Entities
         }
         private string _description = string.Empty;
         /// <summary>
+        /// Entity location
+        /// </summary>
+        public Coordinates Coords
+        {
+            get => _coords;
+            set
+            {
+                _coords = value;
+                LastChange = DateTime.UtcNow;
+            }
+        }
+        private Coordinates _coords = new Coordinates();
+
+        /// <summary>
         /// Parent Id of the entity
         /// </summary>
         public string ParentId
@@ -91,6 +106,51 @@ namespace VEDriversLite.EntitiesBlocks.Entities
         /// Last change of the parameters of the entity
         /// </summary>
         public DateTime LastChange { get; set; } = DateTime.UtcNow;
+
+        /// <summary>
+        /// Dictionary of simulators
+        /// </summary>
+        public ConcurrentDictionary<string, ISimulator> Simulators { get; set; } = new ConcurrentDictionary<string, ISimulator>();
+
+        /// <summary>
+        /// dd simulator to entity
+        /// </summary>
+        /// <param name="simulator"></param>
+        /// <param name="simulatorId"></param>
+        /// <returns></returns>
+        public virtual (bool,string) AddSimulator(ISimulator simulator)
+        {
+            if (simulator == null) return (false, "Simulator object cannot be null.");
+
+            if (string.IsNullOrEmpty(simulator.Id))
+                simulator.Id = Guid.NewGuid().ToString();
+
+            if (!Simulators.ContainsKey(simulator.Id))
+            {
+                simulator.ParentId = Id;
+                Simulators.TryAdd(simulator.Id, simulator);
+            }
+
+            LastChange = DateTime.UtcNow;
+            return (true, simulator.Id);
+        }
+
+        /// <summary>
+        /// Remove simulator from dictionary of Simulators
+        /// </summary>
+        /// <param name="simulators">List of Ids of blocks</param>
+        /// <returns></returns>
+        public virtual (bool,string) RemoveSimulator(List<string> simulatorIds)
+        {
+            if (simulatorIds == null) return (false,string.Empty);
+            foreach (var simulator in simulatorIds)
+            {
+                if (Simulators.ContainsKey(simulator))
+                    Simulators.TryRemove(simulator, out var sim);
+            }
+            LastChange = DateTime.UtcNow;
+            return (true, string.Empty);
+        }
 
         /// <summary>
         /// Try to add the block to the Blocks dictionary. Block must have unique hashs
@@ -262,6 +322,98 @@ namespace VEDriversLite.EntitiesBlocks.Entities
                         block.Type = type;
         }
 
+        /// <summary>
+        /// Get blocks from simulators for specific timerage and timeframe
+        /// </summary>
+        /// <param name="timeframe"></param>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <returns></returns>
+        public List<IBlock> GetSimulatorsBlocks(BlockTimeframe timeframe, 
+                                                DateTime start,
+                                                DateTime end)
+        {
+            var res = new List<IBlock>();
+
+            foreach (var simulator in Simulators.Values)
+            {                
+                var blocks = simulator.GetBlocks(timeframe, start, end, null, null, new Dictionary<string, object>()
+                {
+                    {"weatherFactor", 1.0 }, // weatherFactor is not used in Tddsimulator, but it does not cause the trouble there, thats why it can be shared function like this
+                    {"parentId", Id } // parentId is common for creating blocks in multiple simulators (for example PVE and TDD Consumption)
+                });
+
+                if (blocks != null)
+                    foreach (var b in blocks)
+                        res.Add(b);
+            }
+
+            return res;
+        }
+
+        /// <summary>
+        /// Function will take new empty result blocks and combine them with simulator if simulator is required
+        /// </summary>
+        /// <param name="timeframe"></param>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <param name="takeConsumptionAsInvert"></param>
+        /// <param name="addSimulators"></param>
+        /// <returns></returns>
+        private List<IBlock> GetResultBlocks(BlockTimeframe timeframe, DateTime start, DateTime end, bool takeConsumptionAsInvert, bool addSimulators)
+        {
+            var result = BlockHelpers.GetResultBlocks(timeframe, start, end, ParentId);
+
+            if (addSimulators)
+            {
+                var simulated = GetSimulatorsBlocks(timeframe, start, end);
+
+                if (simulated != null && simulated.Count > 0)
+                {
+                    foreach (var block in simulated)
+                    {
+                        var res = result.FirstOrDefault(b => b.StartTime == block.StartTime);
+                        if (res != null)
+                        {
+                            if (takeConsumptionAsInvert)
+                            {
+                                if (block.Direction == BlockDirection.Consumed)
+                                    res.Amount -= block.Amount;
+                                else if (block.Direction == BlockDirection.Created)
+                                    res.Amount += block.Amount;
+                                else if (block.Direction == BlockDirection.Stored)
+                                    res.Amount += block.Amount;
+                            }
+                            else
+                            {
+                                res.Amount += block.Amount;
+                            }
+                        }
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Get blocks filtered based on Directions or Types
+        /// </summary>
+        /// <param name="justThisDirections">List of all allowed Direction of blocks</param>
+        /// <param name="justThisType">List of all Types of blocks</param>
+        /// <returns></returns>
+        public virtual IEnumerable<IBlock> GetBlocks(List<BlockDirection> justThisDirections = null,
+                                              List<BlockType> justThisType = null)
+        {
+            if (justThisDirections != null && justThisDirections.Count > 0 && justThisType == null)
+                return Blocks.Values.Where(b => justThisDirections.Contains(b.Direction)).OrderBy(b => b.StartTime);
+            else if (justThisType != null && justThisType.Count > 0 && justThisDirections == null)
+                return Blocks.Values.Where(b => justThisType.Contains(b.Type)).OrderBy(b => b.StartTime);
+            else if (justThisType != null && justThisType.Count > 0 && justThisDirections != null && justThisDirections.Count > 0)
+                return Blocks.Values.Where(b => justThisType.Contains(b.Type) && justThisDirections.Contains(b.Direction)).OrderBy(b => b.StartTime);
+
+            return Blocks.Values.OrderBy(b => b.StartTime);
+        }
 
         /// <summary>
         /// Get list of the blocks based on setup timespan and step and specific timegrame
@@ -277,20 +429,15 @@ namespace VEDriversLite.EntitiesBlocks.Entities
                                                         DateTime endtime,
                                                         bool takeConsumptionAsInvert = false,
                                                         List<BlockDirection> justThisDirections = null,
-                                                        List<BlockType> justThisType = null)
+                                                        List<BlockType> justThisType = null,
+                                                        bool addSimulators = true)
         {
-            var result = BlockHelpers.GetResultBlocks(timeframesteps, starttime, endtime, ParentId);
+            var result = GetResultBlocks(timeframesteps, starttime, endtime, takeConsumptionAsInvert, addSimulators);
 
             var invert = 1;
-            var blocks = Blocks.Values.Where(b => b.StartTime < endtime)
-                                            .OrderBy(b => b.StartTime);
-
-            if (justThisDirections != null && justThisDirections.Count > 0)
-                blocks = blocks.Where(b => justThisDirections.Contains(b.Direction)).OrderBy(b => b.StartTime);
-            else if (justThisType != null && justThisType.Count > 0)
-                blocks = blocks.Where(b => justThisType.Contains(b.Type)).OrderBy(b => b.StartTime);
-            else if (justThisType != null && justThisType.Count > 0 && justThisDirections != null && justThisDirections.Count > 0)
-                blocks = blocks.Where(b => justThisType.Contains(b.Type) && justThisDirections.Contains(b.Direction)).OrderBy(b => b.StartTime);
+            
+            var blocks = GetBlocks(justThisDirections, justThisType).Where(b => b.StartTime < endtime)
+                                                                    .OrderBy(b => b.StartTime).ToList();
 
             var counter = 0;
             foreach (var block in blocks)
@@ -344,21 +491,18 @@ namespace VEDriversLite.EntitiesBlocks.Entities
                                                                  DateTime endtime,
                                                                  bool takeConsumptionAsInvert = false,
                                                                  List<BlockDirection> justThisDirections = null,
-                                                                 List<BlockType> justThisType = null)
+                                                                 List<BlockType> justThisType = null,
+                                                                 bool addSimulators = true)
         {
-            var result = BlockHelpers.GetResultBlocks(timeframesteps, starttime, endtime, ParentId);
+            var result = GetResultBlocks(timeframesteps, starttime, endtime, takeConsumptionAsInvert, addSimulators);
 
             var invert = 1;
-            var blocks = Blocks.Values.Where(b => !b.IsRepetitiveSource && !b.IsRepetitiveChild && !b.IsOffPeriodRepetitive && b.StartTime < endtime)
-                                            .OrderBy(b => b.StartTime);
-
-            if (justThisDirections != null && justThisDirections.Count > 0 && justThisType == null)
-                blocks = blocks.Where(b => justThisDirections.Contains(b.Direction)).OrderBy(b => b.StartTime);
-            else if (justThisType != null && justThisType.Count > 0 && justThisDirections == null)
-                blocks = blocks.Where(b => justThisType.Contains(b.Type)).OrderBy(b => b.StartTime);
-            else if (justThisType != null && justThisType.Count > 0 && justThisDirections != null && justThisDirections.Count > 0)
-                blocks = blocks.Where(b => justThisType.Contains(b.Type) && justThisDirections.Contains(b.Direction)).OrderBy(b => b.StartTime);
-
+            var blocks = GetBlocks(justThisDirections, justThisType).Where(b => !b.IsRepetitiveSource && 
+                                                                                !b.IsRepetitiveChild && 
+                                                                                !b.IsOffPeriodRepetitive && 
+                                                                                b.StartTime < endtime)
+                                                                    .OrderBy(b => b.StartTime).ToList();
+                        
             var repblocksresult = GetSummedValuesOfRepetitiveBlocks(timeframesteps, starttime, endtime, takeConsumptionAsInvert, justThisDirections, justThisType);
 
             var counter = 0;
@@ -421,21 +565,17 @@ namespace VEDriversLite.EntitiesBlocks.Entities
                                                                           DateTime endtime,
                                                                           bool takeConsumptionAsInvert = false,
                                                                           List<BlockDirection> justThisDirections = null,
-                                                                          List<BlockType> justThisType = null)
+                                                                          List<BlockType> justThisType = null,
+                                                                          bool addSimulators = true)
         {
-            var result = BlockHelpers.GetResultBlocks(timeframesteps, starttime, endtime, ParentId);
+            var result = GetResultBlocks(timeframesteps, starttime, endtime, takeConsumptionAsInvert, addSimulators);
 
             var invert = 1;
 
-            var repetitiveBlocksSources = Blocks.Values.Where(b => !b.IsRepetitiveChild && b.IsRepetitiveSource && b.StartTime < endtime)
-                                                             .OrderBy(b => b.StartTime);
-
-            if (justThisDirections != null && justThisDirections.Count > 0 && justThisType == null)
-                repetitiveBlocksSources = repetitiveBlocksSources.Where(b => justThisDirections.Contains(b.Direction)).OrderBy(b => b.StartTime);            
-            else if (justThisType != null && justThisType.Count > 0 && justThisDirections == null)
-                repetitiveBlocksSources = repetitiveBlocksSources.Where(b => justThisType.Contains(b.Type)).OrderBy(b => b.StartTime);
-            else if (justThisType != null && justThisType.Count > 0 && justThisDirections != null && justThisDirections.Count > 0)
-                repetitiveBlocksSources = repetitiveBlocksSources.Where(b => justThisType.Contains(b.Type) && justThisDirections.Contains(b.Direction)).OrderBy(b => b.StartTime);
+            var repetitiveBlocksSources = GetBlocks(justThisDirections, justThisType).Where(b => !b.IsRepetitiveChild && 
+                                                                                                  b.IsRepetitiveSource && 
+                                                                                                  b.StartTime < endtime)
+                                                                                     .OrderBy(b => b.StartTime).ToList();
 
             foreach (var block in repetitiveBlocksSources)
             {
@@ -564,9 +704,10 @@ namespace VEDriversLite.EntitiesBlocks.Entities
                                                                       bool invertWindow = false,
                                                                       bool takeConsumptionAsInvert = false,
                                                                       List<BlockDirection> justThisDirections = null,
-                                                                      List<BlockType> justThisType = null)
+                                                                      List<BlockType> justThisType = null,
+                                                                      bool addSimulators = true)
         {
-            var result = BlockHelpers.GetResultBlocks(timeframesteps, starttime, endtime, ParentId);
+            var result = GetResultBlocks(timeframesteps, starttime, endtime, takeConsumptionAsInvert, addSimulators);
 
             var input = GetSummedValuesOptimized(BlockTimeframe.Hour, starttime, endtime, takeConsumptionAsInvert, justThisDirections, justThisType);
             if (input == null)

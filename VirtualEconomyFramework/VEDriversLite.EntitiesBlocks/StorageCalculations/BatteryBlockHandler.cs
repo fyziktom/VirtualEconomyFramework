@@ -5,7 +5,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VEDriversLite.EntitiesBlocks.Blocks;
 using VEDriversLite.EntitiesBlocks.Blocks.Dto;
+using VEDriversLite.EntitiesBlocks.Entities;
 using VEDriversLite.EntitiesBlocks.Financial;
 using VEDriversLite.EntitiesBlocks.PVECalculations;
 using VEDriversLite.EntitiesBlocks.PVECalculations.Dto;
@@ -48,7 +50,7 @@ namespace VEDriversLite.EntitiesBlocks.StorageCalculations
     /// It contains dictionary of all battery blocks. It can provide aggregated information about whole capacity, etc.
     /// This class provides the charging and discharging profiles based on input of source/consumption.
     /// </summary>
-    public class BatteryBlockHandler
+    public class BatteryBlockHandler : CommonSimulator
     {
         /// <summary>
         /// Input unique Id and name and functions for calculation of charging/discharging functions
@@ -189,19 +191,19 @@ namespace VEDriversLite.EntitiesBlocks.StorageCalculations
         /// Export Config file to the Json
         /// </summary>
         /// <returns></returns>
-        public string ExportSettingsToJSON()
+        public override (bool, string) ExportConfig()
         {
             try
             {
                 var exp = JsonConvert.SerializeObject(CreateConfigFile());
                 if (exp != null)
-                    return exp;
+                    return (true, exp);
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Cannot serialize Battery Storage settings. " + ex.Message);
             }
-            return string.Empty;
+            return (false, string.Empty);
         }
 
         /// <summary>
@@ -224,18 +226,18 @@ namespace VEDriversLite.EntitiesBlocks.StorageCalculations
         /// <summary>
         /// Import settings of the Battery Storage from JSON
         /// </summary>
-        /// <param name="jsonConfig"></param>
+        /// <param name="config"></param>
         /// <returns></returns>
-        public bool ImportConfigFromJson(string jsonConfig)
+        public override (bool, string) ImportConfig(string config)
         {
-            if (string.IsNullOrEmpty(jsonConfig))
-                return false;
+            if (string.IsNullOrEmpty(config))
+                return (false, string.Empty);
 
-            var config = JsonConvert.DeserializeObject<BatteryStorageDto>(jsonConfig);
-            if (config != null)
-                return ImportConfig(config);
+            var cnf = JsonConvert.DeserializeObject<BatteryStorageDto>(config);
+            if (cnf != null)
+                return (ImportConfigDto(cnf), string.Empty);
             else
-                return false;
+                return (false, string.Empty);
         }
 
         /// <summary>
@@ -243,7 +245,7 @@ namespace VEDriversLite.EntitiesBlocks.StorageCalculations
         /// </summary>
         /// <param name="config"></param>
         /// <returns></returns>
-        public bool ImportConfig(BatteryStorageDto config)
+        public bool ImportConfigDto(BatteryStorageDto config)
         {
             if (config == null)
                 return false;
@@ -270,14 +272,14 @@ namespace VEDriversLite.EntitiesBlocks.StorageCalculations
         public IEnumerable<string> AddBatteryBlock(BatteryBlock block, int addcount = 1)
         {
             if (block != null)
-            { 
+            {
                 while (addcount > 0)
                 {
                     var b = block.Clone();
                     b.Id = Guid.NewGuid().ToString();
                     b.GroupId = Id;
                     if (BatteryBlocks.TryAdd(b.Id, b))
-                    { 
+                    {
                         addcount--;
                         yield return b.Id;
                     }
@@ -349,7 +351,7 @@ namespace VEDriversLite.EntitiesBlocks.StorageCalculations
                 var laststeptime = starttime;
                 if (inputProfile.ProfileData.Count > 1)
                     laststeptime = starttime - (inputProfile.ProfileData.Keys.Skip(1).Take(1).First() - starttime);
-                
+
                 foreach (var step in inputProfile.ProfileData)
                 {
                     var value = step.Value;
@@ -384,7 +386,7 @@ namespace VEDriversLite.EntitiesBlocks.StorageCalculations
                     if ((loaded + addvalue) < totalcapacity)
                     {
                         loaded += addvalue;
-                        
+
                         if (loaded <= 0)
                             loaded = 0.000001;
 
@@ -456,7 +458,7 @@ namespace VEDriversLite.EntitiesBlocks.StorageCalculations
                     if ((loaded - addvalue) > 0)
                     {
                         loaded -= addvalue;
-                        
+
                         if (loaded <= 0)
                             loaded = 0.000001;
 
@@ -661,10 +663,75 @@ namespace VEDriversLite.EntitiesBlocks.StorageCalculations
 
         public bool DischargeAllBatteryBlocks()
         {
-            foreach(var battery in BatteryBlocks.Values)
+            foreach (var battery in BatteryBlocks.Values)
                 battery.ActualFilledCapacity = 0.0001;
 
             return true;
+        }
+
+
+        public override DataProfile GetData(BlockTimeframe timeframe,
+                                            DateTime start,
+                                            DateTime end,
+                                            Dictionary<string, DataProfile> inputProfiles,
+                                            Dictionary<string, List<IBlock>> inputBlocks,
+                                            Dictionary<string, object> options)
+        {
+            var res = GetBlocks(timeframe, start, end, inputProfiles, inputBlocks, options).ToList();
+            var result = DataProfileHelpers.ConvertBlocksToDataProfile(res);
+            return result;
+        }
+
+        public override IEnumerable<IBlock> GetBlocks(BlockTimeframe timeframe,
+                                                      DateTime start,
+                                                      DateTime end,
+                                                      Dictionary<string, DataProfile> inputProfiles,
+                                                      Dictionary<string, List<IBlock>> inputBlocks,
+                                                      Dictionary<string, object> options)
+        {
+            var sourceProfile = new DataProfile();
+            var consumptionProfile = new DataProfile();
+
+            if (inputProfiles.TryGetValue("source", out var sp))
+                sourceProfile = sp;
+            else
+            {
+                if (inputBlocks.TryGetValue("source", out var spb))
+                    sourceProfile = DataProfileHelpers.ConvertBlocksToDataProfile(spb);
+                else
+                    yield break;
+            }
+
+            if (inputProfiles.TryGetValue("consumption", out var cp))
+                consumptionProfile = cp;
+            else
+            {
+                if (inputBlocks.TryGetValue("consumption", out var cpb))
+                    consumptionProfile = DataProfileHelpers.ConvertBlocksToDataProfile(cpb);
+                else
+                    yield break;
+            }
+
+            var loaded = 0.0;
+            if (options.TryGetValue("loaded", out var ld))
+                loaded = (double)ld;
+            var startDischarge = 0.07; 
+            if (options.TryGetValue("startDischarge", out var sd))
+                startDischarge = (double)sd;
+            var minimumLoadedToDischarge = 0.04;
+            if (options.TryGetValue("minimumLoadedToDischarge", out var mltd))
+                minimumLoadedToDischarge = (double)mltd;
+
+            var res = GetChargingAndDischargingProfiles(sourceProfile, 
+                                                        consumptionProfile, 
+                                                        true, 
+                                                        loaded, 
+                                                        startDischarge, 
+                                                        minimumLoadedToDischarge);
+
+            
+            // todo
+
         }
     }
 }

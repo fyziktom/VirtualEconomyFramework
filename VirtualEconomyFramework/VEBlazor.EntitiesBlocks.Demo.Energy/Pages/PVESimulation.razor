@@ -34,139 +34,29 @@
     PVESimulationGraph? graph;
     PVEYearGraph? ygraph;
     BatteryBlocksGroupCard? batterystorage;
-
-    Coordinates coord = new Coordinates(49.194103, 16.608998);
-    double panelAzimuthE = MathHelpers.DegreeToRadians(-40);
-    double panelAzimuthS = MathHelpers.DegreeToRadians(0);
-    double panelAzimuthW = MathHelpers.DegreeToRadians(40);
-    string name = "mytest";
-    int DurationInDays = 1;
     DateTime start = new DateTime(2022, 1, 1, 0, 0, 0);
     DateTime end = new DateTime(2022, 1, 2, 0, 0, 0);
     IEnumerable<(string,string)> groupIds = new List<(string,string)>();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (!AppData.BatteryStorageSimulatorLoaded)
-        {
-            var storeddata = await Http.GetStringAsync("samplestorage.json");
-            if (storeddata != null)
-                AppData.StoredBatteryStorageConfig = storeddata;
-
-            if (storeddata != null && !AppData.BatteryStorage.ImportConfigFromJson(storeddata))
-            {
-                setCommonBattery();
-                AppData.BatteryStorage.AddBatteryBlock(AppData.BatteryStorage.CommonBattery).ToList();
-                AppData.BatteryStorage.AddBatteryBlock(AppData.BatteryStorage.CommonBattery).ToList();
-                
-                AppData.BatteryStorageSimulatorLoaded = true;
-            }
-
-            if (batterystorage != null)
-                await batterystorage.LoadData();
-
-        }
-
-        if (!AppData.PVESimulatorLoaded)
-        {
-            end = start.AddDays(DurationInDays);
-            var storeddata = await Http.GetStringAsync("samplepve.json");
-            if (storeddata != null)
-                AppData.StoredPVEConfig = storeddata;
-
-            if (storeddata != null && !AppData.PVEGrid.ImportConfigFromJson(storeddata))
-            {
-                panelAzimuthE = MathHelpers.DegreeToRadians(-40);
-                panelAzimuthS = MathHelpers.DegreeToRadians(0);
-                panelAzimuthW = MathHelpers.DegreeToRadians(60);
-
-                var eastPanelsId = AppData.PVEGrid.AddGroup("East");
-                var southPanelsId = AppData.PVEGrid.AddGroup("South");
-                var westPanelsId = AppData.PVEGrid.AddGroup("West");
-
-                SetCommonPanel();
-                // set template panel in this PVE
-                AddPanelToGroup(eastPanelsId, panelAzimuthE, true, 3);
-                AddPanelToGroup(southPanelsId, panelAzimuthS, true, 6);
-                AddPanelToGroup(westPanelsId, panelAzimuthW, true, 8);
-            }
-
-            groupIds = AppData.PVEGrid.PVPanelsGroups.Values.Where(p => p.Id != null).Select(p => (p.Id, p.Name));
-
-            AppData.PVESimulatorLoaded = true;
-            await InvokeAsync(StateHasChanged);
-            await Task.Delay(1);
-
-            if (pveblock != null)
-                await pveblock.Reload();
-
-            if (graph != null)
-                await graph.LoadData(start, groupIds, coord);
-
-            if (ygraph != null)
-                await ygraph.LoadData(start, groupIds, coord, false);
-
-            await InvokeAsync(StateHasChanged);
-        }
-        else 
+        if (firstRender && batterystorage != null)
+            await batterystorage.LoadData();
+        
+        if (AppData.PVESimulatorLoaded && firstRender)
         {
             groupIds = AppData.PVEGrid.PVPanelsGroups.Values.Where(p => p.Id != null).Select(p => (p.Id, p.Name));
             if (pveblock != null)
                 await pveblock.Reload();
 
             if (graph != null)
-                await graph.LoadData(start, groupIds, coord);
+                await graph.LoadData(start, groupIds, AppData.DefaultCoordinates);
 
             if (ygraph != null)
-                await ygraph.LoadData(start, groupIds, coord, false);
+                await ygraph.LoadData(start, groupIds, AppData.DefaultCoordinates, false);
 
         }
 
         await base.OnAfterRenderAsync(firstRender);
-    }
-
-    private void SetCommonPanel()
-    {
-        if (AppData.PVEGrid != null)
-        {
-            var panel = new PVPanel()
-                {
-                    Name = "test",
-                    Azimuth = 0,
-                    BaseAngle = MathHelpers.DegreeToRadians(23),
-                    DirtRatio = 0.05 / 365,
-                    Efficiency = 1,
-                    Height = 2000,
-                    Width = 1000,
-                    Latitude = coord.Latitude,
-                    Longitude = coord.Longitude,
-                    PeakPower = 0.3,
-                    PanelPeakAngle = MathHelpers.DegreeToRadians(90)
-                };
-            AppData.PVEGrid.SetCommonPanel(panel);
-        }
-    }
-
-    private void setCommonBattery()
-    {
-        AppData.BatteryStorage.SetCommonBattery(new BatteryBlock()
-            {
-                Id = Guid.NewGuid().ToString(),
-                Capacity = 10000,
-                InternalResistance = 0.1,
-                MaximumChargePower = 2000,
-                MaximumDischargePower = 2000
-            });
-    }
-
-    private void AddPanelToGroup(string groupId, double azimuth = 0, bool setAzimuth = false, int count = 1)
-    {
-        SetCommonPanel();
-        if (setAzimuth)
-        {
-            AppData.PVEGrid.CommonPanel.Azimuth = azimuth;
-        }
-        var addedPanelsId = AppData.PVEGrid.AddPanelToGroup(groupId, AppData.PVEGrid.CommonPanel, count).ToList();
-
     }
 }
