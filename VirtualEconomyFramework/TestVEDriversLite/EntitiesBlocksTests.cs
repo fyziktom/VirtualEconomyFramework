@@ -690,9 +690,9 @@ namespace TestVEDriversLite
                                 var phase2 = GetEntityBalanceBlocksAfterAlocationOfPVEBlocks(peerEntity, eGrid, dtmp);
 
                                 // get rest of consumption to device entity as blocks
-                                eGrid.AddBlocksToEntity(device.Id, phase2.Item2);
-                                eGrid.AddBlocksToEntity(device.Id, BlockHelpers.CloneBlocks(phase2.Item1, true, true, BlockType.Forwarded).ToList());
-                                eGrid.AddBlocksToEntity(device.Id, BlockHelpers.CloneBlocks(phase2.Item2, true, true, BlockType.NotCovered).ToList());
+                                eGrid.AddBlocksToEntity(peer.Key, phase2.Item2);
+                                eGrid.AddBlocksToEntity(peer.Key, BlockHelpers.CloneBlocks(phase2.Item1, true, true, BlockType.Forwarded).ToList());
+                                eGrid.AddBlocksToEntity(peer.Key, BlockHelpers.CloneBlocks(phase2.Item2, true, true, BlockType.NotCovered).ToList());
                                 // add rest of PVE production after consumption to network
                                 eGrid.AddBlocksToEntity(network.Id, phase2.Item1);
                             }

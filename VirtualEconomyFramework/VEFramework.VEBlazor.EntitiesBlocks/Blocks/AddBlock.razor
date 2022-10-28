@@ -163,6 +163,8 @@
                 Block.RepetitiveFirstRun = DateTime.Now;
             if (Block.RepetitiveEndRun == null)
                 Block.RepetitiveEndRun = DateTime.Now.AddDays(1);
+            if (Block.OffPeriod == null)
+                Block.OffPeriod = new TimeSpan(1, 0, 0);
         }
         await InvokeAsync(StateHasChanged);
     }
