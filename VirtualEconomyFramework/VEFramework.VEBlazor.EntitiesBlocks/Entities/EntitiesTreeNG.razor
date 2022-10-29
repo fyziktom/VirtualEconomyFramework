@@ -1,46 +1,60 @@
-﻿@inherits EntitiesBlocksComponentBase
+﻿@using Microsoft.JSInterop
+@inject IJSRuntime JSRuntime
+@inherits EntitiesBlocksComponentBase
 @inject AppData AppData
 
 
 @if (Item != null)
 {
-    <Row Margin="Margin.Is2.FromTop">
-        <Column>
+
+    <Div Width="Width.Is100" Overflow="Overflow.Auto">
+        <Div Margin="Margin.IsAuto.OnY" Style="width: fit-content;">
             @if (Tree != null)
             {
                 <CascadingValue Value="@addDialog" Name="AddDialog">
-                    <Accordion>
+                    <Accordion Overflow="Overflow.Hidden">
                         @foreach (var item in Tree.GetChilds())
                         {
-                            <EntitiesTreeNGItem Item="@item" ItemSelected="@ItemSelected"></EntitiesTreeNGItem>
+                            <EntitiesTreeNGItem IsMainBlock="true" Item="@item" ItemSelected="@ItemSelected"></EntitiesTreeNGItem>
                         }
                     </Accordion>
                 </CascadingValue>
             }
-        </Column>
-    </Row>
+        </Div>
+    </Div>
 }
 
 <AddEntityNG @ref="@addDialog" ItemChanged="@OnChanged"></AddEntityNG>
 
 @code {
+
+    /* document.getElementById('mainBlock').scrollIntoView({
+     block: 'center', behavior: 'smooth',inline: 'center'
+     });*/
     [Parameter]
     public TreeItem Tree { get; set; } = new TreeItem();
 
     [Parameter]
     public bool DisplayRefreshButton { get; set; } = false;
-    
+
     [Parameter]
     public string? RootItemId { get; set; }
-    
+
     [Parameter]
     public EventCallback<TreeItem> ItemSelected { get; set; }
+
+    IJSObjectReference JSObjectReference { get; set; }
+
 
     IList<TreeItem> ExpandedNodes = new List<TreeItem>();
 
     TreeView<TreeItem>? treeView;
 
     string? rootItemId;
+
+
+  
+
 
     protected override async Task OnParametersSetAsync()
     {
@@ -53,7 +67,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        
+
         await base.OnInitializedAsync();
     }
 
@@ -120,8 +134,8 @@
 
     private async Task OnChanged()
     {
-       Console.WriteLine("Item changed");
-       await LoadData(rootItemId);
+        Console.WriteLine("Item changed");
+        await LoadData(rootItemId);
     }
 
 }

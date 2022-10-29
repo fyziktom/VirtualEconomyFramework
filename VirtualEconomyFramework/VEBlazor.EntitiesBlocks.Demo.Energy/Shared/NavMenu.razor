@@ -1,22 +1,15 @@
 ﻿@inject AppData AppData
- 
-<div class="h-100">
-    <div class="top-row ps-3 navbar navbar-dark">
-        <Div Class="container-fluid" Padding="Padding.Is0">
-            <Div Class="logo-wrapper" Flex="Flex.AlignItems.Center.JustifyContent.Between" Width="Width.Is100">
-                <div class="logo">
-                    <img src="images/egd-logo.svg" />
-                </div>
-                <Icon Name="Blazorise.Icons.FontAwesome.FontAwesomeIcons.Handshake" />
-                <div class="logo">
-                    <img src="images/digiplant-logo.png" />
-                </div>
-            </Div>
-            <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-        </Div>
-    </div>
+
+<div class="top-row ps-3 navbar navbar-dark">
+    <Div Class="container-fluid" Padding="Padding.Is0">
+            <div class="logo">
+                <img src="images/digiplant-logo.png" />
+            </div>
+        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </Div>
+</div>
 
     <div class="@NavMenuCssClass" @onclick="ToggleNavMenu" >
         <nav class="flex-column">
@@ -52,7 +45,6 @@
             </div>
         </nav>
     </div>
-</div>
 @code {
     private bool collapseNavMenu = true;
 
