@@ -1,0 +1,228 @@
+﻿@inherits EntitiesBlocksComponentBase
+@inject AppData AppData
+
+<Modal @ref="AddModal">
+    <ModalContent Centered Size="ModalSize.ExtraLarge">
+        <ModalHeader>
+            <ModalTitle>@(!changing ? "Add" : "Change") Panel</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            @if (Panel != null)
+            {
+                <Row>
+                    <Column>
+                        <Field>
+                            <FieldLabel>Name</FieldLabel>
+                            <TextEdit Placeholder="Entity Name" @bind-Text="@Panel.Name" />
+                        </Field>
+                        <Row>
+                            <Column>
+                                <Field Margin="Margin.Is2.FromTop">
+                                    <FieldLabel>Peak Power</FieldLabel>
+                                    <NumericPicker TValue="double" Min="0" Max="@double.MaxValue" @bind-Value="@Panel.PeakPower" Decimals="4" DecimalSeparator="." AlternativeDecimalSeparator="," />
+                                    <FieldHelp>Please fill the panel peak power in kWh</FieldHelp>
+                                </Field>
+                            </Column>
+                            <Column>
+                                <Field Margin="Margin.Is2.FromTop">
+                                    <FieldLabel>Peak Power measuring beam angle</FieldLabel>
+                                    <NumericPicker TValue="double" Min="0" Max="90" Value="@Panel.PanelPeakAngleInDegrees" ValueChanged="@onPowePeakBeamAngleChanged" Decimals="4" DecimalSeparator="." AlternativeDecimalSeparator="," />
+                                    <FieldHelp>Angle of light beam against panel for peak power measurement in degrees.</FieldHelp>
+                                </Field>
+                            </Column>
+                        </Row>
+                        <Row>
+                            <Column>
+                                <Field Margin="Margin.Is2.FromTop">
+                                    <FieldLabel>Heght</FieldLabel>
+                                    <NumericPicker TValue="double" Min="0" Max="@double.MaxValue" @bind-Value="@Panel.Height" Decimals="4" DecimalSeparator="." AlternativeDecimalSeparator="," />
+                                    <FieldHelp>Please fill the panel height in mm.</FieldHelp>
+                                </Field>
+                            </Column>
+                            <Column>
+                                <Field Margin="Margin.Is2.FromTop">
+                                    <FieldLabel>Width</FieldLabel>
+                                    <NumericPicker TValue="double" Min="0" Max="@double.MaxValue" @bind-Value="@Panel.Width" Decimals="4" DecimalSeparator="." AlternativeDecimalSeparator="," />
+                                    <FieldHelp>Please fill the panel width in mm.</FieldHelp>
+                                </Field>
+                            </Column>
+                        </Row>
+                        <Row>
+                            <Column>
+                                <Field Margin="Margin.Is2.FromTop">
+                                    <FieldLabel>Efficiency</FieldLabel>
+                                    <NumericPicker TValue="double" Min="0" Max="1.0" @bind-Value="@Panel.Efficiency" Decimals="4" DecimalSeparator="." AlternativeDecimalSeparator="," />
+                                    <FieldHelp>Please fill the panel efficiency (1.0 max).</FieldHelp>
+                                </Field>
+                            </Column>
+                            <Column>
+                                <Field Margin="Margin.Is2.FromTop">
+                                    <FieldLabel>Dirt ratio</FieldLabel>
+                                    <NumericPicker TValue="double" Min="0" Max="1.0" @bind-Value="@Panel.DirtRatio" Decimals="4" DecimalSeparator="." AlternativeDecimalSeparator="," />
+                                    <FieldHelp>Please fill the panel dirt ratio. It is decrease of efficiency per day in year (1.0 max). example. 0.05/365.</FieldHelp>
+                                </Field>
+                            </Column>
+                        </Row>
+                        <Row>
+                            <Column>
+                                <Field Margin="Margin.Is2.FromTop">
+                                    <FieldLabel>Base Angle</FieldLabel>
+                                    <NumericPicker TValue="double" Min="0" Max="90" Value="@Panel.BaseAngleInDegrees" ValueChanged="@onBaseAngleChanged" Decimals="4" DecimalSeparator="." AlternativeDecimalSeparator="," />
+                                    <FieldHelp>Please fill the panel base angle. it means angle against ground in degrees.</FieldHelp>
+                                </Field>
+                            </Column>
+                            <Column>
+                                <Field Margin="Margin.Is2.FromTop">
+                                    <FieldLabel>Azimuth</FieldLabel>
+                                    <NumericPicker TValue="double" Min="-180" Max="180" Value="@Panel.AzimutInDegrees" ValueChanged="@onAzimuthChanged" Decimals="4" DecimalSeparator="." AlternativeDecimalSeparator="," />
+                                    <FieldHelp>Please fill the panel azimuth. It means angle againts south line in degrees.</FieldHelp>
+                                </Field>
+                            </Column>
+                        </Row>
+                        <Row>
+                            <Column>
+                                <Field Margin="Margin.Is2.FromTop">
+                                    <FieldLabel>Latitude</FieldLabel>
+                                    <NumericPicker TValue="double" Min="0" Max="@double.MaxValue" @bind-Value="@Panel.Latitude" Decimals="6" DecimalSeparator="." AlternativeDecimalSeparator="," />
+                                    <FieldHelp>Please fill the panel center latitude</FieldHelp>
+                                </Field>
+                            </Column>
+                            <Column>
+                                <Field Margin="Margin.Is2.FromTop">
+                                    <FieldLabel>Longitude</FieldLabel>
+                                    <NumericPicker TValue="double" Min="0" Max="@double.MaxValue" @bind-Value="@Panel.Longitude" Decimals="6" DecimalSeparator="." AlternativeDecimalSeparator="," />
+                                    <FieldHelp>Please fill the panel center longitude</FieldHelp>
+                                </Field>
+                            </Column>
+                        </Row>
+                        
+                    </Column>
+                </Row>
+                <Row>
+                    <Column>
+                        @if (changing)
+                        {
+                            <Button Color="Color.Primary" Outline Clicked="@change">Change Panel</Button>
+                        }
+                        else
+                        {
+                            <Button Color="Color.Primary" Outline Clicked="@add">Add Panel</Button>
+                        }
+                    </Column>
+                </Row>
+            }
+        </ModalBody>
+    </ModalContent>
+</Modal>
+
+@if (WithButton)
+{
+    <Button Color="Color.Primary" Block="@BlockButton" Outline Float="@FloatButton" Clicked="@openAddPanel">
+        <Row>
+            @if (WithButtonIcon)
+            {
+                <Column>
+                    <Icon Name="IconName.Add" />
+                </Column>
+            }
+            @if (WithButtonText)
+            {
+                <Column Margin="Margin.Is2.FromStart">
+                    @ButtonText
+                </Column>
+            }
+        </Row>
+    </Button>
+}
+
+@code {
+
+    [Parameter]
+    public bool WithButton { get; set; } = false;
+    [Parameter]
+    public bool BlockButton { get; set; } = false;
+    [Parameter]
+    public Float FloatButton { get; set; } = Float.Default;
+    [Parameter]
+    public bool WithButtonIcon { get; set; } = false;
+    [Parameter]
+    public bool WithButtonText { get; set; } = false;
+    [Parameter]
+    public string ButtonText { get; set; } = "Add Panel";
+    [Parameter]
+    public EventCallback<List<string>> Added { get; set; }
+    [Parameter]
+    public PVPanel? Panel { get; set; }
+
+    Modal? AddModal;
+    bool changing = false;
+
+    [Inject] INotificationService NotificationService { get; set; }
+
+    public async Task LoadPanel(PVPanel input, bool showmodal = false, bool changeofpanel = false)
+    {
+        if (input != null)
+            Panel = input;
+        if (showmodal)
+        {
+            if (AddModal != null)
+                await AddModal.Show();
+        }
+        changing = changeofpanel;
+        await InvokeAsync(StateHasChanged);
+    }
+    private async Task openAddPanel()
+    {
+        if (AddModal != null)
+        {
+            changing = false;
+            await AddModal.Show();
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private void onPowePeakBeamAngleChanged(double e)
+    {
+        if (Panel != null)
+            Panel.PanelPeakAngle = MathHelpers.DegreeToRadians(e);
+    }
+    private void onBaseAngleChanged(double e)
+    {
+        if (Panel != null)
+            Panel.BaseAngle = MathHelpers.DegreeToRadians(e);
+    }
+    private void onAzimuthChanged(double e)
+    {
+        if (Panel != null)
+            Panel.Azimuth = MathHelpers.DegreeToRadians(e);
+    }
+
+    private async Task add()
+    {
+        if (Panel == null)
+        {
+            await NotificationService.Error("Panel cannot be null.", "Cannot Add Panel");
+            return;
+        }
+        if (string.IsNullOrEmpty(Panel.Name))
+        {
+            await NotificationService.Error("Please fill the name of the panel", "Cannot Add Panel");
+            return;
+        }
+
+        var result = AppData.PVEGrid.AddPanelToGroup(Panel.GroupId, Panel);
+
+        if (AddModal != null)
+            await AddModal.Hide();
+
+        await NotificationService.Success($"Pannel {Panel.Name} added.", "Add Panel");
+
+        await Added.InvokeAsync(result.ToList());
+    }
+
+    async Task change()
+    {
+
+    }
+}

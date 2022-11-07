@@ -1,0 +1,36 @@
+{
+  "Id": "d6f7d0b3-77c2-4d6a-a91b-6104d8c8589c",
+  "Name": "mainbattery",
+  "BatteryBlocks": {
+    "f76921b0-c914-477f-97f9-f9f9e449b881": {
+      "Id": "f76921b0-c914-477f-97f9-f9f9e449b881",
+      "GroupId": "d6f7d0b3-77c2-4d6a-a91b-6104d8c8589c",
+      "Name": "battery-2",
+      "Capacity": 10000.0,
+      "ActualFilledCapacity": 0.1,
+      "MaximumChargePower": 5000.0,
+      "MaximumDischargePower": 5000.0,
+      "InternalResistance": 0.0001
+    },
+    "a305541f-3924-41da-9605-5779a2a69cb5": {
+      "Id": "a305541f-3924-41da-9605-5779a2a69cb5",
+      "GroupId": "d6f7d0b3-77c2-4d6a-a91b-6104d8c8589c",
+      "Name": "battery-1",
+      "Capacity": 10000.0,
+      "ActualFilledCapacity": 0.1,
+      "MaximumChargePower": 5000.0,
+      "MaximumDischargePower": 5000.0,
+      "InternalResistance": 0.0001
+    }
+  },
+  "CommonBattery": {
+    "Id": "",
+    "GroupId": "",
+    "Name": "battery",
+    "Capacity": 10000.0,
+    "ActualFilledCapacity": 0.1,
+    "MaximumChargePower": 5000.0,
+    "MaximumDischargePower": 5000.0,
+    "InternalResistance": 0.0001
+  }
+}

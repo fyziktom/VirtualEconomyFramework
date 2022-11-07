@@ -1,0 +1,310 @@
+﻿@inject AppData AppData
+
+<Card Margin="Margin.Is4.FromBottom">
+    <CardHeader>
+        <CardTitle>FVE Simulace - @AppData.PVEGrid.Name</CardTitle>
+    </CardHeader>
+    <CardBody>
+        <Row Margin="Margin.Is1.FromTop">
+            <Column>
+                <Button Color="Color.Primary" Outline Clicked="@(async () => await Refresh())">Spustit simulace</Button>
+            </Column>
+        </Row>
+        <Row Margin="Margin.Is2.FromTop">
+            <Column>
+                <Span>Zvolené datum: @(Start.ToString("dd.MM.yyyy")) </Span>
+            </Column>
+        </Row>
+        <Row Margin="Margin.Is2.FromTop">
+            <Column>
+                <Slider @ref=slider TValue="int" Step="1" Value="sliderValue" Max="365" ValueChanged="@OnsliderValueChanged" />
+                <Small>Posunte slider pro výběr pro výběr dalšího dne</Small>
+            </Column>
+        </Row>
+        <Row Margin="Margin.Is4.FromTop">
+            <Column>
+                <LineChart @ref="lineChart" TItem="double" Options="@lineChartOptions" Style="max-height: 400px; max-width:800px;" />
+            </Column>
+        </Row>
+        
+    </CardBody>
+</Card>
+
+@code {
+    [Parameter]
+    public DateTime Start { get; set; } = DateTime.UtcNow;
+    [Parameter]
+    public Coordinates Coords { get; set; } = new Coordinates();
+    [Parameter] 
+    public IEnumerable<(string,string)> GroupIds {get;set;} = new List<(string,string)>();
+
+    private LineChart<double>? lineChart;
+
+    private DataProfile totalProductionDataProfile = new DataProfile();
+    private DataProfile storageChargingDataProfile = new DataProfile();
+    private DataProfile storageDischargingDataProfile = new DataProfile();
+    private DataProfile consumptionDataProfile = new DataProfile();
+    private DataProfile storageBilanceDataProfile = new DataProfile();
+
+    Slider<int>? slider;
+    int sliderValue = 0;
+
+    LineChartOptions lineChartOptions = new()
+        {
+            AspectRatio = 1.2,
+            Scales = new()
+            {
+                Y = new()
+                {
+                    Title = new()
+                    {
+                        Display = true,
+                        Text = "Power"
+                    },
+                    Ticks = new ChartAxisTicks
+                    {
+                        Callback = (value, index, values) => value / 1000 + "MWh",
+                        StepSize = 10000
+                    }
+                }
+            }
+        };
+
+    string[] Labels = { "00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23" };
+    List<string> backgroundColors = new List<string> { 
+        ChartColor.FromRgba(255, 99, 132, 0.2f), 
+        ChartColor.FromRgba(54, 162, 235, 0.2f), 
+        ChartColor.FromRgba(255, 206, 86, 0.2f), 
+        ChartColor.FromRgba(75, 192, 192, 0.2f), 
+        ChartColor.FromRgba(153, 102, 255, 0.2f), 
+        ChartColor.FromRgba(255, 159, 64, 0.2f)
+    };
+    List<string> borderColors = new List<string> { 
+        ChartColor.FromRgba(255, 99, 132, 1f), 
+        ChartColor.FromRgba(54, 162, 235, 1f), 
+        ChartColor.FromRgba(255, 206, 86, 1f), 
+        ChartColor.FromRgba(75, 192, 192, 1f), 
+        ChartColor.FromRgba(153, 102, 255, 1f), 
+        ChartColor.FromRgba(255, 159, 64, 1f)
+    };
+
+    async Task HandleRedraw()
+    {
+        if (lineChart != null)
+        {
+            await lineChart.Clear();
+
+            if (GroupIds.Count() <= 0)
+                await lineChart.AddLabelsDatasetsAndUpdate(Labels, GetLineChartDataset(Start, ("tmp","tmp")));
+            else
+            {
+                await lineChart.AddLabels(Labels);
+
+                foreach (var group in GroupIds)
+                    await lineChart.AddDataSet(GetLineChartDataset(Start, group));
+
+                await lineChart.AddDataSet(GetLineChartDatasetForTotal(Start));
+                await lineChart.AddDataSet(GetLineChartDatasetForStorageCharging(Start, true));
+                await lineChart.AddDataSet(GetLineChartDatasetForDayConsumption(Start));
+                await lineChart.AddDataSet(GetLineChartDatasetForStorageDischarging(Start));
+
+                await lineChart.Update();
+            }
+        }
+    }
+
+    LineChartDataset<double> GetLineChartDataset(DateTime start, (string,string) groupinfo)
+    {
+        if (!string.IsNullOrEmpty(groupinfo.Item1))
+        {
+            var data = new List<double>();
+            var tmp = start;
+            var end = start.AddDays(1);
+
+            while (tmp < end)
+            {
+                data.Add(AppData.PVEGrid.GetGroupPeakPowerInDateTime(groupinfo.Item1, tmp, Coords, 1));
+                tmp = tmp.AddHours(1);
+            }
+
+            return new LineChartDataset<double>
+                {
+                    Label = groupinfo.Item2,
+                    Data = data,
+                    BackgroundColor = backgroundColors,
+                    BorderColor = borderColors,
+                    Fill = true,
+                    PointRadius = 3,
+                    CubicInterpolationMode = "monotone",
+                };
+        }
+        else
+        {
+            var data = new List<double>();
+            for (var i = 0; i < 24; i++)
+                data.Add(0);
+
+            return new LineChartDataset<double>
+                {
+                    Label = AppData.EntitiesHandler.UnitLabel,
+                    Data = data,
+                    BackgroundColor = backgroundColors,
+                    BorderColor = borderColors,
+                    Fill = true,
+                    PointRadius = 3,
+                    CubicInterpolationMode = "monotone",
+                };
+        }
+    }
+
+    LineChartDataset<double> GetLineChartDatasetForTotal(DateTime start)
+    {
+        totalProductionDataProfile = new DataProfile();
+        var tmp = start;
+        var end = start.AddDays(1);
+
+        while (tmp < end)
+        {
+            totalProductionDataProfile.ProfileData.Add(tmp, AppData.PVEGrid.GetTotalPowerInDateTime(tmp, Coords, 1));
+            tmp = tmp.AddHours(1);
+        }
+
+        return new LineChartDataset<double>
+            {
+                Label = "Total",
+                Data = totalProductionDataProfile.ProfileData.Values.Where(p => p < double.MaxValue).ToList(),
+                BackgroundColor = backgroundColors,
+                BorderColor = borderColors,
+                Fill = true,
+                PointRadius = 3,
+                CubicInterpolationMode = "monotone",
+            };
+    }
+
+    LineChartDataset<double> GetLineChartDatasetForStorageCharging(DateTime start, bool emptyStorageInStart)
+    {
+        storageChargingDataProfile = new DataProfile();
+
+        if (emptyStorageInStart)
+            AppData.BatteryStorage.DischargeAllBatteryBlocks();
+
+        foreach (var data in AppData.BatteryStorage.GetChargingProfileData(totalProductionDataProfile, false, true))
+            storageChargingDataProfile.ProfileData.TryAdd(data.Item1, data.Item2 / 10000);
+
+        return new LineChartDataset<double>
+            {
+                Label = "Charging in kWh/10",
+                Data = storageChargingDataProfile.ProfileData.Values.Where(p => p < double.MaxValue).ToList(),
+                BackgroundColor = backgroundColors,
+                BorderColor = borderColors,
+                Fill = true,
+                PointRadius = 3,
+                CubicInterpolationMode = "monotone",
+            };
+    }
+
+
+    LineChartDataset<double> GetLineChartDatasetForDayConsumption(DateTime start)
+    {
+        var dayblocks = AppData.EntitiesHandler.GetConsumptionOfEntity(AppData.SelectedItem.Id,
+                                                                               BlockTimeframe.Hour,
+                                                                               start,
+                                                                               start.AddDays(1),
+                                                                               true,
+                                                                               false,
+                                                                               new List<BlockDirection>() { BlockDirection.Consumed });
+
+        consumptionDataProfile = DataProfileHelpers.ConvertBlocksToDataProfile(dayblocks);
+
+        return new LineChartDataset<double>
+            {
+                Label = "Day consumption in kWh",
+                Data = consumptionDataProfile.ProfileData.Values.Where(p => p < double.MaxValue).ToList(),
+                BackgroundColor = backgroundColors,
+                BorderColor = borderColors,
+                Fill = true,
+                PointRadius = 3,
+                CubicInterpolationMode = "monotone",
+            };
+    }
+
+    LineChartDataset<double> GetLineChartDatasetForStorageDischarging(DateTime start)
+    {
+        storageDischargingDataProfile = new DataProfile();
+
+        var dayblocks = AppData.EntitiesHandler.GetConsumptionOfEntity(AppData.SelectedItem.Id,
+                                                                       BlockTimeframe.Hour,
+                                                                       start,
+                                                                       start.AddDays(1),
+                                                                       true,
+                                                                       false,
+                                                                       new List<BlockDirection>() { BlockDirection.Consumed });
+
+        var consumptionProfile = DataProfileHelpers.ConvertBlocksToDataProfile(dayblocks);
+
+        var profiles = AppData.BatteryStorage.GetChargingAndDischargingProfiles(totalProductionDataProfile, consumptionProfile, true);
+
+        if (profiles != null && profiles.TryGetValue("discharge", out var disch))
+        {
+            foreach (var v in disch.ProfileData.Keys)
+            {
+                if (disch.ProfileData.TryGetValue(v, out var d))
+                    storageDischargingDataProfile.ProfileData.TryAdd(v, d / 10000);
+            }
+            storageDischargingDataProfile.Name = disch.Name;
+            storageDischargingDataProfile.Type = disch.Type;
+        }
+
+        if (profiles != null && profiles.TryGetValue("bilance", out var bil))
+            storageBilanceDataProfile = bil;
+
+        return new LineChartDataset<double>
+            {
+                Label = "Discharging in kWh/10",
+                Data = storageDischargingDataProfile.ProfileData.Values.Where(p => p < double.MaxValue).ToList(),
+                BackgroundColor = backgroundColors,
+                BorderColor = borderColors,
+                Fill = true,
+                PointRadius = 3,
+                CubicInterpolationMode = "monotone",
+            };
+    }
+
+    public async Task Refresh()
+    {
+        await HandleRedraw();
+    }
+
+    public async Task LoadData(DateTime start, IEnumerable<(string,string)> groupinfo, Coordinates coords)
+    {
+        if (start != null)
+            Start = start;
+        if (groupinfo != null)
+            GroupIds = groupinfo;
+        if (coords != null)
+            Coords = coords;
+
+        await InvokeAsync(StateHasChanged);
+        await HandleRedraw();
+    }
+
+    private System.Threading.Timer timer;
+    private async Task OnsliderValueChanged(int value)
+    {
+        sliderValue = value;
+        
+        //recalc just when the slider value is stable for at least 1500ms
+        if (timer != null)
+            timer.Dispose();
+        timer = new System.Threading.Timer(async (object stateInfo) =>
+        {
+            if (sliderValue == value)
+            {
+                await LoadData(new DateTime(Start.Year, 1, 1).AddDays(sliderValue), GroupIds, Coords);
+                timer?.Dispose();
+            }
+        }, new System.Threading.AutoResetEvent(false), 1500, 1500);
+
+        await InvokeAsync(StateHasChanged);
+    }
+}

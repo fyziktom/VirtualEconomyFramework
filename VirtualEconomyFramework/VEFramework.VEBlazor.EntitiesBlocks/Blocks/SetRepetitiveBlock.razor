@@ -1,0 +1,103 @@
+﻿@inherits TimeRangeComponentBase
+
+<Tabs SelectedTab="@selectedTab" SelectedTabChanged="@selectedTabChanged">
+    <Items>
+        <Tab Name="day">Day Period</Tab>
+        <Tab Name="onoff">On/Off Period</Tab>
+    </Items>
+    <Content>
+        <TabPanel Name="day">
+            <Row Margin="Margin.Is2.FromTop">
+                <Column>
+                    <StartEndDaySelector StartTime="@StartTime"
+                                         EndTime="@EndTime"
+                                         StartTimeChanged="@onStartTimeChanged"
+                                         EndTimeChanged="@onEndTimeChanged"
+                                         StartDayLabel="First Run Of repetitive Block"
+                                         EndDayLabel="End Run of repetitive Block" />
+                </Column>
+            </Row>
+            <Row>
+                <Column>
+                    <Check TValue="bool" Checked="@JustInWeek" CheckedChanged="@onJustInWeekChanged">Just Week Days</Check>
+                </Column>
+                <Column>
+                    <Check TValue="bool" Checked="@JustInWeekend" CheckedChanged="@onJustInWeekendChanged">Just Weekend</Check>
+                </Column>
+            </Row>
+        </TabPanel>
+        <TabPanel Name="onoff">
+            <Row Margin="Margin.Is2.FromTop">
+                <Column>
+                    <StartEndDaySelector StartTime="@StartTime"
+                                         EndTime="@EndTime"
+                                         StartTimeChanged="@onStartTimeChanged"
+                                         EndTimeChanged="@onEndTimeChanged"
+                                         StartDayLabel="First Run Of repetitive Block"
+                                         EndDayLabel="End Run of repetitive Block" />
+                </Column>
+            </Row>
+            <Row>
+                <Column>
+                    <Field>
+                        <FieldLabel>Off Time in Hours</FieldLabel>
+                        <NumericPicker TValue="int" Min="0" Max="1000" Value="@((int)OffPeriod.TotalHours)" ValueChanged="onOfftimeValueChanged" Decimals="4" />
+                        <FieldHelp>Please fill the off time between repetition</FieldHelp>
+                    </Field>
+                </Column>
+            </Row>
+        </TabPanel>
+    </Content>
+</Tabs>
+
+@code {
+
+    string selectedTab = "day";
+    [Parameter]
+    public bool JustInWeek { get; set; } = false;
+    [Parameter]
+    public EventCallback<bool> JustInWeekChanged { get; set; }
+    [Parameter]
+    public bool JustInWeekend { get; set; } = false;
+    [Parameter]
+    public EventCallback<bool> JustInWeekendChanged { get; set; }
+
+    [Parameter]
+    public TimeSpan OffPeriod { get; set; } = new TimeSpan(1,0,0);
+    [Parameter]
+    public EventCallback<TimeSpan> OffPeriodChanged { get; set; }
+
+    private Task selectedTabChanged(string name)
+    {
+        selectedTab = name;
+        return Task.CompletedTask;
+    }
+
+    private async Task onJustInWeekChanged(bool e)
+    {
+        JustInWeek = e;
+        await JustInWeekChanged.InvokeAsync(e);
+    }
+    private async Task onJustInWeekendChanged(bool e)
+    {
+        JustInWeekend = e;
+        await JustInWeekendChanged.InvokeAsync(e);
+    }
+
+    private async Task onStartTimeChanged(DateTime e)
+    {
+        StartTime = e;
+        await StartTimeChanged.InvokeAsync(e);
+    }
+    private async Task onEndTimeChanged(DateTime e)
+    {
+        EndTime = e;
+        await EndTimeChanged.InvokeAsync(e);
+    }
+
+    private async Task onOfftimeValueChanged(int e)
+    {
+        OffPeriod = new TimeSpan(e, 0, 0) ;
+        await OffPeriodChanged.InvokeAsync(OffPeriod);
+    }
+}

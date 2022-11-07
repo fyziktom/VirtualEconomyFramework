@@ -1,0 +1,160 @@
+﻿@inherits EntitiesBlocksComponentBase
+@inject AppData AppData
+
+<Modal @ref="AddModal">
+    <ModalContent Centered Size="ModalSize.ExtraLarge">
+        <ModalHeader>
+            <ModalTitle>@(!changing ? "Add" : "Change") Panel</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            @if (Battery != null)
+            {
+                    <Row>
+                        <Column>
+                            <Field>
+                                <FieldLabel>Name</FieldLabel>
+                                <TextEdit Placeholder="Entity Name" @bind-Text="@Battery.Name" />
+                            </Field>
+                            <Row>
+                                <Column>
+                                    <Field Margin="Margin.Is2.FromTop">
+                                        <FieldLabel>Capacity</FieldLabel>
+                                        <NumericPicker TValue="double" Min="0" Max="@double.MaxValue" @bind-Value="@Battery.Capacity" Decimals="4" DecimalSeparator="." AlternativeDecimalSeparator="," />
+                                        <FieldHelp>Please fill the battery block capacity in Wh</FieldHelp>
+                                    </Field>
+                                </Column>
+                            </Row>
+                            <Row>
+                                <Column>
+                                     <Field Margin="Margin.Is2.FromTop">
+                                        <FieldLabel>Maximum charging power</FieldLabel>
+                                        <NumericPicker TValue="double" Min="0" Max="double.MaxValue" @bind-Value="@Battery.MaximumChargePower" Decimals="4" DecimalSeparator="." AlternativeDecimalSeparator="," />
+                                        <FieldHelp>Maximum battery block charging power in Wh.</FieldHelp>
+                                    </Field>
+                                </Column>
+                                <Column>
+                                     <Field Margin="Margin.Is2.FromTop">
+                                        <FieldLabel>Maximum discharging power</FieldLabel>
+                                        <NumericPicker TValue="double" Min="0" Max="@double.MaxValue" @bind-Value="@Battery.MaximumDischargePower" Decimals="4" DecimalSeparator="." AlternativeDecimalSeparator="," />
+                                        <FieldHelp>Maximum battery block discharging power in Wh.</FieldHelp>
+                                    </Field>
+                                </Column>
+                            </Row>
+
+                        </Column>
+                    </Row>
+                    <Row>
+                        <Column>
+                        @if (changing)
+                        {
+                                    <Button Color="Color.Primary" Outline Clicked="@change">Change Battery Block</Button>
+                        }
+                        else
+                        {
+                                    <Button Color="Color.Primary" Outline Clicked="@add">Add Battery Block</Button>
+                        }
+                        </Column>
+                    </Row>
+            }
+        </ModalBody>
+    </ModalContent>
+</Modal>
+
+@if (WithButton)
+{
+        <Button Color="Color.Primary" Block="@BlockButton" Outline Float="@FloatButton" Clicked="@openAddModal">
+            <Row>
+            @if (WithButtonIcon)
+            {
+                        <Column>
+                            <Icon Name="IconName.Add" />
+                        </Column>
+            }
+            @if (WithButtonText)
+            {
+                        <Column Margin="Margin.Is2.FromStart">
+                    @ButtonText
+                        </Column>
+            }
+            </Row>
+        </Button>
+}
+
+@code {
+
+    [Parameter]
+    public bool WithButton { get; set; } = false;
+    [Parameter]
+    public bool BlockButton { get; set; } = false;
+    [Parameter]
+    public Float FloatButton { get; set; } = Float.Default;
+    [Parameter]
+    public bool WithButtonIcon { get; set; } = false;
+    [Parameter]
+    public bool WithButtonText { get; set; } = false;
+    [Parameter]
+    public string ButtonText { get; set; } = "Add Battery";
+    [Parameter]
+    public EventCallback<List<string>> Added { get; set; }
+    [Parameter]
+    public BatteryBlock? Battery { get; set; }
+
+    Modal? AddModal;
+    bool changing = false;
+
+    [Inject] INotificationService NotificationService { get; set; }
+
+    public async Task Load(BatteryBlock input, bool showmodal = false, bool changeofpanel = false)
+    {
+        if (input != null)
+            Battery = input;
+        if (showmodal)
+        {
+            if (AddModal != null)
+            {
+                await AddModal.Show();
+                await InvokeAsync(StateHasChanged);
+            }
+        }
+        changing = changeofpanel;
+        await InvokeAsync(StateHasChanged);
+    }
+    private async Task openAddModal()
+    {
+        if (AddModal != null)
+        {
+            changing = false;
+            await AddModal.Show();
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private async Task add()
+    {
+        if (Battery == null)
+        {
+            await NotificationService.Error("Panel cannot be null.", "Cannot Add Battery");
+            return;
+        }
+        if (string.IsNullOrEmpty(Battery.Name))
+        {
+            await NotificationService.Error("Please fill the name of the battery", "Cannot Add Battery");
+            return;
+        }
+
+        var result = AppData.BatteryStorage.AddBatteryBlock(Battery);
+
+        if (AddModal != null)
+            await AddModal.Hide();
+
+        await NotificationService.Success($"Battery Block {Battery.Name} added.", "Add Battery");
+
+        await Added.InvokeAsync(result.ToList());
+    }
+
+    async Task change()
+    {
+
+    }
+}

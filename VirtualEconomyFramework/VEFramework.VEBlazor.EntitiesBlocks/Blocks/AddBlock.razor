@@ -1,0 +1,282 @@
+﻿@inherits EntitiesBlocksComponentBase
+@inject AppData AppData
+
+<Modal @ref="@AddBlockModal">
+    <ModalContent Centered Size="ModalSize.Large">
+        <ModalHeader>
+            <ModalTitle>@(!blockChange? "Přidat" : "Změnit") blok</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            @if (Item != null && Item.Id != null)
+            {
+            <Row>
+                <Column>
+                    <Field>
+                        <FieldLabel>Název</FieldLabel>
+                        <TextEdit Placeholder="Název bloku" @bind-Text="@Block.Name" />
+                    </Field>
+                    <Field>
+                        <FieldLabel>Popis</FieldLabel>
+                        <TextEdit Placeholder="Popis bloku" @bind-Text="@Block.Description" />
+                    </Field>
+                    <StartEndDaySelector StartTime="@Block.StartTime" 
+                                         EndTime="@Block.EndTime" 
+                                         StartTimeChanged="@startDateChanged"
+                                         EndTimeChanged="@endDateChanged"
+                                         StartDayLabel="Začátek bloku"
+                                         EndDayLabel="Konec bloku" />
+
+                    <Check TValue="bool" Checked="@repetitiveBlock" CheckedChanged="@OnRepetitiveBlockCheckedChanged">Opakovaný blokk</Check>
+                    
+                    @if (repetitiveBlock)
+                    {
+                        <SetRepetitiveBlock StartTime="@((DateTime)Block.RepetitiveFirstRun)" 
+                                            StartTimeChanged="@onRepetitiveFirstRunChanged"
+                                            EndTime="@((DateTime)Block.RepetitiveEndRun)" 
+                                            EndTimeChanged="@onRepetitiveEndRunChanged"
+                                            @bind-JustInWeek="@Block.JustInWeek"
+                                            @bind-JustInWeekend="@Block.JustInWeekends"
+                                            OffPeriod="@((TimeSpan)Block.OffPeriod)"
+                                            OffPeriodChanged="@onOffPeriodChanged"/>
+                    }
+
+                    <SetBlockAmount @bind-Amount="@Block.Amount" StartTime="@StartTime" EndTime="@EndTime" />
+                    <SetBlockType @bind-Type="@Block.Type" />
+                    <SetBlockDirection @bind-Direction="@Block.Direction" />
+                </Column>
+            </Row>
+            <Row>
+                <Column>
+                    @if (blockChange)
+                    {
+                    <Button Color="Color.Primary" Outline Clicked="@changeBlock">Upravit blok</Button>
+                    }
+                    else
+                    {
+                    <Button Color="Color.Primary" Outline Clicked="@addBlock">Změnit blok</Button>
+                    }
+                </Column>
+            </Row>
+            }
+            else
+            {
+                <Row>
+                    <Column>
+                        <Span>Prosím vyberte entitu</Span>
+                    </Column>
+                </Row>
+            }
+        </ModalBody>
+    </ModalContent>
+</Modal>
+
+@if (WithButton)
+{
+    <Button Color="Color.Primary" Block="@BlockButton" Outline Float="@FloatButton" Clicked="@openAddBlock">
+        <Row>
+            @if(WithButtonIcon)
+            {
+                <Column ColumnSize="ColumnSize.Is3">
+                    <Icon Name="IconName.Add" />
+                </Column>
+            }
+            @if(WithButtonText)
+            {
+                <Column ColumnSize="ColumnSize.Is9">
+                    @ButtonText
+                </Column>
+            }
+        </Row>
+    </Button>
+}
+
+@code {
+
+    [Parameter]
+    public bool WithButton { get; set; } = false;
+    [Parameter]
+    public bool BlockButton { get; set; } = false;
+    [Parameter]
+    public Float FloatButton { get; set; } = Float.Default;
+    [Parameter]
+    public bool WithButtonIcon { get; set; } = false;
+    [Parameter]
+    public bool WithButtonText { get; set; } = false;
+    [Parameter]
+    public string ButtonText { get; set; } = "Přidat blok";
+
+    Modal? AddBlockModal;
+    bool basedOnTotalPower = true;
+    bool basedOnHourPowerConsumption = false;
+    bool repetitiveBlock = false;
+    bool repetitiveDayBlock = false;
+    bool blockChange = false;
+
+    [Inject] INotificationService NotificationService { get; set; }
+
+    public async Task LoadBlock(IBlock inputblock)
+    {
+        if (inputblock != null)
+            Block.Fill(inputblock);
+        if (AddBlockModal != null)
+            await AddBlockModal.Show();
+        blockChange = true;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    async Task startDateChanged(DateTime e)
+    {
+        Block.StartTime = (DateTime)e;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    async Task endDateChanged(DateTime e)
+    {
+        Block.Timeframe = (DateTime)e - Block.StartTime;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    async Task onRepetitiveFirstRunChanged(DateTime e)
+    {
+        if (e != null)
+            Block.RepetitiveFirstRun = e;
+    }
+    async Task onRepetitiveEndRunChanged(DateTime e)
+    {
+        if (e != null)
+            Block.RepetitiveEndRun = e;
+    }
+    async Task onOffPeriodChanged(TimeSpan e)
+    {
+        if (e != null)
+            Block.OffPeriod = e;
+    }
+
+    async Task OnRepetitiveBlockCheckedChanged(bool e)
+    {
+        if (e == null) return;
+        repetitiveBlock = e;
+        if (e)
+        {
+            if (Block.RepetitiveFirstRun == null)
+                Block.RepetitiveFirstRun = DateTime.Now;
+            if (Block.RepetitiveEndRun == null)
+                Block.RepetitiveEndRun = DateTime.Now.AddDays(1);
+            if (Block.OffPeriod == null)
+                Block.OffPeriod = new TimeSpan(1, 0, 0);
+        }
+        await InvokeAsync(StateHasChanged);
+    }
+
+    async Task openAddBlock()
+    {
+        if (AddBlockModal != null)
+        {
+            Block.StartTime = DateTime.Now;
+            Block.Timeframe = new TimeSpan(1,0,0);
+            Block.RepetitiveFirstRun = DateTime.Now;
+            Block.RepetitiveEndRun = DateTime.Now;
+            Block.OffPeriod = new TimeSpan(1,0,0);
+            blockChange = false;
+            await AddBlockModal.Show();
+        }
+    }
+
+    async Task addBlock()
+    {
+        if (Block.EndTime < Block.StartTime)
+        {
+            await NotificationService.Error("Please set end time bigger than start time!", "Cannot Add Block");
+            return;
+        }
+        if (Block.Timeframe.TotalSeconds == 0)
+        {
+            await NotificationService.Error("Please set end time bigger than start time!", "Cannot Add Block");
+            return;
+        }
+        if (Block.Amount <= 0)
+        {
+            await NotificationService.Error("Please set amount!", "Cannot Add Block");
+            return;
+        }
+
+        Block.Id = Guid.NewGuid().ToString();
+
+        if (repetitiveBlock)
+        {
+            var blocks = BlockHelpers.CreateRepetitiveBlock(Block.RepetitiveFirstRun.Value,
+                                                            Block.RepetitiveEndRun.Value,
+                                                            Block.StartTime,
+                                                            Block.EndTime,
+                                                            Block.OffPeriod.Value,
+                                                            Block.Amount,
+                                                            "",
+                                                            Item.Id,
+                                                            Block.Direction,
+                                                            Block.Type,
+                                                            Block.Name);
+
+            AppData.EntitiesHandler.AddBlocksToEntity(Item.Id, blocks);
+        }
+        else if (!repetitiveBlock && repetitiveDayBlock)
+        {
+            var blocks = BlockHelpers.CreateRepetitiveDayBlock(Block.RepetitiveFirstRun.Value,
+                                                               Block.RepetitiveEndRun.Value,
+                                                               Block.StartTime,
+                                                               Block.EndTime,
+                                                               Block.Amount,
+                                                               "",
+                                                               Item.Id,
+                                                               Block.Direction,
+                                                               Block.Type,
+                                                               Block.JustInWeek,
+                                                               Block.JustInWeekends,
+                                                               Block.Name);
+            AppData.EntitiesHandler.AddBlocksToEntity(Item.Id, blocks);
+        }
+        else if (!repetitiveBlock && !repetitiveDayBlock)
+        {
+            AppData.EntitiesHandler.AddBlockToEntity(Item.Id, Block);
+        }
+        if (AddBlockModal != null)
+            await AddBlockModal.Hide();
+        await BlockChanged.InvokeAsync(Block);
+    }
+
+    async Task changeBlock()
+    {
+        if (Block.EndTime < Block.StartTime)
+        {
+            await NotificationService.Error("Please set end time bigger than start time!", "Cannot Add Block");
+            return;
+        }
+        if (Block.Timeframe.TotalSeconds == 0)
+        {
+            await NotificationService.Error("Please set end time bigger than start time!", "Cannot Add Block");
+            return;
+        }
+        if (Block.Amount <= 0)
+        {
+            await NotificationService.Error("Please set amount!", "Cannot Add Block");
+            return;
+        }
+
+        if (Item != null && Item.Id != null)
+        {
+            var res = AppData.EntitiesHandler.ChangEntityBlockParameters(Item.Id,
+                                                                           Block.Id,
+                                                                           Block.Name,
+                                                                           Block.Description,
+                                                                           Block.Type,
+                                                                           Block.Amount,
+                                                                           Block.Direction,
+                                                                           Block.StartTime,
+                                                                           Block.Timeframe);
+
+            if (AddBlockModal != null)
+                await AddBlockModal.Hide();
+            await BlockChanged.InvokeAsync(Block);
+        }
+    }
+}

@@ -1,0 +1,123 @@
+﻿@inject AppData AppData
+
+<Modal @ref="RemoveModal">
+    <ModalContent Centered Size="ModalSize.ExtraLarge">
+        <ModalHeader>
+            <ModalTitle>Remove PV Panel</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            @if (Panel != null)
+            {
+                <Row Margin="Margin.Is2.FromTop">
+                    <Column>
+                        <Span>nme: @Panel.Name</Span>
+                    </Column>
+                </Row>
+                <Row Margin="Margin.Is2.FromTop">
+                    <Column>
+                        <Span>Id: @Panel.Id</Span>
+                    </Column>
+                </Row>
+                <Row Margin="Margin.Is2.FromTop">
+                    <Column>
+                        <Span>GroupId: @Panel.GroupId</Span>
+                    </Column>
+                </Row>
+                <Row Margin="Margin.Is2.FromTop">
+                    <Column>
+                        <Span>Do you realy want to remove this panel?</Span>
+                    </Column>
+                </Row>
+                <Row Margin="Margin.Is2.FromTop">
+                    <Column>
+                        <Button Color="Color.Primary" Outline Clicked="@removePanel">Remove Panel</Button>
+                    </Column>
+                </Row>
+            }
+            else
+            {
+                <Row>
+                    <Column>
+                        <Span>Please select the Entity to remove block. Click to entity in the Tree.</Span>
+                    </Column>
+                </Row>
+            }
+        </ModalBody>
+    </ModalContent>
+</Modal>
+
+@if (WithButton)
+{
+    <Button Color="Color.Primary" Block="@BlockButton" Outline Float="@FloatButton" Clicked="@openRemoveBlock">
+        <Row>
+            @if (WithButtonIcon)
+            {
+                <Column>
+                    <Icon Name="IconName.Remove" />
+                </Column>
+            }
+            @if (WithButtonText)
+            {
+                <Column Margin="Margin.Is2.FromStart">
+                    @ButtonText
+                </Column>
+            }
+        </Row>
+    </Button>
+}
+
+@code {
+
+    [Parameter]
+    public bool WithButton { get; set; } = false;
+    [Parameter]
+    public bool BlockButton { get; set; } = false;
+    [Parameter]
+    public Float FloatButton { get; set; } = Float.Default;
+    [Parameter]
+    public bool WithButtonIcon { get; set; } = false;
+    [Parameter]
+    public bool WithButtonText { get; set; } = false;
+    [Parameter]
+    public string ButtonText { get; set; } = "Remove Panel";
+    [Parameter]
+    public EventCallback<string> Removed { get; set; }
+    [Parameter]
+    public PVPanel Panel { get; set; } = new PVPanel();
+
+    Modal? RemoveModal;
+
+    [Inject] INotificationService NotificationService { get; set; }
+
+    public async Task Load(PVPanel input, bool showModal = false)
+    {
+        if (input != null)
+            Panel = input;
+        if (showModal && RemoveModal != null)
+            await RemoveModal.Show();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task openRemoveBlock()
+    {
+        if (RemoveModal != null)
+            await RemoveModal.Show();
+    }
+
+    private async Task removePanel()
+    {
+        if (Panel != null && Panel.GroupId != null && Panel.Id != null)
+        {
+            if(AppData.PVEGrid.RemovePanelFromGroup(Panel.GroupId, Panel.Id))
+            {
+                await NotificationService.Success($"Panel {Panel.Name} was removed.", "Remove Panel");
+            }
+
+            if (RemoveModal != null)
+                await RemoveModal.Hide();
+            await Removed.InvokeAsync(Panel.Id);
+        }
+    }
+
+}

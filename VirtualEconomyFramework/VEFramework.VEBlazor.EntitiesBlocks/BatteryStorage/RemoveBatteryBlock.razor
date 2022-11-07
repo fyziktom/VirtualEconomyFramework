@@ -1,0 +1,123 @@
+﻿@inject AppData AppData
+
+<Modal @ref="RemoveModal">
+    <ModalContent Centered Size="ModalSize.ExtraLarge">
+        <ModalHeader>
+            <ModalTitle>Remove Battery Block</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            @if (Battery != null)
+            {
+                <Row Margin="Margin.Is2.FromTop">
+                    <Column>
+                        <Span>nme: @Battery.Name</Span>
+                    </Column>
+                </Row>
+                <Row Margin="Margin.Is2.FromTop">
+                    <Column>
+                        <Span>Id: @Battery.Id</Span>
+                    </Column>
+                </Row>
+                <Row Margin="Margin.Is2.FromTop">
+                    <Column>
+                        <Span>GroupId: @Battery.GroupId</Span>
+                    </Column>
+                </Row>
+                <Row Margin="Margin.Is2.FromTop">
+                    <Column>
+                        <Span>Do you realy want to remove this battery block?</Span>
+                    </Column>
+                </Row>
+                <Row Margin="Margin.Is2.FromTop">
+                    <Column>
+                        <Button Color="Color.Primary" Outline Clicked="@remove">Remove Battery</Button>
+                    </Column>
+                </Row>
+            }
+            else
+            {
+                <Row>
+                    <Column>
+                        <Span>Please select the Entity to remove block. Click to entity in the Tree.</Span>
+                    </Column>
+                </Row>
+            }
+        </ModalBody>
+    </ModalContent>
+</Modal>
+
+@if (WithButton)
+{
+    <Button Color="Color.Primary" Block="@BlockButton" Outline Float="@FloatButton" Clicked="@openRemoveModal">
+        <Row>
+            @if (WithButtonIcon)
+            {
+                <Column>
+                    <Icon Name="IconName.Remove" />
+                </Column>
+            }
+            @if (WithButtonText)
+            {
+                <Column Margin="Margin.Is2.FromStart">
+                    @ButtonText
+                </Column>
+            }
+        </Row>
+    </Button>
+}
+
+@code {
+
+    [Parameter]
+    public bool WithButton { get; set; } = false;
+    [Parameter]
+    public bool BlockButton { get; set; } = false;
+    [Parameter]
+    public Float FloatButton { get; set; } = Float.Default;
+    [Parameter]
+    public bool WithButtonIcon { get; set; } = false;
+    [Parameter]
+    public bool WithButtonText { get; set; } = false;
+    [Parameter]
+    public string ButtonText { get; set; } = "Remove Battery";
+    [Parameter]
+    public EventCallback<string> Removed { get; set; }
+    [Parameter]
+    public BatteryBlock Battery { get; set; } = new BatteryBlock();
+
+    Modal? RemoveModal;
+
+    [Inject] INotificationService NotificationService { get; set; }
+
+    public async Task Load(BatteryBlock input, bool showModal = false)
+    {
+        if (input != null)
+            Battery = input;
+        if (showModal && RemoveModal != null)
+            await RemoveModal.Show();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task openRemoveModal()
+    {
+        if (RemoveModal != null)
+            await RemoveModal.Show();
+    }
+
+    private async Task remove()
+    {
+        if (Battery != null && Battery.GroupId != null && Battery.Id != null)
+        {
+            if (AppData.BatteryStorage.RemoveBatteryBlock(Battery.Id))
+            {
+                await NotificationService.Success($"Battery Block {Battery.Name} was removed.", "Remove Battery");
+            }
+
+            if (RemoveModal != null)
+                await RemoveModal.Hide();
+            await Removed.InvokeAsync(Battery.Id);
+        }
+    }
+
+}

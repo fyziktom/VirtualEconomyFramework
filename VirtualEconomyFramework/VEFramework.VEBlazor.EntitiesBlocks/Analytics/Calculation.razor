@@ -1,0 +1,268 @@
+﻿@using VEFramework.VEBlazor.EntitiesBlocks.Model
+@inject AppData AppData
+@inject ICalculationService CalculationService
+
+<Card Margin="Margin.Is4.FromBottom">
+
+    <CardHeader><CardTitle>Výpočet</CardTitle></CardHeader>
+    <CardBody>
+        <Row>
+            <Field>
+                <FieldLabel>Rozpočet</FieldLabel>
+                <Addons Width="Width.Is25" Style="min-width: 15rem">
+                    <Addon AddonType="AddonType.Body">
+                        <NumericEdit Step="100000" TValue="decimal" Placeholder="Rozpočet" @bind-Value="budget" Min="0"/>
+                    </Addon>
+                    <Addon AddonType="AddonType.End">
+                        <AddonLabel >Kč</AddonLabel>
+                    </Addon>
+                </Addons>
+
+            </Field>
+        </Row>
+        <Row>
+            <Field>
+                <FieldLabel>Úroková sazba</FieldLabel>
+                <Addons Width="Width.Is25" Style="min-width: 15rem">
+                    <Addon AddonType="AddonType.Body">
+                        <NumericEdit Step="0.1m" TValue="decimal" Placeholder="Úroková sazba" @bind-Value="interestRate" />
+                    </Addon>
+                    <Addon AddonType="AddonType.End">
+                        <AddonLabel>%</AddonLabel>
+                    </Addon>
+                </Addons>
+
+            </Field>
+        </Row>
+        <Row Overflow="Overflow.Auto">
+            <Column>
+                <Table Hoverable Class="entities-table" Style="max-width: 100%;">
+                    <TableHeader>
+                        <TableRow>
+                            <TableHeaderCell>Místa</TableHeaderCell>
+                            <TableHeaderCell TextAlignment="TextAlignment.Center">Povoleno</TableHeaderCell>
+                            <TableHeaderCell TextAlignment="TextAlignment.Center">AK</TableHeaderCell>
+                            <TableHeaderCell>Náklady</TableHeaderCell>
+                            <TableHeaderCell>Úspora</TableHeaderCell>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        @if (CalculationEntities != null)
+                        {
+                            @foreach (var entity in CalculationEntities)
+                            {
+                                <TableRow>
+                                    <TableRowCell style="@($"padding-left: {entity.Depth}rem")">
+                                        <Div Flex="Flex.AlignItems.Center">
+
+                                            @if (entity.IsLeading)
+                                            {
+                                                <Div Flex="Flex.AlignItems.Center.JustifyContent.Center" Padding="Padding.Is1" Style="width:25px; height:25px;" Margin="Margin.Is1.FromEnd" Border="Border.RoundedCircle" Background="Background.Info">
+                                                    <Icon Name="@(entity.Icon)" />
+                                                </Div>
+                                            }
+                                            else
+                                            {
+                                                <Div Flex="Flex.AlignItems.Center.JustifyContent.Center" Padding="Padding.Is1" Margin="Margin.Is1.FromEnd">
+                                                    <Icon Name="@(entity.Icon)" />
+                                                </Div>
+                                            }
+                                            <Span>@entity.Name</Span>
+                                        </Div>
+                                    </TableRowCell>
+                                    <TableRowCell TextAlignment="TextAlignment.Center">
+                                        @if (!entity.HasChildren)
+                                        {
+                                            <Check TValue="bool" CheckedChanged="b => SetEntitySelected(entity, b)" Checked="@entity.IsSelected" />
+                                        }
+                                    </TableRowCell>
+                                    <TableRowCell TextAlignment="TextAlignment.Center">
+                                        <Div Style="width: 150px;" Margin="Margin.IsAuto">
+                                            @if (entity.Entity is IConsumer { ConsumerType: ConsumerType.Device } && !entity.HasChildren && entity.IsSelected)
+                                            {
+                                                <Field Margin="Margin.Is0">
+                                                    <Addons>
+                                                        <Addon AddonType="AddonType.Body">
+                                                            <NumericEdit TValue="double" Step="10" ValueChanged="v => SetEntityAllocationKey(entity, v)" 
+                                                                         Value="entity.AllocationKey" Min="0"/>
+                                                        </Addon>
+                                                        <Addon AddonType="AddonType.End">
+                                                            <AddonLabel>%</AddonLabel>
+                                                        </Addon>
+                                                    </Addons>
+                                                </Field>
+                                            }
+                                        </Div>
+                                    </TableRowCell>
+                                    <TableRowCell>1000Kč</TableRowCell>
+                                    <TableRowCell>500Kč</TableRowCell>
+
+
+                                </TableRow>
+                            }
+                        }
+                    </TableBody>
+                </Table>
+            </Column>
+        </Row>
+    </CardBody>
+    <CardFooter>
+        <Row>
+            <Column ColumnSize="ColumnSize.Is12.IsAuto.OnTablet" Flex="Flex.AlignItems.Center">
+                <Button Color="Color.Primary" Clicked="@OnCalculate" Disabled="!isOk">Přepočítat</Button>
+            </Column>
+            <Column ColumnSize="ColumnSize.Is12.IsAuto.OnTablet"  Flex="Flex.AlignItems.Center">
+                <Alert Color="Color.Danger" Width="Width.Is100" TextAlignment="TextAlignment.Center" Visible="!isOk" Margin="Margin.Is0.FromBottom.Is2.FromTop.Is0.FromTop.OnTablet" Style="padding: 0.5rem;">
+                    <AlertMessage>Pozor!</AlertMessage>
+                    <AlertDescription>Součet alokačních klíčů ma být 100%</AlertDescription>
+                </Alert>
+            </Column>
+        </Row>
+    </CardFooter>
+</Card>
+
+@code {
+    [Parameter]
+    public string RootItemId { get; set; }
+
+    private List<CalculationEntity>? CalculationEntities { get; set; }
+
+    private bool isOk;
+
+    protected override void OnParametersSet()
+    {
+        if (RootItemId != rootItemId)
+        {
+            rootItemId = RootItemId;
+            LoadData();
+        }
+        base.OnParametersSet();
+    }
+
+    private void LoadData()
+    {
+        var root = AppData.EntitiesHandler.GetTree(rootItemId);
+        CalculationEntities = new List<CalculationEntity>();
+
+        AddItemToList(root);
+        ValidateForm();
+    }
+
+    private void AddItemToList(TreeItem item, int depth = 0)
+    {
+        if (item.Entity is ISource { SourceType: SourceType.PVE })
+        {
+            var leading = CalculationEntities.FirstOrDefault(e => e.Entity.Id == item.Entity.ParentId);
+            if (leading is not null)
+            {
+                leading.IsLeading = true;
+                leading.AllocationKey = 0;
+            }
+        }
+        if (item.Entity is IConsumer)
+        {
+            var parent = CalculationEntities.FirstOrDefault(e => e.Entity.Id == item.Entity.ParentId);
+            if (parent is not null)
+            {
+                parent.HasChildren = true;
+            }
+        }
+
+        CalculationEntities.Add(new CalculationEntity
+            {
+                Name = item.Name,
+                Icon = GetIcon(item),
+                Depth = depth,
+                Entity = item.Entity,
+                IsSelected = true
+            });
+
+        var children = item.GetChilds();
+        foreach (var child in children)
+        {
+            AddItemToList(child, depth + 1);
+        }
+        StateHasChanged();
+    }
+
+    private String GetIcon(TreeItem item)
+    {
+        if (item.Entity is ISource sourceItem)
+        {
+            switch (sourceItem.SourceType)
+            {
+                case SourceType.Battery: return "fa-battery-full";
+                case SourceType.PowerGridSupplier: return "fa-bolt";
+                case SourceType.PVE: return "fa-solar-panel";
+            }
+
+        }
+        else if (item.Entity is IConsumer consumerItem)
+        {
+            if (consumerItem.ConsumerType == ConsumerType.Device && item.GetChilds().Any())
+            {
+                consumerItem.ConsumerType = ConsumerType.GroupNetwork;
+            }
+            switch (consumerItem.ConsumerType)
+            {
+                case ConsumerType.GroupNetwork: return "fa-city";
+                case ConsumerType.DevicesGroup: return "fa-building";
+                case ConsumerType.Device: return "fa-table";
+            }
+
+        }
+        return "fa-diamond";
+    }
+
+    private string rootItemId;
+
+
+
+
+    private void SetEntitySelected(CalculationEntity item, bool b)
+    {
+        Console.WriteLine($"Setting entity {item.Name} IsSelected={b}");
+        item.IsSelected = b;
+
+        var children = CalculationEntities.Where(e => e.Entity.ParentId == item.Entity.Id);
+        foreach (var child in children)
+        {
+            child.IsSelected = b;
+            if (!b)
+            {
+                child.AllocationKey = 0;
+            }
+        }
+        
+        if (!b)
+        {
+            item.AllocationKey = 0;
+        }
+        ValidateForm();
+    }
+
+    private async Task OnCalculate()
+    {
+        await CalculationService.RunCalculation(CalculationEntities, budget, interestRate);
+    }
+
+    private decimal budget = 0;
+    private decimal interestRate = 0;
+
+    private void SetEntityAllocationKey(CalculationEntity item, double i)
+    {
+        item.AllocationKey = i;
+        ValidateForm();
+    }
+
+    private void ValidateForm()
+    {
+        var keySum = CalculationEntities.Where(d => d.IsSelected).Sum(d => d.AllocationKey);
+        Console.WriteLine("keySum="+keySum);
+        isOk = keySum == 100;
+        
+       
+            StateHasChanged();
+        
+    }
+}

@@ -1,0 +1,158 @@
+﻿@inject AppData AppData
+
+<Card Margin="Margin.Is4.FromBottom" Style="min-width:300px;">
+    <CardHeader>
+        <Row Flex="Flex.AlignItems.Center">
+            <Column ColumnSize="ColumnSize.Is9" Flex="Flex.AlignItems.Center">
+                <CardTitle Flex="Flex.AlignItems.Center" Class="entity-group-title">
+                    <Span Margin="Margin.Is1.FromEnd">
+                        Skupina panelů -
+                    </Span>
+                    <Editable Item="@getGroup()" ParameterName="@(nameof(panelsGroup.Name))" TItem="PVPanelsGroup" ItemChanged="@OnPanelsGroupNameChanged" />
+                </CardTitle>
+            </Column>
+            <Column>
+                <AddPVPanel @ref=addPVPanelModal 
+                            Panel="@getPanel()"
+                            WithButton="true" 
+                            BlockButton="false"
+                            FloatButton="Float.End" 
+                            WithButtonIcon="true" 
+                            WithButtonText="false"
+                            Added="@onPanelAdded"/>
+            </Column>
+        </Row>
+    </CardHeader>
+    <CardBody Overflow="Overflow.Auto" Padding="Padding.Is0">
+    @if (Panels != null)
+    {
+                <Table>
+                    <TableHeader>
+                        <TableHeaderCell>Název</TableHeaderCell>
+                    <TableHeaderCell>Energie</TableHeaderCell>
+                        <TableHeaderCell>Azimut</TableHeaderCell>
+                        <TableHeaderCell>Latitude</TableHeaderCell>
+                        <TableHeaderCell>Longitude</TableHeaderCell>
+                        <TableHeaderCell>Akce</TableHeaderCell>
+                    </TableHeader>
+                    <TableBody>
+                        @foreach (var panel in Panels)
+                        {
+                            <TableRow>
+                                <TableRowCell>@panel.Name</TableRowCell>
+                                <TableRowCell>@panel.PeakPower</TableRowCell>
+                                <TableRowCell>@(
+                            Math.Round(panel.AzimutInDegrees, 2)
+                            ) </TableRowCell>
+                                <TableRowCell>@panel.Latitude</TableRowCell>
+                                <TableRowCell>@panel.Longitude</TableRowCell>
+                                <TableRowCell>
+                                    <RemovePanel Panel="@panel"
+                                                 Removed="@onRemovedPanel" 
+                                                 WithButton="true"
+                                                 WithButtonText="false" 
+                                                 WithButtonIcon="true" 
+                                                 FloatButton="Float.End"/>
+                                </TableRowCell>
+                            </TableRow>
+                        }
+                    </TableBody>
+                </Table>
+    }
+    </CardBody>
+</Card>
+
+@code {
+    [Parameter]
+    public IEnumerable<PVPanel> Panels { get; set; } = new List<PVPanel>();
+    [Parameter]
+    public string Name { get; set; } = string.Empty;
+    [Parameter]
+    public string GroupId { get; set; } = string.Empty;
+
+    PVPanelsGroup? panelsGroup = new PVPanelsGroup();
+
+    AddPVPanel? addPVPanelModal;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            if (addPVPanelModal != null)
+                await addPVPanelModal.LoadPanel(getPanel());
+        }
+    }
+
+    private PVPanelsGroup getGroup()
+    {
+        var g = AppData.PVEGrid.GetGroup(GroupId);
+        if (g != null)
+            return g;
+        else
+            return new PVPanelsGroup();
+    }
+
+    private void OnPanelsGroupNameChanged(PVPanelsGroup e)
+    {
+        if (e != null && AppData.PVEGrid.PVPanelsGroups.TryGetValue(GroupId, out var g))
+            g.Name = e.Name;
+    }
+
+    private PVPanel getPanel()
+    {
+        var panel = AppData.PVEGrid.CommonPanel.Clone();
+        panel.GroupId = GroupId;
+        if (Panels.Any())
+        {
+            var az = Panels.Where(p => p.Azimuth < double.MaxValue)?.Select(p => p.Azimuth)?.Average();
+            if (az != null)
+                panel.Azimuth = (double)az;
+
+            var ba = Panels.Where(p => p.BaseAngle < double.MaxValue)?.Select(p => p.BaseAngle)?.Average();
+            if (ba != null)
+                panel.BaseAngle = (double)ba;
+
+            var lat = Panels.Where(p => p.Latitude < double.MaxValue)?.Select(p => p.Latitude)?.Average();
+            if (lat != null)
+                panel.Latitude = Math.Round((double)lat,8);
+
+            var lon = Panels.Where(p => p.Longitude < double.MaxValue)?.Select(p => p.Longitude)?.Average();
+            if (lon != null)
+                panel.Longitude = Math.Round((double)lon,8);
+
+            panel.Name = Name + $"-{Panels.Count()}";
+        }
+        return panel;
+    }
+
+    public async Task LoadData(string groupId)
+    {
+        var panels = AppData.PVEGrid.GetGroupPanelsList(groupId);
+        if (panels != null)
+        {
+            Panels = panels;
+            Name = AppData.PVEGrid.GetGroup(groupId)?.Name;
+            if (Name == null)
+                Name = "Panels Group";
+            GroupId = groupId;
+        }
+
+        await InvokeAsync(StateHasChanged);
+
+        if (addPVPanelModal != null)
+        {
+            await addPVPanelModal.LoadPanel(getPanel());
+        }
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async void onPanelAdded(List<string> e)
+    {
+        await LoadData(GroupId);
+    }
+    private async void onRemovedPanel(string e)
+    {
+        await LoadData(GroupId);
+    }
+}

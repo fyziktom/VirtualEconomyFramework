@@ -1,0 +1,20 @@
+﻿<Field>
+    <RadioGroup TValue="ConsumerType" Name="consumertypes" CheckedValue="@Type" CheckedValueChanged="@onChekedValueChanged">
+        <Radio Value="@(ConsumerType.Device)">Device</Radio>
+        <Radio Value="@(ConsumerType.DevicesGroup)">Device Group</Radio>
+        <Radio Value="@(ConsumerType.GroupNetwork)">Group Network</Radio>
+    </RadioGroup>
+</Field>
+
+@code {
+    [Parameter]
+    public ConsumerType Type { get; set; }
+    [Parameter]
+    public EventCallback<ConsumerType> TypeChanged { get; set; }
+
+    private async Task onChekedValueChanged(ConsumerType e)
+    {
+        Type = e;
+        await TypeChanged.InvokeAsync(e);
+    }
+}

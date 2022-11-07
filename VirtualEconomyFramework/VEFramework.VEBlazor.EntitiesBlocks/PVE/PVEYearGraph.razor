@@ -1,0 +1,243 @@
+﻿@inject AppData AppData
+
+<Card Margin="Margin.Is4.FromBottom">
+    <CardHeader>
+        <CardTitle>FVE roční graf - @AppData.PVEGrid.Name</CardTitle>
+    </CardHeader>
+    <CardBody>
+        <Row Margin="Margin.Is1.FromTop">
+            <Column>
+                <Button Color="Color.Primary" Outline Clicked="@(async () => await Refresh())">Spustit simulace</Button>
+            </Column>
+        </Row>
+        <Row Margin="Margin.Is2.FromTop">
+            <Column>
+                <Span>Zvolené datum: @(Start.ToString("dd.MM.yyyy")) </Span>
+            </Column>
+        </Row>
+        <Row Margin="Margin.Is2.FromTop">
+            <Column>
+                <Span>Celková roční energie: @YearTotalPower kWh </Span>
+            </Column>
+        </Row>
+        @if (FinalBlocksForPlan != null && FinalBlocksForPlan.Count > 0 && AppData.SelectedItem != null)
+        {
+            <Row Margin="Margin.Is1.FromTop">
+                <Column>
+                    <Button Color="Color.Primary" Outline Clicked="@(async () => await AddToPlanner())">Add Year Blocks To Planner To @AppData.SelectedItem.Name</Button>
+                </Column>
+            </Row>
+        }
+        <Row Margin="Margin.Is4.FromTop">
+            <Column>
+                <LineChart @ref="lineChart" TItem="double" Options="@lineChartOptions" Style="max-height: 400px; max-width:800px;" />
+            </Column>
+        </Row>
+
+    </CardBody>
+</Card>
+
+@code {
+    [Parameter]
+    public DateTime Start { get; set; } = new DateTime(DateTime.UtcNow.Year, 1, 1);
+    [Parameter]
+    public Coordinates Coords { get; set; } = new Coordinates();
+    [Parameter]
+    public IEnumerable<(string, string)> GroupIds { get; set; } = new List<(string, string)>();
+
+    [Inject] INotificationService NotificationService { get; set; }
+
+    private LineChart<double>? lineChart;
+
+    Slider<int>? slider;
+    int sliderValue = 0;
+    double YearTotalPower = 0.0;
+    List<IBlock> FinalBlocksForPlan = new List<IBlock>();
+
+    LineChartOptions lineChartOptions = new()
+        {
+            AspectRatio = 1.2,
+            Scales = new()
+            {
+                Y = new()
+                {
+                    Title = new()
+                    {
+                        Display = true,
+                        Text = "Power"
+                    },
+                    Ticks = new ChartAxisTicks
+                    {
+                        Callback = (value, index, values) => value / 1000 + "kWh",
+                        StepSize = 10000
+                    }
+                }
+            }
+        };
+
+    string[] Labels = { "00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12" };
+    List<string> backgroundColors = new List<string> {
+        ChartColor.FromRgba(255, 99, 132, 0.2f),
+        ChartColor.FromRgba(54, 162, 235, 0.2f),
+        ChartColor.FromRgba(255, 206, 86, 0.2f),
+        ChartColor.FromRgba(75, 192, 192, 0.2f),
+        ChartColor.FromRgba(153, 102, 255, 0.2f),
+        ChartColor.FromRgba(255, 159, 64, 0.2f)
+    };
+    List<string> borderColors = new List<string> {
+        ChartColor.FromRgba(255, 99, 132, 1f),
+        ChartColor.FromRgba(54, 162, 235, 1f),
+        ChartColor.FromRgba(255, 206, 86, 1f),
+        ChartColor.FromRgba(75, 192, 192, 1f),
+        ChartColor.FromRgba(153, 102, 255, 1f),
+        ChartColor.FromRgba(255, 159, 64, 1f)
+    };
+
+    async Task HandleRedraw()
+    {
+        if (lineChart != null)
+        {
+            await lineChart.Clear();
+
+            YearTotalPower = 0.0;
+
+            if (GroupIds.Count() <= 0)
+                await lineChart.AddLabelsDatasetsAndUpdate(Labels, GetLineChartDataset(Start, ("tmp", "tmp")));
+            else
+            {
+                Labels = new string[365];
+                for (var i = 0; i < 365; i++)
+                    Labels[i] = Start.AddDays(i).ToString("dd.MM.yyyy");
+
+                await lineChart.AddLabels(Labels);
+
+                foreach (var group in GroupIds)
+                    await lineChart.AddDataSet(GetLineChartDataset(Start, group));
+                await lineChart.AddDataSet(GetLineChartDatasetForTotalYear(Start));
+
+                await lineChart.Update();
+            }
+
+            await InvokeAsync(StateHasChanged);
+
+        }
+    }
+
+    LineChartDataset<double> GetLineChartDataset(DateTime start, (string, string) groupinfo)
+    {
+        if (!string.IsNullOrEmpty(groupinfo.Item1))
+        {
+            IEnumerable<IBlock> data = new List<IBlock>();
+
+            data = AppData.PVEGrid.GetGroupPeakPowerInYearBlock(groupinfo.Item1, Start.Year, Coords, 1);
+
+            foreach (var d in data)
+                YearTotalPower += d.Amount;
+
+            return new LineChartDataset<double>
+                {
+                    Label = groupinfo.Item2,
+                    Data = data.Where(d => d.Id != null).OrderBy(d => d.StartTime).Select(d => d.Amount).ToList(),
+                    BackgroundColor = backgroundColors,
+                    BorderColor = borderColors,
+                    Fill = true,
+                    PointRadius = 3,
+                    CubicInterpolationMode = "monotone",
+                };
+        }
+        else
+        {
+            var data = new List<double>();
+            for (var i = 0; i < 24; i++)
+                data.Add(0);
+
+            return new LineChartDataset<double>
+                {
+                    Label = AppData.EntitiesHandler.UnitLabel,
+                    Data = data,
+                    BackgroundColor = backgroundColors,
+                    BorderColor = borderColors,
+                    Fill = true,
+                    PointRadius = 3,
+                    CubicInterpolationMode = "monotone",
+                };
+        }
+    }
+
+    LineChartDataset<double> GetLineChartDatasetForTotalYear(DateTime start)
+    {
+        IEnumerable<IBlock> data = new List<IBlock>();
+
+        data = AppData.PVEGrid.GetTotalPeakPowerInYearBlocks(Start.Year, Coords, 1);
+        var res = data.ToList();
+        if (res != null)
+        {
+            FinalBlocksForPlan.Clear();
+            FinalBlocksForPlan = res;
+        }
+        return new LineChartDataset<double>
+            {
+                Label = "Total",
+                Data = data.Where(d => d.Id != null).OrderBy(d => d.StartTime).Select(d => d.Amount).ToList(),
+                BackgroundColor = backgroundColors,
+                BorderColor = borderColors,
+                Fill = true,
+                PointRadius = 3,
+                CubicInterpolationMode = "monotone",
+            };
+    }
+
+    public async Task Refresh()
+    {
+        await HandleRedraw();
+    }
+
+    public async Task LoadData(DateTime start, IEnumerable<(string, string)> groupinfo, Coordinates coords, bool redrawGraw = true)
+    {
+        if (start != null)
+            Start = start;
+        if (groupinfo != null)
+            GroupIds = groupinfo;
+        if (coords != null)
+            Coords = coords;
+
+        await InvokeAsync(StateHasChanged);
+
+        if (redrawGraw)
+        {
+            await HandleRedraw();
+        }
+    }
+
+    private System.Threading.Timer timer;
+    private async Task OnsliderValueChanged(int value)
+    {
+        sliderValue = value;
+
+        //recalc just when the slider value is stable for at least 1500ms
+        if (timer != null)
+            timer.Dispose();
+        timer = new System.Threading.Timer(async (object stateInfo) =>
+        {
+            if (sliderValue == value)
+            {
+                await LoadData(Start.AddDays(365 - sliderValue), GroupIds, Coords);
+                timer?.Dispose();
+            }
+        }, new System.Threading.AutoResetEvent(false), 1500, 1500);
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task AddToPlanner()
+    {
+        if (FinalBlocksForPlan != null && FinalBlocksForPlan.Count > 0)
+        {
+            if (AppData.SelectedItem != null && !string.IsNullOrEmpty(AppData.SelectedItem.Id))
+            {
+                AppData.EntitiesHandler.AddBlocksToEntity(AppData.SelectedItem.Id, FinalBlocksForPlan);
+                await NotificationService.Info($"Energy blocks added to the {AppData.SelectedItem.Name}.");
+            }
+        }
+    }
+}
