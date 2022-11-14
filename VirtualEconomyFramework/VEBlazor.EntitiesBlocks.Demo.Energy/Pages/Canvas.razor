@@ -1,0 +1,123 @@
+﻿@page "/canvas"
+@using Blazor.Extensions.Canvas
+@using Blazor.Extensions.Canvas.Canvas2D
+@using Blazor.Extensions
+@using System.Text.Json
+@inject IJSRuntime JsRuntime
+
+<div id="canvasHolder" style="position: fixed; width: 100%; height: 100%" @onmousemove="OnMouseMove" @onwheel="OnWheel">
+    <BECanvas Width="800" Height="800" @ref="canvasReference"  ></BECanvas>
+</div>
+
+@code {
+    private Canvas2DContext context;
+    private BECanvas canvasReference;
+    private double deltaZ;
+    private double mouseX;
+    private double mouseY;
+    private List<CanvasObject> canvasObjects;
+
+    [JSInvokable]
+    public void ResizeInBlazor(double width, double height)
+    {
+        
+    }
+
+    [JSInvokable]
+    public async ValueTask RenderInBlazor(float timeStamp)
+    {
+        
+        double fps = 1.0 / (DateTime.Now - LastRender).TotalSeconds;
+        LastRender = DateTime.Now;
+
+        await this.context.BeginBatchAsync();
+        await this.context.ClearRectAsync(0, 0, 800, 800);
+        await this.context.SetFillStyleAsync("#D0D0D0");
+        await this.context.FillRectAsync(0, 0, 800, 800);
+        await this.context.SetFillStyleAsync("#360036");
+        await this.context.SetFontAsync("16px consolas");
+        await this.context.FillTextAsync($"FPS: {fps:0.000}", 10, 50);
+        await this.context.FillTextAsync($"X: {mouseX}, Y: {mouseY}, Z: {deltaZ}", 10, 70);
+        await this.context.SetStrokeStyleAsync("#FFFFFF");
+    
+        foreach (var canvasObject in canvasObjects)
+        {
+            var isHighlighted = await canvasObject.CheckHighlight(mouseX, mouseY);
+            await canvasObject.Render(context, isHighlighted);
+        }
+        await this.context.EndBatchAsync();
+    }
+
+    public DateTime LastRender { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        this.context = await this.canvasReference.CreateCanvas2DAsync();
+        
+        if (firstRender)
+        {
+            await RenderInBlazor(0);
+    //await JsRuntime.InvokeAsync<object>("initRenderJS", DotNetObjectReference.Create(this));
+        }
+    }
+
+    protected override Task OnInitializedAsync()
+    {
+        canvasObjects = new List<CanvasObject>();
+        canvasObjects.Add(new BlockCanvasObject() { X = 80, Y = 80, Height = 40, Width = 120 });
+        return base.OnInitializedAsync();
+    }
+
+    
+
+    private async Task OnMouseMove(MouseEventArgs obj)
+    {
+        //Console.WriteLine($"OnMouseMove {obj.ClientX}, {obj.ClientY}");
+        mouseX = obj.OffsetX;
+        mouseY = obj.OffsetY;
+        
+        await RenderInBlazor(0);
+    }
+
+
+    private async Task OnWheel(WheelEventArgs arg)
+    {
+         Console.WriteLine(JsonSerializer.Serialize(arg));
+        deltaZ = arg.DeltaY;
+        await RenderInBlazor(0);
+    }
+    
+    public abstract class CanvasObject
+    {
+        public double X { get; set; }
+        public double Y { get; set; }
+        public double Width { get; set; }
+        public double Height { get; set; }
+        
+        public abstract ValueTask Render(Canvas2DContext canvas2DContext, bool isHighlighted);
+        public abstract ValueTask<bool> CheckHighlight(double mousePosX, double mousePosY);
+    }
+
+    public class BlockCanvasObject
+        : CanvasObject
+    {
+        public override async ValueTask Render(Canvas2DContext canvas2DContext, bool isHighlighted)
+        {
+            await canvas2DContext.SetFillStyleAsync("#FF8080");
+            await canvas2DContext.SetFillStyleAsync("#FF8080");
+            await canvas2DContext.FillRectAsync(X, Y, Width, Height);
+            if (isHighlighted)
+            {
+                await canvas2DContext.SetLineWidthAsync(4);
+                await canvas2DContext.SetStrokeStyleAsync("#000");
+                await canvas2DContext.StrokeRectAsync(X, Y, Width, Height);
+            }
+        }
+
+        public override ValueTask<bool> CheckHighlight(double mousePosX, double mousePosY)
+        {
+            return ValueTask.FromResult<bool>(mousePosX>=X && mousePosX<X+Width && mousePosY>=Y && mousePosY<Y+Height);
+        }
+    }
+    
+}

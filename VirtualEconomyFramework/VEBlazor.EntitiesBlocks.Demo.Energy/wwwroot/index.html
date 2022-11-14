@@ -38,6 +38,30 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.min.js" integrity="sha384-VHvPCCyXqtD5DqJeNxl2dtTyhF78xXNXdkwX1CZeRusQfRKp+tA7hAShOK/B/fQ2" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
     <script src="_content/VEFramework.VEBlazor.EntitiesBlocks/JsInterop.js"></script>
+    <script src="_content/Blazor.Extensions.Canvas/blazor.extensions.canvas.js"></script>
+    <script>
+        function renderJS(timeStamp) {
+            theInstance.invokeMethodAsync('RenderInBlazor', timeStamp);
+            window.requestAnimationFrame(renderJS);
+        }
+
+        function resizeCanvasToFitWindow() {
+            var holder = document.getElementById('canvasHolder');
+            var canvas = holder.querySelector('canvas');
+            if (canvas) {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+                theInstance.invokeMethodAsync('ResizeInBlazor', canvas.width, canvas.height);
+            }
+        }
+
+        window.initRenderJS = (instance) => {
+            window.theInstance = instance;
+            //window.addEventListener("resize", resizeCanvasToFitWindow);
+            //resizeCanvasToFitWindow();
+            window.requestAnimationFrame(renderJS);
+        };
+    </script>
 
     <div id="blazor-error-ui">
         An unhandled error has occurred.
@@ -45,6 +69,8 @@
         <a class="dismiss">🗙</a>
     </div>
     <script src="_framework/blazor.webassembly.js"></script>
+
+    
 </body>
 
 </html>
