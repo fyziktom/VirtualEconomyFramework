@@ -49,16 +49,16 @@
             var holder = document.getElementById('canvasHolder');
             var canvas = holder.querySelector('canvas');
             if (canvas) {
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
+                canvas.width = holder.clientWidth;
+                canvas.height = holder.clientHeight;
                 theInstance.invokeMethodAsync('ResizeInBlazor', canvas.width, canvas.height);
             }
         }
 
         window.initRenderJS = (instance) => {
             window.theInstance = instance;
-            //window.addEventListener("resize", resizeCanvasToFitWindow);
-            //resizeCanvasToFitWindow();
+            window.addEventListener("resize", resizeCanvasToFitWindow);
+            resizeCanvasToFitWindow();
             window.requestAnimationFrame(renderJS);
         };
     </script>
