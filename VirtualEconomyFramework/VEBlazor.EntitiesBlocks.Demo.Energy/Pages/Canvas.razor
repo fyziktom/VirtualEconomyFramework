@@ -195,6 +195,21 @@
             await canvas2DContext.LineToAsync(x + Width / 2, y + Height / 2);
             await canvas2DContext.StrokeAsync();
             await canvas2DContext.DrawImageAsync(Image, x, y, Width, Height);
+
+            if (isHighlighted)
+            {
+                await canvas2DContext.SetFillStyleAsync("#808000");
+                await canvas2DContext.FillRectAsync(X + 15, Y - 35, 75, 35);
+                await canvas2DContext.SetStrokeStyleAsync("#000");
+                await canvas2DContext.SetLineWidthAsync(0.5f);
+                await canvas2DContext.SetLineJoinAsync(LineJoin.Round);
+
+                await canvas2DContext.StrokeRectAsync(X + 15, Y - 35, 75, 35);
+                await canvas2DContext.SetFillStyleAsync("#FFF");
+                await canvas2DContext.SetFontAsync("12px consolas");
+                await canvas2DContext.FillTextAsync($"Drag me", X + 20, Y - 15);
+                
+            }
         }
 
         public override ValueTask<bool> CheckHighlight(double mousePosX, double mousePosY)
