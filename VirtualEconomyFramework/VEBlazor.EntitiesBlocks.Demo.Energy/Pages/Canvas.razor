@@ -5,12 +5,12 @@
 @using System.Text.Json
 @inject IJSRuntime JsRuntime
 
-<img @ref="plusIcon" hidden src="images/add-circle.svg" alt="" />
 
-<div id="canvasHolder" style="width: 100%; height: 100%" @onmousemove="OnMouseMove" @onmousedown="OnMouseDown" @onmouseup="OnMouseUp" @onwheel="OnWheel">
+
+<Div id="canvasHolder" class="h-100 w-100" @onmousemove="OnMouseMove" @onmousedown="OnMouseDown" @onmouseup="OnMouseUp" @onwheel="OnWheel">
     <BECanvas Width="800" Height="800" @ref="canvasReference"  ></BECanvas>
-</div>
-
+</Div>
+<img @ref="plusIcon" hidden src="images/add-circle.svg" alt="" />
 @code {
     private Canvas2DContext context;
     private BECanvas canvasReference;
