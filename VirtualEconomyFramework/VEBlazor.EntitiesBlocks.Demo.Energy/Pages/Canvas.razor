@@ -21,6 +21,7 @@
     private ElementReference plusIcon;
     private int canvasWidth = 800;
     private int canvasHeight = 800;
+    private float aspect = 1;
 
     [JSInvokable]
     public async Task ResizeInBlazor(double width, double height)
@@ -44,18 +45,18 @@
         await context.FillRectAsync(0, 0, canvasWidth, canvasHeight);
         await context.SetFillStyleAsync("#360036");
         await context.SetFontAsync("16px consolas");
-        await context.FillTextAsync($"FPS: {fps:0.000}", 10, 50);
-        await context.FillTextAsync($"X: {mouseX}, Y: {mouseY}, Z: {deltaZ}", 10, 70);
+        await context.FillTextAsync($"FPS: {fps:0.000}", 10*aspect, 50*aspect);
+        await context.FillTextAsync($"X: {mouseX}, Y: {mouseY}, Z: {deltaZ}", 10*aspect, 70*aspect);
         await context.SetStrokeStyleAsync("#FFFFFF");
     
         foreach (var canvasObject in canvasObjects)
         {
-            var isHighlighted = await canvasObject.CheckHighlight(mouseX, mouseY);
+            var isHighlighted = await canvasObject.CheckHighlight(mouseX/aspect, mouseY/aspect);
             if (canvasObject.IsDragged)
             {
-                canvasObject.Drag(mouseX, mouseY);
+                canvasObject.Drag(mouseX/aspect, mouseY/aspect);
             }
-            await canvasObject.Render(context, isHighlighted);
+            await canvasObject.Render(context, isHighlighted, aspect);
         }
         
         await context.EndBatchAsync();
@@ -93,12 +94,12 @@
         
         foreach (var canvasObject in canvasObjects)
         {
-            var isHighlighted = await canvasObject.CheckHighlight(mouseX, mouseY);
+            var isHighlighted = await canvasObject.CheckHighlight(mouseX/aspect, mouseY/aspect);
             if (isHighlighted && canvasObject is { IsMouseDown: true, IsDragged: false })
             {
                 canvasObject.IsDragged = true;
-                canvasObject.DragStartX = mouseX;
-                canvasObject.DragStartY = mouseY;
+                canvasObject.DragStartX = mouseX/aspect;
+                canvasObject.DragStartY = mouseY/aspect;
             }
         }
         
@@ -108,8 +109,17 @@
 
     private async Task OnWheel(WheelEventArgs arg)
     {
-         Console.WriteLine(JsonSerializer.Serialize(arg));
+        Console.WriteLine(JsonSerializer.Serialize(arg));
         deltaZ = arg.DeltaY;
+        switch (arg.DeltaY)
+        {
+            case > 0:
+                aspect += 0.1f;
+                break;
+            case < 0:
+                aspect -= 0.1f;
+                break;
+        }
         await RenderInBlazor(0);
     }
     
@@ -124,7 +134,7 @@
         public double DragStartX { get; set; }
         public double DragStartY { get; set; }
 
-        public abstract ValueTask Render(Canvas2DContext canvas2DContext, bool isHighlighted);
+        public abstract ValueTask Render(Canvas2DContext canvas2DContext, bool isHighlighted, float aspect);
         public abstract ValueTask<bool> CheckHighlight(double mousePosX, double mousePosY);
 
         public abstract ValueTask Drag(double x, double y);
@@ -138,16 +148,16 @@
     public class BlockCanvasObject
         : CanvasObject
     {
-        public override async ValueTask Render(Canvas2DContext canvas2DContext, bool isHighlighted)
+        public override async ValueTask Render(Canvas2DContext canvas2DContext, bool isHighlighted, float aspect)
         {
             await canvas2DContext.SetFillStyleAsync("#FF8080");
             await canvas2DContext.SetFillStyleAsync("#FF8080");
-            await canvas2DContext.FillRectAsync(X, Y, Width, Height);
+            await canvas2DContext.FillRectAsync(X*aspect, Y*aspect, Width*aspect, Height*aspect);
             if (isHighlighted)
             {
-                await canvas2DContext.SetLineWidthAsync(4);
+                await canvas2DContext.SetLineWidthAsync(4*aspect);
                 await canvas2DContext.SetStrokeStyleAsync("#000");
-                await canvas2DContext.StrokeRectAsync(X, Y, Width, Height);
+                await canvas2DContext.StrokeRectAsync(X*aspect, Y*aspect, Width*aspect, Height*aspect);
             }
         }
 
@@ -176,7 +186,7 @@
             Height = height;
             Image = image;
         }
-        public override async ValueTask Render(Canvas2DContext canvas2DContext, bool isHighlighted)
+        public override async ValueTask Render(Canvas2DContext canvas2DContext, bool isHighlighted, float aspect)
         {
             var x = X;
             var y = Y;
@@ -187,27 +197,27 @@
                 x = dragCurrentX - offsetX;
                 y = dragCurrentY - offsetY;
             }
-            await canvas2DContext.SetLineDashOffsetAsync(5);
+            await canvas2DContext.SetLineDashOffsetAsync(5*aspect);
             await canvas2DContext.SetLineWidthAsync(2);
             await canvas2DContext.SetStrokeStyleAsync("#888");
             await canvas2DContext.BeginPathAsync();
-            await canvas2DContext.MoveToAsync(X + Width / 2, Y + Height / 2);
-            await canvas2DContext.LineToAsync(x + Width / 2, y + Height / 2);
+            await canvas2DContext.MoveToAsync(X*aspect + Width*aspect / 2, Y*aspect + Height*aspect / 2);
+            await canvas2DContext.LineToAsync(x*aspect + Width*aspect / 2, y*aspect + Height*aspect / 2);
             await canvas2DContext.StrokeAsync();
-            await canvas2DContext.DrawImageAsync(Image, x, y, Width, Height);
+            await canvas2DContext.DrawImageAsync(Image, x*aspect, y*aspect, Width*aspect, Height*aspect);
 
             if (isHighlighted)
             {
                 await canvas2DContext.SetFillStyleAsync("#808000");
-                await canvas2DContext.FillRectAsync(X + 15, Y - 35, 75, 35);
+                await canvas2DContext.FillRectAsync(X*aspect + 15*aspect, Y*aspect - 35*aspect, 75*aspect, 35*aspect);
                 await canvas2DContext.SetStrokeStyleAsync("#000");
                 await canvas2DContext.SetLineWidthAsync(0.5f);
                 await canvas2DContext.SetLineJoinAsync(LineJoin.Round);
 
-                await canvas2DContext.StrokeRectAsync(X + 15, Y - 35, 75, 35);
+                await canvas2DContext.StrokeRectAsync(X*aspect + 15*aspect, Y*aspect - 35*aspect, 75*aspect, 35*aspect);
                 await canvas2DContext.SetFillStyleAsync("#FFF");
                 await canvas2DContext.SetFontAsync("12px consolas");
-                await canvas2DContext.FillTextAsync($"Drag me", X + 20, Y - 15);
+                await canvas2DContext.FillTextAsync($"Drag me", X*aspect + 20*aspect, Y*aspect - 15*aspect);
                 
             }
         }
