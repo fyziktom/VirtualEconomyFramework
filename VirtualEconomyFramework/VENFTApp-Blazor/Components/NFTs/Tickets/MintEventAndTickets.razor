@@ -2,6 +2,7 @@
 @using VEDriversLite.NFT
 @using VEDriversLite.NFT.Coruzant
 @using Newtonsoft.Json
+@using VEDriversLite.NeblioAPI
 @using Markdig
 @inject AppData AppData
 @inject NavigationManager NavManager
@@ -647,7 +648,7 @@
     }
     private async Task LoadSender()
     {
-        var add = await NeblioTransactionHelpers.GetTransactionSender(eventId);
+        var add = await NeblioAPIHelpers.GetTransactionSender(eventId);
         if (!string.IsNullOrEmpty(add))
         {
             eventAddress = add;

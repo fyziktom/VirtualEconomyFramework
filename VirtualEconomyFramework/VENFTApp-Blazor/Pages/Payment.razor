@@ -306,7 +306,7 @@
                 if (string.IsNullOrEmpty(AppData.DogeAccount.Address))
                     TryLogin();
             }
-            catch (Exception ex)
+            catch
             {
                 Redirect();
             }
@@ -347,7 +347,7 @@
                 await Redirect();
             }
         }
-        catch (Exception ex)
+        catch
         {
             await Redirect();
         }
@@ -457,7 +457,7 @@
                 StateHasChanged();
             }
         }
-        catch (Exception ex)
+        catch
         {
             accountUnlockingError = true;
         }

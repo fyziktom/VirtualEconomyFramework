@@ -1,0 +1,141 @@
+﻿@using VEDriversLite.EntitiesBlocks.Blocks.Dto
+@using VEDriversLite.Common
+
+@inject AppData AppData
+@inject HttpClient Http
+
+<Router AppAssembly="@typeof(App).Assembly">
+    <Found Context="routeData">
+        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+        <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+    </Found>
+    <NotFound>
+        <PageTitle>Not found</PageTitle>
+        <LayoutView Layout="@typeof(MainLayout)">
+            <p role="alert">Sorry, there's nothing at this address.</p>
+        </LayoutView>
+    </NotFound>
+</Router>
+
+<MessageProvider />
+<PageProgressProvider />
+<NotificationProvider />
+
+@code {
+    double panelAzimuthE = MathHelpers.DegreeToRadians(-40);
+    double panelAzimuthS = MathHelpers.DegreeToRadians(0);
+    double panelAzimuthW = MathHelpers.DegreeToRadians(40);
+    string name = "mytest";
+    int DurationInDays = 1;
+    DateTime start = new DateTime(2022, 1, 1, 0, 0, 0);
+    DateTime end = new DateTime(2022, 1, 2, 0, 0, 0);
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!AppData.TDDsLoaded)
+        {
+            var tddfromfile = await Http.GetStringAsync("tdd.csv");
+            var tdds = new List<DataProfile>();
+            if (tddfromfile != null)
+            {
+                tdds = ConsumersHelpers.LoadTDDs(tddfromfile);
+                AppData.TDDs = tdds;
+                AppData.TDDsLoaded = true;
+            }
+        }
+
+        if (!AppData.BatteryStorageSimulatorLoaded)
+        {
+            var storagedata = await Http.GetStringAsync("samplestorage.json");
+            if (storagedata != null)
+                AppData.StoredBatteryStorageConfig = storagedata;
+
+            if (storagedata != null && !AppData.BatteryStorage.ImportConfig(storagedata).Item1)
+            {
+                setCommonBattery();
+                AppData.BatteryStorage.AddBatteryBlock(AppData.BatteryStorage.CommonBattery).ToList();
+                AppData.BatteryStorage.AddBatteryBlock(AppData.BatteryStorage.CommonBattery).ToList();
+
+                AppData.BatteryStorageSimulatorLoaded = true;
+            }
+
+        }
+
+        if (!AppData.PVESimulatorLoaded)
+        {
+            end = start.AddDays(DurationInDays);
+            var storeddata = await Http.GetStringAsync("samplepve.json");
+            if (storeddata != null)
+                AppData.StoredPVEConfig = storeddata;
+
+            if (storeddata != null && !AppData.PVEGrid.ImportConfig(storeddata).Item1)
+            {
+                panelAzimuthE = MathHelpers.DegreeToRadians(-40);
+                panelAzimuthS = MathHelpers.DegreeToRadians(0);
+                panelAzimuthW = MathHelpers.DegreeToRadians(60);
+
+                var eastPanelsId = AppData.PVEGrid.AddGroup("East");
+                var southPanelsId = AppData.PVEGrid.AddGroup("South");
+                var westPanelsId = AppData.PVEGrid.AddGroup("West");
+
+                SetCommonPanel();
+                // set template panel in this PVE
+                AddPanelToGroup(eastPanelsId, panelAzimuthE, true, 3);
+                AddPanelToGroup(southPanelsId, panelAzimuthS, true, 6);
+                AddPanelToGroup(westPanelsId, panelAzimuthW, true, 8);
+            }
+
+            AppData.PVESimulatorLoaded = true;
+            await InvokeAsync(StateHasChanged);
+            await Task.Delay(1);
+            await InvokeAsync(StateHasChanged);
+        }
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+
+    private void setCommonBattery()
+    {
+        AppData.BatteryStorage.SetCommonBattery(new BatteryBlock()
+            {
+                Id = Guid.NewGuid().ToString(),
+                Capacity = 10000,
+                InternalResistance = 0.1,
+                MaximumChargePower = 2000,
+                MaximumDischargePower = 2000
+            });
+    }
+
+    private void SetCommonPanel()
+    {
+        if (AppData.PVEGrid != null)
+        {
+            var panel = new PVPanel()
+                {
+                    Name = "test",
+                    Azimuth = 0,
+                    BaseAngle = MathHelpers.DegreeToRadians(23),
+                    DirtRatio = 0.05 / 365,
+                    Efficiency = 1,
+                    Height = 2000,
+                    Width = 1000,
+                    Latitude = AppData.DefaultCoordinates.Latitude,
+                    Longitude = AppData.DefaultCoordinates.Longitude,
+                    PeakPower = 0.3,
+                    PanelPeakAngle = MathHelpers.DegreeToRadians(90)
+                };
+            AppData.PVEGrid.SetCommonPanel(panel);
+        }
+    }
+    private void AddPanelToGroup(string groupId, double azimuth = 0, bool setAzimuth = false, int count = 1)
+    {
+        SetCommonPanel();
+        if (setAzimuth)
+        {
+            AppData.PVEGrid.CommonPanel.Azimuth = azimuth;
+        }
+        var addedPanelsId = AppData.PVEGrid.AddPanelToGroup(groupId, AppData.PVEGrid.CommonPanel, count).ToList();
+
+    }
+}

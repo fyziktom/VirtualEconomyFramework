@@ -9,8 +9,14 @@ using VEDriversLite.Security;
 
 namespace VEDriversLite.NFT.DevicesNFTs
 {
+    /// <summary>
+    /// Helper class for Hardwario IoT 
+    /// </summary>
     public static class HardwarioNFTHelpers
     {
+        /// <summary>
+        /// Hardwario Token Id
+        /// </summary>
         public static string TokenId { get; set; } = "La2kHrELu2RokMELtgcZrrXL6bqC6QaU8W3TUb";
 
         /// <summary>

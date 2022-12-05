@@ -1,8 +1,11 @@
 ﻿using Microsoft.AspNetCore.Components;
-using VEBlazor.Components.NFTs.Common;
+using VEFramework.VEBlazor.Components.NFTs.Common;
 using VEDriversLite.NFT;
+using VEDriversLite.NFT.Dto;
+using VEDriversLite.NeblioAPI;
+using VEDriversLite;
 
-namespace VEBlazor.Components.Base
+namespace VEFramework.VEBlazor.Components.Base
 {
     public class NFTSentResultDto
     {
@@ -46,12 +49,139 @@ namespace VEBlazor.Components.Base
         public EventCallback<bool> IsOwnNFTChanged { get; set; }
     }
 
-    public abstract class NFTComponentBase : AccountRelatedComponentBase
+    public abstract class NFTBase : AccountRelatedComponentBase
     {
+        public const string EmptyImage = "_content/VEFramework.VEBlazor/images/empty.jpg";
         [Parameter]
         public INFT NFT { get; set; } = new ImageNFT("");
         [Parameter]
         public EventCallback<INFT> NFTChanged { get; set; }
+        [Parameter]
+        public EventCallback<NFTSentResultDto> NFTSent { get; set; }
+
+        /// <summary>
+        /// Get image from the NFT.
+        /// If there is the preview you can set the returnPreviewIfExists and it will return the preview link.
+        /// It does not download the image data. Just provide the link. If the link is empty it will return emtpy image from the the static files.
+        /// </summary>
+        /// <param name="returnPreviewIfExists"></param>
+        /// <returns></returns>
+        public string GetImageUrl(bool returnPreviewIfExists = false)
+        {
+            if (NFT == null)
+                return EmptyImage;
+
+            if (returnPreviewIfExists)
+            {
+                var preview = GetPreviewUrl();
+                if (!string.IsNullOrEmpty(preview))
+                    return preview;
+            }
+
+            if (!string.IsNullOrEmpty(NFT.ImageLink))
+                return NFT.ImageLink;
+            else if (NFT.ImageData != null && NFT.ImageData.Length > 0)
+                return "data:image;base64," + Convert.ToBase64String(NFT.ImageData);
+            else
+                return EmptyImage;
+        }
+        /// <summary>
+        /// Get preview image from the NFT.
+        /// If not exists it will return empty image from the the static files.
+        /// </summary>
+        /// <returns></returns>
+        public string GetPreviewUrl()
+        {
+            if (NFT == null)
+                return EmptyImage;
+
+            if (!string.IsNullOrEmpty(NFT.Preview))
+                return NFT.Preview;
+            else
+                return EmptyImage;
+        }
+
+        public string actualImageLink
+        {
+            get
+            {
+                if (NFT.DataItems != null && NFT.DataItems.Count >= 0)
+                {
+                    foreach (var item in NFT.DataItems)
+                    {
+                        if (item.IsMain)
+                        {
+                            if (item.Storage == DataItemStorageType.IPFS)
+                                return VEDriversLite.StorageDriver.Helpers.IPFSHelpers.GetIPFSLinkFromHash(item.Hash);
+                            else if (item.Storage == DataItemStorageType.Url)
+                                return item.Hash;
+                        }                            
+                    }
+                    if (NFT.DataItems.Count > 0)
+                    {
+                        var il = VEDriversLite.StorageDriver.Helpers.IPFSHelpers.GetIPFSLinkFromHash(NFT.DataItems.FirstOrDefault()?.Hash);
+                        return !string.IsNullOrEmpty(il) ? il : GetImageUrl();
+                    }
+                }
+                return GetImageUrl();
+            }
+        }
+        public DataItemType actualFileType
+        {
+            get
+            {
+                if (NFT.DataItems != null && NFT.DataItems.Count >= 0)
+                {
+                    foreach (var item in NFT.DataItems)
+                    {
+                        if (item.IsMain)
+                            return item.Type;
+                    }
+                    if (NFT.DataItems.Count > 0)
+                        return NFT.DataItems.FirstOrDefault()?.Type ?? DataItemType.Image;                    
+                }
+                return DataItemType.Image;
+            }
+        }
+        public string ActualImageLinkFromNFT(INFT nft)
+        {
+            if (nft.DataItems != null && nft.DataItems.Count >= 0)
+            {
+                foreach (var item in nft.DataItems)
+                {
+                    if (item.IsMain)
+                    {
+                        if (item.Storage == DataItemStorageType.IPFS)
+                            return VEDriversLite.StorageDriver.Helpers.IPFSHelpers.GetIPFSLinkFromHash(item.Hash);
+                        else if (item.Storage == DataItemStorageType.Url)
+                            return item.Hash;
+                    }
+                }
+                if (nft.DataItems.Count > 0)
+                {
+                    var il = VEDriversLite.StorageDriver.Helpers.IPFSHelpers.GetIPFSLinkFromHash(nft.DataItems.FirstOrDefault()?.Hash);
+                    return !string.IsNullOrEmpty(il) ? il : GetImageUrl();
+                }                    
+            }
+            return GetImageUrl();
+        }
+        public DataItemType ActualFileTypeFromNFT(INFT nft)
+        {
+            if (nft.DataItems != null && nft.DataItems.Count >= 0)
+            {
+                foreach (var item in nft.DataItems)
+                {
+                    if (item.IsMain)
+                        return item.Type;
+                }
+                if (nft.DataItems.Count > 0)
+                    return nft.DataItems.FirstOrDefault()?.Type ?? DataItemType.Image;
+            }
+            return DataItemType.Image;
+        }
+    }
+    public abstract class NFTComponentBase : NFTBase
+    {
         [Parameter]
         public string Utxo { get; set; } = string.Empty;
         [Parameter]
@@ -60,9 +190,6 @@ namespace VEBlazor.Components.Base
         public int UtxoIndex { get; set; } = 0;
         [Parameter]
         public EventCallback<int> UtxoIndexChanged { get; set; }
-
-        [Parameter]
-        public EventCallback<NFTSentResultDto> NFTSent { get; set; }
 
         [Parameter]
         public EventCallback<List<INFT>> OpenNFTsInWorkTab { get; set; }
@@ -76,14 +203,14 @@ namespace VEBlazor.Components.Base
         public bool Loading = false;
         public NFTCard? nftCard;        
 
-        public void LoadNFT(INFT nft)
+        public async Task LoadNFT(INFT nft)
         {
             if (nft != null)
             {
                 NFT = nft;
                 Utxo = NFT.Utxo;
                 UtxoIndex = NFT.UtxoIndex;
-                StateHasChanged();
+                await InvokeAsync( StateHasChanged );
             }
         }
 
@@ -100,64 +227,135 @@ namespace VEBlazor.Components.Base
                 if (NFT != null)
                 {
                     if (nftCard != null)
-                        nftCard.LoadNFT(NFT);
+                        await nftCard.LoadNFT(NFT);
                 }
                 else
                     NFT = new ImageNFT("");
                 
                 Loading = false;
             }
-            StateHasChanged();
+            await InvokeAsync( StateHasChanged );
         }
         
+        /// <summary>
+        /// Check if the NFT contains the ImageData in bytes. 
+        /// If not, it will download it from IPFS and then convert as image base64 string
+        /// </summary>
+        /// <returns></returns>
         public async Task<string> GetImage()
         {
             if (NFT == null)
-                return "_content/VEBlazor/images/empty.jpg";
+                return EmptyImage;
 
             if (NFT.ImageData != null && NFT.ImageData.Length > 0)
                 return "data:image;base64," + Convert.ToBase64String(NFT.ImageData);
             else if (NFT.ImageData == null && !string.IsNullOrEmpty(NFT.ImageLink))
             {
-                var imd = await NFTHelpers.IPFSDownloadFromInfuraAsync(NFTHelpers.GetHashFromIPFSLink(NFT.ImageLink));
-                if (imd != null)
+                //var imd = await NFTHelpers.IPFSDownloadFromInfuraAsync(VEDriversLite.StorageDriver.Helpers.IPFSHelpers.GetHashFromIPFSLink(NFT.ImageLink));
+                var result = await VEDriversLite.VEDLDataContext.Storage.GetFileFromIPFS(new VEDriversLite.StorageDriver.StorageDrivers.Dto.ReadFileRequestDto()
+                    {
+                        DriverType = VEDriversLite.StorageDriver.StorageDrivers.StorageDriverType.IPFS,
+                        Hash = VEDriversLite.StorageDriver.Helpers.IPFSHelpers.GetHashFromIPFSLink(NFT.ImageLink),
+                    });
+                if (result.Item1)
                 {
-                    NFT.ImageData = imd;
-                    return "data:image;base64," + Convert.ToBase64String(imd);
+                    NFT.ImageData = result.Item2;
+                    return "data:image;base64," + Convert.ToBase64String(result.Item2);
                 }
             }
             
-            return "_content/VEBlazor/images/empty.jpg";
+            return EmptyImage;
         }
-        public string GetImageUrl(bool returnPreviewIfExists = false)
+
+        /// <summary>
+        /// Check if the DataItem contains the Image Data in bytes. 
+        /// If not, it will download it from IPFS and then convert as image base64 string
+        /// </summary>
+        /// <returns></returns>
+        public async Task<string> GetImageFromHash(string hash)
         {
             if (NFT == null)
-                return "_content/VEBlazor/images/empty.jpg";
-
-            if (returnPreviewIfExists)
+                return EmptyImage;
+            var di = NFT.DataItems.FirstOrDefault(x => x.Hash == hash);
+            
+            if (di != null && di.Data.Length > 0)
+                return "data:image;base64," + Convert.ToBase64String(di.Data);
+            else if (di != null && !string.IsNullOrEmpty(di.Hash))
             {
-                var preview = GetPreviewUrl();
-                if (!string.IsNullOrEmpty(preview))
-                    return preview;
+                //var imd = await NFTHelpers.IPFSDownloadFromInfuraAsync(di.Hash);
+                var result = await VEDriversLite.VEDLDataContext.Storage.GetFileFromIPFS(new VEDriversLite.StorageDriver.StorageDrivers.Dto.ReadFileRequestDto()
+                {
+                    DriverType = VEDriversLite.StorageDriver.StorageDrivers.StorageDriverType.IPFS,
+                    Hash = di.Hash,
+                });
+                if (result.Item1)
+                {
+                    di.Data = result.Item2;
+                    di.Base64Data = Convert.ToBase64String(result.Item2);
+                    return "data:image;base64," + di.Base64Data;
+                }
             }
 
-            if (NFT.ImageData != null && NFT.ImageData.Length > 0)
-                return "data:image;base64," + Convert.ToBase64String(NFT.ImageData);
-            else if (!string.IsNullOrEmpty(NFT.ImageLink))
-                return NFT.ImageLink;
-            else
-                return "_content/VEBlazor/images/empty.jpg";
+            return EmptyImage;
         }
-        public string GetPreviewUrl()
+        /// <summary>
+        /// Get image as base64 string.
+        /// Function will parse it from input bytes array
+        /// </summary>
+        /// <param name="itemdata"></param>
+        /// <returns></returns>
+        public static string GetImageStringFromBytes(byte[] itemdata)
+        {
+            if (itemdata is not null && itemdata.Length > 0)
+                return "data:video;base64," + Convert.ToBase64String(itemdata);
+            else
+                return EmptyImage;
+        }
+        /// <summary>
+        /// Get video as base64 string.
+        /// Function will parse it from input bytes array
+        /// </summary>
+        /// <param name="itemdata"></param>
+        /// <returns></returns>
+        public static string GetVideoStringFromBytes(byte[] itemdata)
+        {
+            if (itemdata is not null && itemdata.Length > 0)
+                return "data:image;base64," + Convert.ToBase64String(itemdata);
+            else
+                return "_content/VEFramework.VEBlazor/images/blankvideo.png";
+        }
+
+        public string GetImageGalleryUrl(VEDriversLite.NFT.Dto.NFTDataItem item)
         {
             if (NFT == null)
-                return "_content/VEBlazor/images/empty.jpg";
+                return EmptyImage;
+            
+            if (item != null)
+            {
+                    if (item.Storage == VEDriversLite.NFT.Dto.DataItemStorageType.IPFS)
+                        return VEDriversLite.StorageDriver.Helpers.IPFSHelpers.GetIPFSLinkFromHash(item.Hash);
+                    else if (item.Storage == VEDriversLite.NFT.Dto.DataItemStorageType.Url)
+                        return item.Hash;
+            }
 
-            if (!string.IsNullOrEmpty(NFT.Preview))
-                return NFT.Preview;
-            else
-                return "_content/VEBlazor/images/empty.jpg";
+            return EmptyImage;
+        }        
+        public List<string> GetImageGalleryUrls()
+        {
+            if (NFT == null)
+                return new List<string>() { EmptyImage };
+
+            if (NFT.DataItems != null && NFT.DataItems.Count > 0)
+            {
+                var urls = new List<string>();
+                foreach(var i in NFT.DataItems)
+                    urls.Add(GetImageGalleryUrl(i));
+                if (urls.Count > 0)
+                    return urls;
+            }   
+            return new List<string>() { EmptyImage };
         }
+        
         internal virtual async Task OpenNFTInWorkTab()
         {
             if (NFT == null)
@@ -189,7 +387,7 @@ namespace VEBlazor.Components.Base
             else if (NFT == null && nft != null)
             {
                 NFT = nft;
-                StateHasChanged();
+                InvokeAsync( StateHasChanged );
             }
 
             if (nft != null)

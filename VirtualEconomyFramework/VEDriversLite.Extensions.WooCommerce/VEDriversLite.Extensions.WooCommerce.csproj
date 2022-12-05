@@ -1,10 +1,34 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+	  <PackageId>VEFramework.VEDriversLite.Extensions.WooCommerce</PackageId>
+	  <Version>0.3.2</Version>
+	  <Authors>fyziktom</Authors>
+	  <Company>VEFramework</Company>
+	  <Description>.NET drivers for getting information from and to the WooCommerce instance. It can hanlde also communication with main WordPress database</Description>
+	  <PackageProjectUrl>https://veframework.com/</PackageProjectUrl>
+	  <RepositoryUrl>https://github.com/fyziktom/VirtualEconomyFramework</RepositoryUrl>
+	  <RepositoryType>Git</RepositoryType>
+	  <PackageTags>VEFramework, Cryptocurrencies, Crypto, NFT, NFTs, Bitcoin, ReddCoin, Neblio, Nebl, Doge, Dogecoin, Blockchain, eCommerce, dApps, WooCommerce, WordPress</PackageTags>
+	  <Copyright>fyziktom</Copyright>
+	  <PackageReleaseNotes>
+		  - Removed unnecessary dependencies
+		  - Fix null reference bugs
+		  - Add XML comments
+	  </PackageReleaseNotes>
+	  <PackageReadmeFile>README.md</PackageReadmeFile>
+	  <PackageLicenseExpression>BSD-2-Clause</PackageLicenseExpression>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="WordPressPCL" Version="1.9.0" />

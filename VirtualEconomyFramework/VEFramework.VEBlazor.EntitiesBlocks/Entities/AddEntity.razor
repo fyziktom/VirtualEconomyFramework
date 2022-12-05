@@ -1,0 +1,163 @@
+﻿@inherits EntitiesBlocksComponentBase
+@inject AppData AppData
+
+<Modal @ref="AddEntityModal">
+    <ModalContent Centered Size="ModalSize.ExtraLarge">
+        <ModalHeader>
+            <ModalTitle>@(!entityChange ? "Add" : "Change") Entity</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            @if (Item != null && Item.Id != null && entity != null)
+            {
+                <Row>
+                    <Column>
+                        <Field>
+                            <FieldLabel>Name</FieldLabel>
+                            <TextEdit Placeholder="Entity Name" @bind-Text="@entity.Name" />
+                        </Field>
+                        <Field>
+                            <FieldLabel>Description</FieldLabel>
+                            <TextEdit Placeholder="Entity Description" @bind-Text="@entity.Description" />
+                        </Field>
+
+                        <SetEntityType Type="@entity.Type" TypeChanged="@onTypeChanged" />
+
+                        @if (entity.Type == EntityType.Source)
+                        {
+                            <SetSourceType @bind-Type="@((entity as ISource).SourceType)" />
+                        }
+                        else if (entity.Type == EntityType.Consumer)
+                        {
+                            <SetConsumerType @bind-Type="@((entity as IConsumer).ConsumerType)" />
+                        }
+                    </Column>
+                </Row>
+                <Row>
+                    <Column>
+                        @if (entityChange)
+                        {
+                            <Button Color="Color.Primary" Outline Clicked="@changeEntity">Change Entity</Button>
+                        }
+                        else
+                        {
+                            <Button Color="Color.Primary" Outline Clicked="@addEntity">Add Entity</Button>
+                        }
+                    </Column>
+                </Row>
+            }
+            else
+            {
+                <Row>
+                    <Column>
+                        <Span>Please select the Entity to add new entity. Click to entity in the Tree.</Span>
+                    </Column>
+                </Row>
+            }
+        </ModalBody>
+    </ModalContent>
+</Modal>
+
+@if (WithButton)
+{
+    <Button Color="Color.Primary" Block="@BlockButton" Outline Float="@FloatButton" Clicked="@openAddEntity">
+        <Row>
+            @if(WithButtonIcon)
+            {
+                <Column>
+                    <Icon Name="IconName.Add" />
+                </Column>
+            }
+            @if(WithButtonText)
+            {
+                <Column Margin="Margin.Is2.FromStart">
+                    @ButtonText
+                </Column>
+            }
+        </Row>
+    </Button>
+}
+
+@code {
+
+    [Parameter]
+    public bool WithButton { get; set; } = false;
+    [Parameter]
+    public bool BlockButton { get; set; } = false;
+    [Parameter]
+    public Float FloatButton { get; set; } = Float.Default;
+    [Parameter]
+    public bool WithButtonIcon { get; set; } = false;
+    [Parameter]
+    public bool WithButtonText { get; set; } = false;
+    [Parameter]
+    public string ButtonText { get; set; } = "Add Entity";
+
+    Modal? AddEntityModal;
+    bool entityChange = false;
+    IEntity entity = new BaseEntity();
+
+    [Inject] INotificationService NotificationService { get; set; }
+
+    public async Task LoadEntity(IEntity input)
+    {
+        if (input != null)
+            entity = input;
+        if (AddEntityModal != null)
+            await AddEntityModal.Show();
+        entityChange = true;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task openAddEntity()
+    {
+        if (AddEntityModal != null)
+        {
+            entityChange = false;
+            await AddEntityModal.Show();
+        }
+    }
+
+    private async Task onTypeChanged(EntityType e)
+    {
+        if (e == EntityType.Source && !(entity is ISource))
+        {
+            var source = SourceFactory.GetSource(SourceType.PVE, entity.Name, entity.ParentId, entity.Id);
+            entity = source;
+        }
+        else if (e == EntityType.Consumer && !(entity is IConsumer))
+        {
+            var consumer = ConsumerFactory.GetConsumer(ConsumerType.Device, entity.Name, entity.ParentId, entity.Id);
+            entity = consumer;
+        }
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task addEntity()
+    {
+        if (Item != null && Item.Id != null)
+        {
+            if (entity == null)
+            {
+                await NotificationService.Error("Entity cannot be null.", "Cannot Add Entity");
+                return;
+            }
+            if (string.IsNullOrEmpty(entity.Name))
+            {
+                await NotificationService.Error("Please fill the name of the entity", "Cannot Add Entity");
+                return;
+            }
+
+            AppData.EntitiesHandler.AddEntity(entity, entity.Name, Item.Id);
+
+            if (AddEntityModal != null)
+                await AddEntityModal.Hide();
+            await ItemChanged.InvokeAsync(Item);
+        }
+    }
+
+    async Task changeEntity()
+    {
+
+    }
+}

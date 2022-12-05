@@ -1,0 +1,557 @@
+﻿@inherits EntitiesBlocksComponentBase
+@inject AppData AppData
+
+<Card Margin="Margin.Is4.FromBottom">
+    @if (Item != null)
+    {
+        <CardHeader>
+            <Row>
+                <Column Flex="Flex.AlignItems.Center">
+                    <Heading Size="HeadingSize.Is5" Margin="Margin.Is0">@Item.Name</Heading>
+                </Column>
+                <Column>
+                    <AddBlock Item="@Item"
+                          WithButton="true"
+                          BlockButton="false"
+                          FloatButton="Float.End"
+                          WithButtonIcon="true"
+                          WithButtonText="true" />
+                </Column>
+            </Row>
+        </CardHeader>
+        <CardBody>
+            <Div Margin="Margin.Is2.FromBottom">
+               Časové hranice
+            </Div>
+            <StartEndDaySelector StartTime="@StartTime"
+                             EndTime="@EndTime"
+                             StartTimeChanged="@startTimeDateChanged"
+                             EndTimeChanged="@endTimeDateChanged"
+                             StartDayLabel="Začatek"
+                             EndDayLabel="Konec"
+                             ShowDatesAsLabels="false" />
+        </CardBody>
+          
+        <CardBody>
+            <Row>
+                <Column ColumnSize="ColumnSize.Is9.OnDesktop.Is12">
+                      <EntityTotalBalance @ref=entityTotalBalance />
+                </Column>
+                <Column>
+                    <Button Color="Color.Light" Clicked="@zoomReset" Float="Float.End">
+                        <Icon Name="IconName.Undo" />
+                    </Button>
+                    <Button Color="Color.Light" Clicked="@zoomTimeOut" Float="Float.End">
+                        <Icon Name="IconName.SearchMinus" />
+                    </Button>
+                    <Button Color="Color.Light" Clicked="@zoomTimeIn" Float="Float.End">
+                        <Icon Name="IconName.SearchPlus" />
+                    </Button>
+                </Column>
+            </Row>
+        </CardBody>
+        <CardBody Overflow="Overflow.Scroll" Padding="Padding.Is0.FromTop">
+          @if(false){
+                <Div Style="max-width:100%" Overflow="Overflow.Auto">
+                <Div Class="blocks-graph" Style="width:200%" Overflow="Overflow.Hidden">
+                    <Row Position="Position.Relative" Style="z-index: 20;" TextAlignment="TextAlignment.End">
+
+                        <Column ColumnSize="ColumnSize.Is1" Position="Position.Relative">
+                            <Alert Color="Color.Primary" Border="Border.Is0" Visible>
+                                <Div Flex="Flex.JustifyContent.Between">
+                                    <Span>
+                                        0
+                                    </Span>
+                                    <Span>
+                                        2
+                                    </Span>
+                                </Div>
+                                <Span Class="line"></Span>
+                            </Alert>
+                        </Column>
+                        <Column ColumnSize="ColumnSize.Is1" Position="Position.Relative">
+                            <Alert Color="Color.Primary" Border="Border.Is0" Visible>
+                                4
+                                <Span Class="line"></Span>
+                            </Alert>
+                        </Column>
+                        <Column ColumnSize="ColumnSize.Is1" Position="Position.Relative">
+                            <Alert Color="Color.Primary" Border="Border.Is0" Visible>
+                                6
+                                <Span Class="line"></Span>
+                            </Alert>
+                        </Column>
+                        <Column ColumnSize="ColumnSize.Is1" Position="Position.Relative">
+                            <Alert Color="Color.Primary" Border="Border.Is0" Visible>
+                                8
+                                <Span Class="line"></Span>
+                            </Alert>
+                        </Column>
+                        <Column ColumnSize="ColumnSize.Is1" Position="Position.Relative">
+                            <Alert Color="Color.Primary" Border="Border.Is0" Visible>
+                                10
+                                <Span Class="line"></Span>
+                            </Alert>
+                        </Column>
+                        <Column ColumnSize="ColumnSize.Is1" Position="Position.Relative">
+                            <Alert Color="Color.Primary" Border="Border.Is0" Visible>
+                                12
+                                <Span Class="line"></Span>
+                            </Alert>
+                        </Column>
+                        <Column ColumnSize="ColumnSize.Is1" Position="Position.Relative">
+                            <Alert Color="Color.Primary" Border="Border.Is0" Visible>
+                                14
+                                <Span Class="line"></Span>
+                            </Alert>
+                        </Column>
+                        <Column ColumnSize="ColumnSize.Is1" Position="Position.Relative">
+                            <Alert Color="Color.Primary" Border="Border.Is0" Visible>
+                                16
+                                <Span Class="line"></Span>
+                            </Alert>
+                        </Column>
+                        <Column ColumnSize="ColumnSize.Is1" Position="Position.Relative">
+                            <Alert Color="Color.Primary" Border="Border.Is0" Visible>
+                                18
+                                <Span Class="line"></Span>
+                            </Alert>
+                        </Column>
+                        <Column ColumnSize="ColumnSize.Is1" Position="Position.Relative">
+                            <Alert Color="Color.Primary" Border="Border.Is0" Visible>
+                                20
+                                <Span Class="line"></Span>
+                            </Alert>
+                        </Column>
+                        <Column ColumnSize="ColumnSize.Is1" Position="Position.Relative">
+                            <Alert Color="Color.Primary" Border="Border.Is0" Visible>
+                                22
+                                <Span Class="line"></Span>
+                            </Alert>
+                        </Column>
+                        <Column ColumnSize="ColumnSize.Is1" Position="Position.Relative">
+                            <Alert Color="Color.Primary" Border="Border.Is0" Visible>
+                                24
+                                <Span Class="line"></Span>
+                            </Alert>
+                        </Column>
+                    </Row>
+                    <Row>
+
+                        <Column ColumnSize="ColumnSize.Is2.Is6.WithOffset">
+                            <Div Style="width: 87.5%; margin-left:6.25%">
+                                <Alert Color="Color.Primary" Visible>
+                                    12.15 - 15.45
+                                </Alert>
+                            </Div>
+                        </Column>
+                    </Row>
+                    <Row HorizontalGutter="0" VerticalGutter="0">
+                        <Column ColumnSize="ColumnSize.Is3.Is1.WithOffset">
+                            <Alert Color="Color.Primary" Visible>
+                                Is3.Is3.WithOffset
+                            </Alert>
+                        </Column>
+                        <Column ColumnSize="ColumnSize.Is4.Is4.WithOffset">
+                            <Alert Color="Color.Primary" Visible>
+                                Is3.Is3.WithOffset
+                            </Alert>
+                        </Column>
+                    </Row>
+                    <Row HorizontalGutter="0" VerticalGutter="0">
+                        <Column ColumnSize="ColumnSize.Is4">
+                            <Alert Color="Color.Primary" Visible>
+                                Is3.Is3.WithOffset
+                            </Alert>
+                        </Column>
+                        <Column ColumnSize="ColumnSize.Is4.Is1.WithOffset">
+                            <Alert Color="Color.Primary" Visible>
+                                Is3.Is3.WithOffset
+                            </Alert>
+                        </Column>
+                    </Row>
+                </Div>
+            </Div>
+          }
+            <Row>
+                <Column>
+
+                    @if (Blocks != null)
+                    {
+                        var yposcounter = 0;
+
+                        <svg width="@(MaxWidth)px" height="@((int)((blockUnitHeight + 1) * BlocksCount) + 40)px" version="1.1"
+                     xmlns="http://www.w3.org/2000/svg">
+                            <desc>Time Graph of Energy Blocks</desc>
+                            <g fill="none" stroke="black" stroke-width="3">
+                                <line x1="0" y1="1.5" x2="@(GraphMaxWidth)" y2="1.5" />
+                                <line x1="1.5" y1="0" x2="1.5" y2="@((int)((blockUnitHeight + 1) * BlocksCount))" />
+                            </g>
+                            <g fill="red" stroke="none">
+                                <rect x="0" y="0" width="3" height="3" />
+                                <rect x="@(TotalWidth - 3)" y="0" width="3" height="3" />
+                                <rect x="0" y="@((blockUnitHeight + 1) * BlocksCount)" width="3" height="3" />
+                            </g>
+                            <g font-size="12" font-family="Verdana" fill="black">
+                                <text x="@ygraphOffset" y="@(ygraphOffset * 2)">@(StartTime.ToString("dd.MM.yyyy hh:mm:ss"))</text>
+                                <text x="@((int)(TotalWidth - textFontSize*20))" y="@(ygraphOffset * 2)">@(EndTime.ToString("dd.MM.yyyy hh:mm:ss"))</text>
+                                <text x="@ygraphOffset" y="@((blockUnitHeight + 1) * BlocksCount - 1)">@(BlocksCount) bloků</text>
+                            </g>
+
+                            <!--
+                            <BlockGraphVerticalLines ref=blockGraphVerticalLines
+                                                     Blockscount="blockscount"
+                                                     BlockUnitHeight="blockUnitHeight"
+                                                     BlockUnitWidth="blockUnitWidth"
+                                                     StartTime="StartTime"
+                                                     EndTime="EndTime"
+                                                     GraphDuration="GraphDuration"/>
+                            -->
+                            @for (var i = 0; i < Blocks.Count; i++)
+                            {
+                                var block = Blocks[i];
+
+                                var ypos = blockUnitHeight * yposcounter + ygraphOffset * 3;
+                                if (!string.IsNullOrEmpty(block.RepetitiveSourceBlockId))
+                                {
+                                    var parentblock = Blocks.Where(b => b.Id == block.RepetitiveSourceBlockId).FirstOrDefault();
+                                    if (parentblock != null)
+                                    {
+                                        var indx = Blocks.IndexOf(parentblock);
+                                        ypos = blockUnitHeight * indx + ygraphOffset * 3;
+                                    }
+                                }
+                                else
+                                {
+                                    yposcounter++;
+                                }
+
+                                if (block != null && block.EndTime >= StartTime && block.StartTime <= EndTime)
+                                {
+                                    var xpos = GetXPosition(block);
+                                    var actualBlockWidth = GetActualBlockWidth(block);
+                                    <BlockGraphBlock ActualBlockWidth="@actualBlockWidth"
+                                     BlockUnitHeight="@blockUnitHeight"
+                                     RemoveBlockRequest="@onRemoveBlockRequest"
+                                     TextFontSize="@textFontSize"
+                                     Block="@(block as BaseBlock)"
+                                     XPos="@xpos"
+                                     YPos="@((int)ypos)"
+                                     BlockDoubleClick="@editItem" />
+
+                                }
+                            }
+                        </svg>
+                    }
+                </Column>
+            </Row>
+            <Row>
+                <Column>
+                    <Slider @ref=slider TValue="int" Step="1" Value="sliderValue" ValueChanged="@OnsliderValueChanged" />
+                </Column>
+            </Row>
+        </CardBody>
+    }
+</Card>
+
+@if (Item != null)
+{
+    <AddBlock @ref=editBlockModal WithButton="false" Item="@Item" BlockChanged="@OnBlockChanged" />
+    <RemoveBlock @ref=removeBlockModal Item="@Item" WithButton="false" BlockChanged="OnBlockChanged" />
+}
+@code {
+
+    [Parameter]
+    public int MaxWidth { get; set; } = 1600;
+    [Parameter]
+    public int MaxHeight { get; set; } = 2500;
+
+    [Inject] INotificationService NotificationService { get; set; }
+
+    public int BlocksCount
+    {
+        get
+        {
+            if (Item != null && Item.Id != null && Blocks != null)
+            {
+                return Blocks.Where(b => (b.IsRepetitiveSource && string.IsNullOrEmpty(b.RepetitiveSourceBlockId)) ||
+                                   ((!b.IsRepetitiveChild && !b.IsRepetitiveSource) && string.IsNullOrEmpty(b.RepetitiveSourceBlockId)))
+                                   .Count();
+            }
+            else
+                return 0;
+        }
+    }
+
+    public int TotalWidth { get => (int)((blockUnitWidth + 1) * totalXsteps); }
+
+    public int GraphMaxWidth { get => (int)(MaxWidth * 0.9); }
+
+    Slider<int>? slider;
+    AddBlock? editBlockModal;
+    BlockGraphVerticalLines? blockGraphVerticalLines;
+    EntityTotalBalance? entityTotalBalance;
+    RemoveBlock? removeBlockModal;
+
+    private double blockUnitHeight = 25; //px
+    private double blockUnitWidth = 4; //px
+    private double totalXsteps = 365;
+    private int sliderValue = 0;
+    private int ygraphOffset = 10;
+    private int textFontSize = 8;
+    private double zoom = 1;
+    private BlockTimeframe timeframe = BlockTimeframe.Day;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            if (slider != null)
+            {
+                slider.Max = (int)totalXsteps;
+                sliderValue = (int)(totalXsteps / 2);
+                await InvokeAsync(StateHasChanged);
+            }
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private async Task onRemoveBlockRequest(IBlock e)
+    {
+        if (Item != null && removeBlockModal != null)
+        {
+            await removeBlockModal.LoadBlock(Item, e);
+        }
+    }
+
+    private async Task OnBlockChanged(IBlock e)
+    {
+        await loadData();
+    }
+
+    private async Task startTimeDateChanged(DateTime e)
+    {
+        if (e == null) return;
+        StartTime = (DateTime)e;
+        SetTotalXstesps();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task endTimeDateChanged(DateTime e)
+    {
+        if (e == null) return;
+        EndTime = (DateTime)e;
+        SetTotalXstesps();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public async Task Load(TreeItem item)
+    {
+        if (item != null && item.Id != null)
+        {
+            Item = item;
+            await loadData();
+        }
+    }
+
+    public async Task Refresh()
+    {
+        await loadData();
+    }
+
+    private async Task loadData()
+    {
+        if (Item != null && Item.Id != null)
+        {
+            Blocks = AppData.EntitiesHandler.GetBlocksOfEntityWithChildernBlocks(Item.Id).ToList();
+            if (Blocks != null)
+            {
+                SetTotalXstesps();
+                SetSlider();
+                if (slider != null)
+                    sliderValue = (int)(slider.Max / 2);
+                if (entityTotalBalance != null)
+                    await entityTotalBalance.GetTotals(Item, StartTime, EndTime);
+                if (blockGraphVerticalLines != null)
+                    await blockGraphVerticalLines.DrawLines(StartTime, EndTime, Duration, blockUnitHeight, blockUnitWidth);
+                await InvokeAsync(StateHasChanged);
+            }
+        }
+    }
+
+    public async Task zoomTimeIn()
+    {
+        if (Duration.TotalHours >= 10)
+        {
+            var timeframeHalf = Duration.TotalHours / 2;
+            var timeHalf = StartTime.AddHours(timeframeHalf);
+            EndTime = timeHalf.AddHours(timeframeHalf / 2);
+            StartTime = timeHalf.AddHours(-(timeframeHalf / 2));
+            zoom += 1;
+            SetTotalXstesps();
+            SetSlider();
+            if (entityTotalBalance != null)
+                await entityTotalBalance.GetTotals(Item, StartTime, EndTime);
+            if (blockGraphVerticalLines != null)
+                await blockGraphVerticalLines.DrawLines(StartTime, EndTime, Duration, blockUnitHeight, blockUnitWidth);
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    public async Task zoomTimeOut()
+    {
+        if (Duration.TotalDays < (5 * 365))
+        {
+            var timeframeHalf = Duration.TotalHours / 2;
+            var timeframeTwice = timeframeHalf * 2;
+            var timeHalf = StartTime.AddHours(timeframeHalf);
+            var zoomratio = (Math.Log(timeframeHalf) / timeframeHalf) * 2 + 1;
+            EndTime = timeHalf.AddHours(timeframeTwice * zoomratio);
+            StartTime = timeHalf.AddHours(-(timeframeTwice * zoomratio));
+            zoom -= 1;
+            SetTotalXstesps();
+            SetSlider();
+            if (entityTotalBalance != null)
+                await entityTotalBalance.GetTotals(Item, StartTime, EndTime);
+            if (blockGraphVerticalLines != null)
+                await blockGraphVerticalLines.DrawLines(StartTime, EndTime, Duration, blockUnitHeight, blockUnitWidth);
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private void SetSlider()
+    {
+        if (slider != null && Blocks != null && Blocks.Count > 0)
+        {
+            var minblock = Blocks[0];
+            var maxblock = Blocks[Blocks.Count - 1];
+            if (minblock != null && maxblock != null)
+            {
+                var timespan = maxblock.EndTime - minblock.StartTime;
+                if (timeframe == BlockTimeframe.Day)
+                    slider.Max = (int)timespan.TotalDays;
+                else if (timeframe == BlockTimeframe.Hour)
+                    slider.Max = (int)timespan.TotalHours;
+
+                sliderValue = (int)((double)slider.Max / 2);
+            }
+        }
+    }
+
+    public async Task zoomReset()
+    {
+        EndTime = new DateTime(2023, 1, 1);
+        StartTime = new DateTime(2022, 1, 1);
+        zoom = 1;
+        SetTotalXstesps();
+        SetSlider();
+        if (entityTotalBalance != null)
+            await entityTotalBalance.GetTotals(Item, StartTime, EndTime);
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private System.Threading.Timer timer;
+    private async Task OnsliderValueChanged(int value)
+    {
+        var tmp = value - sliderValue;
+        //var right = tmp < 0 ? true : false;
+        sliderValue = value;
+        switch (timeframe)
+        {
+            case BlockTimeframe.Day:
+                StartTime = StartTime.AddDays(tmp);
+                EndTime = EndTime.AddDays(tmp);
+                break;
+            case BlockTimeframe.Hour:
+                StartTime = StartTime.AddDays(tmp);
+                EndTime = EndTime.AddDays(tmp);
+                break;
+            default:
+                totalXsteps = 365;
+                break;
+        }
+
+        //recalc just when the slider value is stable for at least 2500ms
+        if (timer != null)
+            timer.Dispose();
+        timer = new System.Threading.Timer(async (object stateInfo) =>
+        {
+            if (sliderValue == value)
+            {
+                if (entityTotalBalance != null)
+                    await entityTotalBalance.GetTotals(Item, StartTime, EndTime);
+                timer?.Dispose();
+            }
+        }, new System.Threading.AutoResetEvent(false), 2500, 2500);
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private void SetTotalXstesps()
+    {
+        switch (timeframe)
+        {
+            case BlockTimeframe.Day:
+                totalXsteps = Duration.TotalDays;
+                break;
+            case BlockTimeframe.Hour:
+                totalXsteps = Duration.TotalHours;
+                break;
+            default:
+                totalXsteps = 365;
+                break;
+        }
+
+        blockUnitWidth = (((double)MaxWidth * 0.9) / totalXsteps) * zoom;
+        if (blockUnitWidth <= 0)
+            blockUnitWidth = 1;
+    }
+
+    private int GetXPosition(IBlock block)
+    {
+        int res = 0;
+        switch (timeframe)
+        {
+            case BlockTimeframe.Day:
+                res = (int)((block.StartTime - StartTime).TotalDays * blockUnitWidth);
+                break;
+            case BlockTimeframe.Hour:
+                res = (int)((block.StartTime - StartTime).TotalHours * blockUnitWidth);
+                break;
+            default:
+                res = (int)((block.StartTime - StartTime).TotalDays * blockUnitWidth);
+                break;
+        }
+        return res;
+    }
+
+    private double GetActualBlockWidth(IBlock block)
+    {
+        double res = 0;
+        switch (timeframe)
+        {
+            case BlockTimeframe.Day:
+                res = blockUnitWidth * (block.Timeframe.TotalDays == 0 ? 1 : block.Timeframe.TotalDays);
+                break;
+            case BlockTimeframe.Hour:
+                res = blockUnitWidth * (block.Timeframe.TotalHours == 0 ? 1 : block.Timeframe.TotalHours);
+                break;
+            default:
+                res = blockUnitWidth * (block.Timeframe.TotalDays == 0 ? 1 : block.Timeframe.TotalDays);
+                break;
+        }
+        if (res <= 0)
+            res = 1;
+
+        return res;
+    }
+
+    private async Task editItem(IBlock block)
+    {
+        if (editBlockModal != null)
+        {
+            await editBlockModal.LoadBlock(block);
+        }
+    }
+
+}

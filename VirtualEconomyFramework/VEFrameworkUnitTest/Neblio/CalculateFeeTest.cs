@@ -2,6 +2,7 @@ using System;
 using VEDriversLite;
 using Xunit;
 using Moq;
+using VEDriversLite.Neblio;
 
 namespace VEFrameworkUnitTest.Neblio
 {
@@ -14,7 +15,7 @@ namespace VEFrameworkUnitTest.Neblio
         public void CalculateFee_Valid_Test()
         {            
             double fee = NeblioTransactionHelpers.CalcFee(2, 2, "Test", false);
-            double expectedFee = 10000;
+            double expectedFee = 20000;
 
             //Assert  
             Assert.Equal(expectedFee, fee, 15);

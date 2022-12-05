@@ -1,0 +1,134 @@
+﻿@inherits EntitiesBlocksComponentBase
+@inject AppData AppData
+
+<Modal @ref="RemoveBlockModal">
+    <ModalContent Centered Size="ModalSize.ExtraLarge">
+        <ModalHeader>
+            <ModalTitle>Remove Block</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            @if (Item != null && Item.Id != null)
+            {
+                    <Row Margin="Margin.Is2.FromTop">
+                        <Column>
+                            <Span>nme: @Block.Name</Span>
+                        </Column>
+                    </Row>
+                    <Row Margin="Margin.Is2.FromTop">
+                        <Column>
+                            <Span>Id: @Block.Id</Span>
+                        </Column>
+                    </Row>
+                    <Row Margin="Margin.Is2.FromTop">
+                        <Column>
+                            <Span>Description: @Block.Description</Span>
+                        </Column>
+                    </Row>
+                    <Row Margin="Margin.Is2.FromTop">
+                        <Column>
+                            <Span>Do you realy want to remove this block?</Span>
+                        </Column>
+                    </Row>
+                    <Row Margin="Margin.Is2.FromTop">
+                        <Column>
+                            <Button Color="Color.Primary" Outline Clicked="@removeBlock">Remove Block</Button>
+                        </Column>
+                    </Row>
+            }
+            else
+            {
+                    <Row>
+                        <Column>
+                            <Span>Please select the Entity to remove block. Click to entity in the Tree.</Span>
+                        </Column>
+                    </Row>
+            }
+        </ModalBody>
+    </ModalContent>
+</Modal>
+
+@if (WithButton)
+{
+    <Button Color="Color.Primary" Block="@BlockButton" Outline Float="@FloatButton" Clicked="@openRemoveBlock">
+        <Row>
+        @if (WithButtonIcon)
+        {
+                    <Column>
+                        <Icon Name="IconName.Remove" />
+                    </Column>
+        }
+        @if (WithButtonText)
+        {
+                    <Column Margin="Margin.Is2.FromStart">
+                @ButtonText
+                    </Column>
+        }
+        </Row>
+    </Button>
+}
+
+@code {
+
+    [Parameter]
+    public bool WithButton { get; set; } = false;
+    [Parameter]
+    public bool BlockButton { get; set; } = false;
+    [Parameter]
+    public Float FloatButton { get; set; } = Float.Default;
+    [Parameter]
+    public bool WithButtonIcon { get; set; } = false;
+    [Parameter]
+    public bool WithButtonText { get; set; } = false;
+    [Parameter]
+    public string ButtonText { get; set; } = "Remove Entity";
+
+    Modal? RemoveBlockModal;
+
+    [Inject] INotificationService NotificationService { get; set; }
+
+    public async Task LoadBlock(TreeItem item, IBlock block)
+    {
+        if (item != null)
+            Item = item;
+        if (block != null)
+            Block = block;
+        if (RemoveBlockModal != null)
+            await RemoveBlockModal.Show();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task openRemoveBlock()
+    {
+        if (RemoveBlockModal != null)
+            await RemoveBlockModal.Show();
+    }
+
+    private async Task removeBlock()
+    {
+        if (Item != null && Item.Id != null)
+        {
+            var e = AppData.EntitiesHandler.GetEntity(Item.Id, Item.Type);
+
+            if (e == null)
+            {
+                await NotificationService.Error("Cannot find entity in handler.", "Cannot Remove Block");
+                return;
+            }
+
+            try
+            {
+                AppData.EntitiesHandler.RemoveBlocksFromEntity(e.Id, new List<string>() { Block.Id });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Cannot remove block. " + Block.Id + ", error: " + ex.Message);
+            }
+
+            if (RemoveBlockModal != null)
+                await RemoveBlockModal.Hide();
+            await ItemChanged.InvokeAsync(Item);
+        }
+    }
+
+}

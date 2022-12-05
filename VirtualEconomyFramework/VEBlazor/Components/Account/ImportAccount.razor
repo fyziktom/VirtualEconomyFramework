@@ -42,7 +42,7 @@
                         <Field>
                             <FieldLabel>Imported Private Key</FieldLabel>
                             <TextEdit Placeholder="Enter Neblio private key" @bind-Text="importAccountKey" />         
-                            <FieldHelp>It will be filled automatically when you upload backup file. You can put there private key if you have just that and you dont have backup file.</FieldHelp>
+                            <FieldHelp>This will populate automatically when you upload the backup file. Alternatively, you can enter the private key if you do not have backup file.</FieldHelp>
                         </Field>
                     </Column>
                 </Row>
@@ -198,6 +198,7 @@
 </Container>
 
 @code {
+    [Inject] INotificationService? NotificationService { get; set; }
     [Parameter] public EventCallback<string> AccountImported { get; set; }
 
     Validations? validationsRef;
@@ -267,16 +268,18 @@
                 importAccountKey = bdto.Key;
                 importDogeAccountKey = bdto.DogeKey;
                 backupData = bdto;
-                StateHasChanged();
+                await InvokeAsync(StateHasChanged);
             }
             else
             {
-                await JS.InvokeVoidAsync("alertMessage", "This is not valid VENFT Backup file.");
+                if (NotificationService != null)
+                    await NotificationService.Error( "This is not valid VENFT Backup file.", "Cannot read" );
             }
         }
         catch (Exception ex)
         {
-            await JS.InvokeVoidAsync("alertMessage", "This is not valid VENFT Backup file. " + ex.Message);
+            if (NotificationService != null)
+                await NotificationService.Error( "This is not valid VENFT Backup file. " + ex.Message, "Cannot read" );
             return;
         }
     }
@@ -289,7 +292,7 @@
         try
         {
             importingAccount = true;
-            StateHasChanged();
+            await InvokeAsync(StateHasChanged);
             await Task.Delay(1);
 
             await AppData.LoadTags();
@@ -312,13 +315,13 @@
         catch (Exception ex)
         {
             accountImportError = true;
-            Console.WriteLine("Cannot import the account: " + ex.Message);
-            // todo
+            if (NotificationService != null)
+                await NotificationService.Error( "Cannot import the account: " + ex.Message, "Cannot import" );
         }
         finally
         {
             importingAccount = false;
-            StateHasChanged();
+            await InvokeAsync(StateHasChanged);
             await Task.Delay(1);
         }        
     }
@@ -353,7 +356,8 @@
                 }
                 catch (Exception ex)
                 {
-                    await JS.InvokeVoidAsync("alertMessage", "Cannot Decrypt Imported key. Probably wrong password for this backup file.");
+                    if (NotificationService != null)
+                        await NotificationService.Error( "Cannot Decrypt Imported key. Probably wrong password for this backup file.", "Cannot decrypt" );
                     return false;
                 }
             }
@@ -371,7 +375,7 @@
                 {
                     AppData.Account.RunningAsVENFTBlazorApp = true; // block the start of the IoT NFTs, etc.
                     VEDLDataContext.AllowCache = true; //turn on/off NFT cache
-
+                    
                     await AppData.LoadChache();
                     AppData.Account.FirsLoadingStatus -= FirstLoadingStatusHandler;
                     AppData.Account.FirsLoadingStatus += FirstLoadingStatusHandler;
@@ -389,7 +393,8 @@
                     }
                     else
                     {
-                        await JS.InvokeVoidAsync("alertMessage", "Cannot load VENFT Backup file.");
+                        if (NotificationService != null)
+                            await NotificationService.Error( "Cannot load VENFT Backup file.", "Cannot Load" );   
                         return false;
                     }
                 }
@@ -410,16 +415,17 @@
             }
             else
             {
-                await JS.InvokeVoidAsync("alertMessage", "Cannot get Neblio address from the private key.");
+                if (NotificationService != null)
+                    await NotificationService.Error( "Cannot get Neblio address from the private key.", "Cannot load" ); 
             }
         }
         return false;
     }
 
-    void FirstLoadingStatusHandler(object sender, string e)
+    async void FirstLoadingStatusHandler(object sender, string e)
     {
         if (!string.IsNullOrEmpty(e)) state = e;
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
     }
     
     void FileValidator( ValidatorEventArgs e )

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 using System.Threading.Tasks;
+using VEDriversLite.NeblioAPI;
 
 namespace VEDriversLite.NFT
 {
@@ -82,20 +83,61 @@ namespace VEDriversLite.NFT
             MusicInLink = nft.MusicInLink;
             Used = nft.Used;
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
         public double PriceInDoge { get; set; } = 0;
+        /// <summary>
+        /// 
+        /// </summary>
         public bool PriceInDogeActive { get; set; } = false;
+        /// <summary>
+        /// Specify author address if different than the mint address
+        /// </summary>
         public string MintAuthorAddress { get; set; } = string.Empty;
+        /// <summary>
+        /// Event NFT Utxo
+        /// </summary>
         public string EventId { get; set; } = string.Empty;
+        /// <summary>
+        /// Event location name
+        /// </summary>
         public string Location { get; set; } = string.Empty;
+        /// <summary>
+        /// Event coordinates "Lat,Len"
+        /// </summary>
         public string LocationCoordinates { get; set; } = string.Empty;
+        /// <summary>
+        /// Location coordinate Latitude
+        /// </summary>
         public double LocationCoordinatesLat { get; set; } = 0.0;
+        /// <summary>
+        /// Location coordinate Longitude
+        /// </summary>
         public double LocationCoordinatesLen { get; set; } = 0.0;
+        /// <summary>
+        /// Indicate if the ticket was used. It goes through all history during load
+        /// </summary>
         public bool Used { get; set; } = false;
+        /// <summary>
+        /// Music in the Link property
+        /// </summary>
         public bool MusicInLink { get; set; } = false;
+        /// <summary>
+        /// Video link
+        /// </summary>
         public string VideoLink { get; set; } = string.Empty;
+        /// <summary>
+        /// Author website page
+        /// </summary>
         public string AuthorLink { get; set; } = string.Empty;
+        /// <summary>
+        /// Date of the Event
+        /// </summary>
         public DateTime EventDate { get; set; } = DateTime.UtcNow;
+        /// <summary>
+        /// Class of the Event
+        /// </summary>
         public ClassOfNFTEvent EventClass { get; set; } = ClassOfNFTEvent.PersonalEvent;
 
         /// <summary>
@@ -205,7 +247,7 @@ namespace VEDriversLite.NFT
                 ParseSpecific(lastmetadata);
 
                 Used = nftData.Used;
-                MintAuthorAddress = await NeblioTransactionHelpers.GetTransactionSender(NFTOriginTxId);
+                MintAuthorAddress = await NeblioAPIHelpers.GetTransactionSender(NFTOriginTxId);
                 IsLoaded = true;
             }
         }

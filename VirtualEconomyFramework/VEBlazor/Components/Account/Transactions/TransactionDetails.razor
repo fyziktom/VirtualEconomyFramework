@@ -3,6 +3,7 @@
 @using VEDriversLite.NFT
 @using VEDriversLite.NFT.Imaging.Xray
 @using VEDriversLite.Neblio
+@using VEDriversLite.NeblioAPI
 @inject AppData AppData
 
 @if ( TxDetails != null )
@@ -17,7 +18,7 @@
                 <Card>
                     <CardBody>
                         <CardTitle>
-                            <Span>Transaction ID: <Text CopyToClipboard="true">@TxDetails.Info.Txid</Text></Span>
+                            <Span>Transaction ID: <a href="@(string.Concat("https://explorer.nebl.io/tx/",TxDetails.Info.Txid))" target="_blank" ><Text CopyToClipboard="true">@TxDetails.Info.Txid</Text></a></Span>
                         </CardTitle>
                         <Row>
                             <Column>
@@ -57,7 +58,7 @@
                             <Column>
                                 <Field>
                                     <FieldLabel>Time</FieldLabel>
-                                    <Badge Color="Color.Info" Padding="Padding.Is2">@TxDetails.Time</Badge>
+                                    <Badge Color="Color.Info" Padding="Padding.Is2" Style="cursor:pointer;">@TxDetails.Time</Badge>
                                 </Field>
                             </Column>
                             <Column>
@@ -264,11 +265,13 @@
     {
         var nft = await NFTFactory.GetNFT( "", TxDetails.Info.Txid,
                                               txinfo: TxDetails.Info,
+                                              wait:true,
                                               loadJustType: true,
                                               justType: NFTTypes.XrayImage );
         if ( nft != null  && openNFTDetailsFactory != null)
         {
             NFT = nft;
+            await InvokeAsync( StateHasChanged );
             await openNFTDetailsFactory?.OpenNFTDetails(nft);
         }
     }
@@ -281,7 +284,7 @@
             return ti;
         else
         {
-            var toi = NeblioTransactionHelpers.GetTokenInfo( tokenId ).GetAwaiter().GetResult();
+            var toi = NeblioAPIHelpers.GetTokenInfo( tokenId ).GetAwaiter().GetResult();
             tokenInfo.Add( tokenId, toi );
             return toi;
         }

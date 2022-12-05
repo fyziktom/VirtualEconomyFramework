@@ -101,7 +101,7 @@
 
     private async Task LoadSender()
     {
-        paymentSender = await NeblioTransactionHelpers.GetTransactionSender(sourceNFT.Utxo, sourceNFT.TxDetails);
+        paymentSender = await NeblioAPIHelpers.GetTransactionSender(sourceNFT.Utxo, sourceNFT.TxDetails);
         receiverAddress = paymentSender;
         StateHasChanged();
     }

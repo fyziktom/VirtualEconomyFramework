@@ -1,0 +1,16 @@
+﻿@inject AppData AppData
+
+@if (AppData.PVEGrid != null)
+{
+    @foreach(var group in AppData.PVEGrid.PVPanelsGroups.Values)
+    {
+        <PVPanelsGroupCard GroupId="@group.Id" Name="@group.Name" Panels="@group.PVPanels.Values" />
+    }
+}
+
+@code {
+    public async Task Reload()
+    {
+        await InvokeAsync(StateHasChanged);
+    }
+}

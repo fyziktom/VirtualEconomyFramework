@@ -18,6 +18,8 @@ using VEDriversLite.NFT;
 using VEDriversLite.NFT.Dto;
 using VEDriversLite.Security;
 using VEDriversLite.Extensions.WooCommerce;
+using VEDriversLite.NeblioAPI;
+using VEDriversLite.StorageDriver.StorageDrivers;
 
 namespace VENFTApp_Server
 {
@@ -46,15 +48,36 @@ namespace VENFTApp_Server
             MainDataContext.LoadAllVENFTOwnersWithAllNFTs = settings.GetValue<bool>("LoadAllVENFTOwnersWithAllNFTs", false);
             var loadWithInWebAssemblyLimits = settings.GetValue<bool>("LoadWithInWebAssemblyLimits", false);
 
+            /*
             MainDataContext.IpfsSecret = settings.GetValue<string>("IpfsSecret", string.Empty);
             MainDataContext.IpfsProjectID = settings.GetValue<string>("IpfsProjectID", string.Empty);
             if (!string.IsNullOrEmpty(MainDataContext.IpfsSecret) && !string.IsNullOrEmpty(MainDataContext.IpfsProjectID))
                 NFTHelpers.LoadConnectionInfo(MainDataContext.IpfsProjectID, MainDataContext.IpfsSecret);
+            */
 
             var acc = new List<string>();
             settings.GetSection("ObservedAccounts").Bind(acc);
             if (acc != null)
                 MainDataContext.ObservedAccounts = acc;
+
+            VEDriversLite.StorageDriver.Helpers.IPFSHelpers.GatewayURL = "https://ve-framework.com/ipfs/"; 
+            var res = await VEDLDataContext.Storage.AddDriver(new VEDriversLite.StorageDriver.StorageDrivers.Dto.StorageDriverConfigDto()
+            {
+                Type = "IPFS",
+                Name = "BDP",
+                Location = "Cloud",
+                ID = "BDP",
+                IsPublicGateway = true,
+                IsLocal = false,
+                ConnectionParams = new StorageDriverConnectionParams()
+                {
+                    APIUrl = "https://ve-framework.com/",
+                    APIPort = 443,
+                    Secured = false,
+                    GatewayURL = "https://ve-framework.com/ipfs/",
+                    GatewayPort = 443,
+                }
+            });
 
             try
             {
@@ -96,7 +119,7 @@ namespace VENFTApp_Server
                                     Console.WriteLine("=========Neblio Main Account========");
                                     Console.WriteLine($"Loading Neblio address {k.Address}...");
                                     if (string.IsNullOrEmpty(k.Name))
-                                        k.Name = NeblioTransactionHelpers.ShortenAddress(k.Address);
+                                        k.Name = NeblioAPIHelpers.ShortenAddress(k.Address);
 
                                     var account = new NeblioAccount();
                                     EncryptedBackupDto bckp = null;
@@ -149,7 +172,7 @@ namespace VENFTApp_Server
                                                 {
                                                     Console.WriteLine($"Backup for main address {k.Address} contains also Dogecoin address {bdto.DogeAddress}. It will be imported.");
                                                     var dogeAccount = new DogeAccount();
-                                                    var res = await dogeAccount.LoadAccount(dpass.Item2, bdto.DogeKey, bdto.DogeAddress);
+                                                    var reslt = await dogeAccount.LoadAccount(dpass.Item2, bdto.DogeKey, bdto.DogeAddress);
                                                     VEDLDataContext.DogeAccounts.TryAdd(bdto.DogeAddress, dogeAccount);
                                                     Console.WriteLine($"Dogecoin address {bdto.DogeAddress} initialized.");
                                                 }

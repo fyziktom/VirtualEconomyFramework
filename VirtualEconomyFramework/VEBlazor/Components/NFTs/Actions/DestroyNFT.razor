@@ -9,18 +9,18 @@
 <Modal @ref="NFTDestroyModal">
     <ModalContent Centered>
         <ModalHeader>
-            <ModalTitle>Destroy the NFT</ModalTitle>
+            <ModalTitle>Recycle the NFT</ModalTitle>
             <CloseButton />
         </ModalHeader>
         <ModalBody>
             <Row Flex="Flex.AlignItems.Center">
                 <Column>
-                    <Span>Do you really want to destroy this NFT? You cannot take this action back.</Span>
+                    <Span>Do you really want to recycle this NFT? You cannot take this action back. It will add the free 1 token back to your minting tokens.</Span>
                 </Column>
             </Row>
             <Row Flex="Flex.AlignItems.Center"> 
                 <Column>
-                    <Button Color="Color.Danger" Clicked="@DestroyNFTAction" Loading="@Destroying">Yes, I understand. Destroy the NFT now.</Button>
+                    <Button Color="Color.Danger" Clicked="@DestroyNFTAction" Loading="@Destroying" Block>Yes, I understand. Recycle the NFT now.</Button>
                 </Column>
             </Row>
             @if (DestroyFinished)
@@ -51,8 +51,10 @@
     bool DestroyFinished = false;
     (bool,string) DestroyResult = (false,string.Empty);
 
-    public void ShowDestroyNFTModal()
+    public void ShowDestroyNFTModal(INFT nft = null)
     {
+        if (nft != null) 
+            NFT = nft;
         if (NFT == null) return;
         NFTDestroyModal?.Show();
     }
@@ -66,7 +68,7 @@
     {
         if (NFT == null) return;
         Destroying = true;
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
         
         if (NotificationService != null)
             await NotificationService.Info( "Destroying data...", "Destroying" );
@@ -88,7 +90,7 @@
             else
                 await NotificationService.Warning( DestroyResult.Item2, "Cannot destroy" );
         }
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
 
         //close automatically after 2 seconds
         await Task.Delay(2000);

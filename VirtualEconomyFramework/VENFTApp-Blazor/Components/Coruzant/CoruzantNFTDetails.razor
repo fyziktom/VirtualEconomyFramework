@@ -229,7 +229,7 @@
             </div>
             @if (OwnNFT)
             {
-                @if (NFT.TxDetails.Confirmations > NeblioTransactionHelpers.MinimumConfirmations)
+                @if (NFT.TxDetails.Confirmations > NeblioAPIHelpers.MinimumConfirmations)
                 {
                     <div class="row d-flex justify-content-center align-items-center" style="margin-top:20px;">
                         <div class="col d-flex justify-content-center align-items-center w-auto">
@@ -469,7 +469,7 @@
             {
                 var filename = string.Empty;
                 var pnft = NFT as CoruzantProfileNFT;
-                var req = new HttpRequestMessage(HttpMethod.Get, $"https://nftticketverifierapp.azurewebsites.net/api/GetBuzzsproutData/866092/{pnft.PodcastId}");
+                var req = new HttpRequestMessage(HttpMethod.Get, $"https://coruzantpublishingserver.azurewebsites.net/GetBuzzsproutData/866092/{pnft.PodcastId}");
                 req.Headers.Add("Accept", "application/json");
                 req.Headers.Add("User-Agent", "VENFT-App");
 

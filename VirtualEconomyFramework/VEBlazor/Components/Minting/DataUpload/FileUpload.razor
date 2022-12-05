@@ -8,7 +8,7 @@
         </Addon>
     }
     <Addon AddonType="AddonType.Body">
-        <FileEdit Changed="@OnChanged" Started="@OnStarted" Ended="@OnEnded" Progressed="@OnProgressed">
+        <FileEdit Changed="@OnChanged" Started="@OnStarted" Ended="@OnEnded" Progressed="@OnProgressed" Multiple="@Multiple" Filter="@Filter">
             <Feedback>
                 <ValidationError>Missing image.</ValidationError>
             </Feedback>
@@ -16,6 +16,9 @@
     </Addon>
 </Addons>
 @code {
+    
+    [Parameter] public bool Multiple { get; set; } = false;
+    [Parameter] public string Filter { get; set; } = string.Empty;
     [Parameter] public Validations ValidationsRef { get; set; }
 
     [Parameter] public EventCallback Started { get; set; }

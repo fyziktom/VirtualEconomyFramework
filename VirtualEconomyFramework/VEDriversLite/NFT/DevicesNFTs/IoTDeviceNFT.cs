@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using VEDriversLite.Devices;
 using VEDriversLite.Devices.Dto;
 using VEDriversLite.Security;
+using VEDriversLite.NeblioAPI;
 
 namespace VEDriversLite.NFT.DevicesNFTs
 {
@@ -449,7 +450,10 @@ namespace VEDriversLite.NFT.DevicesNFTs
 
             return metadata;
         }
-
+        /// <summary>
+        /// Load Device NFT for this IoT Device
+        /// </summary>
+        /// <returns></returns>
         public async Task LoadDeviceNFT()
         {
             if (!string.IsNullOrEmpty(DeviceNFTHash))
@@ -539,8 +543,8 @@ namespace VEDriversLite.NFT.DevicesNFTs
             {
                 if (RunJustOwn)
                 {
-                    var sender = await NeblioTransactionHelpers.GetTransactionSender(Utxo, TxDetails);
-                    var receiver = await NeblioTransactionHelpers.GetTransactionReceiver(Utxo, TxDetails);
+                    var sender = await NeblioAPIHelpers.GetTransactionSender(Utxo, TxDetails);
+                    var receiver = await NeblioAPIHelpers.GetTransactionReceiver(Utxo, TxDetails);
                     if (sender != receiver)
                         throw new Exception("This NFT is not allowed to run on this address. The Sender and Receiver of the tx must be the same!");
                 }

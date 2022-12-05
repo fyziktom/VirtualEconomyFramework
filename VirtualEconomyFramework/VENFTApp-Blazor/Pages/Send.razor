@@ -157,7 +157,7 @@
                     </div>
                     <div class="row" style="margin-top:10px;">
                         <div class="col d-flex justify-content-center align-items-center">
-                            <input type="number" step="1" min="2" max="@NeblioTransactionHelpers.MaximumNeblioOutpus" @bind="@splitNeblioDto.lots" />
+                            <input type="number" step="1" min="2" max="@NeblioAPIHelpers.MaximumNeblioOutpus" @bind="@splitNeblioDto.lots" />
                         </div>
                     </div>
                     <div class="row" style="margin-top:30px;">
@@ -295,7 +295,7 @@
                     </div>
                     <div class="row" style="margin-top:10px;">
                         <div class="col d-flex justify-content-center align-items-center">
-                            <input type="number" step="1" min="2" max="@NeblioTransactionHelpers.MaximumTokensOutpus" @bind="@splitNeblioTokenDto.lots" />
+                            <input type="number" step="1" min="2" max="@NeblioAPIHelpers.MaximumTokensOutpus" @bind="@splitNeblioTokenDto.lots" />
                         </div>
                     </div>
                     <div class="row" style="margin-top:30px;">
@@ -742,7 +742,7 @@
             return;
         if (address.Length < 8)
             return;
-        if (splitNeblioDto.receivers.Count < NeblioTransactionHelpers.MaximumNeblioOutpus)
+        if (splitNeblioDto.receivers.Count < NeblioAPIHelpers.MaximumNeblioOutpus)
             splitNeblioDto.receivers.Add(address);
         StateHasChanged();
     }
@@ -752,7 +752,7 @@
             return;
         if (address.Length < 8)
             return;
-        if (splitNeblioTokenDto.receivers.Count < NeblioTransactionHelpers.MaximumTokensOutpus)
+        if (splitNeblioTokenDto.receivers.Count < NeblioAPIHelpers.MaximumTokensOutpus)
             splitNeblioTokenDto.receivers.Add(address);
         StateHasChanged();
     }

@@ -3,21 +3,21 @@
 <ThemeProvider Theme="@theme">
     <Router AppAssembly="@typeof(App).Assembly">
         <Found Context="routeData">
-            <RouteView RouteData="@routeData" DefaultLayout="@typeof(VEBlazor.Layouts.MainLayout)" />
+            <RouteView RouteData="@routeData" DefaultLayout="@typeof(VEFramework.VEBlazor.Layouts.MainLayout)" />
             <FocusOnNavigate RouteData="@routeData" Selector="h1" />
         </Found>
         <NotFound>
             <PageTitle>Not found</PageTitle>
-            <LayoutView Layout="@typeof(VEBlazor.Layouts.MainLayout)">
+            <LayoutView Layout="@typeof(VEFramework.VEBlazor.Layouts.MainLayout)">
                 <p role="alert">Sorry, there's nothing at this address.</p>
             </LayoutView>
         </NotFound>
     </Router>
     
-<VEBlazor.Components.VEBlazorServicesComponents />
+<VEFramework.VEBlazor.Components.VEBlazorServicesComponents />
 </ThemeProvider>
 @code {
-    Theme theme = VEBlazor.Models.Themes.DefaultTheme.GetDefaultTheme();
+    Theme theme = VEFramework.VEBlazor.Models.Themes.DefaultTheme.GetDefaultTheme();
 
     protected override async Task OnInitializedAsync()
     {
@@ -27,6 +27,26 @@
         AppData.AppShareNFTUrl = "https://test.basedataplace.com/";
         AppData.DisplayGettingStartedMenuItem = false;
         AppData.AppTokenId = VEDriversLite.NFT.NFTHelpers.BDPTokenId;
+
+        VEDriversLite.StorageDriver.Helpers.IPFSHelpers.GatewayURL = "https://ve-framework.com/ipfs/"; //veframework public gateway
+                                                                                                      
+        var res = await VEDriversLite.VEDLDataContext.Storage.AddDriver(new VEDriversLite.StorageDriver.StorageDrivers.Dto.StorageDriverConfigDto()
+            {
+                Type = "IPFS",
+                Name = "BDP",
+                Location = "Cloud",
+                ID = "BDP",
+                IsPublicGateway = true,
+                IsLocal = false,
+                ConnectionParams = new VEDriversLite.StorageDriver.StorageDrivers.StorageDriverConnectionParams()
+                {
+                    APIUrl = "https://ve-framework.com/",
+                    APIPort = 443,
+                    Secured = false,
+                    GatewayURL = "https://ve-framework.com/ipfs/",
+                    GatewayPort = 443,
+                }
+            });
 
         if (AppData.MintingTabsData.TryGetValue("default", out var tab))
         {

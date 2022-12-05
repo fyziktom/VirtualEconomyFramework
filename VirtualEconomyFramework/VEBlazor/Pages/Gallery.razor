@@ -7,8 +7,8 @@
 
 <PageHeader Title="Data Gallery" BreadcrumbItems="@(new string[] { "BDP", "Gallery" })" />
 *@
-<Container Fluid Margin="Margin.Is4.FromBottom" >
-    <Tabs RenderMode="TabsRenderMode.LazyReload" @bind-SelectedTab="@SelectedTabName" Pills>
+<Container Fluid Margin="Margin.Is4.FromBottom">
+    <Tabs RenderMode="TabsRenderMode.LazyReload" @bind-SelectedTab="@SelectedTabName" Pills Height="Height.Is100">
         <Items>
             <Tab Name="gallery">
                 <Tooltip Text="Here you can find all yours images." Placement="TooltipPlacement.Bottom">
@@ -50,7 +50,7 @@
                 }
                 @if (AppData.AllowWorkTabs && tab.Type == TabType.WorkTab )
                 {
-                    <TabPanel Name="@tab.Name">
+                    <TabPanel Name="@tab.Name" Height="Height.Is100">
                         <WorkTabContent NFTs="@GetWTNFTs(tab)"
                                                             Address="@Address"
                                                             IsSubAccount="@IsSubAccount"
@@ -61,23 +61,10 @@
                 }
             }
             <TabPanel Name="newWorkTab">
-                <Container Fluid>
-                    @if (AppData.AllowWorkTabs)
-                    {                    
+                <Container Fluid>          
                     <Row Margin="Margin.Is5.FromTop">
                         <Column Flex="Flex.JustifyContent.Center">
-                            <Span>You can Open New Work Tab to edit the image.</Span>
-                        </Column>
-                    </Row>
-                    <Row Margin="Margin.Is5.FromBottom">
-                        <Column>
-                            <Button Color="Color.Primary" Clicked="@OpenWorkTab"><Icon Name="IconName.Desktop" /> Open Work Tab</Button>
-                        </Column>
-                    </Row>
-                    }                    
-                    <Row Margin="Margin.Is5.FromTop">
-                        <Column Flex="Flex.JustifyContent.Center">
-                            <Span>@(AppData.AllowWorkTabs? "Or ":"")You can Open Tab with some another Address.</Span>
+                            <Span>You can Open Tab with some another Address.</Span>
                         </Column>
                     </Row>
                     <Row Margin="Margin.Is2.FromTop" Width="Width.Is100">
@@ -87,7 +74,7 @@
                     </Row>
                     <Row Margin="Margin.Is2.FromTop" Flex="Flex.JustifyContent.Center">
                         <Column>
-                            <Button Color="Color.Primary" Clicked="@OpenSearchTabAction"><Icon Name="IconName.Add" Block/> Open Search Tab</Button>
+                            <Button Color="Color.Primary" Clicked="@OpenSearchTabAction" Block><Icon Name="IconName.Add" Block/> Open Search Tab</Button>
                         </Column>
                     </Row>
                 </Container>
@@ -210,7 +197,7 @@
                     } );
                 SelectedTabName = tab.ShortAddress;
             }
-            StateHasChanged();
+            await InvokeAsync(StateHasChanged);
         }
         if (PageProgressService != null)            
             await PageProgressService.Go( -1 );
@@ -228,7 +215,7 @@
                 Name = wt.Name
             } );
         SelectedTabName = wt.Name;
-        StateHasChanged();
+        InvokeAsync(StateHasChanged);
     }
 
     void OpenNFTsInWorkTabHandler( List<INFT> e )
@@ -246,7 +233,7 @@
                 Name = wt.Name
             } );
         SelectedTabName = wt.Name;
-        StateHasChanged();
+        InvokeAsync(StateHasChanged);
     }
 
     async Task CloseTab( string tabName )

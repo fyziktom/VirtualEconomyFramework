@@ -1,0 +1,70 @@
+{
+  "tags": {
+    "Analytics": {
+      "name": "Analytics",
+      "command": "",
+      "color": "",
+      "description": "",
+      "image": "https://ipfs.io/ipfs/QmT31t4kpFUhTwcXcKoC4BdWb9WLJ42fsZ1fodfHR7CSnP",
+      "count": 22,
+      "useAsFastButton": false,
+      "lastUse": "2022-06-19T00:55:31.217944Z",
+      "relatedTags": []
+    },
+    "CloudComputing": {
+      "name": "CloudComputing",
+      "command": "",
+      "color": "",
+      "description": "",
+      "image": "https://coruzant.com/wp-content/uploads/2021/02/digital-icons-696x464.jpg",
+      "count": 20,
+      "useAsFastButton": false,
+      "lastUse": "2022-06-19T00:55:31.2181962Z",
+      "relatedTags": []
+    },
+    "Cloud": {
+      "name": "Cloud",
+      "command": "",
+      "color": "",
+      "description": "",
+      "image": "https://ipfs.io/ipfs/QmPnToGEKYyB8oC1ed2wJzHL7pw6pdcQeCd6GnPJhMi31G",
+      "count": 20,
+      "useAsFastButton": false,
+      "lastUse": "2022-06-19T00:55:31.2254063Z",
+      "relatedTags": []
+    },
+    "Blockchain": {
+      "name": "Blockchain",
+      "command": "",
+      "color": "",
+      "description": "",
+      "image": "https://ipfs.io/ipfs/QmTU2gFsGL5HaUaQ3cmHZ9JJ3sgztpRWDCUkQWHpEqriK2",
+      "count": 18,
+      "useAsFastButton": false,
+      "lastUse": "2022-06-19T00:55:31.2159303Z",
+      "relatedTags": []
+    },
+    "SaaS": {
+      "name": "SaaS",
+      "command": "",
+      "color": "",
+      "description": "",
+      "image": "https://ipfs.io/ipfs/QmU6RMxJ1bTdSn1Nb7HFsRTMiyjLUrUJEX1kcfEYAekUur",
+      "count": 18,
+      "useAsFastButton": false,
+      "lastUse": "2022-06-19T00:55:31.2193379Z",
+      "relatedTags": []
+    },
+    "BigData": {
+      "name": "BigData",
+      "command": "",
+      "color": "",
+      "description": "",
+      "image": "https://ipfs.io/ipfs/QmQ7njus52WAjnuCTZQ3hWMFR5A7qPWMtk5NvRZZfQwp39",
+      "count": 16,
+      "useAsFastButton": false,
+      "lastUse": "2022-06-19T00:55:31.2186007Z",
+      "relatedTags": []
+    }
+  }
+}

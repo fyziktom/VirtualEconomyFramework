@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using VEDriversLite.NFT.Dto;
 
 namespace VEDriversLite.NFT.Tags
 {
@@ -45,5 +46,9 @@ namespace VEDriversLite.NFT.Tags
         /// Related tags hashes list
         /// </summary>
         public List<string> RelatedTags { get; set; } = new List<string>();
+        /// <summary>
+        /// Related Data Items to this tag
+        /// </summary>
+        public List<NFTDataItem> RelatedItems { get; set; } = new List<NFTDataItem>();
     }
 }

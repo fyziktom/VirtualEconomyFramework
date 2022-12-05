@@ -18,7 +18,13 @@ namespace VEDriversLite
         /// This property holds the actual value
         /// </summary>
         public object Value { get; set; }
-
+        /// <summary>
+        /// Get empty object with specified type of the object in result
+        /// </summary>
+        /// <typeparam name="T">Define type of return object</typeparam>
+        /// <param name="success">indicate success of some process which returned this object</param>
+        /// <param name="value">not specified type. in case of no parameters it returns default state of T</param>
+        /// <returns></returns>
         public static CommonReturnTypeDto GetNew<T>(bool success = false, T value = default(T))
         {
             return new CommonReturnTypeDto()

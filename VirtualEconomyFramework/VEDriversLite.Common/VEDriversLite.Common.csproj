@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+	  <PackageId>VEFramework.VEDriversLite.Common</PackageId>
+	  <Version>0.3.2</Version>
+	  <Authors>fyziktom</Authors>
+	  <Company>VEFramework</Company>
+	  <Description>Common dtos and tools for VEDriversLite packages</Description>
+	  <PackageProjectUrl>https://veframework.com/</PackageProjectUrl>
+	  <RepositoryUrl>https://github.com/fyziktom/VirtualEconomyFramework</RepositoryUrl>
+	  <RepositoryType>Git</RepositoryType>
+	  <PackageTags>VEFramework, Cryptocurrencies, Crypto, NFT, NFTs, Bitcoin, ReddCoin, Neblio, Nebl, Doge, Dogecoin, Flux, Blockchain, eCommerce, dApps, WooCommerce, WordPress</PackageTags>
+	  <Copyright>fyziktom</Copyright>
+	  <PackageReleaseNotes>
+		  - Separation from VEDriversLite package
+	  </PackageReleaseNotes>
+	  <PackageReadmeFile>README.md</PackageReadmeFile>
+	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
+	  <Title>VEDriversLite Common Dto and Tools</Title>
+  </PropertyGroup>
+
+
+	<ItemGroup>
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+	</ItemGroup>
+
+</Project>

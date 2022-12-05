@@ -63,6 +63,9 @@
                             </Field>
                         </Column>
                     </Row>
+                }
+                @if (Addresses != null && Addresses.Count > 0)
+                {
                     <Row>
                         <Column>
                             <Button Color="Color.Primary" Clicked="@Update" Block>Update</Button>
@@ -79,7 +82,7 @@
                                 @foreach(var addr in Addresses)
                                 {
                                     var addlink = AppData.AppShareNFTUrl + "/gallery?addr=" + addr.Key;
-                                <ListGroupItem>
+                                    <ListGroupItem>
                                     <Row>
                                         
                                         <Column Flex="Flex.JustifyContent.Center"><Button Color="Color.Light" Type="ButtonType.Link" To="@addlink" Target="Target.Blank" Block>@addr.Key</Button></Column>
@@ -178,7 +181,7 @@
 
     [Parameter] public INFT NFT { get; set; }
 
-    [Parameter] public Dictionary<string, ReceiversListItem> Addresses { get; set; } = new Dictionary<string, ReceiversListItem>();
+    [Parameter] public IDictionary<string, ReceiversListItem> Addresses { get; set; } = new Dictionary<string, ReceiversListItem>();
     [Parameter] public EventCallback<Dictionary<string, ReceiversListItem>> AddressesChanged { get; set; }
 
     MemoEdit? memoEditOutputFromMintRef;
@@ -219,8 +222,6 @@
             Console.WriteLine("Cannot parse the file data to the text. " + ex.Message);
         }
         await InvokeAsync( StateHasChanged );
-
-        await FileStringChanged.InvokeAsync(fileString);
     }
 
     public bool IsAllMinted()
@@ -233,13 +234,13 @@
             return false;
     }
 
-    public void Update()
+    public async Task Update()
     {    
         ParseAdresses();
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
     }
 
-    public void LoadAddresees(Dictionary<string, ReceiversListItem> dict)
+    public async Task LoadAddresees(IDictionary<string, ReceiversListItem> dict)
     {    
         if (dict != null && dict.Count > 0)
         {
@@ -249,7 +250,7 @@
             foreach (var add in Addresses)
                 builder.AppendLine(add.Key);
             fileString = builder.ToString();
-            StateHasChanged();
+            await InvokeAsync(StateHasChanged);
         }      
     }
 
@@ -279,8 +280,6 @@
                 }
             }
         }
-
-        AddressesChanged.InvokeAsync(Addresses);
     }
 
     async Task SendNFTs()
@@ -291,7 +290,7 @@
         try
         {
             minting = true;
-            StateHasChanged();
+            await InvokeAsync( StateHasChanged );
 
             var addrs = this.Addresses.Values.Where(x => x.UseAsReceiver == true && x.Done == false).Select(x => x.Address).ToList();
             Console.WriteLine($"Airdrop started.");
@@ -319,8 +318,8 @@
             Console.WriteLine("Cannot mint all the tickets. " + ex.Message);
         }
 
-        await SaveAndInvoke();
-        StateHasChanged();
+        await Save();
+        await InvokeAsync(StateHasChanged);
     }
 
     private void Account_AddressesAirdropedHanlder(object sender, Dictionary<string,string> e)
@@ -335,14 +334,13 @@
         //SaveAndInvoke();
     }
 
-    private async Task SaveAndInvoke()
+    private async Task Save()
     {
         try
         {
             await localStorage.SetItemAsStringAsync($"multiminting-{MintingPageName}", JsonConvert.SerializeObject(Addresses));
         }
         catch { }
-        await AddressesChanged.InvokeAsync(Addresses);
     }
 
     async Task loadLastStateHandler()
@@ -351,8 +349,8 @@
         {
             var adds = await localStorage.GetItemAsync<Dictionary<string, ReceiversListItem>>($"multiminting-{MintingPageName}");
             if (adds != null)
-                LoadAddresees(adds);
-            StateHasChanged();
+                await LoadAddresees(adds);
+            await InvokeAsync(StateHasChanged);
         }
         catch { }
     }
@@ -361,7 +359,6 @@
     {
         Console.WriteLine("New multiminting info: " + e);
         consoleMintingOutput = DateTime.UtcNow.ToString("MM-dd-yyyyThh-mm-ss") + " - New info: " + e + "\n\n" + consoleMintingOutput;
-        ConsoleOutFromMintingChanged.InvokeAsync(consoleMintingOutput);
     }
 
     void ImageValidator( ValidatorEventArgs e )
@@ -383,20 +380,22 @@
     async Task saveResultHandler()
     {
         if (Addresses != null)
+        {
+            await Save();
             await JS.InvokeVoidAsync( "veblazor.downloadText", JsonConvert.SerializeObject(Addresses), $"airdrop-{DateTime.UtcNow.ToString("MM-dd-yyyyThh-mm-ss")}.json" );
+        }
     }
 
     async Task resetHandler()
     {
-        if (await MessageService.Confirm("Are you sure you want reset the airdrop form? The NFT Template will not be cleared. Just the list of the addresses and actual results.", "Reset Airdrop Form") == true)
+        if (MessageService != null && await MessageService.Confirm("Are you sure you want reset the airdrop form? The NFT Template will not be cleared. Just the list of the addresses and actual results.", "Reset Airdrop Form") == true)
         {
             consoleMintingOutput = string.Empty;
             fileString = string.Empty;
             Addresses = new Dictionary<string, ReceiversListItem>();
-            await AddressesChanged.InvokeAsync(Addresses);
             await localStorage.SetItemAsStringAsync($"multiminting-{MintingPageName}", "");
             IsAllMinted();
-            StateHasChanged();
+            await InvokeAsync(StateHasChanged);
         }
     }
 }

@@ -1,0 +1,62 @@
+﻿@using VEDriversLite.Common
+
+@page "/pvesimulation"
+
+@inject AppData AppData
+@inject HttpClient Http
+
+<PageTitle>VE Energy - PVE Simulation</PageTitle>
+
+        <Row>
+            <Column>
+                <PVESimulationGraph @ref=graph />
+            </Column>
+        </Row>
+        <Row>
+            <Column>
+                <PVEYearGraph @ref=ygraph />
+            </Column>
+        </Row>
+        <Row>
+            <Column>
+                <PVEBlock @ref=pveblock />
+            </Column>
+        </Row>
+        <Row>
+            <Column>
+                <BatteryBlocksGroupCard @ref=batterystorage />
+            </Column>
+        </Row>
+
+
+@code {
+    PVEBlock? pveblock;
+    PVESimulationGraph? graph;
+    PVEYearGraph? ygraph;
+    BatteryBlocksGroupCard? batterystorage;
+    DateTime start = new DateTime(2022, 1, 1, 0, 0, 0);
+    DateTime end = new DateTime(2022, 1, 2, 0, 0, 0);
+    IEnumerable<(string,string)> groupIds = new List<(string,string)>();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && batterystorage != null)
+            await batterystorage.LoadData();
+        
+        if (AppData.PVESimulatorLoaded && firstRender)
+        {
+            groupIds = AppData.PVEGrid.PVPanelsGroups.Values.Where(p => p.Id != null).Select(p => (p.Id, p.Name));
+            if (pveblock != null)
+                await pveblock.Reload();
+
+            if (graph != null)
+                await graph.LoadData(start, groupIds, AppData.DefaultCoordinates);
+
+            if (ygraph != null)
+                await ygraph.LoadData(start, groupIds, AppData.DefaultCoordinates, false);
+
+        }
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+}

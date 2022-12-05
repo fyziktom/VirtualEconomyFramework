@@ -20,8 +20,8 @@ namespace VEFrameworkUnitTest.Neblio
         [Fact]
         public async void GetNeblioTransaction_Valid_Test()
         {
-            NeblioTransactionHelpers.GetClient(Common.NeblioTestHelpers.Client.Object);
-            NeblioTransactionHelpers.TurnOnCache = false;
+            NeblioAPIHelpers.GetClient(Common.NeblioTestHelpers.Client.Object);
+            NeblioAPIHelpers.TurnOnCache = false;
 
             //Arrange           
 
@@ -315,7 +315,7 @@ namespace VEFrameworkUnitTest.Neblio
                 Password = ""
             };
 
-            var expectedFee = 0.0002;
+            var expectedFee = 0.0003;
             var totInputs = 0.0;
             foreach (var utxo in addressObject.Utxos)
                 totInputs += utxo.Value.Value;
@@ -359,7 +359,7 @@ namespace VEFrameworkUnitTest.Neblio
                 Password = ""
             };
 
-            var expectedFee = 0.0002;
+            var expectedFee = 0.0003;
             var opreturnValue = 0.0001;
             var totInputs = 0.0;
             foreach (var utxo in addressObject.Utxos)
@@ -379,7 +379,7 @@ namespace VEFrameworkUnitTest.Neblio
             var msgoutput = "OP_RETURN 56454672616d65776f726b";
             Assert.Equal(msgoutput, transaction.Outputs[1].ScriptPubKey.ToString());
             // 8.9998 is the rest after send 1, fee 0.0002 and 0.0001 for save data in this tx - lots of inputs
-            Assert.Equal(totInputs - sendTxData.Amount - expectedFee - opreturnValue,
+            Assert.Equal(Math.Round(totInputs - sendTxData.Amount - expectedFee - opreturnValue, 8),
                          Convert.ToDouble(transaction.Outputs[2].Value.ToUnit(NBitcoin.MoneyUnit.BTC)));
         }
 

@@ -1,0 +1,60 @@
+﻿@using VEFramework.Demo.PublishingDisplay.Components
+@using VEFramework.Demo.PublishingDisplay.Services.NFTs
+@using VEFramework.Demo.PublishingDisplay.Services.NFTs.Coruzant
+@inject AppData AppData
+
+@page "/blog"
+
+<PageTitle>Coruzant Blog</PageTitle>
+
+<Container Fluid>
+    <Row Margin="Margin.Is3.FromTop">
+        <Column Flex="Flex.JustifyContent.Center">
+           @if (!string.IsNullOrEmpty(Tag))
+            {
+                <BlogListByTag @ref="@blogListByTagRef" />
+            }
+            else
+            {
+                <BlogList />
+            }
+        </Column>
+    </Row>
+    <Row Margin="Margin.Is5.FromTop.Is2.FromBottom">
+        <Column>
+        </Column>
+    </Row>
+</Container>
+
+@code {
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "tag")]
+    public string? Tag { get; set; }
+
+    BlogListByTag? blogListByTagRef;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        AppData.NFTsLoaded += NFTsLoadedHandler;
+        if (!AppData.LoadedBase)
+            await AppData.LoadNFTs();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+
+        if (!string.IsNullOrEmpty(Tag) && blogListByTagRef != null)
+            await blogListByTagRef.LoadNFTs(Tag, 0, 10);
+            
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    public void NFTsLoadedHandler(object sender, EventArgs e)
+    {
+        StateHasChanged();
+    }
+}
+
+

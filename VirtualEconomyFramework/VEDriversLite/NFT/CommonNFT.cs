@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using NBitcoin.Altcoins;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -57,7 +58,11 @@ namespace VEDriversLite.NFT
         /// </summary>
         [JsonIgnore]
         public byte[] ImageData { get; set; } = null;
-
+        /// <summary>
+        /// Loaded Image data as base64 string
+        /// </summary>
+        [JsonIgnore]
+        public string Base64Data { get; set; }
         /// <summary>
         /// Preview data of image or music
         /// </summary>
@@ -68,9 +73,15 @@ namespace VEDriversLite.NFT
         [JsonIgnore]
         public byte[] PreviewData { get; set; } = null;
         /// <summary>
+        /// More items in the NFT, for example Image gallery with more images than one
+        /// Probably future replacement of the "ImageLink" property
+        /// </summary>
+        public List<NFTDataItem> DataItems { get; set; } = new List<NFTDataItem>();
+        
+        private string _tags = string.Empty;
+        /// <summary>
         /// List of the tags separated by space
         /// </summary>
-        private string _tags = string.Empty;
         public string Tags 
         {
             get => _tags;
@@ -99,7 +110,7 @@ namespace VEDriversLite.NFT
         /// <summary>
         /// Shorten hash including index number
         /// </summary>
-        public string ShortHash => $"{NeblioTransactionHelpers.ShortenTxId(Utxo, false, 16)}:{UtxoIndex}";
+        public string ShortHash => $"{NeblioAPIHelpers.ShortenTxId(Utxo, false, 16)}:{UtxoIndex}";
         /// <summary>
         /// NFT Origin transaction hash - minting transaction in the case of original NFTs (Image, Music, Ticket)
         /// </summary>
@@ -208,7 +219,7 @@ namespace VEDriversLite.NFT
         public bool IsSpendable()
         {
             if (TxDetails != null)
-                return (TxDetails.Confirmations > NeblioTransactionHelpers.MinimumConfirmations);
+                return (TxDetails.Confirmations > NeblioAPIHelpers.MinimumConfirmations);
             else
                 return false;
         }
@@ -233,6 +244,7 @@ namespace VEDriversLite.NFT
             ImageData = nft.ImageData;
             Preview = nft.Preview;
             PreviewData = nft.PreviewData;
+            DataItems = nft.DataItems;
             Name = nft.Name;
             Link = nft.Link;
             Description = nft.Description;
@@ -396,8 +408,13 @@ namespace VEDriversLite.NFT
                 ImageLink = imagelink;
                 if (!string.IsNullOrEmpty(ImageLink))
                 {
-                    if (ImageLink.Contains("https://gateway.ipfs.io"))
-                        ImageLink = ImageLink.Replace("https://gateway.ipfs.io", "https://ipfs.infura.io");
+                    var ipfslink = VEDriversLite.StorageDriver.Helpers.IPFSHelpers.GetHashFromIPFSLink(ImageLink);
+                    if (!string.IsNullOrEmpty(ipfslink))
+                    {
+                        var il = VEDriversLite.StorageDriver.Helpers.IPFSHelpers.GetIPFSLinkFromHash(ipfslink);
+                        if (!string.IsNullOrEmpty(il))
+                            ImageLink = il;
+                    }
                 }
             }
             if (meta.TryGetValue("Preview", out var preview))
@@ -405,8 +422,16 @@ namespace VEDriversLite.NFT
                 if (!string.IsNullOrEmpty(preview))
                 {
                     Preview = preview;
-                    if (Preview.Contains("https://gateway.ipfs.io"))
-                        Preview = Preview.Replace("https://gateway.ipfs.io", "https://ipfs.infura.io");
+                    if (!string.IsNullOrEmpty(ImageLink))
+                    {
+                        var ipfslink = VEDriversLite.StorageDriver.Helpers.IPFSHelpers.GetHashFromIPFSLink(ImageLink);
+                        if (!string.IsNullOrEmpty(ipfslink))
+                        {
+                            var il = VEDriversLite.StorageDriver.Helpers.IPFSHelpers.GetIPFSLinkFromHash(ipfslink);
+                            if (!string.IsNullOrEmpty(il))
+                                ImageLink = il;
+                        }
+                    }
                 }
             }
             if (meta.TryGetValue("IconLink", out var iconlink))
@@ -443,6 +468,15 @@ namespace VEDriversLite.NFT
             if (UtxoIndex == 1 && meta.TryGetValue("ReceiptFromPaymentUtxo", out var rfp))
                 if (!string.IsNullOrEmpty(rfp))
                     TypeText = "NFT Receipt";
+
+            if (meta.TryGetValue("DataItems", out var dis))
+            {
+                try
+                {
+                    DataItems = JsonConvert.DeserializeObject<List<NFTDataItem>>(dis);
+                }
+                catch { Console.WriteLine("Cannot parse data items in the NFT"); }
+            }
         }
         /// <summary>
         /// Parse dogeft info from the metadata
@@ -484,6 +518,8 @@ namespace VEDriversLite.NFT
                 metadata.Add("Image", ImageLink);
             if (!string.IsNullOrEmpty(Preview))
                 metadata.Add("Preview", Preview);
+            if (DataItems != null && DataItems.Count > 0)
+                metadata.Add("DataItems", JsonConvert.SerializeObject(DataItems));
             Tags = Tags.Replace("#", string.Empty);
             Tags = Tags.Replace(",", string.Empty);
             Tags = Tags.Replace(";", string.Empty);
@@ -522,14 +558,20 @@ namespace VEDriversLite.NFT
             {
                 try
                 {
-                    var data = await NFTHelpers.IPFSDownloadFromInfuraAsync(NFTHelpers.GetHashFromIPFSLink(Preview));
-                    if (data != null)
+                    var hash = VEDriversLite.StorageDriver.Helpers.IPFSHelpers.GetHashFromIPFSLink(Preview);
+                    //var data = await NFTHelpers.IPFSDownloadFromInfuraAsync(hash);
+                    var result = await VEDLDataContext.Storage.GetFileFromIPFS(new VEDriversLite.StorageDriver.StorageDrivers.Dto.ReadFileRequestDto()
                     {
-                        PreviewData = data;
+                        DriverType = StorageDriver.StorageDrivers.StorageDriverType.IPFS,
+                        Hash = hash,
+                    });
+                    if (result.Item1)
+                    {
+                        PreviewData = result.Item2;
                         return true;
                     }
                 }
-                catch (Exception ex)
+                catch
                 {
                     Console.WriteLine("Cannot download the Image Preview data");
                 }
@@ -547,14 +589,21 @@ namespace VEDriversLite.NFT
             {
                 try
                 {
-                    var data = await NFTHelpers.IPFSDownloadFromInfuraAsync(NFTHelpers.GetHashFromIPFSLink(ImageLink));
-                    if (data != null)
+                    var hash = VEDriversLite.StorageDriver.Helpers.IPFSHelpers.GetHashFromIPFSLink(ImageLink);
+                    //var data = await NFTHelpers.IPFSDownloadFromInfuraAsync(hash);
+                    var result = await VEDLDataContext.Storage.GetFileFromIPFS(new VEDriversLite.StorageDriver.StorageDrivers.Dto.ReadFileRequestDto()
                     {
-                        ImageData = data;
+                        DriverType = StorageDriver.StorageDrivers.StorageDriverType.IPFS,
+                        Hash = hash,
+                    });
+                    if (result.Item1)
+                    {
+                        ImageData = result.Item2;
+                        Base64Data = Convert.ToBase64String(result.Item2);
                         return true;
                     }
                 }
-                catch (Exception ex)
+                catch
                 {
                     Console.WriteLine("Cannot download the Image data");
                 }
@@ -573,22 +622,40 @@ namespace VEDriversLite.NFT
         /// <returns></returns>
         public virtual async Task<(bool, byte[])> DecryptImageData(NBitcoin.BitcoinSecret secret, string imageLink, string partner, string sharedkey = "")
         {
-            if (!string.IsNullOrEmpty(imageLink) && (imageLink.Contains("https://gateway.ipfs.io/ipfs/") || imageLink.Contains("https://ipfs.infura.io/ipfs/")))
+            if (!string.IsNullOrEmpty(imageLink) && (imageLink.Contains("/ipfs/")))
             {
                 byte[] ImageData;
-                var hash = imageLink.Replace("https://gateway.ipfs.io/ipfs/", string.Empty).Replace("https://ipfs.infura.io/ipfs/", string.Empty);
+                string hash = string.Empty;
+                if (!string.IsNullOrEmpty(imageLink))
+                {
+                    hash = VEDriversLite.StorageDriver.Helpers.IPFSHelpers.GetHashFromIPFSLink(imageLink);
+                    if (!string.IsNullOrEmpty(hash))
+                    {
+                        var il = VEDriversLite.StorageDriver.Helpers.IPFSHelpers.GetIPFSLinkFromHash(hash);
+                        if (!string.IsNullOrEmpty(il))
+                            ImageLink = il;
+                    }
+                }
                 try
                 {
-                    var bytes = await NFTHelpers.IPFSDownloadFromInfuraAsync(hash);
-                    var dbytesres = await ECDSAProvider.DecryptBytesWithSharedSecret(bytes, partner, secret, sharedkey);
-                    if (dbytesres.Item1)
+                    //var bytes = await NFTHelpers.IPFSDownloadFromInfuraAsync(hash);
+                    var result = await VEDLDataContext.Storage.GetFileFromIPFS(new VEDriversLite.StorageDriver.StorageDrivers.Dto.ReadFileRequestDto()
                     {
-                        ImageData = dbytesres.Item2;
-                        var bl = ImageData.Length;
-                        return (true, ImageData);
+                        DriverType = StorageDriver.StorageDrivers.StorageDriverType.IPFS,
+                        Hash = hash,
+                    });
+                    if (result.Item1)
+                    {
+                        var dbytesres = await ECDSAProvider.DecryptBytesWithSharedSecret(result.Item2, partner, secret, sharedkey);
+                        if (dbytesres.Item1)
+                        {
+                            ImageData = dbytesres.Item2;
+                            var bl = ImageData.Length;
+                            return (true, ImageData);
+                        }
+                        else
+                            ImageData = null;
                     }
-                    else
-                        ImageData = null;
                 }
                 catch (Exception ex)
                 {
@@ -652,7 +719,7 @@ namespace VEDriversLite.NFT
         /// <returns></returns>
         public async Task StartRefreshingTxData(int interval = 5000)
         {
-            if (TxDetails.Confirmations < (NeblioTransactionHelpers.MinimumConfirmations + 2))
+            if (TxDetails.Confirmations < (NeblioAPIHelpers.MinimumConfirmations + 2))
             {
                 TxDetails.Confirmations = 0;
                 TxDetails.Time = 0;
@@ -661,7 +728,7 @@ namespace VEDriversLite.NFT
 
                 try
                 {
-                    TxDetails = await NeblioTransactionHelpers.GetTransactionInfo(Utxo);
+                    TxDetails = await NeblioAPIHelpers.GetTransactionInfo(Utxo);
                     TxDataRefreshed?.Invoke(this, TxDetails);
                 }
                 catch (Exception ex)
@@ -675,10 +742,10 @@ namespace VEDriversLite.NFT
                     {
                         try
                         {
-                            var txi = await NeblioTransactionHelpers.GetTransactionInfo(Utxo);
+                            var txi = await NeblioAPIHelpers.GetTransactionInfo(Utxo);
                             TxDetails = txi;
                             TxDataRefreshed?.Invoke(this, TxDetails);
-                            if (TxDetails.Confirmations > (NeblioTransactionHelpers.MinimumConfirmations))
+                            if (TxDetails.Confirmations > (NeblioAPIHelpers.MinimumConfirmations))
                                 await StopRefreshingData();
                         }
                         catch (Exception ex)

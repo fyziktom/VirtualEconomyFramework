@@ -6,7 +6,7 @@
 
 # Creating a Wallet
 
-Dogeft App is built using <a href="https://nebl.io" target="_blank">Neblio Blockchain</a> and <a href="https://veframework.com" target="_blank">VEFramework</a>. Neblio Blockchain is an eco-friendly proof of stake Blockchain and is used for storing NFT data. Dogeaplooza App runs in just your web browser. Encrypted Private Keys are stored on your browser and not on any centralized server. Please backup the address and private key as soon as possible. Backing up your address and private key will allow you to recover your account on any other device.
+Dogepalooza App is built using <a href="https://nebl.io" target="_blank">Neblio Blockchain</a> and <a href="https://veframework.com" target="_blank">VEFramework</a>. Neblio Blockchain is an eco-friendly proof of stake Blockchain and is used for storing NFT data. Dogepalooza App runs in just your web browser. Encrypted Private Keys are stored on your browser and not on any centralized server. Please backup the address and private key as soon as possible. Backing up your address and private key will allow you to recover your account on any other device.
 
 
 <img src="https://ipfs.infura.io/ipfs/QmNddvwq2UHXpVikKgFqGEgwgwGhPA8KU1qFe4JjxL4Rh2" style="max-width:400px;" class="img-fluid" alt="Creating Address">
@@ -27,6 +27,6 @@ Navigate to Add New NFT, upload the image to the Interplanetary File System (IPF
 
 # Sharing your Collection
 
-Using Dogeft App, you can share your Neblio address and NFT Collection by navigating to Gallery and selecting your Neblio Address. Use the Share button to share a link to your Collection.
+Using Dogepalooza App, you can share your Neblio address and NFT Collection by navigating to Gallery and selecting your Neblio Address. Use the Share button to share a link to your Collection.
 
 <img src="https://ipfs.infura.io/ipfs/QmV838hrnsXRTW6ynvuCh9c4ob8YNA29MoFDaz3Nu9FoXZ" style="max-width:400px;" class="img-fluid" alt="Sharing Address">

@@ -17,6 +17,11 @@
            </Row>
            <Row>
                <Column>
+                   Unconfirmed: @(Math.Round(NeblioBalanceUnconfirmed, 8)) NEBL <Figure Size="FigureSize.Is16x16"><FigureImage Source="@AppData.NeblioImageLink" /></Figure>
+               </Column>
+           </Row>
+           <Row>
+               <Column>
                    Tokens: @TokensBalance VENFT <Figure Size="FigureSize.Is16x16"><FigureImage Source="@AppData.VENFTImageLink" /></Figure>
                </Column>
            </Row>
@@ -36,6 +41,18 @@
                    </Column>
                 </Row>
             }
+            else if (!string.IsNullOrEmpty(AppData.AppTokenId) && (AppData.AppTokenId != VEDriversLite.NFT.NFTHelpers.BDPTokenId) && (AppData.AppTokenId != VEDriversLite.NFT.NFTHelpers.BDPTokenId))
+            {
+                @if (AppData.Account.TokensSupplies.ContainsKey(AppData.AppTokenId))
+                {
+                    <Row>
+                        <Column>
+                            Tokens: @(Math.Round(AppData.Account.TokensSupplies[AppData.AppTokenId].Amount, 0)) @AppData.Account.TokensSupplies[AppData.AppTokenId].TokenSymbol
+                            <Figure Size="FigureSize.Is16x16"><FigureImage Source="@AppData.Account.TokensSupplies[AppData.AppTokenId].ImageUrl" /></Figure>
+                        </Column>
+                    </Row>
+                }
+            }
             <Row>
                <Column>
                    NFTs: @NFTsCount
@@ -45,16 +62,23 @@
     </CardBody>
 </Card>
 
-
 @code {
-    [Parameter]
-    public double NeblioBalance { get; set; } = 0.0;
-    [Parameter]
-    public int TokensBalance { get; set; } = 0;
-    [Parameter]
-    public int BDPBalance { get; set; } = 0;
-    [Parameter]
-    public int WDOGEBalance { get; set; } = 0;
-    [Parameter]
-    public int NFTsCount { get; set; } = 0;    
+    [Parameter] public double NeblioBalance { get; set; } = 0.0;
+    [Parameter] public double NeblioBalanceUnconfirmed { get; set; } = 0.0;
+    [Parameter] public int TokensBalance { get; set; } = 0;
+    [Parameter] public int BDPBalance { get; set; } = 0;
+    [Parameter] public int WDOGEBalance { get; set; } = 0;
+    [Parameter] public int NFTsCount { get; set; } = 0;
+    
+    protected override void OnAfterRender(bool firstRender)
+    {
+        AppData.Account.Refreshed -= RefreshedHandler;
+        AppData.Account.Refreshed += RefreshedHandler;      
+        base.OnAfterRender(firstRender);
+    }
+
+    private async void RefreshedHandler(object? sender, EventArgs e)
+    {
+        await InvokeAsync(StateHasChanged);
+    }
 }

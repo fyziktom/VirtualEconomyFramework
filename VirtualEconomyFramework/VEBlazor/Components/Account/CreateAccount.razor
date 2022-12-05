@@ -93,7 +93,7 @@
         CreatingAccount = true;
         if (CreateAccountModal != null)
             await CreateAccountModal.Show();
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
         await Task.Delay(500);
 
         if (await AppData.Account.CreateNewAccount(password))
@@ -121,7 +121,7 @@
         if (PageProgressService != null)
             await PageProgressService.Go( -1 );
         CreatingAccount = false;
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
     }
 
 }

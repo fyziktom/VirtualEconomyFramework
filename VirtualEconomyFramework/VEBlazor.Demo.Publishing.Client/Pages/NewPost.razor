@@ -1,0 +1,63 @@
+﻿@using VEDriversLite.NFT
+@using VEDriversLite.NFT.Coruzant
+@using VEFramework.VEBlazor.Components.NFTs
+@using VEFramework.VEBlazor.Components.Minting
+@inject AppData AppData
+
+@page "/addnewpost"
+
+<PageTitle>@AppData.AppName - @headerLabel</PageTitle>
+
+<VEFramework.VEBlazor.Components.PageHeader Title="@headerLabel" BreadcrumbItems="@(new string[] { AppData.AppNick, headerLabel })" />
+
+<VEFramework.VEBlazor.Pages.AddNew @bind-NFT="@AppData.GetMintingNFTTab(formName).NFT" 
+                                   @bind-Addresses="@AppData.GetMintingNFTTab(formName).Addresses"
+                                   NFTType="@NFTTypes.CoruzantArticle" 
+                                   MintingPageName="@formName"         
+                                   @bind-ConsoleOutFromMinting="@AppData.GetMintingNFTTab(formName).ConsoleOutFromMinting" 
+                                   Address="@AppData.Account.Address">
+    <SpecificParamsStepHeader>
+        Details
+    </SpecificParamsStepHeader>
+    <SpecificParamsStepContent>
+    @if (AppData.GetMintingNFTTabNFT(formName).Type == NFTTypes.CoruzantArticle)
+    {
+        <Row>
+            <Column>    
+                <Field Horizontal>
+                    <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">Author Name</FieldLabel>
+                    <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                        <TextEdit Placeholder="Enter Author" @bind-Text="@((AppData.GetMintingNFTTab(formName).NFT as CoruzantArticleNFT).Author)"/>
+                    </FieldBody>
+                </Field>
+            </Column>
+        </Row>
+        <Row>
+            <Column>    
+                <Field Horizontal>
+                    <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">Author Profile NFT</FieldLabel>
+                    <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                        <LoadAndDisplayNFTModal @bind-Utxo="@((AppData.GetMintingNFTTab(formName).NFT as CoruzantArticleNFT).AuthorProfileUtxo)" OnLoadNFTTemplate="@onLoadNFTTemplateHandler" />
+                    </FieldBody>
+                </Field>
+            </Column>
+        </Row>
+    }
+    </SpecificParamsStepContent>
+</VEFramework.VEBlazor.Pages.AddNew>
+                       
+@code {
+    string formName = "postminting";
+    string headerLabel = "Add New";
+
+    protected override void OnInitialized()
+    {
+        headerLabel = AppData.GetMintingNFTTab(formName).HeaderLabel;
+        base.OnInitialized();
+    }
+
+    async Task onLoadNFTTemplateHandler( INFT nft )
+    {
+        await InvokeAsync(StateHasChanged);
+    }
+}

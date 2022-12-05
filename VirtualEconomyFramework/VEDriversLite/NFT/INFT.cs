@@ -130,6 +130,10 @@ namespace VEDriversLite.NFT
         /// Xray Image
         /// </summary>
         XrayImage = 1896,
+        /// <summary>
+        /// Application in NFT
+        /// </summary>
+        App = 5000
 
 
     }
@@ -181,12 +185,19 @@ namespace VEDriversLite.NFT
         [JsonIgnore]
         byte[] ImageData { get; set; }
         /// <summary>
+        /// Loaded Image data as base64 string
+        /// </summary>
+        [JsonIgnore]
+        string Base64Data { get; set; }
+
+        /// <summary>
         /// Preview data of image or music
         /// </summary>
         string Preview { get; set; }
         /// <summary>
         /// Data of the preview file
         /// </summary>
+        [JsonIgnore]
         byte[] PreviewData { get; set; }
         /// <summary>
         /// List of the tags separated by space
@@ -196,6 +207,11 @@ namespace VEDriversLite.NFT
         /// Parsed tag list. It is parsed in Common NFT class
         /// </summary>
         List<string> TagsList { get; set; }
+        /// <summary>
+        /// More items in the NFT, for example Image gallery with more images than one
+        /// Probably future replacement of the "ImageLink" property
+        /// </summary>
+        List<NFTDataItem> DataItems { get; set; }
         /// <summary>
         /// NFT Utxo hash
         /// </summary>
@@ -397,6 +413,9 @@ namespace VEDriversLite.NFT
         /// Then the image is saved in ImageData as bytes.
         /// </summary>
         /// <param name="secret">NFT Owner Private Key</param>
+        /// <param name="imageLink">link to image</param>
+        /// <param name="partner">Communication partner address to find public key</param>
+        /// <param name="sharedkey">If you already know sharedkey it saves time</param>
         /// <returns></returns>
         Task<(bool, byte[])> DecryptImageData(NBitcoin.BitcoinSecret secret, string imageLink, string partner, string sharedkey = "");
         /// <summary>
@@ -404,6 +423,9 @@ namespace VEDriversLite.NFT
         /// </summary>
         /// <param name="prop">Property content</param>
         /// <param name="secret">NFT Owner Private Key</param>
+        /// <param name="address">Address of sender</param>
+        /// <param name="partner">Communication partner address to find public key</param>
+        /// <param name="sharedkey">If you already know sharedkey it saves time</param>
         /// <returns></returns>
         Task<string> DecryptProperty(string prop, NBitcoin.BitcoinSecret secret, string address = "", string partner = "", string sharedkey = "");
     }

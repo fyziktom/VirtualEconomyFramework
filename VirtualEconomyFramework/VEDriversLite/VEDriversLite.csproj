@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <PackageId>VEFramework.VEDriversLite</PackageId>
-    <Version>0.2.0</Version>
+    <Version>0.3.21</Version>
     <Authors>fyziktom</Authors>
     <Company>VEFramework</Company>
     <Description>.NET drivers for Web3 and Industry40. Simple way how to start with blockchain in C#. Now supports Neblio and Doge blockchains.</Description>
@@ -11,18 +11,12 @@
     <PackageProjectUrl>https://veframework.com/</PackageProjectUrl>
     <RepositoryUrl>https://github.com/fyziktom/VirtualEconomyFramework</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
-    <PackageTags>VEFramework, Cryptocurrencies, Crypto, NFT, NFTs, Bitcoin, ReddCoin, Neblio, Nebl, Doge, Dogecoin, Blockchain, eCommerce, dApps, WooCommerce, WordPress</PackageTags>
+    <PackageTags>VEFramework, Cryptocurrencies, Crypto, NFT, NFTs, NFTTech, NFTIoT, Bitcoin, ReddCoin, Neblio, Nebl, Doge, Dogecoin, Blockchain, eCommerce, dApps, WooCommerce, WordPress</PackageTags>
     <Copyright>fyziktom</Copyright>
     <PackageReleaseNotes>
-		- Update to .NET Core 3.1
-		- Update NBitcoin package and related functions
-		- Possible to run in .NET 6.0 Blazor WebAssembly
-		- Added tests for encryption and sign/verify messages
-		- Refactoring of UnitTests in the NeblioTransactionHelpers
-		- Refactoring in NeblioTransactionHelpers
-		- Refactoring in DogeTransactionHelpers
-		- Change of sign/verify messages based on update of NBitcoin
-		- Added lots of XML comments to parameters and functions
+		- Added new tags categories
+		- Added tags related items
+		- Round always up the fee in Neblio tx
 	</PackageReleaseNotes>
   </PropertyGroup>
 
@@ -30,6 +24,10 @@
     <Compile Remove="WooCommerce\**" />
     <EmbeddedResource Remove="WooCommerce\**" />
     <None Remove="WooCommerce\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Neblio\NeblioAPIHelpersOLD.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -66,6 +64,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\VEDriversLite.NeblioAPI\VEDriversLite.NeblioAPI.csproj" />
+    <ProjectReference Include="..\VEDriversLite.StorageDriver\VEDriversLite.StorageDriver.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,0 +1,58 @@
+﻿@using VEFramework.Demo.PublishingDisplay.Models
+@using VEFramework.Demo.PublishingDisplay.Services.NFTs
+@using VEFramework.Demo.PublishingDisplay.Services.NFTs.Coruzant
+@inject NavigationManager NavigationManager
+@inject AppData AppData
+
+<Row Flex="Flex.AlignItems.Center">
+    <Column Flex="Flex.JustifyContent.Center">
+        <Heading Size="HeadingSize.Is3" Style="text-decoration: underline;">Explore more</Heading>
+    </Column>
+</Row>
+<CardGroup Margin="Margin.Is3.FromTop">
+    @foreach (var post in AppData.RandArticleNFTs.Take(3))
+    {
+        var p = post as CoruzantArticleNFT;
+        var tag = post.TagsList.FirstOrDefault();                        
+        <Card Style="min-width:250px;max-width:350px;" Margin="Margin.Is3.FromEnd">
+            <CardImage Source="@post.ImageLink" Alt="@post.Name" ></CardImage>
+            <CardBody>
+                <NameOnCard NFT="@post" />
+                
+                <DescriptionOnCard Text="@post.Description" />
+
+                <Row Margin="Margin.Is4.FromTop">
+                    <Column Flex="Flex.JustifyContent.Center">
+                        <Button Class="readmoreprofilebutton" Clicked="@(() => OpenPost(post.Utxo))">
+                            <Span Style="font-size:14px;" Display="Display.None.OnMobile.None.OnTablet.Inline.OnDesktop">Read more</Span>
+                            <Span Style="font-size:8px;" Display="Display.Inline.OnMobile.Inline.OnTablet.None.OnDesktop">Read more</Span>
+                            </Button>
+                    </Column>
+                </Row>                            
+            </CardBody>
+        </Card>
+    }               
+</CardGroup>
+<Row Margin="Margin.Is4.FromTop">
+    <Column Flex="Flex.JustifyContent.Center">
+        <Button Class="viewalltrendingbutton" Type="ButtonType.Link" To="blog">View All</Button>
+    </Column>
+</Row>
+
+@code {
+
+    string selectedSlide = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        AppData.NFTsLoaded += (s,e) => StateHasChanged();
+        if (!AppData.LoadedBase)
+            await AppData.LoadNFTs();
+    }
+
+    public void OpenPost(string postutxo)
+    {
+         NavigationManager.NavigateTo($"post?utxo={postutxo}");
+    }
+}

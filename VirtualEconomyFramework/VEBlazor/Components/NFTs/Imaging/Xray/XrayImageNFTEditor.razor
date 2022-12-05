@@ -1,34 +1,32 @@
 ﻿@using VEDriversLite
 @using VEDriversLite.NFT
+@using VEDriversLite.NFT.Dto
 @using VEDriversLite.NFT.Imaging.Xray
 @inherits AccountRelatedComponentBase 
 
-<Container Border="Border.Is2.Primary" Fluid>
-    @if (NFT != null)
-    {
-        <Div>
-            <Row Margin="Margin.Is2.FromTop">
-                <Column Flex="Flex.JustifyContent.Center">
-                    <Text TextOverflow="TextOverflow.Wrap">@NFT.Name</Text>
-                </Column>
-                <Column Flex="Flex.JustifyContent.Center">
-                    @foreach ( var tag in NFT.TagsList )
-                    {
-                        <Badge Color="Color.Light" Margin="Margin.Is1.FromEnd">#@tag</Badge>
-                    }
-                </Column>
-            </Row>
-            <Row Margin="Margin.Is2.FromTop" Border="Border.Is1.Primary">
-                <Column ColumnSize="ColumnSize.Is2">
-                    <XrayImageEditorToolbar OnToolAction="@OnToolActionHandler"/>
-                </Column>
-                <Column ColumnSize="ColumnSize.Is10">
-                    <PanzoomImage Source="@NFT.ImageLink" />
-                </Column>            
-            </Row>
-        </Div>
-    }
-</Container>
+@if (NFT != null)
+{
+    <Row Margin="Margin.Is2.FromTop">
+        <Column Flex="Flex.JustifyContent.Center">
+            <Text TextOverflow="TextOverflow.Wrap">@NFT.Name</Text>
+        </Column>
+        <Column Flex="Flex.JustifyContent.Center">
+            @foreach ( var tag in NFT.TagsList )
+            {
+                <Badge Color="Color.Light" Margin="Margin.Is1.FromEnd">#@tag</Badge>
+            }
+        </Column>
+    </Row>
+            
+    <Row Margin="Margin.Is2.FromTop" Border="Border.Is1.Primary"  Height="Height.Is100">
+        <Column ColumnSize="ColumnSize.Is2" Height="Height.Is100">
+            <XrayImageEditorToolbar OnToolAction="@OnToolActionHandler"/>
+        </Column>
+        <Column ColumnSize="ColumnSize.Is10" Height="Height.Is100">
+            <NFTDataItem NFT="@NFT" DisplayPDF="true" />                   
+        </Column>            
+    </Row>
+}
 
 <DestroyNFT @ref=DestroyNFTModalComponent
             NFT="@NFT"
@@ -54,10 +52,7 @@
             <CloseButton />
         </ModalHeader>
         <ModalBody>
-            <DataInfoForm @bind-Name="@NFT.Name"
-                          @bind-Description="@NFT.Description"
-                          @bind-Text="@NFT.Text"
-                          @bind-Tags="@NFT.Tags" />
+            <DataInfoForm NFT="@NFT" />
         </ModalBody>
     </ModalContent>
 </Modal>
@@ -112,7 +107,7 @@
     public bool DisplayRigthToolbar { get; set; } = false;
     [Parameter]
     public EventCallback<NFTSentResultDto> NFTSent { get; set; }
-
+    
     private Modal? EditPropertiesModal;
     private Modal? EditXrayParamsModal;
     private ShareNFT? ShareNFTComponent;
@@ -135,10 +130,10 @@
                 await ShareNFT( e.Args );
                 break;            
             case MintingToolbarActionType.Save:
-                SaveNFT( e.Args );
+                await SaveNFT( e.Args );
                 break;
             case MintingToolbarActionType.Send:
-                SendNFT( e.Args );
+                await SendNFT( e.Args );
                 break;
             case MintingToolbarActionType.SendCopy:
                 SendCopyNFT( e.Args );
@@ -164,23 +159,23 @@
             return;
         await ShareNFTComponent.ShowShareNFTModal(NFT.Utxo, NFT.UtxoIndex);
     }
-    private void SaveNFT(string[] e)
+    private async Task SaveNFT(string[] e)
     {
         if ( NFT == null )
             return;
-        SaveNFTModalComponent?.ShowSaveNFTModal(Address);
+        await SaveNFTModalComponent.ShowSaveNFTModal(Address);
     }
-    private void SendNFT(string[] e)
+    private async Task SendNFT(string[] e)
     {
         if ( NFT == null )
             return;
-        SendNFTModalComponent?.ShowSendNFTModal();
+        await SendNFTModalComponent.ShowSendNFTModal();
     }
-    private void SendCopyNFT(string[] e)
+    private async Task SendCopyNFT(string[] e)
     {
         if ( NFT == null )
             return;
-        SendNFTModalComponent?.ShowSendNFTModal(sendCopy:true);
+        await SendNFTModalComponent.ShowSendNFTModal(sendCopy:true);
     }
     private async Task ResetToDefaultNFT(string[] e)
     {
@@ -189,7 +184,7 @@
         if (await MessageService.Confirm("Are you sure you want reset the NFT to original?", "Reset") == true)
         {
             NFT = await NFTFactory.CloneNFT(OriginalNFT);
-            StateHasChanged();
+            await InvokeAsync(StateHasChanged);
         }  
     }    
 
@@ -201,8 +196,8 @@
     }
     public async Task NFTSendHandler( NFTSentResultDto e )
     {
-        SaveNFTModalComponent?.HideSaveNFTModal();
-        SendNFTModalComponent?.HideSendNFTModal();
+        await SaveNFTModalComponent.HideSaveNFTModal();
+        await SendNFTModalComponent.HideSendNFTModal();
         await NFTSent.InvokeAsync( e );
     }
     public async Task NFTDestroyedHandler( NFTSentResultDto e )

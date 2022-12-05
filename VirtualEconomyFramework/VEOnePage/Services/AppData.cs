@@ -32,7 +32,7 @@ namespace VEOnePage.Services
 
         public async Task LoadNFTs()
         {
-            var utxos = await NeblioTransactionHelpers.GetAddressNFTsUtxos(Address, new List<string>() { CoruzantNFTHelpers.CoruzantTokenId });
+            var utxos = await NeblioAPIHelpers.GetAddressNFTsUtxos(Address, new List<string>() { CoruzantNFTHelpers.CoruzantTokenId });
 
             await new ArraySegment<Utxos>(utxos.ToArray(), 0, MaxLoaded).ParallelForEachAsync(async u =>
             {
