@@ -1,70 +1,69 @@
+[![VEDriversLite](https://img.shields.io/nuget/v/VEFramework.VEDriversLite?label=VEDriversLite)](https://www.nuget.org/packages/VEFramework.VEDriversLite/)
+[![VEBlazor](https://img.shields.io/nuget/v/VEFramework.VEBlazor?label=VEBlazor)](https://www.nuget.org/packages/VEFramework.VEBlazor/)
+
 # VEFramework
 
 Virtual Economy framework will help you to create applications related to Web3, Blockchains, IoT, NFTs, Cryptocurrencies and other useful technologies.
 
-This project is OpenSource for personal, educational and commercial use also :)
+VEFramework works with multiple blockchains. Now it has support of Neblio and Dogecoin (L2)
 
-Main framework is **.NET 6.0** (VEDriversLite). You can use it now with **.NET 6.0 Blazor WebAssembly application** :)
-Code is written in C#, HTML, CSS and JavaScript.
-Solution is for [Visual Studio 2022](https://visualstudio.microsoft.com/vs/).
+![Development with VEFramework](./assets/veframework.jpeg)
 
-Repository now contains new version of drivers for Neblio and Doge: **VEDriversLite**. It is also available as [Nuget package](https://www.nuget.org/packages/VEFramework.VEDriversLite/). Please check this drivers and [documentation](https://docs.veframework.com/VEDriversLite/index.html). 
+## Použití
 
-We recommend to use VEDriversLite if you need to build app which uses just Neblio or Doge!
+- [`VEDriversLite`](https://docs.veframework.com/VEDriversLite/api/index.html) - Aktuální a doporučená verze (Neblio a NFT drivers)
 
-If you need to build dApp with the VEDriversLite we recommend you to explore **New Library VEBlazor**. [Source code you can find here](https://github.com/fyziktom/VirtualEconomyFramework/tree/main/VirtualEconomyFramework/VEBlazor). Soon as [Nuget package](https://www.nuget.org/packages/VEFramework.VEBlazor/). Which is built on top of the [Blazorise](https://blazorise.com/) library.
+```shell
+dotnet add package VEFramework.VEDriversLite --version 0.3.21
+```
+- [`VEBlazor`](https://github.com/fyziktom/VirtualEconomyFramework/tree/main/VirtualEconomyFramework/VEBlazor) - Blazor knihovna komponent a dApp template
 
-## Online Demo VENFT App
+```shell
+dotnet add package VEFramework.VEBlazor --version 0.3.21
+```
+
+Zkuste si náš [hello world příklad](#hello-world-with-vedriverslite).
+
+Více informací najdete na
+
+- [Wiki](https://github.com/fyziktom/VirtualEconomyFramework/wiki)
+- [Swagger API dokumentaci](./VEconomy-swagger.json)
+- [Readme VEconomy](https://github.com/fyziktom/VirtualEconomyFramework/tree/main/VirtualEconomyFramework/VEconomy#veconomy-application)
+- [Readme VBlazor](https://github.com/fyziktom/VirtualEconomyFramework/tree/main/VirtualEconomyFramework/VEBlazor)
+
+### Docker
+
+- [Dockerizace VENFT serveru](https://github.com/fyziktom/VirtualEconomyFramework/wiki/Dockerizing-VENFT-APP-Server)
+- [Dockerizace Nebliod (Neblio Blockchain)](https://github.com/fyziktom/VirtualEconomyFramework/wiki/Dockerizing-Nebliod)
+- [Dockerizace IPFS](https://github.com/fyziktom/VirtualEconomyFramework/wiki/Dockerizing-IPFS)
+- [Použití `docker-compose` ke spuštění VENFT serveru, Nebliod a IPFS](https://github.com/fyziktom/VirtualEconomyFramework/wiki/Docker-Compose---VENFTAPP-Server,-Nebliod,-IPFS-Node)
+
+## VENFT online demo
 
 <p align="center">
   <img width="200" src="https://ve-framework.com/ipfs/QmT8wYFsDR55wCKKUwRwXYfxu67uGWpbVCKfg4kxiCM7pJ">
 <p>
 
+Webová peněženka s integrovaným NFT marketplacem a mint mechanismem
 
-New **Testing** Version of the **VENFT App build on the VEBlazor** is [published here](https://apptest.ve-nft.com/). It is testing version and still has few things to solve. It does not display the SubAccounts now, but you can load the backup file from the old version of VENFT App.
-  
-
-Please explore also **old** [VENFT App](https://ve-nft.com/) - C# [Blazor](https://dotnet.microsoft.com/en-us/apps/aspnet/web-apps/blazor) Neblio NFT Web Wallet which uses VEDriversLite. This version does not use the VEBlazor library.
-
-Web Wallet with integrated NFT minting and marketplace.
-
-## Aidrop of tokens and Neblio for testing
-
-Do you need the tokens and some Neblio for testing and development? Please visit [VENFT App Project Page](https://about.ve-nft.com/#airdrop).
-
-If you need more tokens or Neblio plese contact the author of the project on [email](mailto:tomas.svoboda@technicinsider.com)
-
-## VEFramework components
-
-The VEFramework offers lots of different libraries, drivers, components which will reduce code in your application a lot.
-
-![VEFramewoents](https://ve-framework.com/ipfs/QmNrjnNjk7dQKikCo8qZjsKK5J9bw7m8BrJuFXojhwBFJA)
-
-## Development with VEFramework
-
-The most compatible languages are C#, VisualBasic or F#. For lots of applications you can use also different languages and connect backend with use of API or MQTT. This allows to use this framework with more languages such as JavaScript, HTML, Python and others.
-
-![Development with VEFramework](https://ve-framework.com/ipfs/QmVYGi34Qpt69GMDjLLoAQtF48GUs6yN5uabE9nPkw3GLX)
+Vyzkoušejte testovací verzi VENFT postavenou na VEBlazor, [vytvořte si nový účet a prozkoumejte funkcionalitu](https://apptest.ve-nft.com/).
 
 ## Hello World with VEDriversLite
 
-[Install the .NET Core 3.1 SDK.](https://dotnet.microsoft.com/en-us/download/dotnet/3.1)
+1. [Install the .NET Core 6 SDK.](https://dotnet.microsoft.com/en-us/download/dotnet/6.0)
+2. Vytvořte nový `dotnet` projekt
 
-#### Create project
-
-Open console line and create empty folder and ConsoleApplication project
-
-```code
+```shell
 mkdir CreateAccountExample
 cd CreateAccountExample
+
 dotnet new console
 dotnet add package VEFramework.VEDriversLite
 ```
-#### Write simple code to mint NFT
 
-Please remember that when you create address you need to load the Neblio and tokens to the address!
-It is good practice to create [VENFT Web wallet](https://ve-nft.com/) for the testing and development.
-You can request the [Airdrop](https://about.ve-nft.com/#airdrop) or you can send the Neblio from exchange, [Orion wallet](orion.nebl.io/) or [staking desktop wallet](https://nebl.io/wallets/).
+3. [Vytvořte si novou Neblio peněženku](https://ve-nft.com/), pokud už nějakou nemáte
+4. [Aidrop of tokens and Neblio for testing](https://about.ve-nft.com/#airdrop) to your wallet
+5. Write simple code to mint NFT
 
 ```csharp
 using System;
@@ -76,21 +75,23 @@ namespace CreateAccountExample
     {
         static async System.Threading.Tasks.Task Main(string[] args)
         {
-            Console.WriteLine(" Hello World With VEDriversLite!");
-            var account = new NeblioAccount(); // create NeblioAccount object
-            await account.CreateNewAccount("mypassword"); // create new account
+            // Create NeblioAccount object
+            var account = new NeblioAccount();
+            // Create new account
+            await account.CreateNewAccount("mypassword");
             Console.WriteLine($" New Neblio Address: {account.Address}");
-            Console.WriteLine(" Please load Neblio and tokens to Address and then continue.");
-            Console.ReadLine(); // wait for enough confirmation on blockhain
-            // create NFT Image object and load simple test data
+            // Wait for enough confirmation on blockhain
+            Console.ReadLine();
+            // Create NFT Image object and load simple test data
             var nft = new VEDriversLite.NFT.ImageNFT("")
             {
                 Name = "My Hello World NFT",
                 Description = "Hello World NFT for testing.",
                 ImageLink = "https://MyNFT.image"
             };
-            var res = await account.MintNFT(nft); // mint NFT with account
-            // process result
+            // Mint NFT with account
+            var res = await account.MintNFT(nft);
+            // Process result
             if (res.Item1)
                 Console.WriteLine($" Minted with Transaction hash: {res.Item2}");
             else
@@ -101,221 +102,63 @@ namespace CreateAccountExample
 
 ```
 
-Then you can run the code
+6. Run the code
 
-```code
+```shell
 dotnet restore
 dotnet run
 ```
-  
-Here is the output from this program:
+
+7. Zobrazenou transakci můžete ověřit v [Neblio exploreru](https://explorer.nebl.io)
+   - [`e28dcb54c5ec1d3e889a19c75d58eea5e684db6968fd2478a98e78415996760c`](https://explorer.nebl.io/tx/e28dcb54c5ec1d3e889a19c75d58eea5e684db6968fd2478a98e78415996760c)
 
 ![VEDriversLite example code output](https://ve-framework.com/ipfs/QmRS7oY66FCawfuBJpy2sM51tGzQ1GmXgc3ArExEdmSijE)
-  
-Here you can see the details of the transaction in the [Neblio Blockchain Explorer](https://explorer.nebl.io/tx/e28dcb54c5ec1d3e889a19c75d58eea5e684db6968fd2478a98e78415996760c).
 
-# Project and Code Documentation
+## Projects in the solution
 
-## First Steps
+- This repository contains also project [examples for Arduino](https://github.com/fyziktom/VirtualEconomyFramework/tree/main/Examples/ArduinoIDE/M5StickC) IDE. It is developed on [M5StickC HW](https://m5stack.com/). It is based on ESP32 MCU.
 
-[First Steps with VEDrivers Lite](https://veframework.com/first-steps/)
+## Funkce
 
-[First Steps with API of VENFT App Server](https://veframework.com/first-steps-api/)
-
-## Project Wiki
-
-[Wiki](https://github.com/fyziktom/VirtualEconomyFramework/wiki)
-
-## VEDriversLite Docfx documentation
-
-!This is new Light version of drivers!
-
-[VEDriversLite Documentation](https://docs.veframework.com/VEDriversLite/index.html)
-  
-## VEBlazor
-  
-This complete [Blazor component library and dApp template has own readme here](https://github.com/fyziktom/VirtualEconomyFramework/tree/main/VirtualEconomyFramework/VEBlazor).
-  
-## VENFT App Server
-  
-This is actual main application which provides API for most of the commands from the VEDriversLite library. 
-
-### Docker
-
-You can run it as app service or in **Docker**. [On Wiki you can find article about how to use Docker and VENFT App Server](https://github.com/fyziktom/VirtualEconomyFramework/wiki/Dockerizing-VENFT-APP-Server).
-
-Here you can find another related services and how to run them as Docker container:
-
-- Nebliod - Neblio Blockchain Node: [Wiki](https://github.com/fyziktom/VirtualEconomyFramework/wiki/Dockerizing-Nebliod)
-- IPFS Node - [Wiki](https://github.com/fyziktom/VirtualEconomyFramework/wiki/Dockerizing-IPFS)
-- Dockercompose to run together VENFT App Server + Nebliod + IPFS is on [Wiki here](https://github.com/fyziktom/VirtualEconomyFramework/wiki/Docker-Compose---VENFTAPP-Server,-Nebliod,-IPFS-Node)
-
-## VEconomy Application
-
-[Application has own Readme here](https://github.com/fyziktom/VirtualEconomyFramework/tree/main/VirtualEconomyFramework/VEconomy#veconomy-application)
-
-
-# Supported Platforms
-
-Project is based on .NET Core 5.0 so it can run on:
--	Windows
--	Windows 10 IoT
--	Linux
--	MacOS
--	iOS
--	Android
--	x86, x64, AnyCPU, ARM
-And other platforms which .NET Core supports.
-
-# Projects in the solution
-
--	VEDriversLite - Light version and Actual Recommended! version of Neblio drivers, includes NFT drivers
-- VEBlazor - Blazor component library and dApp template
--	TestVEDriversLite - testing utility wih integration tests/examples for VEDriversLite
-- VEFrameworkUnitTest - Unit tests project.
-- VEBlazor.Demo.VENFTApp.Client - New version of VENFT App build with VEBlazor library
-- VEBlazor.Demo.EventsAndTickets - Another example of the dApp built with the VEBlazor
-- BDP-WASM - dApp for storing the X-Ray Images on Blockchain and IPFS as NFT, especially in industry. Build with VEBlazor.
--	VENFTApp-Blazor - Example of use of VEDriversLite in Blazor WebAssembly App. Without VEBlazor component library!
--   VENFTApp-Server - Example of use of VEDriversLite in Blazor Server App. It offers API for lots of VEDriversLite commands.
--	VEOnePage - Example of the simple webpage which works as presentation page for some address NFTs. Example was created for [Coruzant.com](https://coruzant.com/).
--   VECryptographyUtilities - encrypt and decrypt keys example
-
-Older projects. Most of them needs testing and update based on refactoring of VEDriversLite
-
--	NeblioRestApi - .NET Core 5.0 wrapper for Neblio API.
--	TestNeblio – testing utility for integration tests.
--	VEconomy – ASP.NET application to be shaped to your app or used as it is. (needs refactoring)
--	VEDrivers – digital twins and other drivers for economy-based applications. (needs refactoring)
--	VEGameDrivers - drivers for connecting games and blockchain (obsolete, will be replaced with VEDriversLite)
--	VENodeExecutor – runs node-red as a service.
--	VEQTWalletExecutor – runs QT Wallet as a service.
--	VEUsersUtility – utility to create first admin user in Db
-
-
-# Other Projects
-
-This repository contains also project examples for Arduino IDE. It is developed on M5StickC HW. It is based on ESP32 MCU (official page: [M5Stack](https://m5stack.com/)). These projects you can find in folder [Examples-ArduinoIDE-M5StickC](https://github.com/fyziktom/VirtualEconomyFramework/tree/main/Examples/ArduinoIDE/M5StickC).
-
-For compilation you need to install Arduino IDE and M5Stack libraries and ESP32 libraries into IDE ([Guidlines](https://docs.m5stack.com/#/en/arduino/arduino_development)).
- 
-
-# Main Features
-
--   Create Blockchain Account and send transactions or NFTs with just few lines of the code
--   VEFramework works with multiple blockchains. Now it has support of Neblio and Dogecoin
--   Blazor Webassebmly example [VE NFT App](https://ve-nft.com/)
--   Blazor Component library and dApp template - VEBlazor
--   Server App with prepared API for integration existing app or UI with Web3 environments
--   Set of drivers/helpers for minting, sell and trade NFTs. Already with Images, Post, Music, Profile, Payment, etc. NFTs.
--   Store and browse multiple images, pdf, or other kind of files in the one NFT.
--   Integration of [IPFS](https://ipfs.io/) API which uses [Infura.io](https://infura.io/) as IPFS node
--   Create blockchain application without need of running own node
--   NFT Ownership verification system with creating QR codes/messages
--   NFT Events and Tickets system.
--   System of P2P NFT encrypted metadata and encrypted filecontainers stored on ipfs
--   Encryption with EDCH shared secret algorithm. Dont need to share password between peers, they will calculate it!
--   RPC Client for connection the blockchain node
--   [Neblio Blockchain](https://nebl.io/) API wrapper and helper classes
--   Drivers for special transactions such as split transactions, multiple token input/output, minting multiple NFTs, etc.
--   Dogecoin API wrapper and helper classes.
+- Vytvoření účtu a posílání transakcí nebo NFT
+- Server s API pro integraci existujících aplikací
+- UI s integrovaným web3 prostředím
+- Drivery a pomocné funkce pro mintování, prodej a obchodování s NFT
+- NFT jako obrázky, příspěvky, hudba, profily, platby, atd.
+- [IPFS](https://ipfs.io/) API, které používá [Infura.io](https://infura.io/) node
+- Ověření vlastnictví NFT (tvorba QR kódů)
+- NFT systém pro události a vstupenky
+- P2P NFT systém s šifrovanými metadaty a filecontainers uložených na IPFS
+- Šifrování pomocí EDCH sdíleného secret algoritmu
+  - Hesla není potřeba sdílet, budou automaticky dopočítána
+- RPC klient pro připojení k blockchainu
+- [Neblio Blockchain](https://nebl.io/) API wrapper a pomocné třídy
+- Drivery pro speciální transakce - split transakce, vícenásobný vstup/výstup tokenu, mintování více NFT, atd.
+- Dogecoin API wrapper a pomocné třídy
 
 Other features you can explore in the readme of the specifics projects in the solution.
 
+## Podpořte nás
 
-# Roadmap
+Podpořit nás můžete několika způsoby:
 
-## 1-2Q 2022
--   Unit Tests for most of the functions
--   Refactoring of UX/UI Blazor components and VENFT App
--   Automated deployment of apps
--   Dockers for VENFT App Server and IPFS node and Neblio node
--   Simple web page demo for display specific NFTs of some address
--   Add common account interface in the VEDriversLite
--   VEDriversLite core refactoring -> version 0.2.0
+1. Staňte se contributorem a podílejte se na vývoji VEFrameworku
+2. Staňte se sponzorem a přispějte na vývoj VEFrameworku
 
-## 3-4Q 2020
--   Integration of some parts of the PLFramework into the VEDriversLite ;)
--   VE Blazor Component Library
--   Integration of few new blockchains
--   Raspberry PI preinstalled image
--   Integration with SAP
+### Contributing
 
-# Reporting Issues
-  
-Feel free to open Issue if you will find some bug or if you are looking for some new feature. [On Wiki you can find the information about creating the issues](https://github.com/fyziktom/VirtualEconomyFramework/wiki/Guidelines---Issue-Creation).
+Děkujeme, že se chcete podílet na vývoji VEFrameworku! Postupujte prosím podle naší [contributing příručky](./CONTRIBUTING.md). V příručce naleznete informace o tom
+- jak se podílet na vývoji VEFrameworku
+- jak vytvářet issues
+- otevírat pull requesty
+- a další
 
-# Contributors and Development Partners
+### Sponzoring
 
-Tomas Svoboda - [LinkedIn](https://www.linkedin.com/in/fyziktom/), [Twitter](https://twitter.com/fyziktom)
+[Přispějte VEFrameworku](./docs/SPONSORING.md) a pomozte tak s jeho vývojem. Pokud se chcete stát oficiálním sponzorem a partnerem, kontaktujte prosím [Tomáše Svobodu - tomas.svoboda@technicinsider.com](mailto:tomas.svoboda@technicinsider.com)
 
-RoundSqr - [Company website](https://www.roundsqr.com/)
+[Velké díky](./docs/THANKS.md) patří našim sponzorům, mentorům a kontributorům
 
-Mladen Macanović - [LinkedIn](https://www.linkedin.com/in/mladenmacanovic/), [Twitter](https://twitter.com/MladenMacanovic)
+## License
 
-Francis Karuri - [LinkedIn](https://www.linkedin.com/in/francis-karuri/)
-  
-We are looking for new contributors. Please feel free to [contact me on tomas.svoboda@technicinsider.com](mailto:tomas.svoboda@technicinsider.com).
-
-# Thanks
-
-Main Thanks goes to Mr. Jan Kuznik. He taught me lots of great knowledge about programming.
-
-“TestNeblio.exe” utility is Mr.Kuznik design and he agreed to publish it with this project. Many thanks for this great tool.
-
-Many thanks for Blazor developers. It is absolutelly amazing tool!
-
-This project uses some other opensource libraries or other tools. Many thanks to all authors of these projects and other opensource projects.
-
--	[Neblio – Blockchain solution for Enterprises](https://github.com/NeblioTeam/neblio)
--	[Microsoft - .NET Core, C#, Entity Framework Core](https://docs.microsoft.com/en-us/dotnet/core/introduction)
--	[Blazor - Web Apps with C#](https://dotnet.microsoft.com/apps/aspnet/web-apps/blazor)
-- [Blazorise - Component library for Blazor](https://blazorise.com)
--	[Newtonsoft.Json – JSON parsing library](https://github.com/JamesNK/Newtonsoft.Json)
--	[NBitcoin - .NET C# Library for Bitcoin based cryptocurrencies](https://github.com/MetacoSA/NBitcoin)
--	[Ant Desing Blazor - Blazor component library](https://antblazor.com/en-US/)
--	[BlazorFileReader - File Reader component for Blazor](https://github.com/Tewr/BlazorFileReader)
--	[IPFS Http Client C# - Http Api wrapper for IPFS](https://github.com/richardschneider/net-ipfs-http-client)
--	[DocFx – API documentation generator](https://github.com/dotnet/docfx)
--	[Swagger – OpenAPI description of REST API](https://swagger.io/)
--	[MQTTNet – library for MQTT connection](https://github.com/chkr1011/MQTTnet)
--	[Log4net – library for logging](https://github.com/apache/logging-log4net)
--	[Binance.Net – library for connecting to Binance Exchange](https://github.com/JKorf/Binance.Net)
--	[Jint – library for run JavaScript in C#](https://github.com/sebastienros/jint)
--	[Npgsql – EFC provider for PostgreSQL](https://github.com/npgsql/efcore.pg)
--	[Node.js – JavaScript runtime](https://nodejs.org/en/)
--	[Node-RED – IoT tool for event driven connections](https://nodered.org/)
--	[Aedes Node-Red node – MQTT Broker](https://github.com/moscajs/aedes)
--	[Paho MQTT – JavaScript library for MQTT client](https://github.com/eclipse/paho.mqtt.javascript) 
--	[Chart JS - JavaScript library for charts](https://github.com/chartjs) 
--	[CodeJar - Simple JavaScript editor](https://github.com/antonmedv/codejar)
--	[Prism - Code Syntax Highlight library](https://prismjs.com/)
--	[Crypto JS - JS library of crypto standards](https://github.com/brix/crypto-js)
--	[Chessboard JS - JS library for chess game](https://chessboardjs.com/)
--	[Bootstrap Studio – tool for simplify web-based UI](https://bootstrapstudio.io/) 
-
-# License 
-
-This framework can be used for any use even for commercial use. License is BSD 2 with additional conditions. 
-
-Please read it here: 
-
-https://github.com/fyziktom/VirtualEconomyFramework/blob/main/License/license.txt
-
-
-# Donation
-
-If you like this project, please donate the team with some Nebl, Dogecoin, Bitcoin or ReddCoin. 
-
-You can also help as official sponsor. For this option and why to do that please [contact me on tomas.svoboda@technicinsider.com](mailto:tomas.svoboda@technicinsider.com).
-
-Thanks to donations we can focus our energy to this opensource project.
-
-Project Neblio Address - NUhbMPqKYaGe8irb4kXECb8KN79YbD6ZyX
-
-Project Doge Address - D9g337oMmTVUnyMdpYDdSS5ob58CD7Hq7y
-
-Project BTC Address - 34cuGjGbdVBHvwS3dha8pMv63jbxsF96MP
-
-Project ReddCoin Address - RiPAe5nGNvtyPfxCC3nQoXes6EjgduQct2
-
+VEFramework je možné použít pro komerční i nekomerční účely. VEFramework je vyvíjen pod [BSD 2 licencí s dodatečnými podmínkami](./LICENSE).
