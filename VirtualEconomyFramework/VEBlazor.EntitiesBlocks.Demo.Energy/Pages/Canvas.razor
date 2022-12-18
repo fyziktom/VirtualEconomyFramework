@@ -3,6 +3,7 @@
 @using Blazor.Extensions.Canvas.Canvas2D
 @using Blazor.Extensions
 @using System.Text.Json
+@using VEBlazor.EntitiesBlocks.Demo.Energy.CanvasBlazor
 @inject IJSRuntime JsRuntime
 
 
@@ -72,7 +73,7 @@
         {
             canvasObjects = new List<CanvasObject>();
             canvasObjects.Add(new BlockCanvasObject() { X = 80, Y = 80, Height = 40, Width = 120 });
-            canvasObjects.Add(new LinkObject(80 + 120, 80 + (40 - 28) / 2, 28, 28, plusIcon));
+            canvasObjects.Add(new LinkCanvasObject(80 + 120, 80 + (40 - 28) / 2, 28, 28, plusIcon));
             
             //await RenderInBlazor(0);
             await JsRuntime.InvokeAsync<object>("initRenderJS", DotNetObjectReference.Create(this));
@@ -123,119 +124,11 @@
         await RenderInBlazor(0);
     }
     
-    public abstract class CanvasObject
-    {
-        public double X { get; set; }
-        public double Y { get; set; }
-        public double Width { get; set; }
-        public double Height { get; set; }
-        public bool IsMouseDown { get; set; }
-        public bool IsDragged { get; set; }
-        public double DragStartX { get; set; }
-        public double DragStartY { get; set; }
-
-        public abstract ValueTask Render(Canvas2DContext canvas2DContext, bool isHighlighted, float aspect);
-        public abstract ValueTask<bool> CheckHighlight(double mousePosX, double mousePosY);
-
-        public abstract ValueTask Drag(double x, double y);
-
-        public virtual ValueTask DragStop()
-        {
-            return ValueTask.CompletedTask;
-        }
-    }
-
-    public class BlockCanvasObject
-        : CanvasObject
-    {
-        public override async ValueTask Render(Canvas2DContext canvas2DContext, bool isHighlighted, float aspect)
-        {
-            await canvas2DContext.SetFillStyleAsync("#FF8080");
-            await canvas2DContext.SetFillStyleAsync("#FF8080");
-            await canvas2DContext.FillRectAsync(X*aspect, Y*aspect, Width*aspect, Height*aspect);
-            if (isHighlighted)
-            {
-                await canvas2DContext.SetLineWidthAsync(4*aspect);
-                await canvas2DContext.SetStrokeStyleAsync("#000");
-                await canvas2DContext.StrokeRectAsync(X*aspect, Y*aspect, Width*aspect, Height*aspect);
-            }
-        }
-
-        public override ValueTask<bool> CheckHighlight(double mousePosX, double mousePosY)
-        {
-            return ValueTask.FromResult<bool>(mousePosX>=X && mousePosX<X+Width && mousePosY>=Y && mousePosY<Y+Height);
-        }
-
-        public override ValueTask Drag(double x, double y)
-        {
-            return ValueTask.CompletedTask;
-        }
-    }
     
-    public class LinkObject
-        : CanvasObject
-    {
-        private double dragCurrentX;
-        private double dragCurrentY;
 
-        public LinkObject(double x, double y, double width, double height, ElementReference image)
-        {
-            X = x;
-            Y = y;
-            Width = width;
-            Height = height;
-            Image = image;
-        }
-        public override async ValueTask Render(Canvas2DContext canvas2DContext, bool isHighlighted, float aspect)
-        {
-            var x = X;
-            var y = Y;
-            if (IsDragged)
-            {
-                var offsetX = DragStartX - X;
-                var offsetY = DragStartY - Y;
-                x = dragCurrentX - offsetX;
-                y = dragCurrentY - offsetY;
-            }
-            await canvas2DContext.SetLineDashOffsetAsync(5*aspect);
-            await canvas2DContext.SetLineWidthAsync(2);
-            await canvas2DContext.SetStrokeStyleAsync("#888");
-            await canvas2DContext.BeginPathAsync();
-            await canvas2DContext.MoveToAsync(X*aspect + Width*aspect / 2, Y*aspect + Height*aspect / 2);
-            await canvas2DContext.LineToAsync(x*aspect + Width*aspect / 2, y*aspect + Height*aspect / 2);
-            await canvas2DContext.StrokeAsync();
-            await canvas2DContext.DrawImageAsync(Image, x*aspect, y*aspect, Width*aspect, Height*aspect);
-
-            if (isHighlighted)
-            {
-                await canvas2DContext.SetFillStyleAsync("#808000");
-                await canvas2DContext.FillRectAsync(X*aspect + 15*aspect, Y*aspect - 35*aspect, 75*aspect, 35*aspect);
-                await canvas2DContext.SetStrokeStyleAsync("#000");
-                await canvas2DContext.SetLineWidthAsync(0.5f);
-                await canvas2DContext.SetLineJoinAsync(LineJoin.Round);
-
-                await canvas2DContext.StrokeRectAsync(X*aspect + 15*aspect, Y*aspect - 35*aspect, 75*aspect, 35*aspect);
-                await canvas2DContext.SetFillStyleAsync("#FFF");
-                await canvas2DContext.SetFontAsync("12px consolas");
-                await canvas2DContext.FillTextAsync($"Drag me", X*aspect + 20*aspect, Y*aspect - 15*aspect);
-                
-            }
-        }
-
-        public override ValueTask<bool> CheckHighlight(double mousePosX, double mousePosY)
-        {
-            return ValueTask.FromResult<bool>(mousePosX>=X && mousePosX<X+Width && mousePosY>=Y && mousePosY<Y+Height);
-        }
-
-        public override ValueTask Drag(double x, double y)
-        {
-            dragCurrentX = x;
-            dragCurrentY = y;
-            return ValueTask.CompletedTask;
-        }
-
-        public ElementReference Image { get; set; }
-    }
+    
+    
+    
 
     private async Task OnMouseDown(MouseEventArgs arg)
     {
