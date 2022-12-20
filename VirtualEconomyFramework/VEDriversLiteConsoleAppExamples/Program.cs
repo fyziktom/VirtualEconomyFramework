@@ -32,17 +32,36 @@ namespace VEDriversLiteConsoleAppExamples
             Console.WriteLine("Hello Crypto World!");
             Console.WriteLine("These are examples of using VEDriversLite");
 
+            var fromVENFTBackup = FileHelpers.IsFileExists("backup.txt");
+            var fromKey = FileHelpers.IsFileExists("key.txt");
+
+            if (fromVENFTBackup)
+                Console.WriteLine("Loading from VENFT Backup file.");
+            else if (fromKey)
+                Console.WriteLine("Loading from Key file.");
+            else
+                Console.WriteLine("No file backup.txt or key.txt found. App will create new address for you.");
+
+            Console.WriteLine("---------------");
             Console.WriteLine("Input password.");
             var pass = Console.ReadLine();
-            
+
+            account.FirsLoadingStatus += Account_FirsLoadingStatus;
+
             // generate new address with private key and save it to key.txt in root exe folder
-            if (!FileHelpers.IsFileExists("key.txt"))
+            if (!fromVENFTBackup && !fromKey)
                 await GenerateNewAccount(pass);
+            else if (fromVENFTBackup)
+                await LoadAccountFromVENFTBackup(pass, "backup.txt");
             else
                 await InitAccount(pass);// init with just password. in this case you must place key.txt in root exe folder
 
             // or init account with pass, key and address
             //await InitAccount(pass, key, address);
+
+            account.FirsLoadingStatus -= Account_FirsLoadingStatus;
+            account.NFTsChanged += Account_NFTsChanged;
+            account.NFTAddedToPayments += Account_NFTAddedToPayments;
 
             while (true)
             {
@@ -125,6 +144,21 @@ namespace VEDriversLiteConsoleAppExamples
             }
         }
 
+        private static void Account_NFTAddedToPayments(object sender, (string, int) e)
+        {
+            Console.WriteLine($"New NFT in payments: {e.Item1}:{e.Item2}");
+        }
+
+        private static void Account_NFTsChanged(object sender, string e)
+        {
+            Console.WriteLine("NFT changed: " + e);
+        }
+
+        private static void Account_FirsLoadingStatus(object sender, string e)
+        {
+            Console.WriteLine("Loading Status: " + e);
+        }
+
         private static async Task GenerateNewAccount(string password = "")
         {
             if (string.IsNullOrEmpty(password))
@@ -137,6 +171,11 @@ namespace VEDriversLiteConsoleAppExamples
         private static async Task<bool> InitAccount(string password, string ekey, string addr)
         {
             return await account.LoadAccount(password, ekey, addr, withoutNFTs:true); // put here your password, encrypted key and address
+        }
+
+        private static async Task<bool> LoadAccountFromVENFTBackup(string password, string filename)
+        {
+            return await account.LoadAccountFromVENFTBackup(password, "", filename, withoutNFTs: false); // put here your password, encrypted key and address
         }
 
         private static async Task<bool> InitAccount(string password)
