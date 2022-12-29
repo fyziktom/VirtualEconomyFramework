@@ -4,14 +4,42 @@
     if (!children.Any())
     {
 
-        <Div Flex="Flex.JustifyContent.Center.AlignItems.Center" Margin="Margin.Is3.FromBottom.Is3.OnX">
+        <Div Flex="Flex.JustifyContent.Center.AlignItems.Center" Padding="Padding.Is2.OnY" Position="Position.Relative" Margin="Margin.Is3.FromBottom.Is3.OnX">
 
-            <Div Flex="Flex.AlignItems.Center">
-                <Div Margin="Margin.Is2.FromEnd" Style="width: 20px">
+
+            @if (Item.Parent != null && Item.Parent.GetChilds().Count() > 1)
+            {
+                <Span Position="Position.Absolute.Top.Is0.Start.Is50.Translate.MiddleX" Display="Display.Block" Style="width: 2px; height: 10px; z-index: 2;" Background="Background.Dark"></Span>
+                @if (IsOnRightSide)
+                {
+                    <Span Position="Position.Absolute.Top.Is0.End.Is50" Display="Display.Block" Style="height: 2px; width: 200%" Background="Background.Dark"></Span>
+
+                }
+                else
+                {
+                    <Span Position="Position.Absolute.Top.Is0.Start.Is50" Display="Display.Block" Style="height: 2px; width: 200%;" Background="Background.Dark"></Span>
+
+                }
+
+            }
+            @if (IsFirstElement)
+            {
+                <Span Position="Position.Absolute.Top.Is0.End.Is50.Translate.MiddleY" Display="Display.Block" Style="width: 100vw; height: 10px;" Background="Background.White"></Span>
+
+            }
+
+            @if (IsLastElement)
+            {
+                <Span Position="Position.Absolute.Top.Is0.Start.Is50.Translate.MiddleY" Display="Display.Block" Style="width: 100vw; height: 10px;  z-index: 1;" Background="Background.White"></Span>
+
+            }
+
+            <Div Flex="Flex.JustifyContent.Center.AlignItems.Center.Column">
+                <Div Style="width: 20px">
                     <Icon Name="@GetIcon(Item)" />
                 </Div>
                 <Heading Size="HeadingSize.Is5" Margin="Margin.Is0" TextAlignment="TextAlignment.Center" Padding="Padding.Is0">
-                    <Button Clicked="ItemClicked">@Item.Name</Button>
+                    <Button Clicked="ItemClicked" Style="white-space: nowrap;" Padding="Padding.Is0.OnY.Is1.OnX">@Item.Name</Button>
                 </Heading>
             </Div>
 
@@ -20,26 +48,56 @@
     }
     else
     {
-        <Collapse Visible="@isExpanded" Overflow="Overflow.Visible" Width="Width.Is100" Flex="Flex.Column.Order.Is10">
-            <CollapseHeader Flex="Flex.JustifyContent.Center.AlignItems.Center" Background="Background.Transparent">
+        <Collapse Visible="@isExpanded" Overflow="Overflow.Visible" Style="width: fit-content;" Flex="Flex.Column.Order.Is10" Padding="Padding.Is0" Border="Border.Is0">
+            <CollapseHeader Flex="Flex.JustifyContent.Center.AlignItems.Center.Column"  Position="Position.Relative" Background="Background.Transparent" Border="Border.Is0">
+                @if (Item.Parent != null && Item.Parent.GetChilds().Count() > 1)
+                {
+                    <Span Position="Position.Absolute.Top.Is0.Start.Is50.Translate.MiddleX" Display="Display.Block" Style="width: 2px; height: 10px; z-index:2;" Background="Background.Dark"></Span>
 
-                <Div Width="Width.Is25" Flex="Flex.AlignItems.Center">
+                    @if (IsOnRightSide)
+                    {
+                        <Span Position="Position.Absolute.Top.Is0.End.Is50" Display="Display.Block" Style="height: 2px; width: 100%" Background="Background.Dark"></Span>
+
+                    }
+                    else
+                    {
+                        <Span Position="Position.Absolute.Top.Is0.Start.Is50" Display="Display.Block" Style="height: 2px; width: 100%;" Background="Background.Dark"></Span>
+
+                    }
+
+                }
+                @if (isExpanded)
+                {
+                    <Span Position="Position.Absolute.Top.Is100.Start.Is50.Translate.MiddleX" Display="Display.Block" Style="width: 2px; height: 10px;" Background="Background.Dark"></Span>
+
+                }
+                @if (IsFirstElement)
+                {
+                    <Span Position="Position.Absolute.Top.Is0.End.Is50.Translate.MiddleY" Display="Display.Block" Style="width: 100vw; height: 10px; z-index: 1;" Background="Background.White"></Span>
+
+                }
+
+                @if (IsLastElement)
+                {
+                    <Span Position="Position.Absolute.Top.Is0.Start.Is50.Translate.MiddleY" Display="Display.Block" Style="width: 100vw; height: 10px; z-index: 1;" Background="Background.White"></Span>
+
+                }
+                <Div Flex="Flex.JustifyContent.Center.AlignItems.Center.Column" id="@(IsMainBlock ? "main-block": "")">
                     <Div Style="width: 20px">
                         <Icon Name="@GetIcon(Item)" />
                     </Div>
-                    <Heading Margin="Margin.Is0" Size="HeadingSize.Is5" Padding="Padding.Is2.OnX">
-                        <Button Clicked="ItemClicked">@Item.Name</Button>
+                    <Heading Margin="Margin.Is0" Size="HeadingSize.Is5" TextAlignment="TextAlignment.Center">
+                        <Button Clicked="ItemClicked" Padding="Padding.Is0.OnY.Is1.OnX">@Item.Name</Button>
                     </Heading>
-
                 </Div>
-                <Div Margin="Margin.IsAuto.FromStart" Flex="Flex.AlignItems.Center">
-                    <Button Clicked="@(()=>isExpanded = !isExpanded)" Margin="Margin.Is1.OnX">
+                <Div Flex="Flex.AlignItems.Center">
+                    <Button Clicked="@(()=>isExpanded = !isExpanded)" Padding="Padding.Is2.OnX.Is1.OnY" Style="font-size:0.75rem">
                         <Icon Name="@("fa-chevron-down")" />
                     </Button>
 
-                    <Collapse Visible="@isAddBlockExpanded" Flex="Flex.AlignItems.Center.Row" Border="Border.Is0" Position="Position.Relative">
-                        <CollapseHeader Flex="Flex.JustifyContent.Center.AlignItems.Center" Padding="Padding.Is0.OnY.Is2.OnX" Border="Border.Is0">
-                            <Button Clicked="@(()=>isAddBlockExpanded = !isAddBlockExpanded)">
+                    <Collapse Visible="@isAddBlockExpanded" Flex="Flex.AlignItems.Center.Row" Background="Background.Transparent" Border="Border.Is0" Position="Position.Relative">
+                        <CollapseHeader Flex="Flex.JustifyContent.Center.AlignItems.Center" Background="Background.Transparent" Padding="Padding.Is0" Border="Border.Is0">
+                            <Button Clicked="@(()=>isAddBlockExpanded = !isAddBlockExpanded)"  Padding="Padding.Is2.OnX.Is1.OnY" Style="font-size:0.75rem">
                                 <Icon Name="@("fa-plus")" />
                             </Button>
                         </CollapseHeader>
@@ -60,12 +118,39 @@
                 </Div>
 
             </CollapseHeader>
-            <CollapseBody>
+            <CollapseBody Class="collapse-card-body" Overflow="Overflow.Hidden">
                 <Accordion>
-                    <Div Flex="Flex.Row.Wrap.JustifyContent.Center">
+                    <Div Flex="Flex.Row.JustifyContent.Center.AlignItems.Start">
+                        @{
+                            int i = 0; bool IsOnRightSide = false;
+                        }
                         @foreach (var subItem in children)
+
                         {
-                            <EntitiesTreeNGItem Item="@subItem" ItemSelected="@ItemSelected"></EntitiesTreeNGItem>
+                            bool isFirst = false;
+                            bool isLast = false;
+                            @if (i > children.Count() / 2 || children.Count() == 2 && i == 1)
+                            {
+                                IsOnRightSide = true;
+                            }
+                            @if (children.Count() > 1)
+                            {
+                                @if (i == 0)
+                                {
+                                    isFirst = true;
+                                }
+                                else
+                                {
+                                    @if (i == children.Count() - 1)
+                                    {
+                                        isLast = true;
+                                    }
+                                }
+                            }
+
+
+                            <EntitiesTreeNGItem IsFirstElement="isFirst" IsLastElement="isLast" IsOnRightSide="IsOnRightSide" Item="@subItem" ItemSelected="@ItemSelected"></EntitiesTreeNGItem>
+                            i++;
                         }
                     </Div>
                 </Accordion>
@@ -79,11 +164,24 @@
     [Parameter]
     public TreeItem Item { get; set; }
 
+    [Parameter]
+    public bool IsOnRightSide { get; set; }
+
+    [Parameter]
+    public bool IsFirstElement { get; set; }
+
+    [Parameter]
+    public bool IsMainBlock { get; set; }
+
+    [Parameter]
+    public bool IsLastElement { get; set; }
+
     [CascadingParameter(Name = "AddDialog")]
     public AddEntityNG AddDialogRef { get; set; }
-    
+
     [Parameter]
     public EventCallback<TreeItem> ItemSelected { get; set; }
+
 
     private String GetIcon(TreeItem item)
     {
@@ -115,18 +213,20 @@
 
     private void AddConsumerClicked(ConsumerType consumerType)
     {
-        AddDialogRef.AddEntity(ConsumerFactory.GetConsumer(consumerType, "", Item.Id??""));
+        AddDialogRef.AddEntity(ConsumerFactory.GetConsumer(consumerType, "", Item.Id ?? ""));
     }
-    
+
     private void AddProducerClicked(SourceType sourceType)
     {
-        AddDialogRef.AddEntity(SourceFactory.GetSource(sourceType, "", Item.Id??""));
+        AddDialogRef.AddEntity(SourceFactory.GetSource(sourceType, "", Item.Id ?? ""));
     }
 
     private async Task ItemClicked()
     {
         Console.WriteLine($"Item clicked, event={ItemSelected}");
         await ItemSelected.InvokeAsync(Item);
+        Console.WriteLine(Item.Parent);
+
     }
 
 }

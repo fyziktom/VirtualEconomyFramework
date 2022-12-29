@@ -23,7 +23,7 @@
 }
 
 .logo {
-    max-width: 50px
+    max-width:80px
 }
 
 .navbar {
@@ -63,9 +63,6 @@
         }
 
 @media (min-width: 1024px) {
-    .logo {
-        max-width: 60px;
-    }
 
     .navbar-toggler {
         display: none;
@@ -77,11 +74,3 @@
     }
 }
 
-@media (min-width: 1280px) {
-
-    .logo {
-        max-width: 70px
-    }
-
- 
-}
