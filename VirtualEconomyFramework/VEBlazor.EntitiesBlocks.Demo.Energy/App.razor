@@ -4,6 +4,7 @@
 @inject AppData AppData
 @inject HttpClient Http
 
+<Blazorise.ThemeProvider Theme="@theme">
 <Router AppAssembly="@typeof(App).Assembly">
     <Found Context="routeData">
         <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
@@ -16,6 +17,7 @@
         </LayoutView>
     </NotFound>
 </Router>
+</Blazorise.ThemeProvider>
 
 <MessageProvider />
 <PageProgressProvider />
@@ -138,4 +140,27 @@
         var addedPanelsId = AppData.PVEGrid.AddPanelToGroup(groupId, AppData.PVEGrid.CommonPanel, count).ToList();
 
     }
+    
+    private Theme theme = new Theme
+        {
+            ColorOptions = new ThemeColorOptions
+            {
+                Primary = "#45B1E8",
+                Secondary = "#A65529",
+                // other
+            },
+            DropdownOptions =new ThemeDropdownOptions()
+            {
+                
+            },
+            ButtonOptions = new ThemeButtonOptions()
+            {
+                
+            },
+            SpacingOptions = new ThemeSpacingOptions()
+            {
+                
+            },
+            
+        };
 }

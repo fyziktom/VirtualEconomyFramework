@@ -72,8 +72,15 @@
         if (firstRender)
         {
             canvasObjects = new List<CanvasObject>();
+            canvasObjects.Add(new AreaCanvasObject() { X = 80, Y = 180, Height = 300, Width = 300, Caption="Hala 1" });
+            canvasObjects.Add(new AreaCanvasObject() { X = 420, Y = 180, Height = 300, Width = 300, Caption="Hala 2" });
             canvasObjects.Add(new BlockCanvasObject() { X = 80, Y = 80, Height = 40, Width = 120 });
-            canvasObjects.Add(new LinkCanvasObject(80 + 120, 80 + (40 - 28) / 2, 28, 28, plusIcon));
+            canvasObjects.Add(new NewLinkCanvasObject(80 + 120, 80 + (40 - 28) / 2, 28, 28, plusIcon));
+            var block1 = new BlockCanvasObject() {X = 100, Y = 200, Height = 40, Width = 120, Caption = "Operace 1"};
+            var block2 = new BlockCanvasObject() {X = 440, Y = 200, Height = 40, Width = 120, Caption = "Operace 2"};
+            canvasObjects.Add(block1);
+            canvasObjects.Add(block2);
+            canvasObjects.Add(new LinkCanvasObject(block1, block2));
             
             //await RenderInBlazor(0);
             await JsRuntime.InvokeAsync<object>("initRenderJS", DotNetObjectReference.Create(this));
