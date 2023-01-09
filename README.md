@@ -46,9 +46,14 @@ Více informací najdete na
 
 Webová peněženka s integrovaným NFT marketplacem a mint mechanismem
 
-Vyzkoušejte testovací verzi VENFT postavenou na VEBlazor, [vytvořte si nový účet a prozkoumejte funkcionalitu](https://apptest.ve-nft.com/).
+Vyzkoušejte testovací verzi VENFT postavenou na VEBlazor, vytvořte si nový účet a [prozkoumejte funkcionalitu](https://apptest.ve-nft.com/).
 
-## Hello World with VEDriversLite
+## Hello World
+
+1. [Jsem backend vývojář](./docs/BACKEND_INTRO.md)
+2. [Jsem UX / UI / frontend vývojář](./docs/FRONTEND_INTRO.md)
+
+### VEDriversLite
 
 1. [Install the .NET Core 6 SDK.](https://dotnet.microsoft.com/en-us/download/dotnet/6.0)
 2. Vytvořte nový `dotnet` projekt
