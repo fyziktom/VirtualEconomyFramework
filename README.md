@@ -3,9 +3,9 @@
 
 # VEFramework
 
-Virtual Economy framework will help you to create applications related to Web3, Blockchains, IoT, NFTs, Cryptocurrencies and other useful technologies.
+Virtual Economy framework pomáhá s tvorbou Web3, blockchain, IoT a NFT aplikací včetně automatizace.
 
-VEFramework works with multiple blockchains. Now it has support of Neblio and Dogecoin (L2)
+VEFramework je L2 vrstva nad jakámkoli blockchainem. Aktuálně podporuje Neblio a Dogecoin.
 
 ![Development with VEFramework](./assets/veframework.jpeg)
 
@@ -22,7 +22,7 @@ dotnet add package VEFramework.VEDriversLite --version 0.3.21
 dotnet add package VEFramework.VEBlazor --version 0.3.21
 ```
 
-Zkuste si náš [hello world příklad](#hello-world-with-vedriverslite).
+Zkuste si náš [hello world příklad](#hello-world).
 
 Více informací najdete na
 
@@ -67,8 +67,8 @@ dotnet add package VEFramework.VEDriversLite
 ```
 
 3. [Vytvořte si novou Neblio peněženku](https://ve-nft.com/), pokud už nějakou nemáte
-4. [Aidrop of tokens and Neblio for testing](https://about.ve-nft.com/#airdrop) to your wallet
-5. Write simple code to mint NFT
+4. [Aidropněte si tokeny a Neblio pro testování](https://about.ve-nft.com/#airdrop) do vaší peněženky
+5. Napište jednoduchý kód, který vymintuje NFT
 
 ```csharp
 using System;
@@ -107,7 +107,7 @@ namespace CreateAccountExample
 
 ```
 
-6. Run the code
+6. Spusťte kód
 
 ```shell
 dotnet restore
@@ -119,9 +119,9 @@ dotnet run
 
 ![VEDriversLite example code output](https://ve-framework.com/ipfs/QmRS7oY66FCawfuBJpy2sM51tGzQ1GmXgc3ArExEdmSijE)
 
-## Projects in the solution
+## Projekty v příkladech
 
-- This repository contains also project [examples for Arduino](https://github.com/fyziktom/VirtualEconomyFramework/tree/main/Examples/ArduinoIDE/M5StickC) IDE. It is developed on [M5StickC HW](https://m5stack.com/). It is based on ESP32 MCU.
+- Tento repozitář obsahuje také další projekty - [příklad použití v Arduino](https://github.com/fyziktom/VirtualEconomyFramework/tree/main/Examples/ArduinoIDE/M5StickC) - vytvořeno nad [M5StickC HW](https://m5stack.com/) (ESP32 MCU).
 
 ## Funkce
 
@@ -141,7 +141,7 @@ dotnet run
 - Drivery pro speciální transakce - split transakce, vícenásobný vstup/výstup tokenu, mintování více NFT, atd.
 - Dogecoin API wrapper a pomocné třídy
 
-Other features you can explore in the readme of the specifics projects in the solution.
+Další funkce můžete prozkoumat v readme příslušných [projektů v příkladech](#projekty-v-příkladech)
 
 ## Podpořte nás
 

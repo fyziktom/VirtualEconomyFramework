@@ -1,5 +1,5 @@
 # Thanks
 
-Main Thanks goes to Mr. Jan Kuznik. He taught me lots of great knowledge about programming.
+Hlavní poděkování patří panu Kuzníkovi. Předal mi spoustu skvělých znalostí v oblasti programování.
 
-`TestNeblio.exe` utility is Mr.Kuznik design, and he agreed to publish it with this project. Many thanks for this great tool.
+Utilita `TestNeblio.exe` je navržena panem Kuzníkem, který souhlasil s jejím zveřejněním v rámci tohoto projektu. Patří mu velké díky za tento skvělý nástroj.

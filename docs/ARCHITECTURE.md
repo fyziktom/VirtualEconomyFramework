@@ -2,7 +2,7 @@
 
 ## Supported Platforms
 
-Project is based on .NET Core 5.0, so it can run on:
+Projekt je postavený na .NET Core 5.0, díky čemuž může běžet na:
 - Windows
 - Windows 10 IoT
 - Linux
@@ -10,10 +10,10 @@ Project is based on .NET Core 5.0, so it can run on:
 - iOS
 - Android
 - x86, x64, AnyCPU, ARM
-- Other platforms which supports .NET Core
+- Ostatních platformách podporujících .NET Core
 
 ## VEFramework components
 
-The VEFramework offers lots of different libraries, drivers, components which will reduce code in your application a lot.
+VEFramework nabízí mnoho různých knihoven, driverů a komponent, které výrazně sníží množství kódu ve vaší aplikaci.
 
-![VEFramewoents](https://ve-framework.com/ipfs/QmNrjnNjk7dQKikCo8qZjsKK5J9bw7m8BrJuFXojhwBFJA)
+![Komeponenty VEFrameworku](https://ve-framework.com/ipfs/QmNrjnNjk7dQKikCo8qZjsKK5J9bw7m8BrJuFXojhwBFJA)
