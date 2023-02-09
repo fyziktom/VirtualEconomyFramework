@@ -166,4 +166,4 @@ Děkujeme, že se chcete podílet na vývoji VEFrameworku! Postupujte prosím po
 
 ## License
 
-VEFramework je možné použít pro komerční i nekomerční účely. VEFramework je vyvíjen pod MIT licencí.
+VEFramework je možné použít pro komerční i nekomerční účely. VEFramework je vyvíjen pod [MIT licencí](./LICENSE).
