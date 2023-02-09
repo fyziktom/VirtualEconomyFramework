@@ -2239,25 +2239,6 @@ references:
   isSpec: "True"
   fullName: VEDriversLite.Common.QTWalletRPCClient.User
   nameWithType: QTWalletRPCClient.User
-- uid: VEDriversLite.Common.RegexMatchPaterns
-  name: RegexMatchPaterns
-  href: api/VEDriversLite.Common.RegexMatchPaterns.html
-  commentId: T:VEDriversLite.Common.RegexMatchPaterns
-  fullName: VEDriversLite.Common.RegexMatchPaterns
-  nameWithType: RegexMatchPaterns
-- uid: VEDriversLite.Common.RegexMatchPaterns.EmojiPattern
-  name: EmojiPattern
-  href: api/VEDriversLite.Common.RegexMatchPaterns.html#VEDriversLite_Common_RegexMatchPaterns_EmojiPattern
-  commentId: P:VEDriversLite.Common.RegexMatchPaterns.EmojiPattern
-  fullName: VEDriversLite.Common.RegexMatchPaterns.EmojiPattern
-  nameWithType: RegexMatchPaterns.EmojiPattern
-- uid: VEDriversLite.Common.RegexMatchPaterns.EmojiPattern*
-  name: EmojiPattern
-  href: api/VEDriversLite.Common.RegexMatchPaterns.html#VEDriversLite_Common_RegexMatchPaterns_EmojiPattern_
-  commentId: Overload:VEDriversLite.Common.RegexMatchPaterns.EmojiPattern
-  isSpec: "True"
-  fullName: VEDriversLite.Common.RegexMatchPaterns.EmojiPattern
-  nameWithType: RegexMatchPaterns.EmojiPattern
 - uid: VEDriversLite.CommonReturnTypeDto
   name: CommonReturnTypeDto
   href: api/VEDriversLite.CommonReturnTypeDto.html
@@ -2446,13 +2427,13 @@ references:
   isSpec: "True"
   fullName: VEDriversLite.Cryptocurrencies.CommonExchangeRatesAPI.Dispose
   nameWithType: CommonExchangeRatesAPI.Dispose
-- uid: VEDriversLite.Cryptocurrencies.CommonExchangeRatesAPI.GetPrice(VEDriversLite.Cryptocurrencies.CurrencyTypes[],VEDriversLite.Cryptocurrencies.CurrencyTypes)
+- uid: VEDriversLite.Cryptocurrencies.CommonExchangeRatesAPI.GetPrice(VEDriversLite.Common.Enums.CurrencyTypes[],VEDriversLite.Common.Enums.CurrencyTypes)
   name: GetPrice(CurrencyTypes[], CurrencyTypes)
-  href: api/VEDriversLite.Cryptocurrencies.CommonExchangeRatesAPI.html#VEDriversLite_Cryptocurrencies_CommonExchangeRatesAPI_GetPrice_VEDriversLite_Cryptocurrencies_CurrencyTypes___VEDriversLite_Cryptocurrencies_CurrencyTypes_
-  commentId: M:VEDriversLite.Cryptocurrencies.CommonExchangeRatesAPI.GetPrice(VEDriversLite.Cryptocurrencies.CurrencyTypes[],VEDriversLite.Cryptocurrencies.CurrencyTypes)
+  href: api/VEDriversLite.Cryptocurrencies.CommonExchangeRatesAPI.html#VEDriversLite_Cryptocurrencies_CommonExchangeRatesAPI_GetPrice_VEDriversLite_Common_Enums_CurrencyTypes___VEDriversLite_Common_Enums_CurrencyTypes_
+  commentId: M:VEDriversLite.Cryptocurrencies.CommonExchangeRatesAPI.GetPrice(VEDriversLite.Common.Enums.CurrencyTypes[],VEDriversLite.Common.Enums.CurrencyTypes)
   name.vb: GetPrice(CurrencyTypes(), CurrencyTypes)
-  fullName: VEDriversLite.Cryptocurrencies.CommonExchangeRatesAPI.GetPrice(VEDriversLite.Cryptocurrencies.CurrencyTypes[], VEDriversLite.Cryptocurrencies.CurrencyTypes)
-  fullName.vb: VEDriversLite.Cryptocurrencies.CommonExchangeRatesAPI.GetPrice(VEDriversLite.Cryptocurrencies.CurrencyTypes(), VEDriversLite.Cryptocurrencies.CurrencyTypes)
+  fullName: VEDriversLite.Cryptocurrencies.CommonExchangeRatesAPI.GetPrice(VEDriversLite.Common.Enums.CurrencyTypes[], VEDriversLite.Common.Enums.CurrencyTypes)
+  fullName.vb: VEDriversLite.Cryptocurrencies.CommonExchangeRatesAPI.GetPrice(VEDriversLite.Common.Enums.CurrencyTypes(), VEDriversLite.Common.Enums.CurrencyTypes)
   nameWithType: CommonExchangeRatesAPI.GetPrice(CurrencyTypes[], CurrencyTypes)
   nameWithType.vb: CommonExchangeRatesAPI.GetPrice(CurrencyTypes(), CurrencyTypes)
 - uid: VEDriversLite.Cryptocurrencies.CommonExchangeRatesAPI.GetPrice*
@@ -2559,36 +2540,6 @@ references:
   isSpec: "True"
   fullName: VEDriversLite.Cryptocurrencies.CommonExchangeRatesAPI.Type
   nameWithType: CommonExchangeRatesAPI.Type
-- uid: VEDriversLite.Cryptocurrencies.CurrencyTypes
-  name: CurrencyTypes
-  href: api/VEDriversLite.Cryptocurrencies.CurrencyTypes.html
-  commentId: T:VEDriversLite.Cryptocurrencies.CurrencyTypes
-  fullName: VEDriversLite.Cryptocurrencies.CurrencyTypes
-  nameWithType: CurrencyTypes
-- uid: VEDriversLite.Cryptocurrencies.CurrencyTypes.CZK
-  name: CZK
-  href: api/VEDriversLite.Cryptocurrencies.CurrencyTypes.html#VEDriversLite_Cryptocurrencies_CurrencyTypes_CZK
-  commentId: F:VEDriversLite.Cryptocurrencies.CurrencyTypes.CZK
-  fullName: VEDriversLite.Cryptocurrencies.CurrencyTypes.CZK
-  nameWithType: CurrencyTypes.CZK
-- uid: VEDriversLite.Cryptocurrencies.CurrencyTypes.DOGE
-  name: DOGE
-  href: api/VEDriversLite.Cryptocurrencies.CurrencyTypes.html#VEDriversLite_Cryptocurrencies_CurrencyTypes_DOGE
-  commentId: F:VEDriversLite.Cryptocurrencies.CurrencyTypes.DOGE
-  fullName: VEDriversLite.Cryptocurrencies.CurrencyTypes.DOGE
-  nameWithType: CurrencyTypes.DOGE
-- uid: VEDriversLite.Cryptocurrencies.CurrencyTypes.NEBL
-  name: NEBL
-  href: api/VEDriversLite.Cryptocurrencies.CurrencyTypes.html#VEDriversLite_Cryptocurrencies_CurrencyTypes_NEBL
-  commentId: F:VEDriversLite.Cryptocurrencies.CurrencyTypes.NEBL
-  fullName: VEDriversLite.Cryptocurrencies.CurrencyTypes.NEBL
-  nameWithType: CurrencyTypes.NEBL
-- uid: VEDriversLite.Cryptocurrencies.CurrencyTypes.USD
-  name: USD
-  href: api/VEDriversLite.Cryptocurrencies.CurrencyTypes.html#VEDriversLite_Cryptocurrencies_CurrencyTypes_USD
-  commentId: F:VEDriversLite.Cryptocurrencies.CurrencyTypes.USD
-  fullName: VEDriversLite.Cryptocurrencies.CurrencyTypes.USD
-  nameWithType: CurrencyTypes.USD
 - uid: VEDriversLite.Cryptocurrencies.Dto
   name: VEDriversLite.Cryptocurrencies.Dto
   href: api/VEDriversLite.Cryptocurrencies.Dto.html
@@ -2614,11 +2565,11 @@ references:
   isSpec: "True"
   fullName: VEDriversLite.Cryptocurrencies.Dto.PriceDto.Currency
   nameWithType: PriceDto.Currency
-- uid: VEDriversLite.Cryptocurrencies.Dto.PriceDto.GetName(VEDriversLite.Cryptocurrencies.CurrencyTypes,VEDriversLite.Cryptocurrencies.CurrencyTypes)
+- uid: VEDriversLite.Cryptocurrencies.Dto.PriceDto.GetName(VEDriversLite.Common.Enums.CurrencyTypes,VEDriversLite.Common.Enums.CurrencyTypes)
   name: GetName(CurrencyTypes, CurrencyTypes)
-  href: api/VEDriversLite.Cryptocurrencies.Dto.PriceDto.html#VEDriversLite_Cryptocurrencies_Dto_PriceDto_GetName_VEDriversLite_Cryptocurrencies_CurrencyTypes_VEDriversLite_Cryptocurrencies_CurrencyTypes_
-  commentId: M:VEDriversLite.Cryptocurrencies.Dto.PriceDto.GetName(VEDriversLite.Cryptocurrencies.CurrencyTypes,VEDriversLite.Cryptocurrencies.CurrencyTypes)
-  fullName: VEDriversLite.Cryptocurrencies.Dto.PriceDto.GetName(VEDriversLite.Cryptocurrencies.CurrencyTypes, VEDriversLite.Cryptocurrencies.CurrencyTypes)
+  href: api/VEDriversLite.Cryptocurrencies.Dto.PriceDto.html#VEDriversLite_Cryptocurrencies_Dto_PriceDto_GetName_VEDriversLite_Common_Enums_CurrencyTypes_VEDriversLite_Common_Enums_CurrencyTypes_
+  commentId: M:VEDriversLite.Cryptocurrencies.Dto.PriceDto.GetName(VEDriversLite.Common.Enums.CurrencyTypes,VEDriversLite.Common.Enums.CurrencyTypes)
+  fullName: VEDriversLite.Cryptocurrencies.Dto.PriceDto.GetName(VEDriversLite.Common.Enums.CurrencyTypes, VEDriversLite.Common.Enums.CurrencyTypes)
   nameWithType: PriceDto.GetName(CurrencyTypes, CurrencyTypes)
 - uid: VEDriversLite.Cryptocurrencies.Dto.PriceDto.GetName*
   name: GetName
@@ -2754,13 +2705,13 @@ references:
   isSpec: "True"
   fullName: VEDriversLite.Cryptocurrencies.IExchangeRatesAPI.Dispose
   nameWithType: IExchangeRatesAPI.Dispose
-- uid: VEDriversLite.Cryptocurrencies.IExchangeRatesAPI.GetPrice(VEDriversLite.Cryptocurrencies.CurrencyTypes[],VEDriversLite.Cryptocurrencies.CurrencyTypes)
+- uid: VEDriversLite.Cryptocurrencies.IExchangeRatesAPI.GetPrice(VEDriversLite.Common.Enums.CurrencyTypes[],VEDriversLite.Common.Enums.CurrencyTypes)
   name: GetPrice(CurrencyTypes[], CurrencyTypes)
-  href: api/VEDriversLite.Cryptocurrencies.IExchangeRatesAPI.html#VEDriversLite_Cryptocurrencies_IExchangeRatesAPI_GetPrice_VEDriversLite_Cryptocurrencies_CurrencyTypes___VEDriversLite_Cryptocurrencies_CurrencyTypes_
-  commentId: M:VEDriversLite.Cryptocurrencies.IExchangeRatesAPI.GetPrice(VEDriversLite.Cryptocurrencies.CurrencyTypes[],VEDriversLite.Cryptocurrencies.CurrencyTypes)
+  href: api/VEDriversLite.Cryptocurrencies.IExchangeRatesAPI.html#VEDriversLite_Cryptocurrencies_IExchangeRatesAPI_GetPrice_VEDriversLite_Common_Enums_CurrencyTypes___VEDriversLite_Common_Enums_CurrencyTypes_
+  commentId: M:VEDriversLite.Cryptocurrencies.IExchangeRatesAPI.GetPrice(VEDriversLite.Common.Enums.CurrencyTypes[],VEDriversLite.Common.Enums.CurrencyTypes)
   name.vb: GetPrice(CurrencyTypes(), CurrencyTypes)
-  fullName: VEDriversLite.Cryptocurrencies.IExchangeRatesAPI.GetPrice(VEDriversLite.Cryptocurrencies.CurrencyTypes[], VEDriversLite.Cryptocurrencies.CurrencyTypes)
-  fullName.vb: VEDriversLite.Cryptocurrencies.IExchangeRatesAPI.GetPrice(VEDriversLite.Cryptocurrencies.CurrencyTypes(), VEDriversLite.Cryptocurrencies.CurrencyTypes)
+  fullName: VEDriversLite.Cryptocurrencies.IExchangeRatesAPI.GetPrice(VEDriversLite.Common.Enums.CurrencyTypes[], VEDriversLite.Common.Enums.CurrencyTypes)
+  fullName.vb: VEDriversLite.Cryptocurrencies.IExchangeRatesAPI.GetPrice(VEDriversLite.Common.Enums.CurrencyTypes(), VEDriversLite.Common.Enums.CurrencyTypes)
   nameWithType: IExchangeRatesAPI.GetPrice(CurrencyTypes[], CurrencyTypes)
   nameWithType.vb: IExchangeRatesAPI.GetPrice(CurrencyTypes(), CurrencyTypes)
 - uid: VEDriversLite.Cryptocurrencies.IExchangeRatesAPI.GetPrice*
@@ -2873,11 +2824,11 @@ references:
   commentId: T:VEDriversLite.Cryptocurrencies.PriceCalculator
   fullName: VEDriversLite.Cryptocurrencies.PriceCalculator
   nameWithType: PriceCalculator
-- uid: VEDriversLite.Cryptocurrencies.PriceCalculator.AddOneToAmount(VEDriversLite.Cryptocurrencies.CurrencyTypes)
+- uid: VEDriversLite.Cryptocurrencies.PriceCalculator.AddOneToAmount(VEDriversLite.Common.Enums.CurrencyTypes)
   name: AddOneToAmount(CurrencyTypes)
-  href: api/VEDriversLite.Cryptocurrencies.PriceCalculator.html#VEDriversLite_Cryptocurrencies_PriceCalculator_AddOneToAmount_VEDriversLite_Cryptocurrencies_CurrencyTypes_
-  commentId: M:VEDriversLite.Cryptocurrencies.PriceCalculator.AddOneToAmount(VEDriversLite.Cryptocurrencies.CurrencyTypes)
-  fullName: VEDriversLite.Cryptocurrencies.PriceCalculator.AddOneToAmount(VEDriversLite.Cryptocurrencies.CurrencyTypes)
+  href: api/VEDriversLite.Cryptocurrencies.PriceCalculator.html#VEDriversLite_Cryptocurrencies_PriceCalculator_AddOneToAmount_VEDriversLite_Common_Enums_CurrencyTypes_
+  commentId: M:VEDriversLite.Cryptocurrencies.PriceCalculator.AddOneToAmount(VEDriversLite.Common.Enums.CurrencyTypes)
+  fullName: VEDriversLite.Cryptocurrencies.PriceCalculator.AddOneToAmount(VEDriversLite.Common.Enums.CurrencyTypes)
   nameWithType: PriceCalculator.AddOneToAmount(CurrencyTypes)
 - uid: VEDriversLite.Cryptocurrencies.PriceCalculator.AddOneToAmount*
   name: AddOneToAmount
@@ -2962,11 +2913,11 @@ references:
   commentId: E:VEDriversLite.Cryptocurrencies.PriceCalculator.PriceEdited
   fullName: VEDriversLite.Cryptocurrencies.PriceCalculator.PriceEdited
   nameWithType: PriceCalculator.PriceEdited
-- uid: VEDriversLite.Cryptocurrencies.PriceCalculator.RecalcAmounts(VEDriversLite.Cryptocurrencies.CurrencyTypes)
+- uid: VEDriversLite.Cryptocurrencies.PriceCalculator.RecalcAmounts(VEDriversLite.Common.Enums.CurrencyTypes)
   name: RecalcAmounts(CurrencyTypes)
-  href: api/VEDriversLite.Cryptocurrencies.PriceCalculator.html#VEDriversLite_Cryptocurrencies_PriceCalculator_RecalcAmounts_VEDriversLite_Cryptocurrencies_CurrencyTypes_
-  commentId: M:VEDriversLite.Cryptocurrencies.PriceCalculator.RecalcAmounts(VEDriversLite.Cryptocurrencies.CurrencyTypes)
-  fullName: VEDriversLite.Cryptocurrencies.PriceCalculator.RecalcAmounts(VEDriversLite.Cryptocurrencies.CurrencyTypes)
+  href: api/VEDriversLite.Cryptocurrencies.PriceCalculator.html#VEDriversLite_Cryptocurrencies_PriceCalculator_RecalcAmounts_VEDriversLite_Common_Enums_CurrencyTypes_
+  commentId: M:VEDriversLite.Cryptocurrencies.PriceCalculator.RecalcAmounts(VEDriversLite.Common.Enums.CurrencyTypes)
+  fullName: VEDriversLite.Cryptocurrencies.PriceCalculator.RecalcAmounts(VEDriversLite.Common.Enums.CurrencyTypes)
   nameWithType: PriceCalculator.RecalcAmounts(CurrencyTypes)
 - uid: VEDriversLite.Cryptocurrencies.PriceCalculator.RecalcAmounts*
   name: RecalcAmounts
@@ -3001,11 +2952,11 @@ references:
   isSpec: "True"
   fullName: VEDriversLite.Cryptocurrencies.PriceCalculator.RelatedAddressCurrency
   nameWithType: PriceCalculator.RelatedAddressCurrency
-- uid: VEDriversLite.Cryptocurrencies.PriceCalculator.RemoveOneFromAmount(VEDriversLite.Cryptocurrencies.CurrencyTypes)
+- uid: VEDriversLite.Cryptocurrencies.PriceCalculator.RemoveOneFromAmount(VEDriversLite.Common.Enums.CurrencyTypes)
   name: RemoveOneFromAmount(CurrencyTypes)
-  href: api/VEDriversLite.Cryptocurrencies.PriceCalculator.html#VEDriversLite_Cryptocurrencies_PriceCalculator_RemoveOneFromAmount_VEDriversLite_Cryptocurrencies_CurrencyTypes_
-  commentId: M:VEDriversLite.Cryptocurrencies.PriceCalculator.RemoveOneFromAmount(VEDriversLite.Cryptocurrencies.CurrencyTypes)
-  fullName: VEDriversLite.Cryptocurrencies.PriceCalculator.RemoveOneFromAmount(VEDriversLite.Cryptocurrencies.CurrencyTypes)
+  href: api/VEDriversLite.Cryptocurrencies.PriceCalculator.html#VEDriversLite_Cryptocurrencies_PriceCalculator_RemoveOneFromAmount_VEDriversLite_Common_Enums_CurrencyTypes_
+  commentId: M:VEDriversLite.Cryptocurrencies.PriceCalculator.RemoveOneFromAmount(VEDriversLite.Common.Enums.CurrencyTypes)
+  fullName: VEDriversLite.Cryptocurrencies.PriceCalculator.RemoveOneFromAmount(VEDriversLite.Common.Enums.CurrencyTypes)
   nameWithType: PriceCalculator.RemoveOneFromAmount(CurrencyTypes)
 - uid: VEDriversLite.Cryptocurrencies.PriceCalculator.RemoveOneFromAmount*
   name: RemoveOneFromAmount
@@ -3014,11 +2965,11 @@ references:
   isSpec: "True"
   fullName: VEDriversLite.Cryptocurrencies.PriceCalculator.RemoveOneFromAmount
   nameWithType: PriceCalculator.RemoveOneFromAmount
-- uid: VEDriversLite.Cryptocurrencies.PriceCalculator.SetPrices(System.Double,System.Double,System.Boolean,VEDriversLite.Cryptocurrencies.CurrencyTypes)
+- uid: VEDriversLite.Cryptocurrencies.PriceCalculator.SetPrices(System.Double,System.Double,System.Boolean,VEDriversLite.Common.Enums.CurrencyTypes)
   name: SetPrices(Double, Double, Boolean, CurrencyTypes)
-  href: api/VEDriversLite.Cryptocurrencies.PriceCalculator.html#VEDriversLite_Cryptocurrencies_PriceCalculator_SetPrices_System_Double_System_Double_System_Boolean_VEDriversLite_Cryptocurrencies_CurrencyTypes_
-  commentId: M:VEDriversLite.Cryptocurrencies.PriceCalculator.SetPrices(System.Double,System.Double,System.Boolean,VEDriversLite.Cryptocurrencies.CurrencyTypes)
-  fullName: VEDriversLite.Cryptocurrencies.PriceCalculator.SetPrices(System.Double, System.Double, System.Boolean, VEDriversLite.Cryptocurrencies.CurrencyTypes)
+  href: api/VEDriversLite.Cryptocurrencies.PriceCalculator.html#VEDriversLite_Cryptocurrencies_PriceCalculator_SetPrices_System_Double_System_Double_System_Boolean_VEDriversLite_Common_Enums_CurrencyTypes_
+  commentId: M:VEDriversLite.Cryptocurrencies.PriceCalculator.SetPrices(System.Double,System.Double,System.Boolean,VEDriversLite.Common.Enums.CurrencyTypes)
+  fullName: VEDriversLite.Cryptocurrencies.PriceCalculator.SetPrices(System.Double, System.Double, System.Boolean, VEDriversLite.Common.Enums.CurrencyTypes)
   nameWithType: PriceCalculator.SetPrices(Double, Double, Boolean, CurrencyTypes)
 - uid: VEDriversLite.Cryptocurrencies.PriceCalculator.SetPrices*
   name: SetPrices
@@ -3052,11 +3003,11 @@ references:
   commentId: M:VEDriversLite.Cryptocurrencies.PriceService.#ctor
   fullName: VEDriversLite.Cryptocurrencies.PriceService.PriceService()
   nameWithType: PriceService.PriceService()
-- uid: VEDriversLite.Cryptocurrencies.PriceService.#ctor(System.String,VEDriversLite.Cryptocurrencies.CurrencyTypes)
+- uid: VEDriversLite.Cryptocurrencies.PriceService.#ctor(System.String,VEDriversLite.Common.Enums.CurrencyTypes)
   name: PriceService(String, CurrencyTypes)
-  href: api/VEDriversLite.Cryptocurrencies.PriceService.html#VEDriversLite_Cryptocurrencies_PriceService__ctor_System_String_VEDriversLite_Cryptocurrencies_CurrencyTypes_
-  commentId: M:VEDriversLite.Cryptocurrencies.PriceService.#ctor(System.String,VEDriversLite.Cryptocurrencies.CurrencyTypes)
-  fullName: VEDriversLite.Cryptocurrencies.PriceService.PriceService(System.String, VEDriversLite.Cryptocurrencies.CurrencyTypes)
+  href: api/VEDriversLite.Cryptocurrencies.PriceService.html#VEDriversLite_Cryptocurrencies_PriceService__ctor_System_String_VEDriversLite_Common_Enums_CurrencyTypes_
+  commentId: M:VEDriversLite.Cryptocurrencies.PriceService.#ctor(System.String,VEDriversLite.Common.Enums.CurrencyTypes)
+  fullName: VEDriversLite.Cryptocurrencies.PriceService.PriceService(System.String, VEDriversLite.Common.Enums.CurrencyTypes)
   nameWithType: PriceService.PriceService(String, CurrencyTypes)
 - uid: VEDriversLite.Cryptocurrencies.PriceService.#ctor*
   name: PriceService
@@ -3084,11 +3035,11 @@ references:
   isSpec: "True"
   fullName: VEDriversLite.Cryptocurrencies.PriceService.CurrenciesCalculator
   nameWithType: PriceService.CurrenciesCalculator
-- uid: VEDriversLite.Cryptocurrencies.PriceService.GetPrice(VEDriversLite.Cryptocurrencies.CurrencyTypes,System.Boolean)
+- uid: VEDriversLite.Cryptocurrencies.PriceService.GetPrice(VEDriversLite.Common.Enums.CurrencyTypes,System.Boolean)
   name: GetPrice(CurrencyTypes, Boolean)
-  href: api/VEDriversLite.Cryptocurrencies.PriceService.html#VEDriversLite_Cryptocurrencies_PriceService_GetPrice_VEDriversLite_Cryptocurrencies_CurrencyTypes_System_Boolean_
-  commentId: M:VEDriversLite.Cryptocurrencies.PriceService.GetPrice(VEDriversLite.Cryptocurrencies.CurrencyTypes,System.Boolean)
-  fullName: VEDriversLite.Cryptocurrencies.PriceService.GetPrice(VEDriversLite.Cryptocurrencies.CurrencyTypes, System.Boolean)
+  href: api/VEDriversLite.Cryptocurrencies.PriceService.html#VEDriversLite_Cryptocurrencies_PriceService_GetPrice_VEDriversLite_Common_Enums_CurrencyTypes_System_Boolean_
+  commentId: M:VEDriversLite.Cryptocurrencies.PriceService.GetPrice(VEDriversLite.Common.Enums.CurrencyTypes,System.Boolean)
+  fullName: VEDriversLite.Cryptocurrencies.PriceService.GetPrice(VEDriversLite.Common.Enums.CurrencyTypes, System.Boolean)
   nameWithType: PriceService.GetPrice(CurrencyTypes, Boolean)
 - uid: VEDriversLite.Cryptocurrencies.PriceService.GetPrice*
   name: GetPrice
@@ -3097,11 +3048,11 @@ references:
   isSpec: "True"
   fullName: VEDriversLite.Cryptocurrencies.PriceService.GetPrice
   nameWithType: PriceService.GetPrice
-- uid: VEDriversLite.Cryptocurrencies.PriceService.InitPriceService(VEDriversLite.Cryptocurrencies.ExchangeRatesAPITypes,System.String,VEDriversLite.Cryptocurrencies.CurrencyTypes)
+- uid: VEDriversLite.Cryptocurrencies.PriceService.InitPriceService(VEDriversLite.Cryptocurrencies.ExchangeRatesAPITypes,System.String,VEDriversLite.Common.Enums.CurrencyTypes)
   name: InitPriceService(ExchangeRatesAPITypes, String, CurrencyTypes)
-  href: api/VEDriversLite.Cryptocurrencies.PriceService.html#VEDriversLite_Cryptocurrencies_PriceService_InitPriceService_VEDriversLite_Cryptocurrencies_ExchangeRatesAPITypes_System_String_VEDriversLite_Cryptocurrencies_CurrencyTypes_
-  commentId: M:VEDriversLite.Cryptocurrencies.PriceService.InitPriceService(VEDriversLite.Cryptocurrencies.ExchangeRatesAPITypes,System.String,VEDriversLite.Cryptocurrencies.CurrencyTypes)
-  fullName: VEDriversLite.Cryptocurrencies.PriceService.InitPriceService(VEDriversLite.Cryptocurrencies.ExchangeRatesAPITypes, System.String, VEDriversLite.Cryptocurrencies.CurrencyTypes)
+  href: api/VEDriversLite.Cryptocurrencies.PriceService.html#VEDriversLite_Cryptocurrencies_PriceService_InitPriceService_VEDriversLite_Cryptocurrencies_ExchangeRatesAPITypes_System_String_VEDriversLite_Common_Enums_CurrencyTypes_
+  commentId: M:VEDriversLite.Cryptocurrencies.PriceService.InitPriceService(VEDriversLite.Cryptocurrencies.ExchangeRatesAPITypes,System.String,VEDriversLite.Common.Enums.CurrencyTypes)
+  fullName: VEDriversLite.Cryptocurrencies.PriceService.InitPriceService(VEDriversLite.Cryptocurrencies.ExchangeRatesAPITypes, System.String, VEDriversLite.Common.Enums.CurrencyTypes)
   nameWithType: PriceService.InitPriceService(ExchangeRatesAPITypes, String, CurrencyTypes)
 - uid: VEDriversLite.Cryptocurrencies.PriceService.InitPriceService*
   name: InitPriceService
@@ -21791,6 +21742,19 @@ references:
   isSpec: "True"
   fullName: VEDriversLite.NFT.CommonNFT.Author
   nameWithType: CommonNFT.Author
+- uid: VEDriversLite.NFT.CommonNFT.Base64Data
+  name: Base64Data
+  href: api/VEDriversLite.NFT.CommonNFT.html#VEDriversLite_NFT_CommonNFT_Base64Data
+  commentId: P:VEDriversLite.NFT.CommonNFT.Base64Data
+  fullName: VEDriversLite.NFT.CommonNFT.Base64Data
+  nameWithType: CommonNFT.Base64Data
+- uid: VEDriversLite.NFT.CommonNFT.Base64Data*
+  name: Base64Data
+  href: api/VEDriversLite.NFT.CommonNFT.html#VEDriversLite_NFT_CommonNFT_Base64Data_
+  commentId: Overload:VEDriversLite.NFT.CommonNFT.Base64Data
+  isSpec: "True"
+  fullName: VEDriversLite.NFT.CommonNFT.Base64Data
+  nameWithType: CommonNFT.Base64Data
 - uid: VEDriversLite.NFT.CommonNFT.ClearPrices
   name: ClearPrices()
   href: api/VEDriversLite.NFT.CommonNFT.html#VEDriversLite_NFT_CommonNFT_ClearPrices
@@ -25631,6 +25595,19 @@ references:
   commentId: T:VEDriversLite.NFT.Dto.NFTDataItem
   fullName: VEDriversLite.NFT.Dto.NFTDataItem
   nameWithType: NFTDataItem
+- uid: VEDriversLite.NFT.Dto.NFTDataItem.Base64Data
+  name: Base64Data
+  href: api/VEDriversLite.NFT.Dto.NFTDataItem.html#VEDriversLite_NFT_Dto_NFTDataItem_Base64Data
+  commentId: P:VEDriversLite.NFT.Dto.NFTDataItem.Base64Data
+  fullName: VEDriversLite.NFT.Dto.NFTDataItem.Base64Data
+  nameWithType: NFTDataItem.Base64Data
+- uid: VEDriversLite.NFT.Dto.NFTDataItem.Base64Data*
+  name: Base64Data
+  href: api/VEDriversLite.NFT.Dto.NFTDataItem.html#VEDriversLite_NFT_Dto_NFTDataItem_Base64Data_
+  commentId: Overload:VEDriversLite.NFT.Dto.NFTDataItem.Base64Data
+  isSpec: "True"
+  fullName: VEDriversLite.NFT.Dto.NFTDataItem.Base64Data
+  nameWithType: NFTDataItem.Base64Data
 - uid: VEDriversLite.NFT.Dto.NFTDataItem.Data
   name: Data
   href: api/VEDriversLite.NFT.Dto.NFTDataItem.html#VEDriversLite_NFT_Dto_NFTDataItem_Data
@@ -27559,6 +27536,19 @@ references:
   isSpec: "True"
   fullName: VEDriversLite.NFT.INFT.Author
   nameWithType: INFT.Author
+- uid: VEDriversLite.NFT.INFT.Base64Data
+  name: Base64Data
+  href: api/VEDriversLite.NFT.INFT.html#VEDriversLite_NFT_INFT_Base64Data
+  commentId: P:VEDriversLite.NFT.INFT.Base64Data
+  fullName: VEDriversLite.NFT.INFT.Base64Data
+  nameWithType: INFT.Base64Data
+- uid: VEDriversLite.NFT.INFT.Base64Data*
+  name: Base64Data
+  href: api/VEDriversLite.NFT.INFT.html#VEDriversLite_NFT_INFT_Base64Data_
+  commentId: Overload:VEDriversLite.NFT.INFT.Base64Data
+  isSpec: "True"
+  fullName: VEDriversLite.NFT.INFT.Base64Data
+  nameWithType: INFT.Base64Data
 - uid: VEDriversLite.NFT.INFT.ClearPrices
   name: ClearPrices()
   href: api/VEDriversLite.NFT.INFT.html#VEDriversLite_NFT_INFT_ClearPrices
@@ -29155,19 +29145,6 @@ references:
   isSpec: "True"
   fullName: VEDriversLite.NFT.NFTHelpers.CheckIfMintTx
   nameWithType: NFTHelpers.CheckIfMintTx
-- uid: VEDriversLite.NFT.NFTHelpers.CreateIpfsClient(System.String,System.String,System.String)
-  name: CreateIpfsClient(String, String, String)
-  href: api/VEDriversLite.NFT.NFTHelpers.html#VEDriversLite_NFT_NFTHelpers_CreateIpfsClient_System_String_System_String_System_String_
-  commentId: M:VEDriversLite.NFT.NFTHelpers.CreateIpfsClient(System.String,System.String,System.String)
-  fullName: VEDriversLite.NFT.NFTHelpers.CreateIpfsClient(System.String, System.String, System.String)
-  nameWithType: NFTHelpers.CreateIpfsClient(String, String, String)
-- uid: VEDriversLite.NFT.NFTHelpers.CreateIpfsClient*
-  name: CreateIpfsClient
-  href: api/VEDriversLite.NFT.NFTHelpers.html#VEDriversLite_NFT_NFTHelpers_CreateIpfsClient_
-  commentId: Overload:VEDriversLite.NFT.NFTHelpers.CreateIpfsClient
-  isSpec: "True"
-  fullName: VEDriversLite.NFT.NFTHelpers.CreateIpfsClient
-  nameWithType: NFTHelpers.CreateIpfsClient
 - uid: VEDriversLite.NFT.NFTHelpers.DeInitHandlers
   name: DeInitHandlers()
   href: api/VEDriversLite.NFT.NFTHelpers.html#VEDriversLite_NFT_NFTHelpers_DeInitHandlers
@@ -29242,19 +29219,6 @@ references:
   isSpec: "True"
   fullName: VEDriversLite.NFT.NFTHelpers.GetChangeNFTTxData
   nameWithType: NFTHelpers.GetChangeNFTTxData
-- uid: VEDriversLite.NFT.NFTHelpers.GetHashFromIPFSLink(System.String)
-  name: GetHashFromIPFSLink(String)
-  href: api/VEDriversLite.NFT.NFTHelpers.html#VEDriversLite_NFT_NFTHelpers_GetHashFromIPFSLink_System_String_
-  commentId: M:VEDriversLite.NFT.NFTHelpers.GetHashFromIPFSLink(System.String)
-  fullName: VEDriversLite.NFT.NFTHelpers.GetHashFromIPFSLink(System.String)
-  nameWithType: NFTHelpers.GetHashFromIPFSLink(String)
-- uid: VEDriversLite.NFT.NFTHelpers.GetHashFromIPFSLink*
-  name: GetHashFromIPFSLink
-  href: api/VEDriversLite.NFT.NFTHelpers.html#VEDriversLite_NFT_NFTHelpers_GetHashFromIPFSLink_
-  commentId: Overload:VEDriversLite.NFT.NFTHelpers.GetHashFromIPFSLink
-  isSpec: "True"
-  fullName: VEDriversLite.NFT.NFTHelpers.GetHashFromIPFSLink
-  nameWithType: NFTHelpers.GetHashFromIPFSLink
 - uid: VEDriversLite.NFT.NFTHelpers.GetIoTMessageNFTTransaction(System.String,System.String,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos})
   name: GetIoTMessageNFTTransaction(String, String, EncryptionKey, INFT, ICollection<Utxos>, ICollection<Utxos>)
   href: api/VEDriversLite.NFT.NFTHelpers.html#VEDriversLite_NFT_NFTHelpers_GetIoTMessageNFTTransaction_System_String_System_String_VEDriversLite_Security_EncryptionKey_VEDriversLite_NFT_INFT_System_Collections_Generic_ICollection_VEDriversLite_NeblioAPI_Utxos__System_Collections_Generic_ICollection_VEDriversLite_NeblioAPI_Utxos__
@@ -29271,19 +29235,6 @@ references:
   isSpec: "True"
   fullName: VEDriversLite.NFT.NFTHelpers.GetIoTMessageNFTTransaction
   nameWithType: NFTHelpers.GetIoTMessageNFTTransaction
-- uid: VEDriversLite.NFT.NFTHelpers.GetIPFSLinkFromHash(System.String)
-  name: GetIPFSLinkFromHash(String)
-  href: api/VEDriversLite.NFT.NFTHelpers.html#VEDriversLite_NFT_NFTHelpers_GetIPFSLinkFromHash_System_String_
-  commentId: M:VEDriversLite.NFT.NFTHelpers.GetIPFSLinkFromHash(System.String)
-  fullName: VEDriversLite.NFT.NFTHelpers.GetIPFSLinkFromHash(System.String)
-  nameWithType: NFTHelpers.GetIPFSLinkFromHash(String)
-- uid: VEDriversLite.NFT.NFTHelpers.GetIPFSLinkFromHash*
-  name: GetIPFSLinkFromHash
-  href: api/VEDriversLite.NFT.NFTHelpers.html#VEDriversLite_NFT_NFTHelpers_GetIPFSLinkFromHash_
-  commentId: Overload:VEDriversLite.NFT.NFTHelpers.GetIPFSLinkFromHash
-  isSpec: "True"
-  fullName: VEDriversLite.NFT.NFTHelpers.GetIPFSLinkFromHash
-  nameWithType: NFTHelpers.GetIPFSLinkFromHash
 - uid: VEDriversLite.NFT.NFTHelpers.GetMessageNFTTransaction(System.String,System.String,VEDriversLite.Security.EncryptionKey,VEDriversLite.NFT.INFT,System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},System.Collections.Generic.ICollection{VEDriversLite.NeblioAPI.Utxos},NBitcoin.BitcoinSecret,System.String)
   name: GetMessageNFTTransaction(String, String, EncryptionKey, INFT, ICollection<Utxos>, ICollection<Utxos>, BitcoinSecret, String)
   href: api/VEDriversLite.NFT.NFTHelpers.html#VEDriversLite_NFT_NFTHelpers_GetMessageNFTTransaction_System_String_System_String_VEDriversLite_Security_EncryptionKey_VEDriversLite_NFT_INFT_System_Collections_Generic_ICollection_VEDriversLite_NeblioAPI_Utxos__System_Collections_Generic_ICollection_VEDriversLite_NeblioAPI_Utxos__NBitcoin_BitcoinSecret_System_String_
@@ -29465,24 +29416,6 @@ references:
   isSpec: "True"
   fullName: VEDriversLite.NFT.NFTHelpers.GetTxDataForReturnNFTPayment
   nameWithType: NFTHelpers.GetTxDataForReturnNFTPayment
-- uid: VEDriversLite.NFT.NFTHelpers.InfuraAPIURL
-  name: InfuraAPIURL
-  href: api/VEDriversLite.NFT.NFTHelpers.html#VEDriversLite_NFT_NFTHelpers_InfuraAPIURL
-  commentId: F:VEDriversLite.NFT.NFTHelpers.InfuraAPIURL
-  fullName: VEDriversLite.NFT.NFTHelpers.InfuraAPIURL
-  nameWithType: NFTHelpers.InfuraAPIURL
-- uid: VEDriversLite.NFT.NFTHelpers.InfuraKey
-  name: InfuraKey
-  href: api/VEDriversLite.NFT.NFTHelpers.html#VEDriversLite_NFT_NFTHelpers_InfuraKey
-  commentId: F:VEDriversLite.NFT.NFTHelpers.InfuraKey
-  fullName: VEDriversLite.NFT.NFTHelpers.InfuraKey
-  nameWithType: NFTHelpers.InfuraKey
-- uid: VEDriversLite.NFT.NFTHelpers.InfuraSecret
-  name: InfuraSecret
-  href: api/VEDriversLite.NFT.NFTHelpers.html#VEDriversLite_NFT_NFTHelpers_InfuraSecret
-  commentId: F:VEDriversLite.NFT.NFTHelpers.InfuraSecret
-  fullName: VEDriversLite.NFT.NFTHelpers.InfuraSecret
-  nameWithType: NFTHelpers.InfuraSecret
 - uid: VEDriversLite.NFT.NFTHelpers.InitHandlers
   name: InitHandlers()
   href: api/VEDriversLite.NFT.NFTHelpers.html#VEDriversLite_NFT_NFTHelpers_InitHandlers
@@ -29509,44 +29442,6 @@ references:
   isSpec: "True"
   fullName: VEDriversLite.NFT.NFTHelpers.InitNFTHelpers
   nameWithType: NFTHelpers.InitNFTHelpers
-- uid: VEDriversLite.NFT.NFTHelpers.ipfs
-  name: ipfs
-  href: api/VEDriversLite.NFT.NFTHelpers.html#VEDriversLite_NFT_NFTHelpers_ipfs
-  commentId: F:VEDriversLite.NFT.NFTHelpers.ipfs
-  fullName: VEDriversLite.NFT.NFTHelpers.ipfs
-  nameWithType: NFTHelpers.ipfs
-- uid: VEDriversLite.NFT.NFTHelpers.IPFSDownloadFromInfuraAsync(System.String)
-  name: IPFSDownloadFromInfuraAsync(String)
-  href: api/VEDriversLite.NFT.NFTHelpers.html#VEDriversLite_NFT_NFTHelpers_IPFSDownloadFromInfuraAsync_System_String_
-  commentId: M:VEDriversLite.NFT.NFTHelpers.IPFSDownloadFromInfuraAsync(System.String)
-  fullName: VEDriversLite.NFT.NFTHelpers.IPFSDownloadFromInfuraAsync(System.String)
-  nameWithType: NFTHelpers.IPFSDownloadFromInfuraAsync(String)
-- uid: VEDriversLite.NFT.NFTHelpers.IPFSDownloadFromInfuraAsync*
-  name: IPFSDownloadFromInfuraAsync
-  href: api/VEDriversLite.NFT.NFTHelpers.html#VEDriversLite_NFT_NFTHelpers_IPFSDownloadFromInfuraAsync_
-  commentId: Overload:VEDriversLite.NFT.NFTHelpers.IPFSDownloadFromInfuraAsync
-  isSpec: "True"
-  fullName: VEDriversLite.NFT.NFTHelpers.IPFSDownloadFromInfuraAsync
-  nameWithType: NFTHelpers.IPFSDownloadFromInfuraAsync
-- uid: VEDriversLite.NFT.NFTHelpers.IPFSDownloadFromPublicAsync(System.String)
-  name: IPFSDownloadFromPublicAsync(String)
-  href: api/VEDriversLite.NFT.NFTHelpers.html#VEDriversLite_NFT_NFTHelpers_IPFSDownloadFromPublicAsync_System_String_
-  commentId: M:VEDriversLite.NFT.NFTHelpers.IPFSDownloadFromPublicAsync(System.String)
-  fullName: VEDriversLite.NFT.NFTHelpers.IPFSDownloadFromPublicAsync(System.String)
-  nameWithType: NFTHelpers.IPFSDownloadFromPublicAsync(String)
-- uid: VEDriversLite.NFT.NFTHelpers.IPFSDownloadFromPublicAsync*
-  name: IPFSDownloadFromPublicAsync
-  href: api/VEDriversLite.NFT.NFTHelpers.html#VEDriversLite_NFT_NFTHelpers_IPFSDownloadFromPublicAsync_
-  commentId: Overload:VEDriversLite.NFT.NFTHelpers.IPFSDownloadFromPublicAsync
-  isSpec: "True"
-  fullName: VEDriversLite.NFT.NFTHelpers.IPFSDownloadFromPublicAsync
-  nameWithType: NFTHelpers.IPFSDownloadFromPublicAsync
-- uid: VEDriversLite.NFT.NFTHelpers.ipfsInfura
-  name: ipfsInfura
-  href: api/VEDriversLite.NFT.NFTHelpers.html#VEDriversLite_NFT_NFTHelpers_ipfsInfura
-  commentId: F:VEDriversLite.NFT.NFTHelpers.ipfsInfura
-  fullName: VEDriversLite.NFT.NFTHelpers.ipfsInfura
-  nameWithType: NFTHelpers.ipfsInfura
 - uid: VEDriversLite.NFT.NFTHelpers.IsBuyableNFT(VEDriversLite.NFT.NFTTypes)
   name: IsBuyableNFT(NFTTypes)
   href: api/VEDriversLite.NFT.NFTHelpers.html#VEDriversLite_NFT_NFTHelpers_IsBuyableNFT_VEDriversLite_NFT_NFTTypes_
@@ -29605,19 +29500,6 @@ references:
   isSpec: "True"
   fullName: VEDriversLite.NFT.NFTHelpers.LoadAddressNFTsWithProfile
   nameWithType: NFTHelpers.LoadAddressNFTsWithProfile
-- uid: VEDriversLite.NFT.NFTHelpers.LoadConnectionInfo(System.String,System.String,System.String)
-  name: LoadConnectionInfo(String, String, String)
-  href: api/VEDriversLite.NFT.NFTHelpers.html#VEDriversLite_NFT_NFTHelpers_LoadConnectionInfo_System_String_System_String_System_String_
-  commentId: M:VEDriversLite.NFT.NFTHelpers.LoadConnectionInfo(System.String,System.String,System.String)
-  fullName: VEDriversLite.NFT.NFTHelpers.LoadConnectionInfo(System.String, System.String, System.String)
-  nameWithType: NFTHelpers.LoadConnectionInfo(String, String, String)
-- uid: VEDriversLite.NFT.NFTHelpers.LoadConnectionInfo*
-  name: LoadConnectionInfo
-  href: api/VEDriversLite.NFT.NFTHelpers.html#VEDriversLite_NFT_NFTHelpers_LoadConnectionInfo_
-  commentId: Overload:VEDriversLite.NFT.NFTHelpers.LoadConnectionInfo
-  isSpec: "True"
-  fullName: VEDriversLite.NFT.NFTHelpers.LoadConnectionInfo
-  nameWithType: NFTHelpers.LoadConnectionInfo
 - uid: VEDriversLite.NFT.NFTHelpers.LoadLastData(System.String)
   name: LoadLastData(String)
   href: api/VEDriversLite.NFT.NFTHelpers.html#VEDriversLite_NFT_NFTHelpers_LoadLastData_System_String_
@@ -29669,19 +29551,6 @@ references:
   commentId: E:VEDriversLite.NFT.NFTHelpers.NFTLoadingStateChanged
   fullName: VEDriversLite.NFT.NFTHelpers.NFTLoadingStateChanged
   nameWithType: NFTHelpers.NFTLoadingStateChanged
-- uid: VEDriversLite.NFT.NFTHelpers.PinToInfuraAsync(System.String)
-  name: PinToInfuraAsync(String)
-  href: api/VEDriversLite.NFT.NFTHelpers.html#VEDriversLite_NFT_NFTHelpers_PinToInfuraAsync_System_String_
-  commentId: M:VEDriversLite.NFT.NFTHelpers.PinToInfuraAsync(System.String)
-  fullName: VEDriversLite.NFT.NFTHelpers.PinToInfuraAsync(System.String)
-  nameWithType: NFTHelpers.PinToInfuraAsync(String)
-- uid: VEDriversLite.NFT.NFTHelpers.PinToInfuraAsync*
-  name: PinToInfuraAsync
-  href: api/VEDriversLite.NFT.NFTHelpers.html#VEDriversLite_NFT_NFTHelpers_PinToInfuraAsync_
-  commentId: Overload:VEDriversLite.NFT.NFTHelpers.PinToInfuraAsync
-  isSpec: "True"
-  fullName: VEDriversLite.NFT.NFTHelpers.PinToInfuraAsync
-  nameWithType: NFTHelpers.PinToInfuraAsync
 - uid: VEDriversLite.NFT.NFTHelpers.ProfileNFTFound
   name: ProfileNFTFound
   href: api/VEDriversLite.NFT.NFTHelpers.html#VEDriversLite_NFT_NFTHelpers_ProfileNFTFound
@@ -29694,32 +29563,6 @@ references:
   commentId: F:VEDriversLite.NFT.NFTHelpers.TokenId
   fullName: VEDriversLite.NFT.NFTHelpers.TokenId
   nameWithType: NFTHelpers.TokenId
-- uid: VEDriversLite.NFT.NFTHelpers.UploadImage(System.IO.Stream,System.String,System.String)
-  name: UploadImage(Stream, String, String)
-  href: api/VEDriversLite.NFT.NFTHelpers.html#VEDriversLite_NFT_NFTHelpers_UploadImage_System_IO_Stream_System_String_System_String_
-  commentId: M:VEDriversLite.NFT.NFTHelpers.UploadImage(System.IO.Stream,System.String,System.String)
-  fullName: VEDriversLite.NFT.NFTHelpers.UploadImage(System.IO.Stream, System.String, System.String)
-  nameWithType: NFTHelpers.UploadImage(Stream, String, String)
-- uid: VEDriversLite.NFT.NFTHelpers.UploadImage*
-  name: UploadImage
-  href: api/VEDriversLite.NFT.NFTHelpers.html#VEDriversLite_NFT_NFTHelpers_UploadImage_
-  commentId: Overload:VEDriversLite.NFT.NFTHelpers.UploadImage
-  isSpec: "True"
-  fullName: VEDriversLite.NFT.NFTHelpers.UploadImage
-  nameWithType: NFTHelpers.UploadImage
-- uid: VEDriversLite.NFT.NFTHelpers.UploadInfura(System.IO.Stream,System.String,System.String)
-  name: UploadInfura(Stream, String, String)
-  href: api/VEDriversLite.NFT.NFTHelpers.html#VEDriversLite_NFT_NFTHelpers_UploadInfura_System_IO_Stream_System_String_System_String_
-  commentId: M:VEDriversLite.NFT.NFTHelpers.UploadInfura(System.IO.Stream,System.String,System.String)
-  fullName: VEDriversLite.NFT.NFTHelpers.UploadInfura(System.IO.Stream, System.String, System.String)
-  nameWithType: NFTHelpers.UploadInfura(Stream, String, String)
-- uid: VEDriversLite.NFT.NFTHelpers.UploadInfura*
-  name: UploadInfura
-  href: api/VEDriversLite.NFT.NFTHelpers.html#VEDriversLite_NFT_NFTHelpers_UploadInfura_
-  commentId: Overload:VEDriversLite.NFT.NFTHelpers.UploadInfura
-  isSpec: "True"
-  fullName: VEDriversLite.NFT.NFTHelpers.UploadInfura
-  nameWithType: NFTHelpers.UploadInfura
 - uid: VEDriversLite.NFT.NFTHelpers.WDOGETokenId
   name: WDOGETokenId
   href: api/VEDriversLite.NFT.NFTHelpers.html#VEDriversLite_NFT_NFTHelpers_WDOGETokenId
@@ -33170,6 +33013,12 @@ references:
   commentId: F:VEDriversLite.VEDLDataContext.PublicAddresses
   fullName: VEDriversLite.VEDLDataContext.PublicAddresses
   nameWithType: VEDLDataContext.PublicAddresses
+- uid: VEDriversLite.VEDLDataContext.Storage
+  name: Storage
+  href: api/VEDriversLite.VEDLDataContext.html#VEDriversLite_VEDLDataContext_Storage
+  commentId: F:VEDriversLite.VEDLDataContext.Storage
+  fullName: VEDriversLite.VEDLDataContext.Storage
+  nameWithType: VEDLDataContext.Storage
 - uid: VEDriversLite.VEDLDataContext.WooCommerceStoreAPIKey
   name: WooCommerceStoreAPIKey
   href: api/VEDriversLite.VEDLDataContext.html#VEDriversLite_VEDLDataContext_WooCommerceStoreAPIKey
