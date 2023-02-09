@@ -6,6 +6,7 @@ using VEDriversLite.Admin.Dto;
 using VEDriversLite.Dto;
 using VEDriversLite.NFT;
 using VEDriversLite.NFT.Dto;
+using VEDriversLite.StorageDriver;
 
 namespace VEDriversLite
 {
@@ -22,6 +23,10 @@ namespace VEDriversLite
         /// List of all Dogecoin accounts
         /// </summary>
         public static ConcurrentDictionary<string, DogeAccount> DogeAccounts = new ConcurrentDictionary<string, DogeAccount>();
+        /// <summary>
+        /// Access to storages such as Filesystem, IPFS, API, etc.
+        /// </summary>
+        public static StorageHandler Storage = new StorageHandler();
         /// <summary>
         /// Allowed addresses which can do some admin actions with AccountHandler
         /// </summary>

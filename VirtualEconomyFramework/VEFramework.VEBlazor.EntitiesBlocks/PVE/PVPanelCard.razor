@@ -1,0 +1,65 @@
+﻿@inject AppData AppData
+
+<Card Margin="Margin.Is4.FromBottom">
+    @if (Panel != null && Panel.Id != null)
+    {
+        <CardHeader>
+            <CardTitle>
+                PVPanel - <Editable Item="@Panel" ParameterName="@(nameof(Panel.Name))" TItem="PVPanel" ItemChanged="@OnPanelChanged" />
+            </CardTitle>
+        </CardHeader>
+        <CardBody>
+            <Row>
+                <Column>
+                    <Span>Peak Power: @Panel.PeakPower</Span>
+                </Column>
+            </Row>
+            
+            <Row>
+                <Column>
+                    <Span>Sun to Panel Angle for Peak Power Measurement: @Panel.PanelPeakAngleInDegrees</Span>
+                </Column>
+            </Row>
+            <Row>
+                <Column>
+                    <Span>Peak Azimuth: @Panel.AzimutInDegrees °</Span>
+                </Column>
+            </Row>
+            <Row>
+                <Column>
+                    <Span>Panel angle against base: @Panel.BaseAngleInDegrees °</Span>
+                </Column>
+            </Row>
+            <Row>
+                <Column>
+                    <Span>Panel Height: @Panel.Height mm</Span>
+                </Column>
+            </Row>
+            <Row>
+                <Column>
+                    <Span>Panel Height: @Panel.Width mm</Span>
+                </Column>
+            </Row>
+            <Row>
+                <Column>
+                    <Span>Panel Latitude on planet: @Panel.Latitude</Span>
+                </Column>
+            </Row>
+            <Row>
+                <Column>
+                    <Span>Panel Longitude on planet: @Panel.Longitude</Span>
+                </Column>
+            </Row>
+        </CardBody>
+    }
+</Card>
+@code {
+    [Parameter]
+    public PVPanel Panel { get; set; } = new PVPanel();
+
+    private void OnPanelChanged(PVPanel e)
+    {
+        Panel = e;
+        StateHasChanged();
+    }
+}

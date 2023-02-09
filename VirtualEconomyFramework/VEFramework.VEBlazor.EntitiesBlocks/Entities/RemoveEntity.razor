@@ -1,0 +1,127 @@
+﻿@inherits EntitiesBlocksComponentBase
+@inject AppData AppData
+
+<Modal @ref="RemoveEntityModal">
+    <ModalContent Centered Size="ModalSize.ExtraLarge">
+        <ModalHeader>
+            <ModalTitle>Remove Entity</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            @if (Item != null && Item.Id != null)
+            {
+                <Row Margin="Margin.Is2.FromTop">
+                    <Column>
+                        <Span>Name: @Item.Name</Span>
+                    </Column>
+                </Row>
+                <Row Margin="Margin.Is2.FromTop">
+                    <Column>
+                        <Span>Id: @Item.Id</Span>
+                    </Column>
+                </Row>
+                <Row Margin="Margin.Is2.FromTop">
+                    <Column>
+                        <Span>Do you realy want to remove this entity?</Span>
+                    </Column>
+                </Row>
+                <Row Margin="Margin.Is2.FromTop">
+                    <Column>
+                        <Button Color="Color.Primary" Outline Clicked="@removeEntity">Remove Entity</Button>
+                    </Column>
+                </Row>
+            }
+            else
+            {
+                <Row>
+                    <Column>
+                        <Span>Please select the Entity to remove entity. Click to entity in the Tree.</Span>
+                    </Column>
+                </Row>
+            }
+        </ModalBody>
+    </ModalContent>
+</Modal>
+
+@if (WithButton)
+{
+    <Button Color="Color.Primary" Block="@BlockButton" Outline Float="@FloatButton" Clicked="@openRemoveEntity">
+        <Row>
+            @if (WithButtonIcon)
+            {
+                <Column>
+                    <Icon Name="IconName.Remove" />
+                </Column>
+            }
+            @if (WithButtonText)
+            {
+                <Column Margin="Margin.Is2.FromStart">
+                    @ButtonText
+                </Column>
+            }
+        </Row>
+    </Button>
+}
+
+@code {
+
+    [Parameter]
+    public bool WithButton { get; set; } = false;
+    [Parameter]
+    public bool BlockButton { get; set; } = false;
+    [Parameter]
+    public Float FloatButton { get; set; } = Float.Default;
+    [Parameter]
+    public bool WithButtonIcon { get; set; } = false;
+    [Parameter]
+    public bool WithButtonText { get; set; } = false;
+    [Parameter]
+    public string ButtonText { get; set; } = "Remove Entity";
+
+    Modal? RemoveEntityModal;
+
+    [Inject] INotificationService NotificationService { get; set; }
+
+    public async Task LoadEntity(TreeItem item)
+    {
+        if (item != null)
+            Item = item;
+        if (RemoveEntityModal != null)
+            await RemoveEntityModal.Show();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task openRemoveEntity()
+    {
+        if (RemoveEntityModal != null)
+            await RemoveEntityModal.Show();
+    }
+
+    private async Task removeEntity()
+    {
+        if (Item != null && Item.Id != null)
+        {
+            var e = AppData.EntitiesHandler.GetEntity(Item.Id, Item.Type);
+            
+            if (e == null)
+            {
+                await NotificationService.Error("Cannot find entity in handler.", "Cannot Remove Entity");
+                return;
+            }
+
+            try
+            {
+                AppData.EntitiesHandler.RemoveEntity(e.Id);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("Cannot remove entity. " + Item.Id + ", error: " + ex.Message);
+            }
+
+            if (RemoveEntityModal != null)
+                await RemoveEntityModal.Hide();
+            await ItemChanged.InvokeAsync(Item);
+        }
+    }
+
+}

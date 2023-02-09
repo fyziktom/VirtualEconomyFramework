@@ -105,7 +105,16 @@
                 await InvokeAsync(StateHasChanged);
 
                 if (!string.IsNullOrEmpty(NFT.ImageLink))
-                    NFT.ImageData = await NFTHelpers.IPFSDownloadFromInfuraAsync(NFTHelpers.GetHashFromIPFSLink(NFT.ImageLink));
+                {
+                    //NFT.ImageData = await NFTHelpers.IPFSDownloadFromInfuraAsync(VEDriversLite.StorageDriver.Helpers.IPFSHelpers.GetHashFromIPFSLink(NFT.ImageLink));
+                    var result = await VEDriversLite.VEDLDataContext.Storage.GetFileFromIPFS(new VEDriversLite.StorageDriver.StorageDrivers.Dto.ReadFileRequestDto()
+                        {
+                            DriverType = VEDriversLite.StorageDriver.StorageDrivers.StorageDriverType.IPFS,
+                            Hash = VEDriversLite.StorageDriver.Helpers.IPFSHelpers.GetHashFromIPFSLink(NFT.ImageLink),
+                        });
+                    if (result.Item1)
+                        NFT.ImageData = result.Item2;
+                }
                 await OnLoadNFTTemplate.InvokeAsync(NFT);
                 loadingImage = false;
                 await InvokeAsync(StateHasChanged);

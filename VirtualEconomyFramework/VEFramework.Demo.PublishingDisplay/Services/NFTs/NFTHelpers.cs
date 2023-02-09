@@ -106,7 +106,11 @@ namespace VEFramework.Demo.PublishingDisplay.Services.NFTs
         /// <summary>
         /// Infura Url for the access to the IPFS API
         /// </summary>
-        public static string InfuraAPIURL = "https://ipfs.infura.io:5001";
+        public static string InfuraAPIURL = "https://venftappserver.azurewebsites.net/api/uploadtoipfs";//"https://ipfs.infura.io:5001";
+        /// <summary>
+        /// IPFS Gateway address
+        /// </summary>
+        public static string GatewayURL = "https://ipfs.io/ipfs/";//"https://bdp.infura-ipfs.io/ipfs/";
         /// <summary>
         /// Main default tokens in VEFramework - CORZT
         /// </summary>
@@ -166,7 +170,7 @@ namespace VEFramework.Demo.PublishingDisplay.Services.NFTs
         public static string GetHashFromIPFSLink(string link)
         {
             if (string.IsNullOrEmpty(link)) return string.Empty;
-            var hash = link.Replace("https://gateway.ipfs.io/ipfs/", string.Empty).Replace("https://ipfs.infura.io/ipfs/", string.Empty);
+            var hash = link.Replace("https://gateway.ipfs.io/ipfs/", string.Empty).Replace("https://ipfs.io/ipfs/", string.Empty).Replace("https://ipfs.infura.io/ipfs/", string.Empty).Replace(GatewayURL, string.Empty);
             return hash;
         }
         /// <summary>
@@ -176,7 +180,10 @@ namespace VEFramework.Demo.PublishingDisplay.Services.NFTs
         /// <returns></returns>
         public static string GetIPFSLinkFromHash(string? hash)
         {
-            return !string.IsNullOrEmpty(hash) ? string.Concat("https://ipfs.infura.io/ipfs/", hash) : string.Empty;
+            if (hash.Contains("http"))
+                return hash;
+            else
+                return !string.IsNullOrEmpty(hash) ? string.Concat(GatewayURL, hash) : string.Empty;
         }
         /// <summary>
         /// Obsolete function - just example how to redirect upload through different server
@@ -213,7 +220,7 @@ namespace VEFramework.Demo.PublishingDisplay.Services.NFTs
                     {
                         try
                         {
-                            var respb = await IPFSDownloadFromInfuraAsync(link.Replace("https://gateway.ipfs.io/ipfs/", string.Empty).Replace("https://ipfs.infura.io/ipfs/",string.Empty));
+                            var respb = await IPFSDownloadFromInfuraAsync(GetHashFromIPFSLink(link));
                             if (respb != null)
                             {
                                 var resp = new MemoryStream(respb);

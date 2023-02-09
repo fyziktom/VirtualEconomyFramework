@@ -1,0 +1,40 @@
+﻿<h4>Piano</h4>
+
+<div>
+    <div class="row">
+        <div class="col">
+            <Editable Item="@PianoModel" ParameterName="@(nameof(PianoModel.Name))" TItem="Piano" ItemChanged="@OnPianoChanged" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <Editable Item="@PianoModel" ParameterName="@(nameof(PianoModel.Brand))" TItem="Piano" ItemChanged="@OnPianoChanged" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <Editable Item="@PianoModel" ParameterName="@(nameof(PianoModel.NumberOfKeys))" TItem="Piano" ItemChanged="@OnPianoChanged" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <Editable Item="@PianoModel" ParameterName="@(nameof(PianoModel.Volume))" TItem="Piano" ItemChanged="@OnPianoChanged" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <Editable Item="@PianoModel" ParameterName="@(nameof(PianoModel.IsOn))" TItem="Piano" ItemChanged="@OnPianoChanged" />
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public Piano PianoModel { get; set; } = new Piano() { Name = "S82", Brand = "Yamaha" };
+
+    private void OnPianoChanged(Piano e)
+    {
+        PianoModel = e;
+        StateHasChanged();
+    }
+}

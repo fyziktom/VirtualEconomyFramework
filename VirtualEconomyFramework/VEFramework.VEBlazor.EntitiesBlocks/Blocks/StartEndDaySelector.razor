@@ -1,0 +1,66 @@
+﻿@inherits TimeRangeComponentBase
+@if (ShowDatesAsLabels)
+{
+    <Row>
+        <Column>
+            <Span>Start Date: @(StartTime.ToString("dd.MM.yyyy hh:mm:ss"))</Span>
+            <Span>End Date: @(EndTime.ToString("dd.MM.yyyy hh:mm:ss"))</Span>
+        </Column>
+    </Row>
+}
+<Row>
+    <Column>
+        <Field Flex="Flex.AlignItems.Center">
+            <FieldLabel Margin="Margin.Is0.FromBottom.Is2.FromEnd">@StartDayLabel</FieldLabel>
+            <Addons>
+              
+                <Addon AddonType="AddonType.Body">
+                    <DatePicker @ref="@datePickerStartTime"
+                                InputMode="DateInputMode.DateTime"
+                                Date="@StartTime"
+                                DateChanged="@startTimeDateChanged"
+                                TValue="DateTime" />
+                </Addon>
+            </Addons>
+        </Field>
+    </Column>
+    <Column >
+        <Field Flex="Flex.AlignItems.Center">
+            <FieldLabel Margin="Margin.Is0.FromBottom.Is2.FromEnd">@EndDayLabel</FieldLabel>
+            <Addons>
+              
+                <Addon AddonType="AddonType.Body">
+                    <DatePicker @ref="@datePickerEndTime"
+                                InputMode="DateInputMode.DateTime"
+                                Date="@EndTime"
+                                DateChanged="@endTimeDateChanged"
+                                TValue="DateTime" />
+                </Addon>
+            </Addons>
+        </Field>
+    </Column>
+</Row>
+
+ @code {
+    [Parameter]
+    public bool ShowDatesAsLabels { get; set; } = false;
+
+    DatePicker<DateTime>? datePickerStartTime;
+    DatePicker<DateTime>? datePickerEndTime;
+
+    async Task startTimeDateChanged(DateTime e)
+    {
+        if (e == null) return;
+        StartTime = (DateTime)e;
+        await InvokeAsync(StateHasChanged);
+        await StartTimeChanged.InvokeAsync(StartTime);
+    }
+
+    async Task endTimeDateChanged(DateTime e)
+    {
+        if (e == null) return;
+        EndTime = (DateTime)e;
+        await InvokeAsync(StateHasChanged);
+        await EndTimeChanged.InvokeAsync(EndTime);
+    }
+}

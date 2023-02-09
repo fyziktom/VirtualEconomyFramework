@@ -34,6 +34,26 @@
         AppData.DisplayGettingStartedMenuItem = true;
         AppData.GettingStartedPageName = "gettingstarted";
         AppData.AppTokenId = VEDriversLite.NFT.Coruzant.CoruzantNFTHelpers.CoruzantTokenId;
+
+        VEDriversLite.StorageDriver.Helpers.IPFSHelpers.GatewayURL = "https://ve-framework.com/ipfs/"; //veframework public gateway
+
+        var res = await VEDriversLite.VEDLDataContext.Storage.AddDriver(new VEDriversLite.StorageDriver.StorageDrivers.Dto.StorageDriverConfigDto()
+            {
+                Type = "IPFS",
+                Name = "BDP",
+                Location = "Cloud",
+                ID = "BDP",
+                IsPublicGateway = true,
+                IsLocal = false,
+                ConnectionParams = new VEDriversLite.StorageDriver.StorageDrivers.StorageDriverConnectionParams()
+                {
+                    APIUrl = "https://ve-framework.com/",
+                    APIPort = 443,
+                    Secured = false,
+                    GatewayURL = "https://ve-framework.com/ipfs/",
+                    GatewayPort = 443,
+                }
+            });
         
         if ( AppData.MintingTabsData.TryGetValue( "default", out var tab ) )
         {

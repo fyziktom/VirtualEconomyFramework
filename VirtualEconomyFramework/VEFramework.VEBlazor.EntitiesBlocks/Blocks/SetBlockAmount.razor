@@ -1,0 +1,53 @@
+﻿@inherits TimeRangeComponentBase
+
+<Tabs SelectedTab="@selectedTab" SelectedTabChanged="@selectedTabChanged">
+    <Items>
+        <Tab Name="amount">By Amount</Tab>
+        <Tab Name="power">By Power</Tab>
+    </Items>
+    <Content>
+        <TabPanel Name="amount">
+            <Field Margin="Margin.Is2.FromTop">
+                <FieldLabel>Total Amount of Power</FieldLabel>
+                <NumericPicker TValue="double" Min="0" Max="1000" Value="@Amount" ValueChanged="@onAmountChanged" Decimals="4" />
+                <FieldHelp>Please fill the total amount of energy in the block</FieldHelp>
+            </Field>
+        </TabPanel>
+        <TabPanel Name="power">
+            <Field Margin="Margin.Is2.FromTop">
+                <FieldLabel>Power per hour</FieldLabel>
+                <NumericPicker TValue="double" Min="0" Max="1000" Value="@power" ValueChanged="@onPowerChanged" Decimals="4" />
+                <FieldHelp>Please fill the power of energy per hour</FieldHelp>
+            </Field>
+        </TabPanel>
+    </Content>
+</Tabs>
+
+@code {
+    [Parameter]
+    public double Amount { get; set; } = 0;
+    [Parameter]
+    public EventCallback<double> AmountChanged { get; set; }
+
+    string selectedTab = "amount";
+    double power = 0;
+
+    private Task selectedTabChanged(string name)
+    {
+        selectedTab = name;
+        return Task.CompletedTask;
+    }
+
+    private async Task onAmountChanged(double amount)
+    {
+        Amount = amount;
+        await AmountChanged.InvokeAsync(amount);
+    }
+
+    private async Task onPowerChanged(double pwr)
+    {
+        power = pwr;
+        Amount = power * Duration.TotalHours;
+        await AmountChanged.InvokeAsync(power * Duration.TotalHours);
+    }
+}

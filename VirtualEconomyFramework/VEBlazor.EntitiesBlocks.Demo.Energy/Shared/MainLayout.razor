@@ -1,0 +1,15 @@
+﻿@inherits LayoutComponentBase
+@inject AppData AppData
+
+<div class="page">
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+
+    <main>
+        <Div Class="context" Padding="Padding.Is3.OnX.Is4.OnX.OnTablet.Is2.OnY">
+            @Body
+
+        </Div>
+    </main>
+</div>

@@ -1,0 +1,228 @@
+﻿@inherits EntitiesBlocksComponentBase
+@inject AppData AppData
+
+<Card Margin="Margin.Is4.FromBottom" Style="max-height: 400px;">
+    @if (Item != null)
+    {
+        <CardHeader>
+            <CardTitle>@(Item.Type.ToString()) - @Item.Name</CardTitle>
+    </CardHeader>
+    <CardBody>
+        <Row>
+            <Column>
+                <Button Color="Color.Primary" Outline Clicked="@(async () => await Refresh())">RedrawConsumption</Button>
+            </Column>
+        </Row>
+        <Row>
+            <Column>
+                <Row>
+                    <Column>
+                        <Field>
+                            <FieldLabel>Window Start Hour</FieldLabel>
+                            <NumericPicker @bind-Value="WindowStartHour" Decimals="0" />
+                        </Field>
+                    </Column>
+                    <Column>
+                        <Field>
+                            <FieldLabel>Window End Hour</FieldLabel>
+                            <NumericPicker @bind-Value="WindowEndHour" Decimals="0" />
+                        </Field>
+                    </Column>
+                </Row>
+            </Column>
+        </Row>
+        <Row Margin="Margin.Is2.FromTop">
+            <Column>
+                <Row>
+                    <Column>
+                        <Check TValue="bool" Checked="@WithWindowGraph" CheckedChanged="@OnWithWindowGraphChanged">With Window Graph</Check>
+                    </Column>
+                    <Column>
+                        <Check TValue="bool" Checked="@DrawInvertedWindow" CheckedChanged="@OnWithWindowInvertedGraphChanged">With Inverted Window Graph</Check>
+                    </Column>
+                </Row>
+            </Column>
+        </Row>
+        <Row Margin="Margin.Is4.FromTop">
+            <Column>
+                <LineChart @ref="lineChart" TItem="double" Options="@lineChartOptions" />
+            </Column>
+        </Row>
+    </CardBody>
+    }
+</Card>
+
+@code {
+
+    [Parameter]
+    public bool WithWindowGraph { get; set; } = false;
+    [Parameter]
+    public int WindowStartHour { get; set; } = 7;
+    [Parameter]
+    public int WindowEndHour { get; set; } = 21;
+    [Parameter]
+    public bool DrawInvertedWindow { get; set; } = false;
+
+    private LineChart<double>? lineChart;
+
+    LineChartOptions lineChartOptions = new()
+        {
+            AspectRatio = 1.5,
+            Scales = new()
+            {
+                Y = new()
+                {
+                    Title = new()
+                    {
+                        Display = true,
+                        Text = "Power"
+                    },
+                    Ticks = new ChartAxisTicks
+                    {
+                        Callback = (value, index, values) => value / 1000 + "MWh",
+                        StepSize = 10000
+                    }
+                }
+            }
+        };
+
+    string[] Labels = { "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" };
+    List<string> backgroundColors = new List<string> { ChartColor.FromRgba(255, 99, 132, 0.2f), ChartColor.FromRgba(54, 162, 235, 0.2f), ChartColor.FromRgba(255, 206, 86, 0.2f), ChartColor.FromRgba(75, 192, 192, 0.2f), ChartColor.FromRgba(153, 102, 255, 0.2f), ChartColor.FromRgba(255, 159, 64, 0.2f) };
+    List<string> borderColors = new List<string> { ChartColor.FromRgba(255, 99, 132, 1f), ChartColor.FromRgba(54, 162, 235, 1f), ChartColor.FromRgba(255, 206, 86, 1f), ChartColor.FromRgba(75, 192, 192, 1f), ChartColor.FromRgba(153, 102, 255, 1f), ChartColor.FromRgba(255, 159, 64, 1f) };
+
+    private List<string> backgroundColors1 = new() { ChartColor.FromRgba(200, 50, 132, 0.2f), ChartColor.FromRgba(54, 100, 235, 0.2f), ChartColor.FromRgba(255, 150, 86, 0.2f), ChartColor.FromRgba(75, 140, 192, 0.2f), ChartColor.FromRgba(103, 102, 255, 0.2f), ChartColor.FromRgba(205, 109, 64, 0.2f) };
+    private List<string> borderColors1 = new() { ChartColor.FromRgba(200, 50, 132, 1f), ChartColor.FromRgba(54, 162, 200, 1f), ChartColor.FromRgba(255, 180, 86, 1f), ChartColor.FromRgba(75, 140, 192, 1f), ChartColor.FromRgba(103, 102, 255, 1f), ChartColor.FromRgba(205, 109, 64, 1f) };
+
+    private List<string> backgroundColors2 = new() { ChartColor.FromRgba(150, 50, 202, 0.2f), ChartColor.FromRgba(100, 100, 205, 0.2f), ChartColor.FromRgba(155, 150, 146, 0.2f), ChartColor.FromRgba(75, 140, 102, 0.2f), ChartColor.FromRgba(103, 102, 205, 0.2f), ChartColor.FromRgba(105, 109, 164, 0.2f) };
+    private List<string> borderColors2 = new() { ChartColor.FromRgba(150, 50, 202, 1f), ChartColor.FromRgba(100, 162, 200, 1f), ChartColor.FromRgba(155, 180, 146, 1f), ChartColor.FromRgba(75, 140, 102, 1f), ChartColor.FromRgba(103, 102, 205, 1f), ChartColor.FromRgba(105, 109, 164, 1f) };
+
+
+    async Task OnWithWindowGraphChanged(bool value)
+    {
+        WithWindowGraph = value;
+        await HandleRedraw();
+    }
+    async Task OnWithWindowInvertedGraphChanged(bool value)
+    {
+        DrawInvertedWindow = value;
+        await HandleRedraw();
+    }
+
+    async Task HandleRedraw()
+    {
+        if (lineChart != null)
+        {
+            await lineChart.Clear();
+
+            await lineChart.AddLabelsDatasetsAndUpdate(Labels, GetLineChartDataset());
+
+            if (WithWindowGraph)
+            {
+                await lineChart.AddDatasetsAndUpdate(GetConsumptionGraphWithWindow(WindowStartHour, WindowEndHour, false));
+            }
+            if (DrawInvertedWindow)
+            {
+                await lineChart.AddDatasetsAndUpdate(GetConsumptionGraphWithWindow(WindowStartHour, WindowEndHour, true));
+            }
+        }
+    }
+
+    LineChartDataset<double> GetConsumptionGraphWithWindow(int windowstarthour, int windowendhour, bool invertWindow = false)
+    {
+        var label = AppData.EntitiesHandler.UnitLabel + " in window: " + $"{windowstarthour}:00-{windowendhour}:00";
+        if (invertWindow)
+            label = AppData.EntitiesHandler.UnitLabel + " in window: " + $"00:00-{windowstarthour}:00-{windowendhour}:00-24:00";
+
+        if (Item != null && Item.Id != null)
+        {
+            var data = AppData.EntitiesHandler.GetConsumptionOfEntityWithWindow(Item.Id,
+                                                                                BlockTimeframe.Month,
+                                                                                new DateTime(2022, 1, 1),
+                                                                                new DateTime(2023, 1, 1),
+                                                                                DateTime.MinValue.AddHours(windowstarthour),
+                                                                                DateTime.MinValue.AddHours(windowendhour),
+                                                                                invertWindow,
+                                                                                true,
+                                                                                true,
+                                                                                null);
+
+            return new LineChartDataset<double>
+                {
+                    Label = label,
+                    Data = data.Select(t => t.Amount).ToList(),
+                    BackgroundColor = invertWindow ? backgroundColors2 : backgroundColors1,
+                    BorderColor = invertWindow ? borderColors2 : borderColors1,
+                    Fill = true,
+                    PointRadius = 3,
+                    CubicInterpolationMode = "monotone",
+                };
+        }
+        else
+            return new LineChartDataset<double>
+                {
+                    Label = label,
+                    Data = new List<double> { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
+                    BackgroundColor = invertWindow ? backgroundColors2 : backgroundColors1,
+                    BorderColor = invertWindow ? borderColors2 : borderColors1,
+                    Fill = true,
+                    PointRadius = 3,
+                    CubicInterpolationMode = "monotone",
+                };
+    }
+
+    LineChartDataset<double> GetLineChartDataset()
+    {
+        if (Item != null && Item.Id != null)
+        {
+            var data = AppData.EntitiesHandler.GetConsumptionOfEntity(Item.Id,
+                                                                      BlockTimeframe.Month,
+                                                                      new DateTime(2022, 1, 1),
+                                                                      new DateTime(2023, 1, 1),
+                                                                      true,
+                                                                      true,
+                                                                      null);
+
+            return new LineChartDataset<double>
+                {
+                    Label = AppData.EntitiesHandler.UnitLabel,
+                    Data = data.Select(t => t.Amount).ToList(),
+                    BackgroundColor = backgroundColors,
+                    BorderColor = borderColors,
+                    Fill = true,
+                    PointRadius = 3,
+                    CubicInterpolationMode = "monotone",
+                };
+        }
+        else
+        {
+            return new LineChartDataset<double>
+                {
+                    Label = AppData.EntitiesHandler.UnitLabel,
+                    Data = new List<double> { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
+                    BackgroundColor = backgroundColors,
+                    BorderColor = borderColors,
+                    Fill = true,
+                    PointRadius = 3,
+                    CubicInterpolationMode = "monotone",
+                };
+        }
+    }
+
+    public async Task Refresh()
+    {
+        if (Item != null)
+        {
+            await HandleRedraw();
+        }
+    }
+
+    public async Task LoadData(TreeItem item)
+    {
+        if (item != null && item.Id != null)
+        {
+            Item = item;
+            await InvokeAsync(StateHasChanged);
+            await HandleRedraw();
+        }
+    }
+}

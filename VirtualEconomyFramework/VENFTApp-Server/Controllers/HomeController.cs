@@ -53,10 +53,11 @@ namespace VENFTApp_Server.Controllers
     [ApiController]
     public class HomeController : ControllerBase
     {
+
         [HttpPost]
         [AllowCrossSiteJsonAttribute]
-        [Route("upload")]
-        public async Task<string> Upload(IFormFile file)
+        [Route("uploadtoipfs")]
+        public async Task<string> UploadToIPFS(IFormFile file)
         {
             if (file == null)
                 return "Error. Provided null file.";
@@ -64,84 +65,18 @@ namespace VENFTApp_Server.Controllers
             using var stream = file.OpenReadStream();
             try
             {
-                var imageLink = await NFTHelpers.ipfs.FileSystem.AddAsync(stream, file.FileName);
-                //var imageLink = await NFTHelpers.UploadInfura(stream, file.FileName);
-                var link = "https://gateway.ipfs.io/ipfs/" + imageLink.ToLink().Id.ToString();
-                return link;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Error during uploading the image to the IPFS." + ex.Message);
-            }
-            return string.Empty;
-        }
-
-        [HttpPost]
-        [AllowCrossSiteJsonAttribute]
-        [Route("uploadinfura")]
-        public async Task<string> UploadInfura(IFormFile file)
-        {
-            if (file == null)
-                return "Error. Provided null file.";
-
-            using var stream = file.OpenReadStream();
-            try
-            {
-                var imageLink = await NFTHelpers.UploadInfura(stream, file.FileName);
-                return imageLink;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Error during uploading the image to the IPFS." + ex.Message);
-            }
-            return string.Empty;
-        }
-
-        /*
-        [HttpPost]
-        [AllowCrossSiteJsonAttribute]
-        [Route("uploadinfura")]
-        public async Task<string> UploadInfura(IFormFile file)
-        {
-            if (file == null)
-                return "Error. Provided null file.";
-
-            using var stream = file.OpenReadStream();
-            try
-            {
-                var id = MainDataContext.IpfsProjectID;
-                var secret = MainDataContext.IpfsSecret;
-
-                if (file.Length <= 0)
-                    return string.Empty;
-                var link = string.Empty;
-                var fileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"');
-                using (var client = new HttpClient())
+                var result = await VEDriversLite.VEDLDataContext.Storage.SaveFileToIPFS(new VEDriversLite.StorageDriver.StorageDrivers.Dto.WriteStreamRequestDto()
                 {
-                    //client.BaseAddress = new Uri($"https://{id}:{secret)@ipfs.infura.io:5001/api/v0/add";
-                    var url = $"https://{id}:{secret}@ipfs.infura.io:5001/api/v0/add";
-
-                    using (var content = new MultipartFormDataContent())
-                    {
-                        content.Add(new StreamContent(file.OpenReadStream())
-                        {
-                            Headers =
-                            {
-                                ContentLength = file.Length,
-                                ContentType = new MediaTypeHeaderValue(file.ContentType)
-                            }
-                        }, "File", fileName);
-
-                        var response = await client.PostAsync(url, content);
-                        var ipfsresponse = await response.Content.ReadAsStringAsync();
-                        var res = JsonConvert.DeserializeObject<IPFSResponse>(ipfsresponse);
-                        if (res != null)
-                        {
-                            link = "https://gateway.ipfs.io/ipfs/" + res.Hash;
-                        }
-                    }
-                }
-                return link;
+                    Data = stream,
+                    Filename = file.FileName,
+                    DriverType = VEDriversLite.StorageDriver.StorageDrivers.StorageDriverType.IPFS,
+                    BackupInLocal = false,
+                    StorageId = "BDP"
+                });
+                if (result.Item1)
+                    return result.Item2;
+                else
+                    return string.Empty;
             }
             catch (Exception ex)
             {
@@ -149,7 +84,6 @@ namespace VENFTApp_Server.Controllers
             }
             return string.Empty;
         }
-        */
 
         [AllowCrossSiteJsonAttribute]
         [HttpGet("GetAccountBalance/{address}")]

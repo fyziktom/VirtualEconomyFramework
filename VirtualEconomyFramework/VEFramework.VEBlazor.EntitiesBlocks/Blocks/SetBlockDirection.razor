@@ -1,0 +1,20 @@
+﻿<Field>
+    <RadioGroup TValue="BlockDirection" Name="blockdirection" CheckedValue="@Direction" CheckedValueChanged="@onChekedValueChanged">
+        <Radio Value="@(BlockDirection.Created)">Created</Radio>
+        <Radio Value="@(BlockDirection.Consumed)">Consumed</Radio>
+        <Radio Value="@(BlockDirection.Stored)">Stored</Radio>
+    </RadioGroup>
+</Field>
+
+@code {
+    [Parameter]
+    public BlockDirection Direction { get; set; }
+    [Parameter]
+    public EventCallback<BlockDirection> DirectionChanged { get; set; }
+
+    private async Task onChekedValueChanged(BlockDirection e)
+    {
+        Direction = e;
+        await DirectionChanged.InvokeAsync(e);
+    }
+}

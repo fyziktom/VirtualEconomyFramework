@@ -117,7 +117,7 @@
                                             }
                                             @if (item.Type == DataItemType.Image)
                                             {
-                                                <CardImage Source="@(NFTHelpers.GetIPFSLinkFromHash(item.Hash))"></CardImage>
+                                                <CardImage Source="@(VEDriversLite.StorageDriver.Helpers.IPFSHelpers.GetIPFSLinkFromHash(item.Hash))"></CardImage>
                                             }
                                             else if (item.Type == DataItemType.PDF)
                                             {
@@ -144,7 +144,7 @@
                                                 {
                                                     <Row>
                                                         <Column>
-                                                            <Video Source="@(NFTHelpers.GetIPFSLinkFromHash(item.Hash))" Style="min-height:160px;" />
+                                                            <Video Source="@(VEDriversLite.StorageDriver.Helpers.IPFSHelpers.GetIPFSLinkFromHash(item.Hash))" Style="min-height:160px;" />
                                                         </Column>
                                                     </Row>
                                                 }
@@ -153,7 +153,7 @@
                                                 {
                                                     <Row>
                                                         <Column>
-                                                            <Button Color="Color.Primary" Type="ButtonType.Link" To="@(NFTHelpers.GetIPFSLinkFromHash(item.Hash))" Target="Target.Blank" Block>Open PDF in new Tab</Button>
+                                                            <Button Color="Color.Primary" Type="ButtonType.Link" To="@(VEDriversLite.StorageDriver.Helpers.IPFSHelpers.GetIPFSLinkFromHash(item.Hash))" Target="Target.Blank" Block>Open PDF in new Tab</Button>
                                                         </Column>
                                                     </Row>
                                                 }                                                
@@ -163,7 +163,7 @@
                                                     {
                                                         <Row Margin="Margin.Is2.FromTop">
                                                             <Column>
-                                                                <Button Color="Color.Primary" Type="ButtonType.Link" To="@(NFTHelpers.GetIPFSLinkFromHash(item.Hash))" Target="Target.Blank" Block>Open JSON in new Tab</Button>
+                                                                <Button Color="Color.Primary" Type="ButtonType.Link" To="@(VEDriversLite.StorageDriver.Helpers.IPFSHelpers.GetIPFSLinkFromHash(item.Hash))" Target="Target.Blank" Block>Open JSON in new Tab</Button>
                                                             </Column>
                                                         </Row>
                                                     } 
@@ -171,7 +171,7 @@
                                                     {
                                                         <Row Margin="Margin.Is2.FromTop">
                                                             <Column>
-                                                                <Button Color="Color.Primary" Type="ButtonType.Link" To="@(NFTHelpers.GetIPFSLinkFromHash(item.Hash))" Target="Target.Blank" Block>Open HTML in new Tab</Button>
+                                                                <Button Color="Color.Primary" Type="ButtonType.Link" To="@(VEDriversLite.StorageDriver.Helpers.IPFSHelpers.GetIPFSLinkFromHash(item.Hash))" Target="Target.Blank" Block>Open HTML in new Tab</Button>
                                                             </Column>
                                                         </Row>
                                                     }  
@@ -286,7 +286,16 @@
         {
             byte[] imd = null;          
             if (_imageData == null || _imageData.Length == 0)
-                imd = await NFTHelpers.IPFSDownloadFromInfuraAsync(NFTHelpers.GetHashFromIPFSLink(link));
+            {
+                //imd = await NFTHelpers.IPFSDownloadFromInfuraAsync(VEDriversLite.StorageDriver.Helpers.IPFSHelpers.GetHashFromIPFSLink(link));
+                var result = await VEDriversLite.VEDLDataContext.Storage.GetFileFromIPFS(new VEDriversLite.StorageDriver.StorageDrivers.Dto.ReadFileRequestDto()
+                    {
+                        DriverType = VEDriversLite.StorageDriver.StorageDrivers.StorageDriverType.IPFS,
+                        Hash = VEDriversLite.StorageDriver.Helpers.IPFSHelpers.GetHashFromIPFSLink(link),
+                    });
+                if (result.Item1)
+                    imd = result.Item2;
+            }
             else if (_imageData.Length > 0)
                 imd = _imageData;
 
@@ -343,7 +352,7 @@
         var item = new VEDriversLite.NFT.Dto.NFTDataItem()
             {
                 Type = itemType,
-                Hash = NFTHelpers.GetHashFromIPFSLink(mainIPFSLink),
+                Hash = VEDriversLite.StorageDriver.Helpers.IPFSHelpers.GetHashFromIPFSLink(mainIPFSLink),
                 IsMain = true
             };
         NFT.DataItems.Add(item);
@@ -382,7 +391,7 @@
                 i.IsMain = false;
 
             item.IsMain = e;
-            if (e) NFT.ImageLink = NFTHelpers.GetIPFSLinkFromHash(item.Hash);
+            if (e) NFT.ImageLink = VEDriversLite.StorageDriver.Helpers.IPFSHelpers.GetIPFSLinkFromHash(item.Hash);
 
             StateHasChanged();
         }

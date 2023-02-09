@@ -18,7 +18,7 @@
 		  - Just cleanup and added XML tags
 	  </PackageReleaseNotes>
 	  <PackageReadmeFile>README.md</PackageReadmeFile>
-	  <PackageLicenseExpression>BSD-2-Clause</PackageLicenseExpression>
+	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>
@@ -30,6 +30,10 @@
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\VEDriversLite.Common\VEDriversLite.Common.csproj" />
   </ItemGroup>
 
 
