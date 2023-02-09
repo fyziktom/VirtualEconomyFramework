@@ -31,7 +31,7 @@
   </ItemGroup>
   
   <PropertyGroup>
-    <DocumentationFile>C:\repositories\VirtualEconomyFramework\VirtualEconomyFramework\VEDriversLite\VEDriversLite.xml</DocumentationFile>
+    <DocumentationFile></DocumentationFile>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
