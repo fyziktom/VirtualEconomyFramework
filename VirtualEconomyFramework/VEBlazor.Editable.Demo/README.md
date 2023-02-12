@@ -1,0 +1,1 @@
+Vysvětlení k tomuto demu je součástí [Readme knihovny VEFramework.VEBlazor.Editable](https://github.com/fyziktom/VirtualEconomyFramework/tree/main/VirtualEconomyFramework/VEFramework.VEBlazor.Editable)
