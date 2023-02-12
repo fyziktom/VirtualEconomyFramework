@@ -4,6 +4,17 @@
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <Title>VEFramework.VEBlazor.Editable</Title>
+    <Version>0.3.3</Version>
+    <Authors>fyziktom</Authors>
+    <Company>VEFramework</Company>
+    <Copyright>fyziktom</Copyright>
+    <PackageProjectUrl>https://veframework.com/</PackageProjectUrl>
+    <Description>Simple generic component for create any "Label" editable. It displays "pencil" icon next to label and edit the class parameter.</Description>
+    <RepositoryUrl>https://github.com/fyziktom/VirtualEconomyFramework</RepositoryUrl>
+    <PackageTags>Component editable generic helper</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
 
@@ -17,6 +28,13 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>
