@@ -1,5 +1,6 @@
 [![VEDriversLite](https://img.shields.io/nuget/v/VEFramework.VEDriversLite?label=VEDriversLite)](https://www.nuget.org/packages/VEFramework.VEDriversLite/)
 [![VEBlazor](https://img.shields.io/nuget/v/VEFramework.VEBlazor?label=VEBlazor)](https://www.nuget.org/packages/VEFramework.VEBlazor/)
+[![VEBlazor.Editable](https://img.shields.io/nuget/v/VEFramework.VEBlazor.Editable?label=VEBlazor.Editable)](https://www.nuget.org/packages/VEFramework.VEBlazor.Editable/)
 
 # VEFramework
 
@@ -20,6 +21,12 @@ dotnet add package VEFramework.VEDriversLite --version 0.3.21
 
 ```shell
 dotnet add package VEFramework.VEBlazor --version 0.3.21
+```
+
+- Dodatečná knihovna [`VEBlazor.Editable`](./VirtualEconomyFramework/VEFramework.VEBlazor.Editable) pro zobrazení a editaci parametrů tříd v UI
+
+```shell
+dotnet add package VEFramework.VEBlazor.Editable --version 0.3.3
 ```
 
 Zkuste si náš [hello world příklad](#hello-world).
