@@ -543,7 +543,7 @@ namespace VEDriversLite.EntitiesBlocks.Entities
                                                                                 b.StartTime < endtime)
                                                                     .OrderBy(b => b.StartTime).ToList();
                         
-            var repblocksresult = GetSummedValuesOfRepetitiveBlocks(timeframesteps, starttime, endtime, takeConsumptionAsInvert, justThisDirections, justThisType);
+            var repblocksresult = GetSummedValuesOfRepetitiveBlocks(timeframesteps, starttime, endtime, takeConsumptionAsInvert, justThisDirections, justThisType, false);
 
             var counter = 0;
             foreach (var block in blocks)

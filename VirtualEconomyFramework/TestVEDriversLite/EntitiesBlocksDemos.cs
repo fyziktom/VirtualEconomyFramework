@@ -42,9 +42,11 @@ namespace TestVEDriversLite
             // SET Coordinates of PVE
             Coordinates coord = new Coordinates(12.097178, -68.914773);
             // SET Start of the simulation
-            var start = new DateTime(2022, 1, 1);
+            var start = new DateTime(2022, 1, 3); // 3rd of January 2022 is Monday
             // SET Number of days which you want to simulate
-            var daysOfSimulation = 31;
+            var daysOfSimulation = 1;
+            // SET output timeframe which will be calculated as step
+            var outputTimeframe = BlockTimeframe.Hour;
             // create simulator objects
             var eGrid = new BaseEntitiesHandler();
             var PVESim = new PVPanelsGroupsHandler();
@@ -55,7 +57,7 @@ namespace TestVEDriversLite
 
             var owner = "hotel";
 
-            var powerOfAC = 2;
+            var powerOfAC = 1.5;
             var powerOfFridge = 0.12;
             var numberOfRooms = 30;
             var averageOccupancy = 0.6;
@@ -135,9 +137,26 @@ namespace TestVEDriversLite
             if (res.Item1)
                 kitchenId = res.Item2.Item2;
 
+            name = "laundry";
+            var laundryId = string.Empty;
+            var laundryEnt = new Device() { Type = EntityType.Consumer, Name = name, ParentId = sharedGroupId };
+            res = eGrid.AddEntity(laundryEnt, name, owner);
+            if (res.Item1)
+                laundryId = res.Item2.Item2;
+
+            name = "mosquitoTraps";
+            var mosquitoTrapsId = string.Empty;
+            var mosquitoTrapsEnt = new Device() { Type = EntityType.Consumer, Name = name, ParentId = sharedGroupId };
+            res = eGrid.AddEntity(mosquitoTrapsEnt, name, owner);
+            if (res.Item1)
+                mosquitoTrapsId = res.Item2.Item2;
+
+
             eGrid.AddSubEntityToEntity(networkId, sharedGroupId);
             eGrid.AddSubEntityToEntity(sharedGroupId, poolsId);
             eGrid.AddSubEntityToEntity(sharedGroupId, kitchenId);
+            eGrid.AddSubEntityToEntity(sharedGroupId, laundryId);
+            eGrid.AddSubEntityToEntity(sharedGroupId, mosquitoTrapsId);
 
             double[] pump = new double[24]
             {
@@ -160,10 +179,37 @@ namespace TestVEDriversLite
              //  00,  01,  02,  03,  04,  05, 06,  07,  08,  09,  10,  11,  12,  13,  14,  15,  16,  17,  18,  19,  20,  21,  22,  23 
             };
 
-            var kitchenSim = new DeviceSimulator(cooker, 2);
+            var kitchenSim = new DeviceSimulator(cooker, 2 * averageOccupancy);
             _ = kitchenEnt.AddSimulator(kitchenSim);
-            var otherKitchenSim = new DeviceSimulator(othersKitchen, 2);
+            var otherKitchenSim = new DeviceSimulator(othersKitchen, 2 * averageOccupancy );
             _ = kitchenEnt.AddSimulator(otherKitchenSim);
+
+
+            double[] washingMachine = new double[24]
+            {
+                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.5, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
+             //  00,  01,  02,  03,  04,  05, 06,  07,  08,  09,  10,  11,  12,  13,  14,  15,  16,  17,  18,  19,  20,  21,  22,  23 
+            };
+
+            double[] dryer = new double[24]
+            {
+                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.6, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
+             //  00,  01,  02,  03,  04,  05, 06,  07,  08,  09,  10,  11,  12,  13,  14,  15,  16,  17,  18,  19,  20,  21,  22,  23 
+            };
+
+            var washingMachineSimulator = new DeviceSimulator(washingMachine, 1 * averageOccupancy, Week.WorkDays);
+            _ = laundryEnt.AddSimulator(washingMachineSimulator);
+            var dryerSimulator = new DeviceSimulator(dryer, 1 * averageOccupancy, Week.WorkDays);
+            _ = laundryEnt.AddSimulator(dryerSimulator);
+
+            double[] mosquitoTrap = new double[24]
+            {
+                1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0
+             //  00,  01,  02,  03,  04,  05,  06,  07,  08,  09,  10,  11,  12,  13,  14,  15,  16,  17,  18,  19,  20,  21,  22,  23 
+            };
+
+            var mosquitoTrapsSim = new DeviceSimulator(mosquitoTrap, 0.03 * 4);
+            _ = mosquitoTrapsEnt.AddSimulator(mosquitoTrapsSim);
 
             #endregion
             ////////////////////////////////////////////////
@@ -189,7 +235,7 @@ namespace TestVEDriversLite
 
             double[] acOfficeRun = new double[24]
             {
-                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.7, 0.3, 0.4, 0.6, 0.6, 0.6, 0.5, 0.5, 0.5, 0.4, 0.3, 0.3, 0.2, 0.0, 0.0, 0.0
+                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.5, 0.3, 0.4, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.4, 0.3, 0.3, 0.2, 0.0, 0.0, 0.0
              //  00,  01,  02,  03,  04,  05, 06,  07,  08,  09,  10,  11,  12,  13,  14,  15,  16,  17,  18,  19,  20,  21,  22,  23 
             };
 
@@ -257,8 +303,6 @@ namespace TestVEDriversLite
             PVESim.CommonPanel.Azimuth = panelAzimuthW;
             _ = PVESim.AddPanelToGroup(westPanelsId, PVESim.CommonPanel, numOfPanelsInString).ToList();
             
-            await Console.Out.WriteLineAsync($"Total Peak Power of PVE: {PVESim.TotalPeakPower} kWp");
-
             // add PVE simulator to entity
             eGrid.AddSimulatorToEntity(pvesourceId, PVESim);
 
@@ -267,82 +311,115 @@ namespace TestVEDriversLite
 
             // print Entities tree
 
+            await Console.Out.WriteLineAsync("-------------------Entities Tree------------------------");
             var tree = eGrid.GetTree(networkId);
             TreeViewHelpers.PrintTree(tree, "\n", false);
 
+            await Console.Out.WriteLineAsync("--------------------------------------------------------");
+            // print PVE info
+
+            await Console.Out.WriteLineAsync("---------------------PVE Info------------------------");
+            await Console.Out.WriteLineAsync($"Total Peak Power of PVE: {PVESim.TotalPeakPower} kWp");
+            await Console.Out.WriteLineAsync($"Total Number Of panels: {PVESim.PanelCount}");
+            await Console.Out.WriteLineAsync("--------------------------------------------------------");
+
             // calculate bilance in specific range
             var bilance = eGrid.GetConsumptionOfEntity(networkId,
-                                                       BlockTimeframe.Hour,
+                                                       outputTimeframe,
                                                        start,
-                                                       start.AddDays(1),
+                                                       start.AddDays(daysOfSimulation),
                                                        true,
                                                        true,
                                                        new List<BlockDirection>() { BlockDirection.Created, BlockDirection.Consumed },
                                                        new List<BlockType>() { BlockType.Simulated });
 
-            await DrawBlocks("Bilance", bilance, start, start.AddDays(1));
+            await DrawBlocks("Bilance", bilance, start, start.AddDays(daysOfSimulation));
 
             var bilanceProfile = DataProfileHelpers.ConvertBlocksToDataProfile(bilance);
 
             // calculate consumption in specific range
             var consumption = eGrid.GetConsumptionOfEntity(networkId,
-                                                           BlockTimeframe.Hour,
+                                                           outputTimeframe,
                                                            start,
-                                                           start.AddDays(1),
+                                                           start.AddDays(daysOfSimulation),
                                                            true,
                                                            true,
                                                            new List<BlockDirection>() { BlockDirection.Consumed },
                                                            new List<BlockType>() { BlockType.Simulated });
             
-            await DrawBlocks("Consumption", consumption, start, start.AddDays(1));
+            await DrawBlocks("Consumption", consumption, start, start.AddDays(daysOfSimulation));
 
             // calculate production in specific range
             var production = eGrid.GetConsumptionOfEntity(networkId,
-                                                          BlockTimeframe.Hour,
+                                                          outputTimeframe,
                                                           start,
-                                                          start.AddDays(1),
+                                                          start.AddDays(daysOfSimulation),
                                                           true,
                                                           false,
                                                           new List<BlockDirection>() { BlockDirection.Created },
                                                           new List<BlockType>() { BlockType.Simulated });
             
-            await DrawBlocks("Production", production, start, start.AddDays(1));
+            await DrawBlocks("Production", production, start, start.AddDays(daysOfSimulation));
 
             // calculate consumption of rooms in specific range
             var consumptionOfRooms = eGrid.GetConsumptionOfEntity(allroomsId,
-                                                                  BlockTimeframe.Hour,
+                                                                  outputTimeframe,
                                                                   start,
-                                                                  start.AddDays(1),
+                                                                  start.AddDays(daysOfSimulation),
                                                                   true,
                                                                   true,
                                                                   new List<BlockDirection>() { BlockDirection.Consumed },
                                                                   new List<BlockType>() { BlockType.Simulated });
 
-            await DrawBlocks("Consumption Of Rooms", consumptionOfRooms, start, start.AddDays(1));
+            await DrawBlocks("Consumption Of Rooms", consumptionOfRooms, start, start.AddDays(daysOfSimulation));
 
             // calculate consumption of offices in specific range
             var consumptionOfOffices = eGrid.GetConsumptionOfEntity(officesId,
-                                                                    BlockTimeframe.Hour,
+                                                                    outputTimeframe,
                                                                     start,
-                                                                    start.AddDays(1),
+                                                                    start.AddDays(daysOfSimulation),
                                                                     true,
                                                                     true,
                                                                     new List<BlockDirection>() { BlockDirection.Consumed },
                                                                     new List<BlockType>() { BlockType.Simulated });
 
-            await DrawBlocks("Consumption Of Offices", consumptionOfOffices, start, start.AddDays(1));
+            await DrawBlocks("Consumption Of Offices", consumptionOfOffices, start, start.AddDays(daysOfSimulation));
 
             // calculate consumption of shared spaces in specific range
             var consumptionOfShared = eGrid.GetConsumptionOfEntity(sharedGroupId,
-                                                                   BlockTimeframe.Hour,
+                                                                   outputTimeframe,
                                                                    start,
-                                                                   start.AddDays(1),
+                                                                   start.AddDays(daysOfSimulation),
                                                                    true,
                                                                    true,
                                                                    new List<BlockDirection>() { BlockDirection.Consumed },
                                                                    new List<BlockType>() { BlockType.Simulated });
 
-            await DrawBlocks("Consumption Of Shared spaces", consumptionOfShared, start, start.AddDays(1));
+            await DrawBlocks("Consumption Of Shared spaces", consumptionOfShared, start, start.AddDays(daysOfSimulation));
+
+            // calculate consumption of laundry in specific range
+            var consumptionOfLaundry = eGrid.GetConsumptionOfEntity(laundryId,
+                                                                   outputTimeframe,
+                                                                   start,
+                                                                   start.AddDays(daysOfSimulation),
+                                                                   true,
+                                                                   true,
+                                                                   new List<BlockDirection>() { BlockDirection.Consumed },
+                                                                   new List<BlockType>() { BlockType.Simulated });
+
+            await DrawBlocks("Consumption Of Laundry", consumptionOfLaundry, start, start.AddDays(daysOfSimulation));
+
+            // calculate consumption of electric mosquito traps in specific range
+            var consumptionOfMosquitoTraps = eGrid.GetConsumptionOfEntity(mosquitoTrapsId,
+                                                                   outputTimeframe,
+                                                                   start,
+                                                                   start.AddDays(daysOfSimulation),
+                                                                   true,
+                                                                   true,
+                                                                   new List<BlockDirection>() { BlockDirection.Consumed },
+                                                                   new List<BlockType>() { BlockType.Simulated });
+
+            await DrawBlocks("Consumption Of Mosquito Traps", consumptionOfMosquitoTraps, start, start.AddDays(daysOfSimulation));
 
             var export = eGrid.ExportToConfig();
             if (export.Item1)
