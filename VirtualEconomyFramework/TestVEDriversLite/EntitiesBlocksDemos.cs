@@ -359,10 +359,13 @@ namespace TestVEDriversLite
             await Console.Out.WriteLineAsync($"StartTime: {start}");
             await Console.Out.WriteLineAsync($"EndTime: {end}");
             await Console.Out.WriteLineAsync($"Calculated Data:");
+            var total = 0.0;
             foreach (var block in blocks)
             {
-                await Console.Out.WriteLineAsync($"\t{block.StartTime} - {block.EndTime}, Amount: {block.Amount} kWh.");
+                await Console.Out.WriteLineAsync($"\t{block.StartTime} - {block.EndTime}, Amount: {Math.Round(block.Amount, 2)} kWh.");
+                total += block.Amount;
             }
+            await Console.Out.WriteLineAsync($"Total Bilance: {total} kWh");
             await Console.Out.WriteLineAsync("--------------------END------------------:");
 
         }

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using VEDriversLite.Common.Calendar;
 using VEDriversLite.EntitiesBlocks.Blocks;
 using VEDriversLite.EntitiesBlocks.Blocks.Dto;
 using VEDriversLite.EntitiesBlocks.Entities;
@@ -20,11 +21,13 @@ namespace VEDriversLite.EntitiesBlocks.Consumers
             Type = SimulatorTypes.Device;
         }
 
-        public DeviceSimulator(double[] dayProfile, double devicePowerConsumption = 1.0)
+        public DeviceSimulator(double[] dayProfile, double devicePowerConsumption = 1.0, Week scheduledDays = Week.WholeWeek)
         {
             Type = SimulatorTypes.Device;
             if (devicePowerConsumption > 0)
                 DevicePowerConsumption = devicePowerConsumption;
+
+            ScheduledDays = scheduledDays;
 
             if (dayProfile != null && dayProfile.Length == 24)
             {
@@ -37,6 +40,7 @@ namespace VEDriversLite.EntitiesBlocks.Consumers
         public double[] DayProfileData { get; set; } = new double[24];
 
         public string Name { get; set; } = string.Empty;
+        public Week ScheduledDays { get; set; } = Week.WholeWeek;
 
         public override (bool, string) ExportConfig()
         {
@@ -96,26 +100,28 @@ namespace VEDriversLite.EntitiesBlocks.Consumers
             while (tmp < end)
             {
                 var amount = 0.0;
-
-                var htmp = tmp;
-                var hend = htmp.Add(ts);
-                while (htmp < hend)
+                if (WeekHelpers.IsDateTimeAllowed(tmp, ScheduledDays))
                 {
-                    if (ts.TotalHours == 1)
+                    var htmp = tmp;
+                    var hend = htmp.Add(ts);
+                    while (htmp < hend)
                     {
-                        amount += DayProfileData[htmp.Hour] * DevicePowerConsumption;
-                    }
-                    else if (ts.TotalHours < 1)
-                    {
-                        var add = DayProfileData[htmp.Hour] * (ts.TotalHours) * DevicePowerConsumption;
-                        amount += add;
-                    }
-                    else if (ts.TotalHours > 1)
-                    {
-                        amount += DayProfileData[htmp.Hour] * DevicePowerConsumption;
-                    }
+                        if (ts.TotalHours == 1)
+                        {
+                            amount += DayProfileData[htmp.Hour] * DevicePowerConsumption;
+                        }
+                        else if (ts.TotalHours < 1)
+                        {
+                            var add = DayProfileData[htmp.Hour] * (ts.TotalHours) * DevicePowerConsumption;
+                            amount += add;
+                        }
+                        else if (ts.TotalHours > 1)
+                        {
+                            amount += DayProfileData[htmp.Hour] * DevicePowerConsumption;
+                        }
 
-                    htmp = htmp.AddHours(1);
+                        htmp = htmp.AddHours(1);
+                    }
                 }
 
                 if (string.IsNullOrEmpty(sourceId))

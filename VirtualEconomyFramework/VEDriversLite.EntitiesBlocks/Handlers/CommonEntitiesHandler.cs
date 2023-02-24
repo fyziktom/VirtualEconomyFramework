@@ -679,7 +679,7 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
                                                               justThisType, 
                                                               addSimulators);
 
-                if (withSubConsumers && mainres != null)
+                if (withSubConsumers && mainres != null && entity.IsParent)
                 {
                     Queue<IEntity> queue = new Queue<IEntity>();
                     queue.Enqueue(entity);
@@ -700,12 +700,12 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
                             }
 
                             var re = e.GetSummedValuesOptimized(timeframesteps,
-                                                                        starttime,
-                                                                        endtime,
-                                                                        takeConsumptionAsInvert,
-                                                                        justThisDirections,
-                                                                        justThisType,
-                                                                        addSimulators);
+                                                                starttime,
+                                                                endtime,
+                                                                takeConsumptionAsInvert,
+                                                                justThisDirections,
+                                                                justThisType,
+                                                                addSimulators);
                             if (re != null)
                             {
                                 foreach (var block in re.Where(r => r.Amount > 0 || r.Amount < 0))

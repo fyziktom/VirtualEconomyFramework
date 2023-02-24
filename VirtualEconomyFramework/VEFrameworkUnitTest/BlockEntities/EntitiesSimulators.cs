@@ -342,5 +342,64 @@ namespace VEFrameworkUnitTest.BlockEntities
             }
         }
 
+        [Fact]
+        public void ScheduledDeviceSimulatorInEntityTest()
+        {
+            DateTime start = new DateTime(2022, 1, 3, 0, 0, 0); // 3rd of January 2022 is Monday
+            var consumptionPerHour = 1;
+            var days = 1;
+            var end = start.AddDays(days);
+
+            var entity = new BaseEntity();
+
+            double[] acRun = new double[24]
+            {
+                0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.5, 0.5, 0.5, 0.5
+             //  00,  01,  02,  03,  04,  05, 06,  07,  08,  09,  10,  11,  12,  13,  14,  15,  16,  17,  18,  19,  20,  21,  22,  23 
+            };
+
+            var deviceSim = new DeviceSimulator(acRun, 2, Week.Monday | Week.Tuesday | Week.Weekedn);
+
+            var addsimres = entity.AddSimulator(deviceSim);
+            if (addsimres.Item1)
+            {
+                var consumption = entity.GetSummedValues(BlockTimeframe.Hour, start, end, true, null, null, true);
+                Assert.Equal(24 * days, consumption.Count);
+
+                var total = 0.0;
+                foreach (var cons in consumption)
+                    total += cons.Amount;
+
+                Assert.Equal(-consumptionPerHour * 36 * days, total);
+
+                consumption = entity.GetSummedValues(BlockTimeframe.Hour, start.AddDays(1), end.AddDays(1), true, null, null, true);
+                Assert.Equal(24 * days, consumption.Count);
+
+                total = 0.0;
+                foreach (var cons in consumption)
+                    total += cons.Amount;
+
+                Assert.Equal(-consumptionPerHour * 36 * days, total);
+
+                consumption = entity.GetSummedValues(BlockTimeframe.Hour, start.AddDays(2), end.AddDays(2), true, null, null, true);
+                Assert.Equal(24 * days, consumption.Count);
+
+                total = 0.0;
+                foreach (var cons in consumption)
+                    total += cons.Amount;
+
+                Assert.Equal(0, total);
+
+                consumption = entity.GetSummedValues(BlockTimeframe.Hour, start, start.AddDays(7), true, null, null, true);
+                Assert.Equal(7 * 24 * days, consumption.Count);
+
+                total = 0.0;
+                foreach (var cons in consumption)
+                    total += cons.Amount;
+
+                Assert.Equal(-consumptionPerHour * 36 * 4, total);
+            }
+        }
+
     }
 }
