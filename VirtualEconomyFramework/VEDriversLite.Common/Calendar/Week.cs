@@ -40,6 +40,16 @@ namespace VEDriversLite.Common.Calendar
                         dt.DayOfWeek == DayOfWeek.Sunday)
                         return true;
                     break;
+                case Week.WholeWeek:
+                    if (dt.DayOfWeek == DayOfWeek.Monday ||
+                        dt.DayOfWeek == DayOfWeek.Tuesday ||
+                        dt.DayOfWeek == DayOfWeek.Wednesday ||
+                        dt.DayOfWeek == DayOfWeek.Thursday ||
+                        dt.DayOfWeek == DayOfWeek.Friday ||
+                        dt.DayOfWeek == DayOfWeek.Saturday ||
+                        dt.DayOfWeek == DayOfWeek.Sunday)
+                        return true;
+                    break;
                 case Week.Monday:
                     if (dt.DayOfWeek == DayOfWeek.Monday)
                         return true;
