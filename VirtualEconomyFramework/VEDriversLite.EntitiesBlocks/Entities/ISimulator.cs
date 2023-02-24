@@ -14,7 +14,8 @@ namespace VEDriversLite.EntitiesBlocks.Entities
         PVE,
         Battery,
         TDDConsumption,
-        Custom
+        Device,
+        Custom,
     }
     public interface ISimulator
     {

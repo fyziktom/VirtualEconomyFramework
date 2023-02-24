@@ -36,191 +36,6 @@ namespace TestVEDriversLite
             await CalculateHotelNetwork();
         }
 
-
-        #region DataProfileCreators
-
-        private static DataProfile GetACandFridgesDataProfile(double powerAC, double powerFridge, int numOfRooms, DateTime start, int days)
-        {
-            var profile = new DataProfile();
-
-            if (start == DateTime.MinValue)
-                start = new DateTime(2023, 1, 1);
-
-            var tmp = start;
-            for (var i = 0; i < days; i++)
-            {
-                var dayhours = tmp;
-
-                var dayConsumption = GetDayRoomConsumption(powerAC, powerFridge, numOfRooms);
-                for (var j = 0; j < 24; j++)
-                {
-                    profile.ProfileData.Add(dayhours, dayConsumption[j]);
-                    dayhours = dayhours.AddHours(1);
-                }
-
-                tmp = tmp.AddDays(1);
-            }
-
-            return profile;
-        }
-
-        private static double[] GetDayRoomConsumption(double powerAC, double powerFridge, int numberOfRooms = 1)
-        {
-            double[] dayconsumption = new double[24];
-
-            double[] acRun = new double[24]
-            {
-                0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.3, 0.4, 0.5, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.4, 0.6, 0.7, 0.7, 0.5, 0.5, 0.4, 0.3
-             //  00,  01,  02,  03,  04,  05, 06,  07,  08,  09,  10,  11,  12,  13,  14,  15,  16,  17,  18,  19,  20,  21,  22,  23 
-            };
-
-            double[] fridgeRun = new double[24]
-            {
-                0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2
-             //  00,  01,  02,  03,  04,  05, 06,  07,  08,  09,  10,  11,  12,  13,  14,  15,  16,  17,  18,  19,  20,  21,  22,  23 
-            };
-
-            for (var i = 0; i < 24; i++)
-                dayconsumption[i] = (powerAC * acRun[i] + powerFridge * fridgeRun[i]) * numberOfRooms;
-
-            return dayconsumption;
-        }
-
-        private static DataProfile GetOfficesDataProfile(double powerAC, int numOfOffices, DateTime start, int days)
-        {
-            var profile = new DataProfile();
-
-            if (start == DateTime.MinValue)
-                start = new DateTime(2023, 1, 1);
-
-            var tmp = start;
-            for (var i = 0; i < days; i++)
-            {
-                var dayhours = tmp;
-
-                var dayConsumption = GetOfficeConsumption(powerAC, numOfOffices);
-                for (var j = 0; j < 24; j++)
-                {
-                    profile.ProfileData.Add(dayhours, dayConsumption[j]);
-                    dayhours = dayhours.AddHours(1);
-                }
-
-                tmp = tmp.AddDays(1);
-            }
-
-            return profile;
-        }
-        private static double[] GetOfficeConsumption(double powerAC, int numberOfOffices = 1)
-        {
-            double[] dayconsumption = new double[24];
-
-            double[] acRun = new double[24]
-            {
-                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.7, 0.3, 0.4, 0.6, 0.6, 0.6, 0.5, 0.5, 0.5, 0.4, 0.3, 0.3, 0.2, 0.0, 0.0, 0.0
-             //  00,  01,  02,  03,  04,  05, 06,  07,  08,  09,  10,  11,  12,  13,  14,  15,  16,  17,  18,  19,  20,  21,  22,  23 
-            };
-
-            double[] itTech = new double[24]
-            {
-                0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.1, 0.1, 0.1
-             //  00,  01,  02,  03,  04,  05, 06,  07,  08,  09,  10,  11,  12,  13,  14,  15,  16,  17,  18,  19,  20,  21,  22,  23 
-            };
-
-            for (var i = 0; i < 24; i++)
-                dayconsumption[i] = (powerAC * acRun[i] + itTech[i]) * numberOfOffices;
-
-            return dayconsumption;
-        }
-
-        private static DataProfile GetPoolDataProfile(double pumpPower, DateTime start, int days)
-        {
-            var profile = new DataProfile();
-
-            if (start == DateTime.MinValue)
-                start = new DateTime(2023, 1, 1);
-
-            var tmp = start;
-            for (var i = 0; i < days; i++)
-            {
-                var dayhours = tmp;
-
-                var dayConsumption = GetPoolConsumption(pumpPower);
-                for (var j = 0; j < 24; j++)
-                {
-                    profile.ProfileData.Add(dayhours, dayConsumption[j]);
-                    dayhours = dayhours.AddHours(1);
-                }
-
-                tmp = tmp.AddDays(1);
-            }
-
-            return profile;
-        }
-
-        private static double[] GetPoolConsumption(double pumpPower)
-        {
-            double[] dayconsumption = new double[24];
-
-            double[] pump = new double[24]
-            {
-                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.8, 0.0, 0.8, 0.0, 0.8, 0.0, 0.0, 0.0, 0.3, 0.3, 0.3, 0.8, 0.0, 0.0, 0.0, 0.0
-             //  00,  01,  02,  03,  04,  05, 06,  07,  08,  09,  10,  11,  12,  13,  14,  15,  16,  17,  18,  19,  20,  21,  22,  23 
-            };
-
-            for (var i = 0; i < 24; i++)
-                dayconsumption[i] = (pumpPower * pump[i]);
-
-            return dayconsumption;
-        }
-
-        private static DataProfile GetKitchenDataProfile(int numOfKitchens, DateTime start, int days)
-        {
-            var profile = new DataProfile();
-
-            if (start == DateTime.MinValue)
-                start = new DateTime(2023, 1, 1);
-
-            var tmp = start;
-            for (var i = 0; i < days; i++)
-            {
-                var dayhours = tmp;
-
-                var dayConsumption = GetKitchenConsumption(numOfKitchens);
-                for (var j = 0; j < 24; j++)
-                {
-                    profile.ProfileData.Add(dayhours, dayConsumption[j]);
-                    dayhours = dayhours.AddHours(1);
-                }
-
-                tmp = tmp.AddDays(1);
-            }
-
-            return profile;
-        }
-        private static double[] GetKitchenConsumption(int numberOfKitchens = 1)
-        {
-            double[] dayconsumption = new double[24];
-
-            double[] cooker = new double[24]
-            {
-                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.7, 0.7, 0.0, 0.4, 0.8, 0.3, 0.0, 0.0, 0.0, 0.4, 0.7, 0.5, 0.0, 0.0, 0.0, 0.0
-             //  00,  01,  02,  03,  04,  05, 06,  07,  08,  09,  10,  11,  12,  13,  14,  15,  16,  17,  18,  19,  20,  21,  22,  23 
-            };
-
-            double[] others = new double[24]
-            {
-                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.1, 0.2, 0.3, 0.1, 0.2, 0.5, 0.4, 0.2, 0.1, 0.2, 0.3, 0.5, 0.5, 0.3, 0.1, 0.1, 0.0
-             //  00,  01,  02,  03,  04,  05, 06,  07,  08,  09,  10,  11,  12,  13,  14,  15,  16,  17,  18,  19,  20,  21,  22,  23 
-            };
-
-            for (var i = 0; i < 24; i++)
-                dayconsumption[i] = (cooker[i] + others[i]) * numberOfKitchens;
-
-            return dayconsumption;
-        }
-
-        #endregion 
-
         private static async Task CalculateHotelNetwork()
         {
             // SET Coordinates of PVE
@@ -238,12 +53,23 @@ namespace TestVEDriversLite
                                                      BatteryBlockHandler.DefaultDischargingFunction);
 
             var owner = "hotel";
+
+            var powerOfAC = 2;
+            var powerOfFridge = 0.12;
+            var numberOfRooms = 30;
+            var averageOccupancy = 0.6;
+            var numberOfOffices = 2;
+
+            //////////////////////////////////////////////////
+            #region MainEntity
             var name = "network";
             var networkId = string.Empty;
             var network = new GroupNetwork() { Type = EntityType.Consumer, Name = name, ParentId = owner };
             var res = eGrid.AddEntity(network, name, owner);
             if (res.Item1)
                 networkId = res.Item2.Item2;
+
+            #endregion
 
             /////////////////////////////////////////////////
             #region Rooms
@@ -265,20 +91,22 @@ namespace TestVEDriversLite
             eGrid.AddSubEntityToEntity(networkId, roomsGroupId);
             eGrid.AddSubEntityToEntity(roomsGroupId, allroomsId);
 
-            var dataprofile = GetACandFridgesDataProfile(2, 0.12, 30, start, daysOfSimulation);
-            var blocks = DataProfileHelpers.ConvertDataProfileToBlocks(dataprofile,
-                                                                       BlockDirection.Consumed,
-                                                                       BlockType.Simulated,
-                                                                       allroomsId,
-                                                                       0,
-                                                                       false,
-                                                                       "ACandFridge",
-                                                                       "Consmption of AC and refrigerator",
-                                                                       "",
-                                                                       "");
+            double[] acRun = new double[24]
+            {
+                0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.3, 0.4, 0.5, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.4, 0.6, 0.7, 0.7, 0.5, 0.5, 0.4, 0.3
+             //  00,  01,  02,  03,  04,  05, 06,  07,  08,  09,  10,  11,  12,  13,  14,  15,  16,  17,  18,  19,  20,  21,  22,  23 
+            };
 
-            if (allRoomsEnt.AddBlocks(blocks.ToList()))
-                await Console.Out.WriteLineAsync("Simulated blocks of AC and Refrigerators added to the AllRoomsEntity.");
+            double[] fridgeRun = new double[24]
+            {
+                0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2
+             //  00,  01,  02,  03,  04,  05, 06,  07,  08,  09,  10,  11,  12,  13,  14,  15,  16,  17,  18,  19,  20,  21,  22,  23 
+            };
+
+            var acSim = new DeviceSimulator(acRun, powerOfAC * numberOfRooms * averageOccupancy);
+            _ = allRoomsEnt.AddSimulator(acSim);
+            var fridgeSim = new DeviceSimulator(fridgeRun, powerOfFridge * numberOfRooms * averageOccupancy);
+            _ = allRoomsEnt.AddSimulator(fridgeSim);
 
             #endregion
             //////////////////////////////////////////////
@@ -311,35 +139,31 @@ namespace TestVEDriversLite
             eGrid.AddSubEntityToEntity(sharedGroupId, poolsId);
             eGrid.AddSubEntityToEntity(sharedGroupId, kitchenId);
 
-            var dppool = GetPoolDataProfile(2, start, daysOfSimulation);
-            var poolBlocks = DataProfileHelpers.ConvertDataProfileToBlocks(dppool,
-                                                                           BlockDirection.Consumed,
-                                                                           BlockType.Simulated,
-                                                                           allroomsId,
-                                                                           0,
-                                                                           false,
-                                                                           "Pool",
-                                                                           "Consmption of Pool pump",
-                                                                           "",
-                                                                           "");
+            double[] pump = new double[24]
+            {
+                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.8, 0.0, 0.8, 0.0, 0.8, 0.0, 0.0, 0.0, 0.3, 0.3, 0.3, 0.8, 0.0, 0.0, 0.0, 0.0
+             //  00,  01,  02,  03,  04,  05, 06,  07,  08,  09,  10,  11,  12,  13,  14,  15,  16,  17,  18,  19,  20,  21,  22,  23 
+            };
 
-            if (poolsEnt.AddBlocks(poolBlocks.ToList()))
-                await Console.Out.WriteLineAsync("Simulated blocks of Pool added to the Pool Entity.");
+            var pumpSim = new DeviceSimulator(pump, 2);
+            _ = poolsEnt.AddSimulator(pumpSim);
 
-            var dpkitchen = GetKitchenDataProfile(1, start, daysOfSimulation);
-            var kitchenBlocks = DataProfileHelpers.ConvertDataProfileToBlocks(dpkitchen,
-                                                                              BlockDirection.Consumed,
-                                                                              BlockType.Simulated,
-                                                                              allroomsId,
-                                                                              0,
-                                                                              false,
-                                                                              "Pool",
-                                                                              "Consmption of Pool pump",
-                                                                              "",
-                                                                              "");
+            double[] cooker = new double[24]
+            {
+                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.7, 0.7, 0.0, 0.4, 0.8, 0.3, 0.0, 0.0, 0.0, 0.4, 0.7, 0.5, 0.0, 0.0, 0.0, 0.0
+             //  00,  01,  02,  03,  04,  05, 06,  07,  08,  09,  10,  11,  12,  13,  14,  15,  16,  17,  18,  19,  20,  21,  22,  23 
+            };
 
-            if (kitchenEnt.AddBlocks(kitchenBlocks.ToList()))
-                await Console.Out.WriteLineAsync("Simulated blocks of Kitchen added to the Kitchen Entity.");
+            double[] othersKitchen = new double[24]
+            {
+                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.1, 0.2, 0.3, 0.1, 0.2, 0.5, 0.4, 0.2, 0.1, 0.2, 0.3, 0.5, 0.5, 0.3, 0.1, 0.1, 0.0
+             //  00,  01,  02,  03,  04,  05, 06,  07,  08,  09,  10,  11,  12,  13,  14,  15,  16,  17,  18,  19,  20,  21,  22,  23 
+            };
+
+            var kitchenSim = new DeviceSimulator(cooker, 2);
+            _ = kitchenEnt.AddSimulator(kitchenSim);
+            var otherKitchenSim = new DeviceSimulator(othersKitchen, 2);
+            _ = kitchenEnt.AddSimulator(otherKitchenSim);
 
             #endregion
             ////////////////////////////////////////////////
@@ -363,21 +187,22 @@ namespace TestVEDriversLite
             eGrid.AddSubEntityToEntity(networkId, officesGroupId);
             eGrid.AddSubEntityToEntity(officesGroupId, officesId);
 
-            var dpoffices = GetOfficesDataProfile(2, 2, start, daysOfSimulation);
-            var officesBlocks = DataProfileHelpers.ConvertDataProfileToBlocks(dpoffices,
-                                                                              BlockDirection.Consumed,
-                                                                              BlockType.Simulated,
-                                                                              allroomsId,
-                                                                              0,
-                                                                              false,
-                                                                              "Offices",
-                                                                              "Consmption of AC and IT in offices.",
-                                                                              "",
-                                                                              "");
+            double[] acOfficeRun = new double[24]
+            {
+                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.7, 0.3, 0.4, 0.6, 0.6, 0.6, 0.5, 0.5, 0.5, 0.4, 0.3, 0.3, 0.2, 0.0, 0.0, 0.0
+             //  00,  01,  02,  03,  04,  05, 06,  07,  08,  09,  10,  11,  12,  13,  14,  15,  16,  17,  18,  19,  20,  21,  22,  23 
+            };
 
-            if (officesEnt.AddBlocks(officesBlocks.ToList()))
-                await Console.Out.WriteLineAsync("Simulated blocks of Offices added to the Offices Entity.");
+            double[] itTech = new double[24]
+            {
+                0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.1, 0.1, 0.1
+             //  00,  01,  02,  03,  04,  05, 06,  07,  08,  09,  10,  11,  12,  13,  14,  15,  16,  17,  18,  19,  20,  21,  22,  23 
+            };
 
+            var acOfficeSim = new DeviceSimulator(acOfficeRun, powerOfAC * numberOfOffices);
+            _ = officesEnt.AddSimulator(acOfficeSim);
+            var itSim = new DeviceSimulator(itTech, numberOfOffices);
+            _ = officesEnt.AddSimulator(itSim);
 
             #endregion
 
@@ -439,7 +264,7 @@ namespace TestVEDriversLite
             #endregion
             /////////////////////////////////////////////////////////
 
-            // calculate consumption in specific range
+            // calculate bilance in specific range
             var bilance = eGrid.GetConsumptionOfEntity(networkId,
                                                        BlockTimeframe.Hour,
                                                        start,
@@ -449,7 +274,33 @@ namespace TestVEDriversLite
                                                        new List<BlockDirection>() { BlockDirection.Created, BlockDirection.Consumed },
                                                        new List<BlockType>() { BlockType.Simulated });
 
+            await DrawBlocks("Bilance", bilance, start, start.AddDays(1));
+
             var bilanceProfile = DataProfileHelpers.ConvertBlocksToDataProfile(bilance);
+
+            // calculate consumption in specific range
+            var consumption = eGrid.GetConsumptionOfEntity(networkId,
+                                                           BlockTimeframe.Hour,
+                                                           start,
+                                                           start.AddDays(1),
+                                                           true,
+                                                           true,
+                                                           new List<BlockDirection>() { BlockDirection.Consumed },
+                                                           new List<BlockType>() { BlockType.Simulated });
+            
+            await DrawBlocks("Consumption", consumption, start, start.AddDays(1));
+
+            // calculate production in specific range
+            var production = eGrid.GetConsumptionOfEntity(networkId,
+                                                          BlockTimeframe.Hour,
+                                                          start,
+                                                          start.AddDays(1),
+                                                          true,
+                                                          false,
+                                                          new List<BlockDirection>() { BlockDirection.Created },
+                                                          new List<BlockType>() { BlockType.Simulated });
+            
+            await DrawBlocks("Production", production, start, start.AddDays(1));
 
             var export = eGrid.ExportToConfig();
             if (export.Item1)
@@ -457,6 +308,21 @@ namespace TestVEDriversLite
             var exportpve = PVESim.ExportConfig();
             if (exportpve.Item1)
                 FileHelpers.WriteTextToFile("PVESim-BocaSimon-02.json", exportpve.Item2);
+        }
+
+        private static async Task DrawBlocks(string heading, List<IBlock> blocks, DateTime start, DateTime end)
+        {
+            await Console.Out.WriteLineAsync($"-------------------{heading}--------------------:");
+            await Console.Out.WriteLineAsync("Results:");
+            await Console.Out.WriteLineAsync($"StartTime: {start}");
+            await Console.Out.WriteLineAsync($"EndTime: {end}");
+            await Console.Out.WriteLineAsync($"Calculated Data:");
+            foreach (var block in blocks)
+            {
+                await Console.Out.WriteLineAsync($"\t{block.StartTime} - {block.EndTime}, Amount: {block.Amount} kWh.");
+            }
+            await Console.Out.WriteLineAsync("--------------------END------------------:");
+
         }
 
     }

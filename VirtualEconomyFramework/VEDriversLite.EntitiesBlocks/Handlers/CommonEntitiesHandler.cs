@@ -695,29 +695,26 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
                             {
                                 if (Entities.TryGetValue(childId, out var sbc))
                                 {
-                                    tmpEntity.AddBlocks(sbc.BlocksOrderByTime.ToList());
-
-                                    if (sbc.IsParent)
-                                        queue.Enqueue(sbc);
+                                    queue.Enqueue(sbc);
                                 }
                             }
-                        }
-                    }
 
-                    var re = tmpEntity.GetSummedValuesOptimized(timeframesteps, 
-                                                                starttime, 
-                                                                endtime, 
-                                                                takeConsumptionAsInvert, 
-                                                                justThisDirections, 
-                                                                justThisType, 
-                                                                addSimulators);
-                    if (re != null)
-                    {
-                        foreach(var block in re.Where(r => r.Amount > 0 || r.Amount < 0))
-                        {
-                            var r = mainres.First(b => b.StartTime == block.StartTime);
-                            if (r != null)
-                                r.Amount += block.Amount;
+                            var re = e.GetSummedValuesOptimized(timeframesteps,
+                                                                        starttime,
+                                                                        endtime,
+                                                                        takeConsumptionAsInvert,
+                                                                        justThisDirections,
+                                                                        justThisType,
+                                                                        addSimulators);
+                            if (re != null)
+                            {
+                                foreach (var block in re.Where(r => r.Amount > 0 || r.Amount < 0))
+                                {
+                                    var r = mainres.First(b => b.StartTime == block.StartTime);
+                                    if (r != null)
+                                        r.Amount += block.Amount;
+                                }
+                            }
                         }
                     }
                 }

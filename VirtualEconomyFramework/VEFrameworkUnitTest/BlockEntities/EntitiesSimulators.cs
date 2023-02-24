@@ -291,5 +291,56 @@ namespace VEFrameworkUnitTest.BlockEntities
                 Assert.Equal(PVE1kWh2022YearProduction - (consumptionPerHour + consumptionPerHour1) * 24 * days, total);
             }
         }
+
+        [Fact]
+        public void DeviceSimulatorInEntityTest()
+        {
+            DateTime start = new DateTime(2022, 1, 1, 0, 0, 0);
+            var consumptionPerHour = 1;
+            var days = 1;
+            var end = start.AddDays(days);
+
+            var entity = new BaseEntity();
+
+            double[] acRun = new double[24]
+            {
+                0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.5, 0.5, 0.5, 0.5
+             //  00,  01,  02,  03,  04,  05, 06,  07,  08,  09,  10,  11,  12,  13,  14,  15,  16,  17,  18,  19,  20,  21,  22,  23 
+            };
+
+            var deviceSim = new DeviceSimulator(acRun, 2);
+                        
+            var addsimres = entity.AddSimulator(deviceSim);
+            if (addsimres.Item1)
+            {
+                var consumption = entity.GetSummedValues(BlockTimeframe.Hour, start, end, true, null, null, true);
+                Assert.Equal(24 * days, consumption.Count);
+
+                var total = 0.0;
+                foreach (var cons in consumption)
+                    total += cons.Amount;
+
+                Assert.Equal(-consumptionPerHour * 36 * days, total);
+
+                consumption = entity.GetSummedValues(BlockTimeframe.Day, start, end, true, null, null, true);
+                Assert.Equal(days, consumption.Count);
+
+                total = 0.0;
+                foreach (var cons in consumption)
+                    total += cons.Amount;
+
+                Assert.Equal(-consumptionPerHour * 36 * days, total);
+
+                consumption = entity.GetSummedValues(BlockTimeframe.QuaterHour, start, end, true, null, null, true);
+                Assert.Equal(24 * 4 * days, consumption.Count);
+
+                total = 0.0;
+                foreach (var cons in consumption)
+                    total += cons.Amount;
+
+                Assert.Equal(-consumptionPerHour * 36 * days, total);
+            }
+        }
+
     }
 }

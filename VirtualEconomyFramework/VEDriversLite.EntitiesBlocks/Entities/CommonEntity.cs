@@ -360,13 +360,20 @@ namespace VEDriversLite.EntitiesBlocks.Entities
         /// <param name="takeConsumptionAsInvert"></param>
         /// <param name="addSimulators"></param>
         /// <returns></returns>
-        private List<IBlock> GetResultBlocks(BlockTimeframe timeframe, DateTime start, DateTime end, bool takeConsumptionAsInvert, bool addSimulators)
+        private List<IBlock> GetResultBlocks(BlockTimeframe timeframe, 
+                                             DateTime start, 
+                                             DateTime end, 
+                                             bool takeConsumptionAsInvert, 
+                                             bool addSimulators,
+                                             List<BlockDirection> justThisDirections = null,
+                                             List<BlockType> justThisType = null)
         {
             var result = BlockHelpers.GetResultBlocks(timeframe, start, end, ParentId);
 
             if (addSimulators)
             {
-                var simulated = GetSimulatorsBlocks(timeframe, start, end);
+                var tmpsim = GetSimulatorsBlocks(timeframe, start, end);
+                var simulated = GetBlocks(tmpsim, justThisDirections, justThisType).ToList();
 
                 if (simulated != null && simulated.Count > 0)
                 {
@@ -416,15 +423,36 @@ namespace VEDriversLite.EntitiesBlocks.Entities
         }
 
         /// <summary>
-        /// Get list of the blocks based on setup timespan and step and specific timegrame
-        /// Timeframe will cause recalculation of the blocks of entity to timeframe like "hours", "days", "months" etc.
+        /// Get blocks filtered based on Directions or Types. This function needs input blocks list
         /// </summary>
-        /// <param name="timeframesteps">timeframe step (for example "month")</param>
-        /// <param name="starttime">start datetime (1.1.2022)</param>
-        /// <param name="endtime">end date</param>
-        /// <param name="takeConsumptionAsInvert">if this is set it will multiply "consumed" blocks with -1. Means consumption is negative in calculation</param>
+        /// <param name="blocks">Input blocks</param>
+        /// <param name="justThisDirections">List of all allowed Direction of blocks</param>
+        /// <param name="justThisType">List of all Types of blocks</param>
         /// <returns></returns>
-        public virtual List<IBlock> GetSummedValues(BlockTimeframe timeframesteps,
+        public IEnumerable<IBlock> GetBlocks(List<IBlock> blocks, List<BlockDirection> justThisDirections = null,
+                                             List<BlockType> justThisType = null)
+        {
+            if (justThisDirections != null && justThisDirections.Count > 0 && (justThisType == null || justThisType != null && justThisType.Count == 0))
+                return blocks.Where(b => justThisDirections.Contains(b.Direction)).OrderBy(b => b.StartTime);
+            else if (justThisType != null && justThisType.Count > 0 && (justThisDirections == null || justThisDirections != null && justThisDirections.Count == 0))
+                return blocks.Where(b => justThisType.Contains(b.Type)).OrderBy(b => b.StartTime);
+            else if (justThisType != null && justThisType.Count > 0 && justThisDirections != null && justThisDirections.Count > 0)
+                return blocks.Where(b => justThisType.Contains(b.Type) && justThisDirections.Contains(b.Direction)).OrderBy(b => b.StartTime);
+
+            return blocks.OrderBy(b => b.StartTime);
+        }
+
+
+    /// <summary>
+    /// Get list of the blocks based on setup timespan and step and specific timegrame
+    /// Timeframe will cause recalculation of the blocks of entity to timeframe like "hours", "days", "months" etc.
+    /// </summary>
+    /// <param name="timeframesteps">timeframe step (for example "month")</param>
+    /// <param name="starttime">start datetime (1.1.2022)</param>
+    /// <param name="endtime">end date</param>
+    /// <param name="takeConsumptionAsInvert">if this is set it will multiply "consumed" blocks with -1. Means consumption is negative in calculation</param>
+    /// <returns></returns>
+    public virtual List<IBlock> GetSummedValues(BlockTimeframe timeframesteps,
                                                         DateTime starttime,
                                                         DateTime endtime,
                                                         bool takeConsumptionAsInvert = false,
@@ -432,8 +460,14 @@ namespace VEDriversLite.EntitiesBlocks.Entities
                                                         List<BlockType> justThisType = null,
                                                         bool addSimulators = true)
         {
-            var result = GetResultBlocks(timeframesteps, starttime, endtime, takeConsumptionAsInvert, addSimulators);
-
+            var result = GetResultBlocks(timeframesteps,
+                                         starttime, 
+                                         endtime, 
+                                         takeConsumptionAsInvert, 
+                                         addSimulators, 
+                                         justThisDirections, 
+                                         justThisType);
+            
             var invert = 1;
             
             var blocks = GetBlocks(justThisDirections, justThisType).Where(b => b.StartTime < endtime)
@@ -494,8 +528,14 @@ namespace VEDriversLite.EntitiesBlocks.Entities
                                                                  List<BlockType> justThisType = null,
                                                                  bool addSimulators = true)
         {
-            var result = GetResultBlocks(timeframesteps, starttime, endtime, takeConsumptionAsInvert, addSimulators);
-
+            var result = GetResultBlocks(timeframesteps, 
+                                         starttime, 
+                                         endtime, 
+                                         takeConsumptionAsInvert, 
+                                         addSimulators,
+                                         justThisDirections,
+                                         justThisType);
+            
             var invert = 1;
             var blocks = GetBlocks(justThisDirections, justThisType).Where(b => !b.IsRepetitiveSource && 
                                                                                 !b.IsRepetitiveChild && 
@@ -568,8 +608,14 @@ namespace VEDriversLite.EntitiesBlocks.Entities
                                                                           List<BlockType> justThisType = null,
                                                                           bool addSimulators = true)
         {
-            var result = GetResultBlocks(timeframesteps, starttime, endtime, takeConsumptionAsInvert, addSimulators);
-
+            var result = GetResultBlocks(timeframesteps, 
+                                         starttime, 
+                                         endtime, 
+                                         takeConsumptionAsInvert, 
+                                         addSimulators,
+                                         justThisDirections,
+                                         justThisType);
+            
             var invert = 1;
 
             var repetitiveBlocksSources = GetBlocks(justThisDirections, justThisType).Where(b => !b.IsRepetitiveChild && 
@@ -707,8 +753,14 @@ namespace VEDriversLite.EntitiesBlocks.Entities
                                                                       List<BlockType> justThisType = null,
                                                                       bool addSimulators = true)
         {
-            var result = GetResultBlocks(timeframesteps, starttime, endtime, takeConsumptionAsInvert, addSimulators);
-
+            var result = GetResultBlocks(timeframesteps, 
+                                         starttime, 
+                                         endtime, 
+                                         takeConsumptionAsInvert, 
+                                         addSimulators, 
+                                         justThisDirections, 
+                                         justThisType);
+            
             var input = GetSummedValuesOptimized(BlockTimeframe.Hour, starttime, endtime, takeConsumptionAsInvert, justThisDirections, justThisType);
             if (input == null)
                 return new List<IBlock>();
