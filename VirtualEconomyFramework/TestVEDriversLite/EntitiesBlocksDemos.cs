@@ -18,6 +18,7 @@ using VEDriversLite.EntitiesBlocks.Handlers;
 using VEDriversLite.EntitiesBlocks.PVECalculations;
 using VEDriversLite.EntitiesBlocks.Sources;
 using VEDriversLite.EntitiesBlocks.StorageCalculations;
+using VEDriversLite.EntitiesBlocks.Tree;
 using WordPressPCL.Models;
 
 namespace TestVEDriversLite
@@ -60,7 +61,7 @@ namespace TestVEDriversLite
             var averageOccupancy = 0.6;
             var numberOfOffices = 2;
 
-            //////////////////////////////////////////////////
+            ////////////////////////////////////////////////
             #region MainEntity
             var name = "network";
             var networkId = string.Empty;
@@ -70,8 +71,7 @@ namespace TestVEDriversLite
                 networkId = res.Item2.Item2;
 
             #endregion
-
-            /////////////////////////////////////////////////
+            ////////////////////////////////////////////////
             #region Rooms
 
             name = "rooms";
@@ -109,9 +109,9 @@ namespace TestVEDriversLite
             _ = allRoomsEnt.AddSimulator(fridgeSim);
 
             #endregion
-            //////////////////////////////////////////////
+            ////////////////////////////////////////////////
 
-            //////////////////////////////////////////////
+            ////////////////////////////////////////////////
             #region SharedSpaces
 
             name = "shared";
@@ -205,7 +205,6 @@ namespace TestVEDriversLite
             _ = officesEnt.AddSimulator(itSim);
 
             #endregion
-
             ////////////////////////////////////////////////
 
             ////////////////////////////////////////////////
@@ -257,12 +256,19 @@ namespace TestVEDriversLite
             _ = PVESim.AddPanelToGroup(southPanelsId, PVESim.CommonPanel, numOfPanelsInString).ToList();
             PVESim.CommonPanel.Azimuth = panelAzimuthW;
             _ = PVESim.AddPanelToGroup(westPanelsId, PVESim.CommonPanel, numOfPanelsInString).ToList();
+            
+            await Console.Out.WriteLineAsync($"Total Peak Power of PVE: {PVESim.TotalPeakPower} kWp");
 
             // add PVE simulator to entity
             eGrid.AddSimulatorToEntity(pvesourceId, PVESim);
 
             #endregion
-            /////////////////////////////////////////////////////////
+            ////////////////////////////////////////////////
+
+            // print Entities tree
+
+            var tree = eGrid.GetTree(networkId);
+            TreeViewHelpers.PrintTree(tree, "\n", false);
 
             // calculate bilance in specific range
             var bilance = eGrid.GetConsumptionOfEntity(networkId,
@@ -301,6 +307,42 @@ namespace TestVEDriversLite
                                                           new List<BlockType>() { BlockType.Simulated });
             
             await DrawBlocks("Production", production, start, start.AddDays(1));
+
+            // calculate consumption of rooms in specific range
+            var consumptionOfRooms = eGrid.GetConsumptionOfEntity(allroomsId,
+                                                                  BlockTimeframe.Hour,
+                                                                  start,
+                                                                  start.AddDays(1),
+                                                                  true,
+                                                                  true,
+                                                                  new List<BlockDirection>() { BlockDirection.Consumed },
+                                                                  new List<BlockType>() { BlockType.Simulated });
+
+            await DrawBlocks("Consumption Of Rooms", consumptionOfRooms, start, start.AddDays(1));
+
+            // calculate consumption of offices in specific range
+            var consumptionOfOffices = eGrid.GetConsumptionOfEntity(officesId,
+                                                                    BlockTimeframe.Hour,
+                                                                    start,
+                                                                    start.AddDays(1),
+                                                                    true,
+                                                                    true,
+                                                                    new List<BlockDirection>() { BlockDirection.Consumed },
+                                                                    new List<BlockType>() { BlockType.Simulated });
+
+            await DrawBlocks("Consumption Of Offices", consumptionOfOffices, start, start.AddDays(1));
+
+            // calculate consumption of shared spaces in specific range
+            var consumptionOfShared = eGrid.GetConsumptionOfEntity(sharedGroupId,
+                                                                   BlockTimeframe.Hour,
+                                                                   start,
+                                                                   start.AddDays(1),
+                                                                   true,
+                                                                   true,
+                                                                   new List<BlockDirection>() { BlockDirection.Consumed },
+                                                                   new List<BlockType>() { BlockType.Simulated });
+
+            await DrawBlocks("Consumption Of Shared spaces", consumptionOfShared, start, start.AddDays(1));
 
             var export = eGrid.ExportToConfig();
             if (export.Item1)

@@ -13,9 +13,9 @@ namespace VEDriversLite.EntitiesBlocks.Tree
         public static void PrintTree(TreeItem tree, String indent, bool last)
         {
             if (tree.Type == EntityType.Source)
-                Console.Write(indent + "+- " + " Source: " + tree.Name + "\n");
+                Console.WriteLine(indent + "+- " + " Source: " + tree.Name + "\n");
             else
-                Console.Write(indent + "+- " + " Consumer: " + tree.Name + "\n");
+                Console.WriteLine(indent + "+- " + " Consumer: " + tree.Name + "\n");
             indent += last ? "   " : "|  ";
 
             for (int i = 0; i < tree.Children?.Count; i++)
