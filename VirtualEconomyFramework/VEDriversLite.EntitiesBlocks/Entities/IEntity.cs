@@ -132,12 +132,22 @@ namespace VEDriversLite.EntitiesBlocks.Entities
                                          DateTime end);
 
         /// <summary>
-        /// Get blocks filtered based on Directions or Types
+        /// Get blocks filtered based on Directions or Types. This function use Blocks list in entity
         /// </summary>
         /// <param name="justThisDirections">List of all allowed Direction of blocks</param>
         /// <param name="justThisType">List of all Types of blocks</param>
         /// <returns></returns>
         IEnumerable<IBlock> GetBlocks(List<BlockDirection> justThisDirections = null,
+                                      List<BlockType> justThisType = null);
+
+        /// <summary>
+        /// Get blocks filtered based on Directions or Types. This function needs input blocks list
+        /// </summary>
+        /// <param name="blocks">Input blocks</param>
+        /// <param name="justThisDirections">List of all allowed Direction of blocks</param>
+        /// <param name="justThisType">List of all Types of blocks</param>
+        /// <returns></returns>
+        IEnumerable<IBlock> GetBlocks(List<IBlock> blocks, List<BlockDirection> justThisDirections = null,
                                       List<BlockType> justThisType = null);
 
         /// <summary>

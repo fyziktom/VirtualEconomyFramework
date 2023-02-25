@@ -34,7 +34,10 @@ h1:focus {
     left: -1.25rem;
 }
 
-
+.collapse-card-body .card-body {
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
 
 a, .btn-link {
     color: #0071c1;

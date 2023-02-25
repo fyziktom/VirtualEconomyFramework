@@ -4,18 +4,20 @@
 @inject AppData AppData
 @inject HttpClient Http
 
-<Router AppAssembly="@typeof(App).Assembly">
-    <Found Context="routeData">
-        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
-        <FocusOnNavigate RouteData="@routeData" Selector="h1" />
-    </Found>
-    <NotFound>
-        <PageTitle>Not found</PageTitle>
-        <LayoutView Layout="@typeof(MainLayout)">
-            <p role="alert">Sorry, there's nothing at this address.</p>
-        </LayoutView>
-    </NotFound>
-</Router>
+<Blazorise.ThemeProvider Theme="@theme">
+    <Router AppAssembly="@typeof(App).Assembly">
+        <Found Context="routeData">
+            <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+            <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+        </Found>
+        <NotFound>
+            <PageTitle>Not found</PageTitle>
+            <LayoutView Layout="@typeof(MainLayout)">
+                <p role="alert">Sorry, there's nothing at this address.</p>
+            </LayoutView>
+        </NotFound>
+    </Router>
+</Blazorise.ThemeProvider>
 
 <MessageProvider />
 <PageProgressProvider />
@@ -27,8 +29,45 @@
     double panelAzimuthW = MathHelpers.DegreeToRadians(40);
     string name = "mytest";
     int DurationInDays = 1;
+    string PrimaryColor = "#0c345c";
+    string SecondaryColor = "#43ab74";
+
     DateTime start = new DateTime(2022, 1, 1, 0, 0, 0);
     DateTime end = new DateTime(2022, 1, 2, 0, 0, 0);
+
+
+    private Theme theme = new Theme
+        {
+            ColorOptions = new ThemeColorOptions
+            {
+                Primary = "#0c345c",
+                Secondary = "#43ab74",
+            },
+
+            TextColorOptions = new ThemeTextColorOptions
+            {
+                Primary = "#0c345c",
+                Secondary = "#43ab74",
+            },
+            BackgroundOptions = new ThemeBackgroundOptions
+            {
+                Primary = "#0c345c",
+                Secondary = "#43ab74",
+            },
+            ButtonOptions = new ThemeButtonOptions
+            {
+                Padding = ".5rem 1rem",
+            },
+            BodyOptions = new ThemeBodyOptions
+            {
+                TextColor = "#000000"
+            },
+            InputOptions = new ThemeInputOptions
+            {
+                Color = "#000000"
+            },
+
+        };
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {

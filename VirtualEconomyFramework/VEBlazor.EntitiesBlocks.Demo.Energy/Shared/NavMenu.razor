@@ -2,50 +2,49 @@
 
 <div class="top-row ps-3 navbar navbar-dark">
     <Div Class="container-fluid" Padding="Padding.Is0">
-        <Div Class="logo-wrapper" Flex="Flex.AlignItems.Center.JustifyContent.Between" Width="Width.Is100">
-            <div class="logo">
-                <img src="images/egd-logo.svg" />
-            </div>
-            <Icon Name="Blazorise.Icons.FontAwesome.FontAwesomeIcons.Handshake" />
             <div class="logo">
                 <img src="images/digiplant-logo.png" />
             </div>
-        </Div>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
             <span class="navbar-toggler-icon"></span>
         </button>
     </Div>
 </div>
 
-<div class="@NavMenuCssClass" @onclick="ToggleNavMenu" style="height: 100%;">
-    <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="oi oi-home" aria-hidden="true"></span> Přehled
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="pvesimulation" Match="NavLinkMatch.All">
-                <span class="oi oi-sun" aria-hidden="true"></span> FVE
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="entities" Match="NavLinkMatch.All">
-                <Span Style="transform: scale(-1, -1);">
-                    <span class="oi oi-fork" aria-hidden="true" style="display: flex; justify-content: end; position: relative;
+    <div class="@NavMenuCssClass" @onclick="ToggleNavMenu" >
+        <nav class="flex-column">
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                    <span class="oi oi-home" aria-hidden="true"></span> Přehled
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="pvesimulation" Match="NavLinkMatch.All">
+                    <span class="oi oi-sun" aria-hidden="true"></span> FVE
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="entities" Match="NavLinkMatch.All">
+                    <Span Style="transform: scale(-1, -1);">
+                        <span class="oi oi-fork" aria-hidden="true" style="display: flex; justify-content: end; position: relative;
     top: 1px;"></span>
-                </Span> Komunitní strom
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="analytics" Match="NavLinkMatch.All">
-                <span class="oi oi-pie-chart" aria-hidden="true"></span>
-                Analytika
-            </NavLink>
-        </div>
-    </nav>
-</div>
-
+                    </Span> Komunitní strom
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="analytics" Match="NavLinkMatch.All">
+                    <span class="oi oi-pie-chart" aria-hidden="true"></span>
+                    Analytika
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="canvas" Match="NavLinkMatch.All">
+                    <span class="oi oi-infinity" aria-hidden="true"></span>
+                    Canvas demo
+                </NavLink>
+            </div>
+        </nav>
+    </div>
 @code {
     private bool collapseNavMenu = true;
 
