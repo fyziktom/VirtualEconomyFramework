@@ -18,8 +18,7 @@
 		  - Driver for IPFS
 		  - Basic driver for FileSystem
 	  </PackageReleaseNotes>
-	  <PackageReadmeFile>README.md</PackageReadmeFile>
-	  <PackageLicenseExpression>BSD-2-Clause</PackageLicenseExpression>
+	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>

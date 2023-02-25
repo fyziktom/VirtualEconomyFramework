@@ -20,7 +20,7 @@
 		  - Add XML comments
 	  </PackageReleaseNotes>
 	  <PackageReadmeFile>README.md</PackageReadmeFile>
-	  <PackageLicenseExpression>BSD-2-Clause</PackageLicenseExpression>
+	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>

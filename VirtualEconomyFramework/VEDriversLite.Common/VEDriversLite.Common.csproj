@@ -5,7 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 	  <PackageId>VEFramework.VEDriversLite.Common</PackageId>
-	  <Version>0.3.2</Version>
+	  <Version>0.3.3</Version>
 	  <Authors>fyziktom</Authors>
 	  <Company>VEFramework</Company>
 	  <Description>Common dtos and tools for VEDriversLite packages</Description>
@@ -17,7 +17,6 @@
 	  <PackageReleaseNotes>
 		  - Separation from VEDriversLite package
 	  </PackageReleaseNotes>
-	  <PackageReadmeFile>README.md</PackageReadmeFile>
 	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
 	  <Title>VEDriversLite Common Dto and Tools</Title>
   </PropertyGroup>

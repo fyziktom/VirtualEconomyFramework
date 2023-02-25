@@ -56,7 +56,7 @@ else
                         </PaginationLink>
                     </PaginationItem>
                     @{
-                        for ( var i = 1; i <= pageItems; i++ )
+                        for ( var i = Offset + 1; i <= pageItems + Offset + 1; i++ )
                         {
                             var pageNumberAsString = i.ToString();
                             <PaginationItem @key="pageNumberAsString" Active="@IsActive(pageNumberAsString)">
@@ -105,7 +105,7 @@ else
         await Load();
     }
 
-    private async Task Load()
+    public async Task Load()
     {
         Transactions = await LoadTransactions( IsSubAccount );
         var pit = (double)Transactions.Count / PerPage + ( Transactions.Count % PerPage > 0 ? 1 : 0 );
