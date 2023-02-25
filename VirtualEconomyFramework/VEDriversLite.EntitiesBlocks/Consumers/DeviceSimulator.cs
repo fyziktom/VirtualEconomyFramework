@@ -86,10 +86,7 @@ namespace VEDriversLite.EntitiesBlocks.Consumers
             var name = $"Block-{Name}";
             if (options.TryGetValue("name", out var n))
                 name = n as string;
-            var tddIndex = -1;
-            if (options.TryGetValue("tddIndex", out var tix))
-                tddIndex = (int)tix;
-
+            
             start = start.AddHours(-start.Hour).AddMinutes(-start.Minute).AddSeconds(-start.Second);
             end = end.AddHours(-end.Hour).AddMinutes(-end.Minute).AddSeconds(-end.Second);
             var tmp = start;
@@ -106,18 +103,21 @@ namespace VEDriversLite.EntitiesBlocks.Consumers
                     var hend = htmp.Add(ts);
                     while (htmp < hend)
                     {
-                        if (ts.TotalHours == 1)
+                        if (DayProfileData != null)
                         {
-                            amount += DayProfileData[htmp.Hour] * DevicePowerConsumption;
-                        }
-                        else if (ts.TotalHours < 1)
-                        {
-                            var add = DayProfileData[htmp.Hour] * (ts.TotalHours) * DevicePowerConsumption;
-                            amount += add;
-                        }
-                        else if (ts.TotalHours > 1)
-                        {
-                            amount += DayProfileData[htmp.Hour] * DevicePowerConsumption;
+                            if (ts.TotalHours == 1)
+                            {
+                                amount += DayProfileData[htmp.Hour] * DevicePowerConsumption;
+                            }
+                            else if (ts.TotalHours < 1)
+                            {
+                                var add = DayProfileData[htmp.Hour] * (ts.TotalHours) * DevicePowerConsumption;
+                                amount += add;
+                            }
+                            else if (ts.TotalHours > 1)
+                            {
+                                amount += DayProfileData[htmp.Hour] * DevicePowerConsumption;
+                            }
                         }
 
                         htmp = htmp.AddHours(1);

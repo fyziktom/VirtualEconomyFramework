@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace VEDriversLite.Common.Calendar
 {
+    [Flags]
     public enum Week
     {
         Monday = 1,
