@@ -44,18 +44,16 @@ namespace TestVEDriversLite
             // SET Start of the simulation
             var start = new DateTime(2022, 1, 3); // 3rd of January 2022 is Monday
             // SET Number of days which you want to simulate
-            var daysOfSimulation = 1;
+            var daysOfSimulation = 7;
             // SET output timeframe which will be calculated as step
             var outputTimeframe = BlockTimeframe.Hour;
             // create simulator objects
             var eGrid = new BaseEntitiesHandler();
             var PVESim = new PVPanelsGroupsHandler();
-            var StorageSim = new BatteryBlockHandler(null,
-                                                     "battery",
-                                                     BatteryBlockHandler.DefaultChargingFunction,
-                                                     BatteryBlockHandler.DefaultDischargingFunction);
 
             var owner = "hotel";
+
+            var filename = $"{DateTime.UtcNow.ToString("yyyy_MM_ddThh_mm_ss")}-{owner}-blocks.csv";
 
             var powerOfAC = 1.5;
             var powerOfFridge = 0.12;
@@ -95,7 +93,7 @@ namespace TestVEDriversLite
 
             double[] acRun = new double[24]
             {
-                0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.3, 0.4, 0.5, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.4, 0.6, 0.7, 0.7, 0.5, 0.5, 0.4, 0.3
+                0.2, 0.2, 0.2, 0.2, 0.2, 0.3, 0.3, 0.4, 0.4, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.3, 0.4, 0.6, 0.6, 0.4, 0.4, 0.4, 0.3
              //  00,  01,  02,  03,  04,  05, 06,  07,  08,  09,  10,  11,  12,  13,  14,  15,  16,  17,  18,  19,  20,  21,  22,  23 
             };
 
@@ -265,9 +263,9 @@ namespace TestVEDriversLite
 
             eGrid.AddSubEntityToEntity(networkId, pvesourceId);
 
-            var panelAzimuthE = MathHelpers.DegreeToRadians(-10);
+            var panelAzimuthE = MathHelpers.DegreeToRadians(-20);
             var panelAzimuthS = MathHelpers.DegreeToRadians(0);
-            var panelAzimuthW = MathHelpers.DegreeToRadians(10);
+            var panelAzimuthW = MathHelpers.DegreeToRadians(20);
 
             var eastPanelsId = PVESim.AddGroup("East");
             var southPanelsId = PVESim.AddGroup("South");
@@ -280,7 +278,7 @@ namespace TestVEDriversLite
                 {
                     Name = "test",
                     Azimuth = 0,
-                    BaseAngle = MathHelpers.DegreeToRadians(23),
+                    BaseAngle = MathHelpers.DegreeToRadians(15),
                     DirtRatio = 0.05 / 365,
                     Efficiency = 1,
                     Height = 2000,
@@ -319,8 +317,11 @@ namespace TestVEDriversLite
             // print PVE info
 
             await Console.Out.WriteLineAsync("---------------------PVE Info------------------------");
-            await Console.Out.WriteLineAsync($"Total Peak Power of PVE: {PVESim.TotalPeakPower} kWp");
+            await Console.Out.WriteLineAsync($"Total Peak Power of PVE: {Math.Round(PVESim.TotalPeakPower,2)} kWp");
             await Console.Out.WriteLineAsync($"Total Number Of panels: {PVESim.PanelCount}");
+            await Console.Out.WriteLineAsync($"Dimension of one common panel: Width: {Math.Round((PVESim.CommonPanel.Width / 1000),3)} m, Height: {Math.Round((PVESim.CommonPanel.Height / 1000),3)} m");
+            await Console.Out.WriteLineAsync($"Area of one common panel: {Math.Round((PVESim.CommonPanel.Width / 1000) * (PVESim.CommonPanel.Height / 1000),3)} m2");
+            await Console.Out.WriteLineAsync($"Total Panels Area: {Math.Round(PVESim.PanelCount * (PVESim.CommonPanel.Width / 1000) * (PVESim.CommonPanel.Height / 1000), 3)} m2");
             await Console.Out.WriteLineAsync("--------------------------------------------------------");
 
             // calculate bilance in specific range
@@ -421,12 +422,49 @@ namespace TestVEDriversLite
 
             await DrawBlocks("Consumption Of Mosquito Traps", consumptionOfMosquitoTraps, start, start.AddDays(daysOfSimulation));
 
+            /////////////////////////////////////////
+            // Save values to the file
+            #region SaveValues
+
+            var header = "Date\t" +
+                         "Start\t" +
+                         "End\t" +
+                         "Bilance\t" +
+                         "Consumption\t" +
+                         "Production\t" +
+                         "Rooms\t" +
+                         "Offices\t" +
+                         "Shared Spaces\t" +
+                         "Laundry\t" +
+                         "Mosquito Traps";
+
+            FileHelpers.AppendLineToTextFile(header, filename);
+            for (var i = 0; i < bilance.Count; i++)
+            {
+                var line = $"{bilance[i].StartTime.ToString("yyyy:MM:dd")}\t" +
+                           $"{bilance[i].StartTime.ToString("hh:mm:ss")}\t" +
+                           $"{bilance[i].EndTime.ToString("hh:mm:ss")}\t" +
+                           $"{Math.Round(bilance[i].Amount,2)}\t" +
+                           $"{Math.Round(consumption[i].Amount,2)}\t" +
+                           $"{Math.Round(production[i].Amount,2)}\t" +
+                           $"{Math.Round(consumptionOfRooms[i].Amount,2)}\t" +
+                           $"{Math.Round(consumptionOfOffices[i].Amount,2)}\t" +
+                           $"{Math.Round(consumptionOfShared[i].Amount,2)}\t" +
+                           $"{Math.Round(consumptionOfLaundry[i].Amount,2)}\t" +
+                           $"{Math.Round(consumptionOfMosquitoTraps[i].Amount,2)}";
+
+                FileHelpers.AppendLineToTextFile(line, filename);
+            }
+
             var export = eGrid.ExportToConfig();
             if (export.Item1)
                 FileHelpers.WriteTextToFile("eGrid-BocaSimon-02.json", export.Item2);
             var exportpve = PVESim.ExportConfig();
             if (exportpve.Item1)
                 FileHelpers.WriteTextToFile("PVESim-BocaSimon-02.json", exportpve.Item2);
+
+            #endregion
+            /////////////////////////////////////////////////////
         }
 
         private static async Task DrawBlocks(string heading, List<IBlock> blocks, DateTime start, DateTime end)
@@ -439,7 +477,7 @@ namespace TestVEDriversLite
             var total = 0.0;
             foreach (var block in blocks)
             {
-                await Console.Out.WriteLineAsync($"\t{block.StartTime} - {block.EndTime}, Amount: {Math.Round(block.Amount, 2)} kWh.");
+                await Console.Out.WriteLineAsync($"\t{block.StartTime.ToString("yyyy_MM_dd-hh:mm")} - {block.EndTime.ToString("yyyy_MM_dd-hh:mm")}, Amount: {Math.Round(block.Amount, 2)} kWh.");
                 total += block.Amount;
             }
             await Console.Out.WriteLineAsync($"Total Bilance: {total} kWh");
