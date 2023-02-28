@@ -37,24 +37,32 @@ public class TransactionsService
 {
     public async Task<List<string>> LoadTransactions(string address, NeblioAccount account, bool subAccount)
     {
-        if (!subAccount)
+        try
         {
-            var inf = await NeblioAPIHelpers.AddressInfoAsync(account.Address);
-            return inf.Transactions?.Reverse().ToList() ?? new List<string>();
-        }
-        else
-        {
-            if (account.SubAccounts.TryGetValue(address, out _))
+            if (!subAccount)
             {
-                var inf = await NeblioAPIHelpers.AddressInfoAsync(address);
+                var inf = await NeblioAPIHelpers.AddressInfoAsync(account.Address);
                 return inf.Transactions?.Reverse().ToList() ?? new List<string>();
             }
+            else
+            {
+                if (account.SubAccounts.TryGetValue(address, out _))
+                {
+                    var inf = await NeblioAPIHelpers.AddressInfoAsync(address);
+                    return inf.Transactions?.Reverse().ToList() ?? new List<string>();
+                }
+            }
+        }
+        catch(Exception ex)
+        {
+            await global::System.Console.Out.WriteLineAsync("Cannot get the address info." + ex.Message);
         }
         return new List<string>();
     }
 
     public async Task<TxDetails> LoadTxDetails(string txid, NeblioAccount account)
     {
+        try { 
         var tinfo = await NeblioAPIHelpers.GetTransactionInfo(txid);
         if (tinfo == null)
             return new TxDetails();
@@ -105,17 +113,26 @@ public class TransactionsService
         if (string.IsNullOrEmpty(receiver))
             receiver = rec;// NeblioTransactionHelpers.ShortenAddress(rec);
 
-        var time = TimeHelpers.UnixTimestampToDateTime((double)tinfo.Blocktime);
-
-        return new TxDetails()
+        if (tinfo != null && tinfo.Blocktime != null)
         {
-            FromAnotherAccount = fromAnotherAccount,
-            FromSubAccount = fromSubAccount,
-            Info = tinfo,
-            Receiver = receiver,
-            Sender = sender,
-            Time = time,
-        };
+            var time = TimeHelpers.UnixTimestampToDateTime((double)tinfo.Blocktime);
+
+            return new TxDetails()
+            {
+                FromAnotherAccount = fromAnotherAccount,
+                FromSubAccount = fromSubAccount,
+                Info = tinfo,
+                Receiver = receiver,
+                Sender = sender,
+                Time = time,
+            };
+        }
+        }
+        catch (Exception ex)
+        {
+            await global::System.Console.Out.WriteLineAsync("Cannot get the tx info." + ex.Message);
+        }
+        return new TxDetails();
     }
 }
 

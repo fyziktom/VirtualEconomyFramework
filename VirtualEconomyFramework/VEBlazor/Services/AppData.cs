@@ -65,11 +65,11 @@ public class AppData
         localStorage = LocalStorage;
     }
 
-    public const string NeblioImageLink = "https://ipfs.io/ipfs/QmPUvBN4qKvGyKKhADBJKSmNC7JGnr3Rwf5ndENGMfpX54";
-    public const string DogecoinImageLink = "https://ipfs.io/ipfs/QmRp3eyUeqctcgBFcRuBa7uRWiABTXmLBeYuhLp8xLX1sy";
-    public const string VENFTImageLink = "https://ipfs.io/ipfs/QmZSdjuLTihuPzVwUKaHLtivw1HYhsyCdQFnVLLCjWoVBk";
-    public const string BDPImageLink = "https://ipfs.io/ipfs/QmYMVuotTTpW24eJftpbUFgK7Ln8B4ox3ydbKCB6gaVwVB";
-    public const string WDOGEImageLink = "https://ipfs.io/ipfs/Qmc9xS9a8TnWmU7AN4dtsbu4vU6hpEXpMNAeUdshFfg1wT";
+    public const string NeblioImageLink = "https://ve-framework.com/ipfs/QmPUvBN4qKvGyKKhADBJKSmNC7JGnr3Rwf5ndENGMfpX54";
+    public const string DogecoinImageLink = "https://ve-framework.com/ipfs/QmRp3eyUeqctcgBFcRuBa7uRWiABTXmLBeYuhLp8xLX1sy";
+    public const string VENFTImageLink = "https://ve-framework.com/ipfs/QmZSdjuLTihuPzVwUKaHLtivw1HYhsyCdQFnVLLCjWoVBk";
+    public const string BDPImageLink = "https://ve-framework.com/ipfs/QmYMVuotTTpW24eJftpbUFgK7Ln8B4ox3ydbKCB6gaVwVB";
+    public const string WDOGEImageLink = "https://ve-framework.com/ipfs/Qmc9xS9a8TnWmU7AN4dtsbu4vU6hpEXpMNAeUdshFfg1wT";
     
     public bool Development { get; set; } = false;
     public static string AppName { get; set; } = "VEBlazorApp";
