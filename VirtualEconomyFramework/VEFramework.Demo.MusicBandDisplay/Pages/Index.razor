@@ -1,0 +1,89 @@
+﻿@using VEFramework.Demo.MusicBandDisplay.Components
+@using VEFramework.Demo.MusicBandDisplay.Services.NFTs
+@using VEFramework.Demo.MusicBandDisplay.Services
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+
+@inject AppData AppData
+
+@page "/"
+
+<PageTitle>"The -" Home</PageTitle>
+
+<MainHeader />
+
+<Container Class="content px-4 article" Fluid>
+    @if (!AppData.Loading)
+    {
+        <Row Margin="Margin.Is3.FromTop">
+            <Column>
+                <Trending />
+            </Column>
+        </Row>
+    }
+    else
+    {
+        <Row Margin="Margin.Is3.FromTop">
+            <Column>
+                <Heading Size="HeadingSize.Is4">Loading Data...</Heading>
+            </Column>
+        </Row>
+    }
+
+    <Row Margin="Margin.Is5.FromTop">
+        <Column>
+            <PostOfTheDay NFT="@Post" />
+        </Column>
+    </Row>
+    @if (!AppData.Loading)
+    {
+        <Row Margin="Margin.Is5.FromTop.Is2.FromBottom">
+            <Column>
+                <Div Display="Display.Inline.OnMobile.Inline.OnTablet.None.OnDesktop">
+                    <FeaturedPosts OnMainPage="true" PerPage="3" />
+                </Div>
+                <Div Display="Display.None.OnMobile.None.OnTablet.Inline.OnDesktop">
+                    <FeaturedPosts OnMainPage="true" PerPage="5" />
+                </Div>
+            </Column>
+        </Row>
+    }
+</Container>
+
+@code {
+
+    public INFT Post
+    {
+        get
+        {
+            var prof = AppData.PostNFTs.FirstOrDefault();
+            if (prof != null)
+                return prof;
+            else
+                return new PostNFT("");
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        if (!AppData.LoadedBase)
+        {
+            AppData.NFTsLoaded += (s, e) => StateHasChanged();
+
+            var addr = Configuration["Addresses:Main"];
+            var appNFTshareUrl = Configuration["AppShareNFTUrl"];
+            if (!string.IsNullOrEmpty(appNFTshareUrl))
+                AppData.AppShareNFTUrl = appNFTshareUrl;
+            
+            if (!string.IsNullOrEmpty(addr))
+            {
+                AppData.Address = addr;
+                await AppData.LoadNFTs();
+            }
+        }
+    }
+    
+}
+
+
