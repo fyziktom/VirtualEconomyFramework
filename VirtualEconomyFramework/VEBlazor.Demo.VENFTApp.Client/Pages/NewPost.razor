@@ -3,7 +3,7 @@
 @using VEFramework.VEBlazor.Components.Minting
 @inject AppData AppData
 
-@page "/addnewpost"
+@page "/addnewmusic"
 
 <PageTitle>@AppData.AppName - @headerLabel</PageTitle>
 
@@ -11,13 +11,13 @@
 
 <VEFramework.VEBlazor.Pages.AddNew @bind-NFT="@AppData.GetMintingNFTTab(formName).NFT" 
                                    @bind-Addresses="@AppData.GetMintingNFTTab(formName).Addresses"
-                                   NFTType="@NFTTypes.Post" 
+                                   NFTType="@NFTTypes.Music" 
                                    MintingPageName="@formName"         
                                    @bind-ConsoleOutFromMinting="@AppData.GetMintingNFTTab(formName).ConsoleOutFromMinting" 
                                    Address="@AppData.Account.Address" />
                        
 @code {
-    string formName = "postminting";
+    string formName = "musicminting";
     string headerLabel = "Add New";
 
     protected override void OnInitialized()

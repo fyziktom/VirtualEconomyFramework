@@ -99,6 +99,18 @@
 
     private UnlockAccount? UnlockAccountComponent;
 
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+            AppData.AccountLoadedOrImported += AccountLoadedOrImportedHandler;
+    }
+
+    void AccountLoadedOrImportedHandler(object sender, bool e)
+    {
+        if (e)
+            StateHasChanged();
+    }
+
     void Unlock()
     {
         UnlockAccountComponent?.ShowUnlockAccountModal();
