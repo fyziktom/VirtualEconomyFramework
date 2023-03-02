@@ -32,7 +32,7 @@
 
     <Row Margin="Margin.Is5.FromTop">
         <Column>
-            <PostOfTheDay NFT="@Post" />
+            <MusicOfTheDay NFT="@MusicDayNFT" />
         </Column>
     </Row>
     @if (!AppData.Loading)
@@ -52,15 +52,15 @@
 
 @code {
 
-    public INFT Post
+    public INFT MusicDayNFT
     {
         get
         {
-            var prof = AppData.PostNFTs.FirstOrDefault();
+            var prof = AppData.MusicNFTs.FirstOrDefault();
             if (prof != null)
                 return prof;
             else
-                return new PostNFT("");
+                return new MusicNFT("");
         }
     }
 

@@ -42,7 +42,7 @@
         }
         <Row Margin="Margin.Is4.FromTop">
             <Column Flex="Flex.JustifyContent.Center">
-                <CopyButton TextToCopy="@(AppData.AppShareNFTUrl.Trim('/') + $"/post?utxo={NFT.Utxo}")" ButtonText="Copy Share Link" ColorOfButton="Color.Light" />
+                <CopyButton TextToCopy="@(AppData.AppShareNFTUrl.Trim('/') + $"/music?utxo={NFT.Utxo}")" ButtonText="Copy Share Link" ColorOfButton="Color.Light" />
             </Column>
         </Row>
     </Column>
@@ -75,7 +75,7 @@
 }
 @code {
     [Parameter]
-    public INFT NFT { get; set; } = new PostNFT("");
+    public INFT NFT { get; set; } = new MusicNFT("");
 
     public string NFTTextMarkuptext => Markdig.Markdown.ToHtml( NFT.Text , new MarkdownPipelineBuilder().UseAdvancedExtensions().Build());
 

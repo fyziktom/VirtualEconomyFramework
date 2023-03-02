@@ -1,0 +1,39 @@
+﻿@inject AppData AppData
+
+@page "/musics"
+
+<PageTitle>Music</PageTitle>
+
+<Container Fluid>
+    <Row Margin="Margin.Is3.FromTop">
+        <Column Flex="Flex.JustifyContent.Center">
+                <FeaturedMusic />
+        </Column>
+    </Row>
+    <Row Margin="Margin.Is5.FromTop.Is2.FromBottom">
+        <Column>
+        </Column>
+    </Row>
+</Container>
+
+@code {
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "tag")]
+    public string? Tag { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        AppData.NFTsLoaded += NFTsLoadedHandler;
+        if (!AppData.LoadedBase)
+            await AppData.LoadNFTs();
+    }
+
+    public void NFTsLoadedHandler(object sender, EventArgs e)
+    {
+        StateHasChanged();
+    }
+}
+
+

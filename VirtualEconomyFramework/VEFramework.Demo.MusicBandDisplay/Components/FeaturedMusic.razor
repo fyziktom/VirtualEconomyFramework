@@ -1,0 +1,147 @@
+﻿@inject AppData AppData
+@inject NavigationManager NavigationManager
+
+<Row>
+    <Column>
+        <Row Flex="Flex.AlignItems.Center">
+            <Column Flex="Flex.JustifyContent.Center">
+                <Heading Size="HeadingSize.Is3" Style="text-decoration: underline;">Featured Music</Heading>
+            </Column>
+        </Row>
+        <Row Margin="Margin.Is3.FromTop">
+            <Column>
+                
+                    <CardGroup>
+                    @foreach (var music in Music)
+                    {
+                        var p = music as MusicNFT;
+                        @if (p != null)
+                        {
+                            var tag = music.TagsList.FirstOrDefault();
+                            <Card Style="min-width:300px;max-width:350px;" Margin="Margin.Is3.FromEnd">
+                                @if (OnMainPage)
+
+                                {
+                                    <CardImage Source="@music.ImageLink" Alt="@music.Name" Style="max-width:100px;"></CardImage>
+                                }
+                                else
+                                {
+                                    <CardImage Source="@music.ImageLink" Alt="@music.Name" Style="max-width:200px;"></CardImage>
+                                }
+                                <CardBody>
+                                    <NameOnCard NFT="@music" />
+
+                                    <DescriptionOnCard Text="@music.Description" />
+
+                                    <Row Margin="Margin.Is4.FromTop">
+                                        <Column Flex="Flex.JustifyContent.Center">
+                                            <Button Class="readmoreprofilebutton" Clicked="@(() => ReadMoreProfile(music))">
+                                                <Span Style="font-size:14px;" Display="Display.None.OnMobile.None.OnTablet.Inline.OnDesktop">Read more</Span>
+                                                <Span Style="font-size:8px;" Display="Display.Inline.OnMobile.Inline.OnTablet.None.OnDesktop">Read more</Span>
+                                                </Button>
+                                        </Column>
+                                    </Row>                            
+                                </CardBody>
+                            </Card>
+                        }
+                    }               
+                </CardGroup>
+            </Column>
+        </Row>
+        @if (OnMainPage)
+        {        
+            <Row Margin="Margin.Is4.FromTop">
+                <Column Flex="Flex.JustifyContent.Center">
+                    <Button Class="viewalltrendingbutton" Type="ButtonType.Link" To="posts">View All</Button>
+                </Column>
+            </Row>
+        }        
+        else
+        {
+            <Row Margin="Margin.Is4.FromTop">
+                <Column Flex="Flex.JustifyContent.Center">
+                    <Button Class="viewalltrendingbutton" Clicked="@LoadMore" Loading="@loadingMore">Load More</Button>
+                </Column>
+            </Row>
+        }
+    </Column>
+</Row>
+
+<Modal @ref="PostDetailsModal">
+    <ModalContent Centered Size="ModalSize.ExtraLarge">
+            <ModalHeader>
+                <ModalTitle>@NFTInDetails.Name</ModalTitle>
+                <CloseButton />
+            </ModalHeader>
+            <ModalBody>
+                <PostDetails @ref="@PostDetailRef" NFT="@NFTInDetails" />
+            </ModalBody>
+    </ModalContent>
+</Modal>
+
+@code {
+    Modal? PostDetailsModal;
+    PostDetails? PostDetailRef;
+
+    [Parameter]
+    public int PerPage {get;set;} = 10;
+
+    [Parameter]
+    public bool OnMainPage { get; set; } = false;
+
+    public IEnumerable<INFT> Music 
+    { 
+        get
+        {
+            if (!OnMainPage)
+                return AppData.MusicNFTs.Take(PerPage);
+            else
+                return AppData.MusicNFTs.Skip(1).Take(PerPage);
+        }
+    }
+
+    INFT NFTInDetails = new MusicNFT("");
+
+    string selectedSlide = "";
+    bool loadingMore = false;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        AppData.NFTsLoaded += (s, e) =>
+        {
+            loadingMore = false;
+            StateHasChanged();
+        };
+    }
+
+    private string GetName(MusicNFT pnft)
+    {
+        var name = pnft.Name;
+        return name.Length > 50 ? name.Substring(0, 50) + "..." : name;
+    }
+
+    async Task ReadMoreProfile(INFT profile)
+    {
+        NFTInDetails = profile;
+        if (OnMainPage)
+        {
+        if (PostDetailsModal != null)
+            await PostDetailsModal.Show();
+        if (PostDetailRef != null)
+            await PostDetailRef.Load(NFTInDetails);
+        }
+        else
+        {
+            NavigationManager.NavigateTo($"music?utxo={profile.Utxo}");
+        }
+    }
+
+    public async Task LoadMore()
+    {
+        PerPage += 10;
+        loadingMore = true;
+        await AppData.LoadMoreNFTs();
+    }
+    
+}

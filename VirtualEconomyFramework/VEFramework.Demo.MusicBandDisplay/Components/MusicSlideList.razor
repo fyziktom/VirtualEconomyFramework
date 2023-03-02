@@ -1,0 +1,94 @@
+﻿@inject AppData AppData
+
+<Row>
+    <Column>
+        <Row Flex="Flex.AlignItems.Center">
+            <Column Flex="Flex.JustifyContent.Center">
+                <Heading Size="HeadingSize.Is3" Style="text-decoration: underline;">Featured Music</Heading>
+            </Column>
+        </Row>
+        <Row Margin="Margin.Is3.FromTop">
+            <Column>
+                
+                    <CardGroup>
+                    @foreach (var post in AppData.RandMusicNFTs.Take(PerPage))
+                    {
+                        var p = post as MusicNFT;
+                        @if (p != null)
+                        {
+                            var tag = post.TagsList.FirstOrDefault();
+                            <Card Style="min-width:300px;max-width:350px;" Margin="Margin.Is3.FromEnd">
+                                <CardImage Source="@post.ImageLink" Alt="@post.Name" Style="max-width:200px;"></CardImage>
+                                <CardBody>
+                                    <NameOnCard NFT="@post" />
+                                    
+                                    <DescriptionOnCard Text="@post.Description" />
+
+                                    <Row Margin="Margin.Is4.FromTop">
+                                        <Column Flex="Flex.JustifyContent.Center">
+                                            <Button Class="readmoreprofilebutton" Clicked="@(() => ReadMoreProfile(post))">
+                                                <Span Style="font-size:14px;" Display="Display.None.OnMobile.None.OnTablet.Inline.OnDesktop">Read more</Span>
+                                                <Span Style="font-size:8px;" Display="Display.Inline.OnMobile.Inline.OnTablet.None.OnDesktop">Read more</Span>
+                                                </Button>
+                                        </Column>
+                                    </Row>                            
+                                </CardBody>
+                            </Card>
+                        }
+                    }               
+                </CardGroup>
+            </Column>
+        </Row>
+        <Row Margin="Margin.Is4.FromTop">
+            <Column Flex="Flex.JustifyContent.Center">
+                <Button Class="viewalltrendingbutton" Type="ButtonType.Link" To="musics">View All</Button>
+            </Column>
+        </Row>
+    </Column>
+</Row>
+
+<Modal @ref="NFTDetailsModal">
+    <ModalContent Centered Size="ModalSize.ExtraLarge">
+            <ModalHeader>
+                <ModalTitle>@(GetName(NFTInDetails as MusicNFT))</ModalTitle>
+                <CloseButton />
+            </ModalHeader>
+            <ModalBody>
+                <PostDetails @ref="@PostDetailRef" NFT="@NFTInDetails" />
+            </ModalBody>
+    </ModalContent>
+</Modal>
+
+@code {
+    Modal? NFTDetailsModal;
+    PostDetails? PostDetailRef;
+
+    [Parameter]
+    public int PerPage {get;set;} = 3;
+
+    INFT NFTInDetails = new MusicNFT("");
+
+    string selectedSlide = "";
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        AppData.NFTsLoaded += (s, e) =>  StateHasChanged();
+    }
+
+    private string GetName(MusicNFT pnft)
+    {
+        var name = pnft.Name;
+        return name.Length > 50 ? name.Substring(0, 50) + "..." : name;
+    }
+
+    async Task ReadMoreProfile(INFT post)
+    {
+        NFTInDetails = post;
+        if (NFTDetailsModal != null)
+            await NFTDetailsModal.Show();
+        if (PostDetailRef != null)
+            await PostDetailRef.Load(NFTInDetails);
+    }
+
+}
