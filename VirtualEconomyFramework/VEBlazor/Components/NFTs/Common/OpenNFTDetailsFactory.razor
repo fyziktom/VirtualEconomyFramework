@@ -134,6 +134,9 @@ else if (NFT.Type == NFTTypes.Image ||
             case NFTTypes.Post:
                 NFTDetailsModalComponent?.ShowNFTDetails(nft);
                 break; 
+            case NFTTypes.Music:
+                NFTDetailsModalComponent?.ShowNFTDetails(nft);
+                break;
             case NFTTypes.App:
                 NFTDetailsModalComponent?.ShowNFTDetails(nft);
                 break;  
@@ -170,6 +173,9 @@ else if (NFT.Type == NFTTypes.Image ||
                 NFTDetailsModalComponent?.HideNFTDetails();
                 break;
             case NFTTypes.Post:
+                NFTDetailsModalComponent?.HideNFTDetails();
+                break;
+            case NFTTypes.Music:
                 NFTDetailsModalComponent?.HideNFTDetails();
                 break;
             case NFTTypes.App:
