@@ -33,7 +33,6 @@ namespace TestVEDriversLite
         }
         public static async Task EB_SmallHotelDemoAsync(string param)
         {
-
             await CalculateHotelNetwork();
         }
 
@@ -44,13 +43,12 @@ namespace TestVEDriversLite
             // SET Start of the simulation
             var start = new DateTime(2022, 1, 3); // 3rd of January 2022 is Monday
             // SET Number of days which you want to simulate
-            var daysOfSimulation = 7;
+            var daysOfSimulation = 1;
             // SET output timeframe which will be calculated as step
             var outputTimeframe = BlockTimeframe.Hour;
             // create simulator objects
             var eGrid = new BaseEntitiesHandler();
-            var PVESim = new PVPanelsGroupsHandler();
-
+            
             var owner = "hotel";
 
             var filename = $"{DateTime.UtcNow.ToString("yyyy_MM_ddThh_mm_ss")}-{owner}-blocks.csv";
@@ -253,6 +251,8 @@ namespace TestVEDriversLite
 
             ////////////////////////////////////////////////
             #region PVESource
+
+            var PVESim = new PVPanelsGroupsHandler();
 
             name = "pvesource";
             var pvesourceId = string.Empty;
