@@ -82,7 +82,11 @@ namespace VEFramework.Demo.MusicBandDisplay.Services
 
             if (utxos.Count > initcount && MaxLoaded > initcount)
             {
-                await new ArraySegment<Utxos>(utxos.ToArray(), initcount, MaxLoaded).ParallelForEachAsync(async u =>
+                var max = MaxLoaded;
+                if (MaxLoaded + initcount > utxos.Count)
+                    max = utxos.Count-initcount;
+
+                await new ArraySegment<Utxos>(utxos.ToArray(), initcount, max).ParallelForEachAsync(async u =>
                 {
                     var nft = await NFTFactory.GetNFT(NFTHelpers.TokenId, u.Txid, (int)u.Index, (double)u.Blocktime, address: Address);
                     if (nft != null)
