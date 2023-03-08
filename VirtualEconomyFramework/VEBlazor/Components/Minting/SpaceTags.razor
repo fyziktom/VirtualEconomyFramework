@@ -69,6 +69,9 @@
 
     async Task OnTagNamesChanged( List<string> values )
     {
+        if (values.Count == 0 && TagNames.Count > 1)
+            return;
+        
         Tags = string.Join( " ", values ?? Enumerable.Empty<string>() ).Trim();
         await TagsChanged.InvokeAsync( Tags );
     }

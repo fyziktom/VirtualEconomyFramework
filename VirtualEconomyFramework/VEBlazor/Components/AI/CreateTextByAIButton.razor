@@ -1,0 +1,92 @@
+﻿@inject AppData AppData
+
+<Button Color="Color.Primary" Clicked="@ShowModal" Block>Create text by ChatGPT</Button>
+
+<Modal @ref="CreateTextModal">
+    <ModalContent Centered>
+        <ModalHeader>
+            <ModalTitle>Create Text By AI</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <Row Flex="Flex.AlignItems.Center">
+                <Column>
+                    <Span>Please input some base for the full create article by AI</Span>
+                </Column>
+            </Row>
+
+            <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is3.FromTop">
+                <Column>
+                    <Span>Please create text about ...</Span>
+                </Column>
+            </Row>
+            <Row Flex="Flex.AlignItems.Center">
+                <Column>
+                    <MemoEdit Rows="6" Placeholder="Contiune with what about text should be..." @bind-Text="BaseText" />
+                </Column>
+            </Row>
+            <Row Flex="Flex.AlignItems.Center">
+                <Column>
+                    <Button Color="Color.Danger" Clicked="@CreateTextAction" Loading="@Creating" Block>Create Text</Button>
+                </Column>
+            </Row>
+        </ModalBody>
+    </ModalContent>
+</Modal>
+@code {
+    [Inject] INotificationService? NotificationService { get; set; }
+
+    [Parameter] public EventCallback<string> TextCreated { get; set; }
+
+    private Modal? CreateTextModal;
+
+    public string BaseText { get; set; } = string.Empty;
+    bool Creating = false;
+    (bool, string) Result = (false, string.Empty);
+
+    public void ShowModal()
+    {
+        if (AppData.Assistant != null)
+            CreateTextModal?.Show();
+        else
+        {
+            if (NotificationService != null)
+                NotificationService.Warning("Cannot use AI without setup of OpenAI API Key. Please fill it in the profile tab in settings.", "OpenAI API Key missing");
+        }
+    }
+    public void HideModal()
+    {
+        CreateTextModal?.Hide();
+    }
+
+    async Task CreateTextAction()
+    {
+        Creating = true;
+        await InvokeAsync(StateHasChanged);
+
+        if (NotificationService != null)
+            await NotificationService.Info("Createing text...", "AI working");
+
+        var baset = "Vytvoř prosím krátký článek o " + BaseText + ". Výstup bude Markdown.";
+
+        if (AppData.Assistant != null)
+            Result = await AppData.Assistant.SendSimpleQuestion( baset , 750);
+
+        if (NotificationService != null)
+        {
+            if (Result.Item1)
+                await NotificationService.Success("Text creation was successfull.", "Success");
+            else
+                await NotificationService.Warning(Result.Item2, "Cannot create text");
+        }
+        await InvokeAsync(StateHasChanged);
+
+        if (Result.Item1)
+            await TextCreated.InvokeAsync(Result.Item2);
+
+        //close automatically after 2 seconds
+        await Task.Delay(2000);
+        HideModal();
+        
+    }
+}

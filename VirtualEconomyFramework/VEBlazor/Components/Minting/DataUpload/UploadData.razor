@@ -1,6 +1,7 @@
 ﻿@using System.IO
 @using VEDriversLite.NFT
 @using VEDriversLite.NFT.Dto
+@using VEDriversLite.StorageDriver;
 @inherits NFTComponentBase
 @inject AppData AppData
 @inject HttpClient HttpClient
@@ -9,7 +10,7 @@
 <Card Margin="Margin.Is4.FromBottom" Shadow="Shadow.Small">
     <CardBody>
        <CardTitle>
-           Upload the Image
+           Upload the Files
         </CardTitle>
         <Alert Color="Color.Info" Visible>
             <AlertDescription>
@@ -23,13 +24,18 @@
                         <Validations @ref="@validationsRef" Mode="ValidationMode.Manual">
                             <Validation Validator="ImageValidator">
                                 <Field>
-                                    <FieldLabel>Please select the image.</FieldLabel>
+                                    <FieldLabel>Please select the file.</FieldLabel>
                                     <FieldBody>
                                         <FileUpload Started="@OnImageUploadStarted" Uploaded="@OnImageUploadEnded" ValidationsRef="@validationsRef" Multiple="@Multiple" Filter="@Filter" />
                                     </FieldBody>
                                 </Field>
                             </Validation>
                         </Validations>
+                    </Column>
+                </Row>
+                <Row>
+                    <Column>
+                        <Button Color="Color.Primary" Clicked="@CreateImageForNFT" Loading="@creatingImage" Block>Create image by OpenAI based on NFT Info</Button>
                     </Column>
                 </Row>
                 @if (uploadingImage)
@@ -212,6 +218,7 @@
 </Card>
 
 @code {
+    [Inject] INotificationService? NotificationService { get; set; }
 
     [Parameter] public bool Multiple { get; set; } = false;
     [Parameter] public bool SmallThumbnails { get; set; } = false;
@@ -260,6 +267,7 @@
     bool uploadingImage = false;
     bool uploadingToIPFS = false;
     bool imageNeedsReload = true;
+    bool creatingImage = false;
 
     byte[] imageData = new byte[0];
 
@@ -394,6 +402,92 @@
             if (e) NFT.ImageLink = VEDriversLite.StorageDriver.Helpers.IPFSHelpers.GetIPFSLinkFromHash(item.Hash);
 
             StateHasChanged();
+        }
+    }
+
+    public async Task CreateImageForNFT()
+    {
+        if (AppData.Assistant != null)
+        {
+            if (string.IsNullOrEmpty(NFT.Name) && string.IsNullOrEmpty(NFT.Description) && string.IsNullOrEmpty(NFT.Tags))
+            {
+                if (NotificationService != null)
+                    await NotificationService.Error("Cannot create NFT Image without filled Name, Description and Tags fields.", "Fill the NFT Info");
+                return;
+            }
+
+            creatingImage = true;
+            await InvokeAsync(StateHasChanged);
+
+            if (NotificationService != null)
+                    await NotificationService.Info("Creating Image by AI has started...", "Creating Image by AI");
+                
+            var responseForImage = await AppData.Assistant.GetImageForText($"Název: {NFT.Name}, Popis: {NFT.Description}, Tagy: {NFT.Tags}");
+            if (responseForImage.Item1 && !string.IsNullOrEmpty(responseForImage.Item2))
+            {
+                var item = new VEDriversLite.NFT.Dto.NFTDataItem()
+                    {
+                        Storage = DataItemStorageType.IPFS,
+                        IsMain = true,
+                        Type = DataItemType.Image
+                    };
+                var link = string.Empty;
+
+                try
+                {
+                    await Console.Out.WriteLineAsync("Uploading image to IPFS...");
+                    var bytes = Convert.FromBase64String(responseForImage.Item2);
+                    using (Stream stream = new MemoryStream(bytes))
+                    {
+                        //Request IPFS upload with StorageDriver
+                        var result = await VEDriversLite.VEDLDataContext.Storage.SaveFileToIPFS(new VEDriversLite.StorageDriver.StorageDrivers.Dto.WriteStreamRequestDto()
+                            {
+                                Data = stream,
+                                Filename = $"{DateTime.UtcNow.ToString("yyyy_MM_ddThh_mm_ss")}-{NFT.Name.Replace(' ', '_')}.png",
+                                DriverType = VEDriversLite.StorageDriver.StorageDrivers.StorageDriverType.IPFS,
+                            });
+
+                        if (result.Item1)
+                        {
+                            await Console.Out.WriteLineAsync("Upload finished.");
+                            await Console.Out.WriteLineAsync("Image Link: " + result.Item2);
+
+                            // store link to image for later use
+                            link = result.Item2;
+
+                            // store IPFS hash of image in DataItem
+                            var hash = VEDriversLite.StorageDriver.Helpers.IPFSHelpers.GetHashFromIPFSLink(result.Item2);
+                            if (!string.IsNullOrEmpty(hash))
+                                item.Hash = hash;
+                        }
+                        else
+                            Console.WriteLine("Cannot upload. " + result.Item2);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    await Console.Out.WriteLineAsync("Cannot upload Image to IPFS. " + ex.Message);
+                }
+
+                if (!string.IsNullOrEmpty(link) && !string.IsNullOrEmpty(item.Hash))
+                {
+                    Console.WriteLine($"Link to NFT Image: {link}");
+                    NFT.ImageLink = link;
+                    NFT.DataItems.Add(item);
+                }
+            }
+            else
+            {
+                await Console.Out.WriteLineAsync("Cannot create image.");
+            }
+
+            creatingImage = false;
+            await InvokeAsync(StateHasChanged);
+        }
+        else
+        {
+            if (NotificationService != null)
+                await NotificationService.Warning("Cannot use AI without setup of OpenAI API Key. Please fill it in the profile tab in settings.", "OpenAI API Key missing");
         }
     }
 

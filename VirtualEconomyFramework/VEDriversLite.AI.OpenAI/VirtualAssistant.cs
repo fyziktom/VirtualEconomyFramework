@@ -346,7 +346,7 @@ namespace VEDriversLite.AI.OpenAI
             try
             {
 
-                MessagesHistory.Add(ChatMessage.FromUser("Vymysli a vypiš data pro NFT ze zdrojového textu. Potřebuji doplnit JSON: {\"Name\": \"\", \"Description\": \"\", \"Tags\":\"\" }. Tags (tagy) jsou bez mezer na jednom řádku a jednotlivé tagy jsou v řádku oddělené mezerou. Potřebuji alespoň 5 tagů. Name (jméno) maximálně 30 znaků. Description (popis) by mělo být poutavé a o délce maximálně 160 znaků. Zde je zdrojový text: \"" + text + "\""));
+                MessagesHistory.Add(ChatMessage.FromUser("Vytvoř data pro NFT ze zdrojového textu. Potřebuji jako výstup JSON: {\"Name\": \"\", \"Description\": \"\", \"Tags\":\"\" } kde Tags (tagy) jsou bez mezer na jednom řádku a jednotlivé tagy jsou v řádku oddělené mezerou. Potřebuji alespoň 5 tagů. Name (jméno) maximálně 30 znaků. Description (popis) by mělo být poutavé a o délce maximálně 160 znaků. Zde je zdrojový text: \"" + text.Substring(0, (int)(text.Length * 0.5)) + "\""));
 
                 var completionResult = await AIService.ChatCompletion.CreateCompletion(new ChatCompletionCreateRequest
                 {

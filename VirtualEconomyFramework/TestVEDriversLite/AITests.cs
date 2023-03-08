@@ -87,11 +87,13 @@ namespace TestVEDriversLite
                 return;
             }
 
-            var split = param.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
-            if (split.Length < 2)
-                throw new Exception("Please input textfilename, articleLength");
+            var split = param.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+            if (split.Length < 3)
+                throw new Exception("Please input textfilename, articleLength, storybase");
             var fileName = split[0];
             var articleLength = Convert.ToInt32(split[1]);
+            var storybase = split[2];
+
             if (articleLength < 250)
                 articleLength = 250;
 
@@ -108,8 +110,14 @@ namespace TestVEDriversLite
             {
                 Console.WriteLine("Creating base text...");
                 // create random text by ChatGPT
+                
                 var baseEn = "Create some short article about how people could treat each other better please. Output will be in Markdown.";
                 var baseCz = "Vytvoř prosím krátký článek o tom, jak by se k sobě lidé mohli chovat lépe. Výstup bude Markdown.";
+                if (!string.IsNullOrEmpty(storybase))
+                {
+                    baseCz = "Vytvoř prosím krátký článek o " + storybase + ". Výstup bude Markdown.";
+                }
+
                 var story = await assistant.SendSimpleQuestion(baseCz, articleLength);
                 if (story.Item1)
                 {
