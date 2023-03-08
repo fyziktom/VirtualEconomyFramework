@@ -29,7 +29,14 @@ namespace TestVEDriversLite
         }
         public static async Task AI_InitAssistantAsync(string param)
         {
-            assistant = new VirtualAssistant(param);
+            var split = param.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            if (split.Length < 3)
+                throw new Exception("Please input OpenAIApiKey, VENFTbackupname, password");
+            var apiKey = split[0];
+            var backupFile = split[1];
+            var password = split[2];
+
+            assistant = new VirtualAssistant(apiKey);
             var init = await assistant.InitAssistant();
             if (init.Item1)
                 await Console.Out.WriteLineAsync("AI Assistant Initialized.");
@@ -54,6 +61,17 @@ namespace TestVEDriversLite
                     GatewayPort = 443,
                 }
             });
+
+
+            if (account.IsLocked())
+            {
+                // load the Neblio Address for minting of NFT
+                Console.WriteLine("Loading VENFT Backup file.");
+                account.FirsLoadingStatus += Account_FirsLoadingStatus;
+                if (await account.LoadAccountFromVENFTBackup(password, "", backupFile))
+                    Console.WriteLine($"Adresa {account.Address} loaded.");
+            }
+
         }
 
         [TestEntry]
@@ -70,23 +88,39 @@ namespace TestVEDriversLite
             }
 
             var split = param.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
-            if (split.Length < 3)
-                throw new Exception("Please input VENFTbackupname, password, textfilename");
-            var backupFile = split[0];
-            var password = split[1];
-            var fileName = split[2];
+            if (split.Length < 2)
+                throw new Exception("Please input textfilename, articleLength");
+            var fileName = split[0];
+            var articleLength = Convert.ToInt32(split[1]);
+            if (articleLength < 250)
+                articleLength = 250;
 
             var withGreetings = false;
 
-            // load the Neblio Address for minting of NFT
-            Console.WriteLine("Loading VENFT Backup file.");
-            account.FirsLoadingStatus += Account_FirsLoadingStatus;
-            if (await account.LoadAccountFromVENFTBackup(password, "", backupFile))
-                Console.WriteLine($"Adresa {account.Address} loaded.");
+            var text = string.Empty;
 
-            // load text content from the file
-            var text = FileHelpers.ReadTextFromFile(fileName);
-           
+            if (fileName != "random")
+            {
+                // load text content from the file
+                text = FileHelpers.ReadTextFromFile(fileName);
+            }
+            else
+            {
+                Console.WriteLine("Creating base text...");
+                // create random text by ChatGPT
+                var baseEn = "Create some short article about how people could treat each other better please. Output will be in Markdown.";
+                var baseCz = "Vytvoř prosím krátký článek o tom, jak by se k sobě lidé mohli chovat lépe. Výstup bude Markdown.";
+                var story = await assistant.SendSimpleQuestion(baseCz, articleLength);
+                if (story.Item1)
+                {
+                    Console.WriteLine("Text created: ");
+                    Console.WriteLine("-------------------------");
+                    Console.WriteLine(story.Item2);
+                    Console.WriteLine("-------------------------");
+                    text = story.Item2;
+                }
+            }
+
             if (string.IsNullOrEmpty(text))
             {
                 Console.WriteLine("Text cannot be empty.");
@@ -116,12 +150,13 @@ namespace TestVEDriversLite
                 nft.Tags = nftInput.Tags;
                 nft.Text = text;
                 Console.WriteLine("");
+                Console.WriteLine("-------------------------");
                 Console.WriteLine("Design of NFT:");
                 Console.WriteLine($"Name: {nft.Name}");
                 Console.WriteLine($"Description: {nft.Description}");
                 Console.WriteLine($"Tags: {nft.Tags}");
                 Console.WriteLine($"Text: {nft.Text}");
-
+                Console.WriteLine("-------------------------");
                 Console.WriteLine("");
                 Console.WriteLine("Creating image for NFT...");
                 // Create image for the NFT. It returns Base64 which will be uploaded to the IPFS later.
@@ -186,8 +221,10 @@ namespace TestVEDriversLite
                         var mintres = await account.MintNFT(nft);
                         if (mintres.Item1)
                         {
+                            Console.WriteLine("-------------------------");
                             Console.WriteLine("NFT minted.");
                             Console.WriteLine($"NFT minted. Transaction ID is: {mintres.Item2}");
+                            Console.WriteLine("-------------------------");
                         }
                     }
                     else
@@ -195,6 +232,14 @@ namespace TestVEDriversLite
                         await Console.Out.WriteLineAsync("Cannot mint without the image.");
                     }
                 }
+                else
+                {
+                    await Console.Out.WriteLineAsync("Cannot create image.");
+                }
+            }
+            else
+            {
+                await Console.Out.WriteLineAsync("Cannot create NFT description.");
             }
 
         }

@@ -172,6 +172,7 @@ namespace VEDriversLite.AI.OpenAI
 
         /// <summary>
         /// Send question from the user and wait for the response from ChatGPT
+        /// This will send also all previous messages to keep the conversation
         /// </summary>
         /// <param name="question"></param>
         /// <param name="maxTokens"></param>
@@ -198,6 +199,43 @@ namespace VEDriversLite.AI.OpenAI
                     //Console.WriteLine(msg.Content);
                     MessagesHistory.Add(msg);
 
+                    return (true, FindEndOfSentense(msg.Content));
+                }
+            }
+            catch (Exception ex)
+            {
+                return (false, ex.Message);
+            }
+
+            return (false, "Unknown Error");
+        }
+
+        /// <summary>
+        /// Send one question from the user and wait for the response from ChatGPT
+        /// </summary>
+        /// <param name="question"></param>
+        /// <param name="maxTokens"></param>
+        /// <returns></returns>
+        public async Task<(bool, string)> SendSimpleQuestion(string question, int maxTokens = 250)
+        {
+            if (AIService == null)
+                return (false, "Init AI service first.");
+
+            try
+            {
+                var completionResult = await AIService.ChatCompletion.CreateCompletion(new ChatCompletionCreateRequest
+                {
+                    Messages = new List<ChatMessage>() 
+                    { 
+                        ChatMessage.FromUser(question)
+                    },
+                    Model = Models.ChatGpt3_5Turbo,
+                    MaxTokens = maxTokens//optional
+                });
+
+                if (completionResult.Successful)
+                {
+                    var msg = completionResult.Choices.First().Message;
                     return (true, FindEndOfSentense(msg.Content));
                 }
             }
@@ -308,7 +346,7 @@ namespace VEDriversLite.AI.OpenAI
             try
             {
 
-                MessagesHistory.Add(ChatMessage.FromUser("Vymysli a vypiš data pro NFT ze zdrojového textu. Potřebuji doplnit JSON: {\"Name\": \"\", \"Description\": \"\", \"Tags\":\"\" }. Tags (tagy) jsou bez mezer na jednom řádku a jednotlivé tagy jsou v řádku oddělené mezerou. Potřebuji alespoň 5 tagů. Name (jméno) maximálně 30 znaků. Description (popis) maximálně 160 znaků. Zde je zdrojový text: \"" + text + "\""));
+                MessagesHistory.Add(ChatMessage.FromUser("Vymysli a vypiš data pro NFT ze zdrojového textu. Potřebuji doplnit JSON: {\"Name\": \"\", \"Description\": \"\", \"Tags\":\"\" }. Tags (tagy) jsou bez mezer na jednom řádku a jednotlivé tagy jsou v řádku oddělené mezerou. Potřebuji alespoň 5 tagů. Name (jméno) maximálně 30 znaků. Description (popis) by mělo být poutavé a o délce maximálně 160 znaků. Zde je zdrojový text: \"" + text + "\""));
 
                 var completionResult = await AIService.ChatCompletion.CreateCompletion(new ChatCompletionCreateRequest
                 {
