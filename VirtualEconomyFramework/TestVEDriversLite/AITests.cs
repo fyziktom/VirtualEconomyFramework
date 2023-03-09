@@ -11,6 +11,8 @@ using VEDriversLite.StorageDriver.StorageDrivers.Dto;
 using VEDriversLite.StorageDriver.StorageDrivers;
 using VEDriversLite.NFT.Dto;
 using System.IO;
+using static System.Net.Mime.MediaTypeNames;
+using static System.Windows.Forms.LinkLabel;
 
 namespace TestVEDriversLite
 {
@@ -169,7 +171,7 @@ namespace TestVEDriversLite
                 Console.WriteLine("Creating image for NFT...");
                 // Create image for the NFT. It returns Base64 which will be uploaded to the IPFS later.
                 var responseForImage = await assistant.GetImageForText($"Název: {nft.Name}, Popis: {nft.Description}, Tagy: {nft.Tags}");
-                if (responseForImage.Item1 && !string.IsNullOrEmpty(responseForImage.Item2))
+                if (responseForImage.Item1 && responseForImage.Item2.Count > 0)
                 {
                     var item = new NFTDataItem()
                     {
@@ -182,7 +184,7 @@ namespace TestVEDriversLite
                     try
                     {
                         await Console.Out.WriteLineAsync("Uploading image to IPFS...");
-                        var bytes = Convert.FromBase64String(responseForImage.Item2);
+                        var bytes = Convert.FromBase64String(responseForImage.Item2.FirstOrDefault());
                         using (Stream stream = new MemoryStream(bytes))
                         {
                             //Request IPFS upload with StorageDriver

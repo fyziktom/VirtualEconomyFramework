@@ -420,60 +420,63 @@
             await InvokeAsync(StateHasChanged);
 
             if (NotificationService != null)
-                    await NotificationService.Info("Creating Image by AI has started...", "Creating Image by AI");
-                
+                await NotificationService.Info("Creating Image by AI has started...", "Creating Image by AI");
+
             var responseForImage = await AppData.Assistant.GetImageForText($"Název: {NFT.Name}, Popis: {NFT.Description}, Tagy: {NFT.Tags}");
-            if (responseForImage.Item1 && !string.IsNullOrEmpty(responseForImage.Item2))
+            if (responseForImage.Item1 && responseForImage.Item2.Count > 0)
             {
-                var item = new VEDriversLite.NFT.Dto.NFTDataItem()
-                    {
-                        Storage = DataItemStorageType.IPFS,
-                        IsMain = true,
-                        Type = DataItemType.Image
-                    };
-                var link = string.Empty;
-
-                try
+                foreach (var img in responseForImage.Item2)
                 {
-                    await Console.Out.WriteLineAsync("Uploading image to IPFS...");
-                    var bytes = Convert.FromBase64String(responseForImage.Item2);
-                    using (Stream stream = new MemoryStream(bytes))
-                    {
-                        //Request IPFS upload with StorageDriver
-                        var result = await VEDriversLite.VEDLDataContext.Storage.SaveFileToIPFS(new VEDriversLite.StorageDriver.StorageDrivers.Dto.WriteStreamRequestDto()
-                            {
-                                Data = stream,
-                                Filename = $"{DateTime.UtcNow.ToString("yyyy_MM_ddThh_mm_ss")}-{NFT.Name.Replace(' ', '_')}.png",
-                                DriverType = VEDriversLite.StorageDriver.StorageDrivers.StorageDriverType.IPFS,
-                            });
-
-                        if (result.Item1)
+                    var item = new VEDriversLite.NFT.Dto.NFTDataItem()
                         {
-                            await Console.Out.WriteLineAsync("Upload finished.");
-                            await Console.Out.WriteLineAsync("Image Link: " + result.Item2);
+                            Storage = DataItemStorageType.IPFS,
+                            IsMain = true,
+                            Type = DataItemType.Image
+                        };
+                    var link = string.Empty;
 
-                            // store link to image for later use
-                            link = result.Item2;
+                    try
+                    {
+                        await Console.Out.WriteLineAsync("Uploading image to IPFS...");
+                        var bytes = Convert.FromBase64String(img);
+                        using (Stream stream = new MemoryStream(bytes))
+                        {
+                            //Request IPFS upload with StorageDriver
+                            var result = await VEDriversLite.VEDLDataContext.Storage.SaveFileToIPFS(new VEDriversLite.StorageDriver.StorageDrivers.Dto.WriteStreamRequestDto()
+                                {
+                                    Data = stream,
+                                    Filename = $"{DateTime.UtcNow.ToString("yyyy_MM_ddThh_mm_ss")}-{NFT.Name.Replace(' ', '_')}.png",
+                                    DriverType = VEDriversLite.StorageDriver.StorageDrivers.StorageDriverType.IPFS,
+                                });
 
-                            // store IPFS hash of image in DataItem
-                            var hash = VEDriversLite.StorageDriver.Helpers.IPFSHelpers.GetHashFromIPFSLink(result.Item2);
-                            if (!string.IsNullOrEmpty(hash))
-                                item.Hash = hash;
+                            if (result.Item1)
+                            {
+                                await Console.Out.WriteLineAsync("Upload finished.");
+                                await Console.Out.WriteLineAsync("Image Link: " + result.Item2);
+
+                                // store link to image for later use
+                                link = result.Item2;
+
+                                // store IPFS hash of image in DataItem
+                                var hash = VEDriversLite.StorageDriver.Helpers.IPFSHelpers.GetHashFromIPFSLink(result.Item2);
+                                if (!string.IsNullOrEmpty(hash))
+                                    item.Hash = hash;
+                            }
+                            else
+                                Console.WriteLine("Cannot upload. " + result.Item2);
                         }
-                        else
-                            Console.WriteLine("Cannot upload. " + result.Item2);
                     }
-                }
-                catch (Exception ex)
-                {
-                    await Console.Out.WriteLineAsync("Cannot upload Image to IPFS. " + ex.Message);
-                }
+                    catch (Exception ex)
+                    {
+                        await Console.Out.WriteLineAsync("Cannot upload Image to IPFS. " + ex.Message);
+                    }
 
-                if (!string.IsNullOrEmpty(link) && !string.IsNullOrEmpty(item.Hash))
-                {
-                    Console.WriteLine($"Link to NFT Image: {link}");
-                    NFT.ImageLink = link;
-                    NFT.DataItems.Add(item);
+                    if (!string.IsNullOrEmpty(link) && !string.IsNullOrEmpty(item.Hash))
+                    {
+                        Console.WriteLine($"Link to NFT Image: {link}");
+                        NFT.ImageLink = link;
+                        NFT.DataItems.Add(item);
+                    }
                 }
             }
             else

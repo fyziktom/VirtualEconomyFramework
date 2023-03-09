@@ -390,10 +390,11 @@ namespace VEDriversLite.AI.OpenAI
         /// </summary>
         /// <param name="text"></param>
         /// <returns>true and Base64 string if success</returns>
-        public async Task<(bool, string)> GetImageForText(string text)
+        public async Task<(bool, List<string>)> GetImageForText(string text)
         {
             if (AIService == null)
-                return (false, null);
+                return (false, new List<string>());
+
             try
             {
                 var imageResult = await AIService.Image.CreateImage(new ImageCreateRequest
@@ -409,18 +410,23 @@ namespace VEDriversLite.AI.OpenAI
                 {
                     var res = imageResult.Results.Select(r => r.B64).FirstOrDefault();
 
-                    if (!string.IsNullOrEmpty(res))
+                    var images = new List<string>();
+                    if (imageResult.Results.Count > 1)
                     {
-                        return (true, res);
+                        foreach(var img in imageResult.Results)
+                            images.Add(img.B64);
                     }
+
+                    if (images.Count > 0)
+                        return (true, images);
                 }
             }
             catch (Exception ex)
             {
-                return (false, string.Empty);
+                return (false, new List<string>());
             }
 
-            return (false, string.Empty);
+            return (false, new List<string>());
         }
 
         private (bool, string) ParseOutOneJSONFromString(string input)
