@@ -5,6 +5,7 @@ using OpenAI.GPT3;
 using System.Text;
 using VEDriversLite.AI.OpenAI.Dto;
 using Newtonsoft.Json;
+using VEDriversLite.Common.Enums;
 
 namespace VEDriversLite.AI.OpenAI
 {
@@ -64,7 +65,7 @@ namespace VEDriversLite.AI.OpenAI
             var result = new StringBuilder();
 
             for (var i = 0; i < split.Length - 1; i++)
-                result.Append(split[i]);
+                result.Append(split[i] + ".");
 
             if (split.Length == 1)
                 result.Append(split[0]);
@@ -451,6 +452,70 @@ namespace VEDriversLite.AI.OpenAI
                     return (true, res.ToString());
             }
             return (false, string.Empty);
+        }
+
+        /// <summary>
+        /// Let the ChatGPT create the Mermaid graph from the text
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="graphType">Mermaid graph type</param>
+        /// <param name="maxTokens"></param>
+        /// <returns></returns>
+        public async Task<(bool, string)> GetMermaidFromText(string text, MermaidGraphTypes graphType = MermaidGraphTypes.Sequence, int maxTokens = 1500)
+        {
+            if (AIService == null)
+                return (false, "Init AI service first.");
+
+            try
+            {
+
+                var requestMessage = $"Vytvoř prosím z tohoto textu Mermaid \"{Enum.GetName(graphType)}\" diagram. Zde je text: \"{text}\".";
+
+                var completionResult = await AIService.ChatCompletion.CreateCompletion(new ChatCompletionCreateRequest
+                {
+                    Messages = new List<ChatMessage>()
+                    {
+                        ChatMessage.FromUser(requestMessage)
+                    },
+                    Model = Models.ChatGpt3_5Turbo,
+                    MaxTokens = maxTokens//optional
+                });
+
+                if (completionResult.Successful)
+                {
+                    var msg = completionResult.Choices.First().Message;
+                    if (msg != null)
+                        return (true, ParseMermaidFromText(msg.Content));
+                }
+            }
+            catch (Exception ex)
+            {
+                return (false, ex.Message);
+            }
+
+            return (false, "Unknown Error");
+        }
+
+        private string ParseMermaidFromText(string text)
+        {
+            var result = new StringBuilder();
+
+            using (var reader = new StringReader(text))
+            {
+                var start = false;
+                for (string line = reader.ReadLine(); line != null; line = reader.ReadLine())
+                {
+                    if (line.StartsWith("```") && start)
+                        break;
+
+                    if (start)
+                        result.AppendLine(line);
+
+                    if (line.StartsWith("```mermaid"))
+                        start = true;
+                }
+            }
+            return result.ToString();
         }
     }
 }

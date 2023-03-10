@@ -88,6 +88,21 @@ namespace TestVEDriversLite
             var baseForImage = await assistant.SendSimpleQuestion($"{param} Zdrojový text: \"{text}\".", 100);
             await Console.Out.WriteLineAsync($"Result: " + baseForImage.Item2);
         }
+
+        [TestEntry]
+        public static void AI_MermaidFromText(string param)
+        {
+            AI_MermaidFromTextAsync(param);
+        }
+        public static async Task AI_MermaidFromTextAsync(string param)
+        {
+            var text = FileHelpers.ReadTextFromFile("text.txt");
+            //var baseForImage = await assistant.SendSimpleQuestion($"How do you visual imagine this text? Describe it in one english sentense. Source text: \"{text}\".", 100);
+            //var baseForImage = await assistant.GetMermaidFromText($"{param} Zdrojový text: \"{text}\".", VEDriversLite.Common.Enums.MermaidGraphTypes.Sequence, 750);
+            var baseForImage = await assistant.GetMermaidFromText(text, VEDriversLite.Common.Enums.MermaidGraphTypes.Sequence, 1500);
+            await Console.Out.WriteLineAsync($"Result: " + baseForImage.Item2);
+        }
+
         [TestEntry]
         public static void AI_CreateNFTBasedOnText(string param)
         {

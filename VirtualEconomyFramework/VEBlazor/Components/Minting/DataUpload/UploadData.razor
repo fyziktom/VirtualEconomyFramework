@@ -33,9 +33,14 @@
                         </Validations>
                     </Column>
                 </Row>
-                <Row>
+                <Row Margin="Margin.Is2.FromTop">
                     <Column>
                         <Button Color="Color.Primary" Clicked="@CreateImageForNFT" Loading="@creatingImage" Block>Create image by OpenAI based on NFT Info</Button>
+                    </Column>
+                </Row>
+                <Row Margin="Margin.Is2.FromTop">
+                    <Column>
+                        <VEFramework.VEBlazor.Components.AI.CreateMermaidByAIButton OnMermaidCreated="@onMermaidCrearedHandler" DefaultText="@NFT.Text" />
                     </Column>
                 </Row>
                 @if (uploadingImage)
@@ -433,7 +438,7 @@
                 dalleRequest = baseForImage.Item2.Replace("\n", " ");
             else 
                 dalleRequest = $"Vytvoř pozitivní obrázek pro tuto skladbu parametrů NFT: Název: {NFT.Name}, Popis: {NFT.Description}, Tagy: {NFT.Tags}";
-            
+
             Console.WriteLine($"Request for DALL-E-2: {dalleRequest}");
 
             if (NotificationService != null)
@@ -511,6 +516,15 @@
         {
             if (NotificationService != null)
                 await NotificationService.Warning("Cannot use AI without setup of OpenAI API Key. Please fill it in the profile tab in settings.", "OpenAI API Key missing");
+        }
+    }
+
+    private async Task onMermaidCrearedHandler(VEDriversLite.NFT.Dto.NFTDataItem item)
+    {
+        if (item != null)
+        {
+            NFT.DataItems.Add(item);
+            await InvokeAsync(StateHasChanged);
         }
     }
 
