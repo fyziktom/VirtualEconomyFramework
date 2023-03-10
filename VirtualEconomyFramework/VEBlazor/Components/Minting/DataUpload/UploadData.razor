@@ -409,10 +409,10 @@
     {
         if (AppData.Assistant != null)
         {
-            if (string.IsNullOrEmpty(NFT.Name) && string.IsNullOrEmpty(NFT.Description) && string.IsNullOrEmpty(NFT.Tags))
+            if (string.IsNullOrEmpty(NFT.Text) && string.IsNullOrEmpty(NFT.Description))// && string.IsNullOrEmpty(NFT.Description) && string.IsNullOrEmpty(NFT.Tags))
             {
                 if (NotificationService != null)
-                    await NotificationService.Error("Cannot create NFT Image without filled Name, Description and Tags fields.", "Fill the NFT Info");
+                    await NotificationService.Error("Cannot create NFT Image without filled NFT Text or Description.", "Fill the NFT Text or Description first.");//Name, Description and Tags fields.", "Fill the NFT Info");
                 return;
             }
 
@@ -420,9 +420,26 @@
             await InvokeAsync(StateHasChanged);
 
             if (NotificationService != null)
+                await NotificationService.Info("Analyzing Text to create description of image for AI...", "Creating Image description");
+
+            var dalleRequest = string.Empty;
+
+            var text = NFT.Text;
+            if (string.IsNullOrEmpty(NFT.Text))
+                text = NFT.Description;
+
+            var baseForImage = await AppData.Assistant.SendSimpleQuestion($"Potřebuji od AI obrázek k textu. Napiš pro AI prosím stručné zadání v angličtině. Délka zadání maximálně dvě věty. Chci obdržet jako výsledek jenom zadání. Zdrojový text: \"{text}\".", 100);
+            if (baseForImage.Item1)
+                dalleRequest = baseForImage.Item2.Replace("\n", " ");
+            else 
+                dalleRequest = $"Vytvoř pozitivní obrázek pro tuto skladbu parametrů NFT: Název: {NFT.Name}, Popis: {NFT.Description}, Tagy: {NFT.Tags}";
+            
+            Console.WriteLine($"Request for DALL-E-2: {dalleRequest}");
+
+            if (NotificationService != null)
                 await NotificationService.Info("Creating Image by AI has started...", "Creating Image by AI");
 
-            var responseForImage = await AppData.Assistant.GetImageForText($"Název: {NFT.Name}, Popis: {NFT.Description}, Tagy: {NFT.Tags}");
+            var responseForImage = await AppData.Assistant.GetImageForText($"{dalleRequest}");
             if (responseForImage.Item1 && responseForImage.Item2.Count > 0)
             {
                 foreach (var img in responseForImage.Item2)
@@ -473,6 +490,9 @@
 
                     if (!string.IsNullOrEmpty(link) && !string.IsNullOrEmpty(item.Hash))
                     {
+                        if (NFT.DataItems.FirstOrDefault(d => d.IsMain) != null) 
+                            item.IsMain = false;
+
                         Console.WriteLine($"Link to NFT Image: {link}");
                         NFT.ImageLink = link;
                         NFT.DataItems.Add(item);

@@ -1,4 +1,4 @@
-﻿@inject AppData AppData
+@inject AppData AppData
 
 <Button Color="Color.Primary" Clicked="@ShowModal" Block>Create text by ChatGPT</Button>
 
@@ -84,6 +84,7 @@
         if (Result.Item1)
             await TextCreated.InvokeAsync(Result.Item2);
 
+        Creating = false;
         //close automatically after 2 seconds
         await Task.Delay(2000);
         HideModal();

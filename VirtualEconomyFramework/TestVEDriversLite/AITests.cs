@@ -77,6 +77,18 @@ namespace TestVEDriversLite
         }
 
         [TestEntry]
+        public static void AI_DALLE_RequestCreation(string param)
+        {
+            AI_DALLE_RequestCreationAsync(param);
+        }
+        public static async Task AI_DALLE_RequestCreationAsync(string param)
+        {
+            var text = FileHelpers.ReadTextFromFile("text.txt");
+            //var baseForImage = await assistant.SendSimpleQuestion($"How do you visual imagine this text? Describe it in one english sentense. Source text: \"{text}\".", 100);
+            var baseForImage = await assistant.SendSimpleQuestion($"{param} Zdrojový text: \"{text}\".", 100);
+            await Console.Out.WriteLineAsync($"Result: " + baseForImage.Item2);
+        }
+        [TestEntry]
         public static void AI_CreateNFTBasedOnText(string param)
         {
             AI_CreateNFTBasedOnTextAsync(param);
