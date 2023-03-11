@@ -9,6 +9,34 @@
             <CloseButton />
         </ModalHeader>
         <ModalBody>
+
+            <Row Flex="Flex.AlignItems.Center">
+                <Column>
+                    <Span>What should be the length of the post?</Span>
+                </Column>
+            </Row>
+
+            <Row Flex="Flex.AlignItems.Center">
+                <Column>
+                    <Field Horizontal>
+                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                            <Select Display="Display.None.OnDesktop.InlineBlock.OnTablet" SelectedValue="@postLength" SelectedValueChanged="@postLengthChanged" TValue="PostLength">
+                                @foreach (var length in Enum.GetValues<PostLength>())
+                                {
+                                    <SelectItem TValue="PostLength" @key="@length" Value="@length">@(Enum.GetName(typeof(PostLength), length))</SelectItem>
+                                }
+                            </Select>
+                            <RadioGroup Display="Display.None.OnMobile.None.OnTablet.InlineBlock.OnDesktop" CheckedValue="@postLength" CheckedValueChanged="@postLengthChanged" TValue="PostLength" Name="graphtype" Orientation="Orientation.Horizontal" Buttons Color="Color.Light">
+                                @foreach (var length in Enum.GetValues<PostLength>())
+                                {
+                                    <Radio TValue="PostLength" @key="@length" Value="@length">@(Enum.GetName(typeof(PostLength), length))</Radio>
+                                }
+                            </RadioGroup>
+                        </FieldBody>
+                    </Field>
+                </Column>
+            </Row>
+            
             <Row Flex="Flex.AlignItems.Center">
                 <Column>
                     <Span>Please input some base for the full create article by AI</Span>
@@ -34,6 +62,15 @@
     </ModalContent>
 </Modal>
 @code {
+
+    public enum PostLength
+    {
+        Tiny = 100,
+        Short = 250,
+        Medium = 500,
+        Long = 750
+    }
+
     [Inject] INotificationService? NotificationService { get; set; }
 
     [Parameter] public EventCallback<string> TextCreated { get; set; }
@@ -43,6 +80,7 @@
     public string BaseText { get; set; } = string.Empty;
     bool Creating = false;
     (bool, string) Result = (false, string.Empty);
+    PostLength postLength = PostLength.Medium;
 
     public void ShowModal()
     {
@@ -70,7 +108,7 @@
         var baset = "Vytvoř prosím krátký článek o " + BaseText + ". Výstup bude Markdown.";
 
         if (AppData.Assistant != null)
-            Result = await AppData.Assistant.SendSimpleQuestion( baset , 750);
+            Result = await AppData.Assistant.SendSimpleQuestion( baset , (int)postLength);
 
         if (NotificationService != null)
         {
@@ -88,6 +126,11 @@
         //close automatically after 2 seconds
         await Task.Delay(2000);
         HideModal();
-        
+
+    }
+
+    private void postLengthChanged(PostLength e)
+    {
+        postLength = e;
     }
 }
