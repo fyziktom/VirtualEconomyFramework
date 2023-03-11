@@ -141,6 +141,15 @@ public class AppData
         AccountLoadedOrImported.Invoke(null, true);
     }
 
+    public async Task<bool> DoesAccountExist()
+    {
+        var ekey = await localStorage.GetItemAsync<string>("key");
+        if (string.IsNullOrEmpty(ekey))
+            return false;
+        else
+            return true;
+    }
+
     public async Task<(bool,string)> UnlockAccount(string password, bool withoutNFTs = false)
     {
         var ekey = await localStorage.GetItemAsync<string>("key");
