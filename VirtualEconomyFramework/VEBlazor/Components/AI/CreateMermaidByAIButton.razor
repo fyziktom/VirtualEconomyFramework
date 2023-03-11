@@ -113,7 +113,7 @@
         await InvokeAsync(StateHasChanged);
 
         if (NotificationService != null)
-            await NotificationService.Info("Createing text...", "AI working");
+            await NotificationService.Info("Creating text...", "AI working");
 
         if (AppData.Assistant != null)
             Result = await AppData.Assistant.GetMermaidFromText( baseText, mermaidGraphType , 1000);
@@ -122,7 +122,11 @@
         {
             if (Result.Item1)
             {
-                item.Hash = string.Empty;
+                item = new VEDriversLite.NFT.Dto.NFTDataItem()
+                    {
+                        Storage = DataItemStorageType.IPFS,
+                        Type = DataItemType.Mermaid
+                    };
 
                 if (mermaidEditorRef != null)
                     await mermaidEditorRef.LoadText(Result.Item2);
