@@ -69,7 +69,7 @@
 
     async Task OnTagNamesChanged( List<string> values )
     {
-        if (values.Count == 0 && TagNames.Count > 1)
+        if (values.Count == 0 && TagNames.Count >= values.Count + 1)
             return;
         
         Tags = string.Join( " ", values ?? Enumerable.Empty<string>() ).Trim();
@@ -85,6 +85,8 @@
             Tags += $"{tag}";
         else
             Tags += $" {tag}";
+
+        await InvokeAsync(StateHasChanged);
         await TagsChanged.InvokeAsync( Tags );
         await InvokeAsync(StateHasChanged);
     }

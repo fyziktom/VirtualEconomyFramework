@@ -1,0 +1,296 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@using VEDriversLite.NFT.Dto
+@using VEDriversLite.StorageDriver
+@using Newtonsoft.Json
+@using VEDriversLite.AI.OpenAI.Dto;
+@inject HttpClient Http
+@inject NavigationManager Navigator
+
+@page "/search"
+
+<PageTitle>Search</PageTitle>
+
+<Row Flex="Flex.AlignItems.Center" Margin="Margin.Is1.FromTop">
+    <Column>
+        <Field>
+            <FieldLabel>Vyplňte prosím Id transakce NFT:</FieldLabel>
+            <TextEdit Text="@NFTTxId" TextChanged="@((e) => { if (e != null && e != NFTTxId) { NFTTxId = e; } })" />
+        </Field>
+    </Column>
+</Row>
+
+<Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
+    <Column>
+        @if (!string.IsNullOrEmpty(NFTTxId))
+        {
+            <Button Color=" Color.Primary" Clicked="@LoadNFT" Loading="@LoadingNFT" Block>Načíst NFT</Button>
+        }
+        else
+        {
+            <Button Color="Color.Primary" Clicked="@LoadNFT" Loading="@LoadingNFT" Disabled Block>Načíst NFT</Button>
+            <Span>Vyplňte prosím prvně ID transakce NFT. Teprve poté je možné načíst NFT.</Span>
+        }
+    </Column>
+</Row>
+
+
+<Card Margin="Margin.Is1.FromTop">
+    <CardBody>
+        <CardTitle Size="3">@NFT.Name</CardTitle>
+        <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is1.FromTop">
+            <Column>
+                <small><b>Autor:</b> @NFT.Author</small>
+            </Column>
+        </Row>
+        <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
+            <Column>
+                <Span><b>Popis:</b></Span>
+            </Column>
+        </Row>
+
+        <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is1.FromTop">
+            <Column>
+                <Span>@NFT.Description</Span>
+            </Column>
+        </Row>
+
+        <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
+            <Column>
+                <Span><b>Tagy:</b></Span>
+            </Column>
+        </Row>
+        <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is1.FromTop">
+            <Column>
+                <VEFramework.VEBlazor.Components.Tags.Tags NFTType="@NFTTypes.Post" TagsList="@NFT.TagsList" />
+            </Column>
+        </Row>
+
+        <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is1.FromTop">
+            <Column>
+                <VEFramework.VEBlazor.Components.NFTs.Common.NFTText Text="@NFT.Text" />
+            </Column>
+        </Row>
+
+        <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
+            <Column>
+                <CardDeck>
+                    @foreach(var item in NFT.DataItems)
+                    {
+                        var link = VEDriversLite.StorageDriver.Helpers.IPFSHelpers.GetIPFSLinkFromHash(item.Hash);
+                        @if (item.Type == DataItemType.Image)
+                        {
+                            var rating = GetRatingOfItem(item);
+                            var complexity = GetRatingComplexityOfItem(item);
+                            <Card>
+                                <CardImage Source="@link" Style="max-width:350px;" />
+                                <CardBody>
+                                    <CardTitle>Rating</CardTitle>
+                                    <Field>
+                                        <FieldLabel>Výstižnost</FieldLabel>
+                                        <Rating Color="Color.Warning" SelectedValue="rating" ReadOnly />
+                                    </Field>
+                                    <Field>
+                                        <FieldLabel>Propracovanost</FieldLabel>
+                                        <Rating Color="Color.Warning" SelectedValue="complexity" ReadOnly />
+                                    </Field>
+                                    @if (item.IsMain)
+                                    {
+                                        <Row Margin="  Margin.Is2.FromTop">
+                                            <Column>
+                                                <Span><b>Tento je nejlepší</b></Span>
+                                            </Column>
+                                        </Row>
+                                    }
+                                </CardBody>
+                            </Card>
+                        }
+                    }
+                </CardDeck>
+            </Column>
+        </Row>
+    </CardBody>
+</Card>
+
+<Row Flex="Flex.AlignItems.Center" Margin="Margin.Is3.FromTop">
+    <Column>
+        <b>NFT Id Transakce:</b> <Link To="@("https://explorer.nebl.io/tx/" + @NFTTxId)" Target="Target.Blank">@NFTTxId</Link>
+    </Column>
+</Row>
+
+<Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
+    <Column>
+        <VEFramework.VEBlazor.Components.Display.CopyButton TextToCopy="@(Navigator.BaseUri + "/search?txid=" + @NFTTxId + "&index=0")" ButtonText="Zkopíruj odkaz na sdílení NFT" />
+    </Column>
+</Row>
+
+
+<Card Margin="Margin.Is1.FromTop">
+    <CardBody>
+        <CardTitle Size="3">Doplňující Info z procesu mintování s AI</CardTitle>
+        <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
+            <Column>
+                <Heading Size="HeadingSize.Is5">Originální základní text od uživatele:</Heading>
+            </Column>
+        </Row>
+
+        <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
+            <Column>
+                <Span>@additionalInfo.OrigUserBaseText</Span>
+            </Column>
+        </Row>
+
+
+        <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
+            <Column>
+                <Heading Size="HeadingSize.Is5">Originální Jméno podle AI:</Heading>
+            </Column>
+        </Row>
+
+        <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
+            <Column>
+                <Span>@additionalInfo.OrigAIName</Span>
+            </Column>
+        </Row>
+
+        <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
+            <Column>
+                <Heading Size="HeadingSize.Is5">Originální Popis podle AI</Heading>
+            </Column>
+        </Row>
+
+        <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
+            <Column>
+                <Span>@additionalInfo.OrigAIDescription</Span>
+            </Column>
+        </Row>
+
+        <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
+            <Column>
+                <Heading Size="HeadingSize.Is5">Originální Tagy podle AI:</Heading>
+            </Column>
+        </Row>
+
+        <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
+            <Column>
+                <Span>@additionalInfo.OrigAITags</Span>
+            </Column>
+        </Row>
+
+        <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
+            <Column>
+                <Heading Size="HeadingSize.Is5">Originální AI Text:</Heading>
+            </Column>
+        </Row>
+
+        <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop.Is5.FromBottom">
+            <Column>
+                <VEFramework.VEBlazor.Components.NFTs.Common.NFTText Text="@additionalInfo.OrigAIText" />
+            </Column>
+        </Row>
+
+    </CardBody>
+</Card>
+@code{
+    
+    public class AdditionalInfo
+    {
+        public string OrigUserBaseText { get; set; } = string.Empty;
+        public string OrigAIText { get; set; } = string.Empty;
+        public string OrigAIName { get; set; } = string.Empty;
+        public string OrigAIDescription { get; set; } = string.Empty;
+        public string OrigAITags { get; set; } = string.Empty;
+
+    }
+
+    MintFreeForAI.Components.GetText getTextRef;
+
+    INFT NFT = new PostNFT("");
+
+    AdditionalInfo additionalInfo = new AdditionalInfo();
+
+    bool LoadingNFT = false;
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "txid")]
+    public string NFTTxId {get;set;} = string.Empty;
+
+    protected override async Task OnAfterRenderAsync(bool firstLoad)
+    {
+        if (firstLoad)
+        {
+            if (!string.IsNullOrEmpty(NFTTxId))
+                await LoadNFT();
+        }
+    }
+
+    public int GetRatingOfItem(NFTDataItem item)
+    {
+        var rating = item.TagsList.FirstOrDefault(t => t.Contains("rating:"));
+        if (rating != null)
+        {
+            var split = rating.Split(":");
+            if (split.Length > 0)
+                return Convert.ToInt32(split[1].Trim());
+
+        }
+
+        return 0;
+    }
+    public int GetRatingComplexityOfItem(NFTDataItem item)
+    {
+        var rating = item.TagsList.FirstOrDefault(t => t.Contains("complexity:"));
+        if (rating != null)
+        {
+            var split = rating.Split(":");
+            if (split.Length > 0)
+                return Convert.ToInt32(split[1].Trim());
+
+        }
+
+        return 0;
+    }
+
+    private async Task LoadNFT()
+    {
+        LoadingNFT = true;
+        await InvokeAsync(StateHasChanged);
+
+        if (!string.IsNullOrEmpty(NFTTxId))
+        {
+            var nft = await NFTFactory.GetNFT(NFTHelpers.TokenId, NFTTxId, 0, 0, true, true, NFTTypes.Post);
+            if (nft != null)
+            {
+                NFT = nft;
+
+                var it = NFT.DataItems.FirstOrDefault(i => i.Type == DataItemType.JSON);
+                if (it != null)
+                {
+                    var file = await VEDLDataContext.Storage.GetFileFromIPFS(new VEDriversLite.StorageDriver.StorageDrivers.Dto.ReadFileRequestDto()
+                    {
+                         Hash = it.Hash,
+                         DriverType = VEDriversLite.StorageDriver.StorageDrivers.StorageDriverType.IPFS
+                    });
+                    if (file.Item1)
+                    {
+                        var info = System.Text.Encoding.UTF8.GetString(file.Item2);
+                        try
+                        {
+                            var parsed = JsonConvert.DeserializeObject<AdditionalInfo>(info);
+                            if (parsed != null)
+                                additionalInfo = parsed;
+                        }
+                        catch(Exception ex)
+                        {
+                            Console.WriteLine("Cannot parse the additional info: " + ex.Message);
+                        }
+                    }
+                }
+            }
+        }
+
+        LoadingNFT = false;
+        await InvokeAsync(StateHasChanged);
+    }
+
+}

@@ -1,0 +1,464 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@using VEDriversLite.NFT.Dto
+@using VEDriversLite.StorageDriver
+@using Newtonsoft.Json
+@using VEDriversLite.AI.OpenAI.Dto;
+@inject HttpClient Http
+@inject NavigationManager Navigator
+
+@page "/"
+
+<PageTitle>MintFreeForAI</PageTitle>
+
+
+<Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
+    <Column>
+        <Span>Pomozte prosím vylepšit umělou inteligenci mintováním NFT zdarma. </Span>
+    </Column>
+</Row>
+<Row Flex="Flex.AlignItems.Center">
+    <Column>
+        <Span>Vyplnění všech polí můžete nechat na ChatGPT, který je zde integrován, nebo je můžete vyplnit podle libosti.</Span>
+    </Column>
+</Row>
+<Row Flex="Flex.AlignItems.Center">
+    <Column>
+        <Span>Obrázky pro Vás vytvoří modul DALL-E-2 a chtěli bychom poprosit o jejich ohodnocení.</Span>
+    </Column>
+</Row>
+<Row Flex="Flex.AlignItems.Center">
+    <Column>
+        <Span>Můžete i udělat korekturů textů, doplnit tagy, apod. Je na vás jak moc detailně budete chtít pomoci. Tyto data pomůžou AI zlepšit vnímání českého jazyka.</Span>
+    </Column>
+</Row>
+
+<Row Flex="Flex.AlignItems.Center" Margin="Margin.Is3.FromTop">
+    <Column>
+        <Span><Link To="https://apptest.ve-nft.com/gallery?addr=NbjvQz5P4TVAjZBLtwJW3VevGgMkG9Diy6" Target="Target.Blank">Na tomto odkazu</Link> si můžete prohlédnout některá z posledních NFT od různých uživatelů.</Span>
+    </Column>
+</Row>
+
+<Row Flex="Flex.AlignItems.Center" Margin="Margin.Is3.FromTop">
+    <Column>
+        <Heading Size="HeadingSize.Is4">1. Zadejte prosím základní informace pro příběh</Heading>
+    </Column>
+</Row>
+
+<Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
+    <Column>
+        <GetText @ref="getTextRef" TextCreated="@onTextCreatedHandler" />
+    </Column>
+</Row>
+
+<Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
+    <Column>
+        @if (!string.IsNullOrEmpty(NFT.Text))
+        {
+            <Button Color="Color.Primary" Clicked="@CreateInfoAction" Loading="@CreatingInfo" Block>3. Vytvoř NFT Info pomocí AI</Button>
+        }
+        else
+        {
+            <Button Color="Color.Primary" Clicked="@CreateInfoAction" Loading="@CreatingInfo" Disabled Block>3. Vytvoř NFT Info pomocí AI</Button>
+            <Span>Vyplňte prosím prvně hlavní text.</Span>
+        }
+    </Column>
+</Row>
+
+
+<Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
+    <Column>
+        <Field>
+            <FieldLabel>Vyplňte prosím jméno NFT</FieldLabel>
+            <TextEdit Placeholder="Vyplňte jméno" @bind-Text="@NFT.Name" />
+        </Field>
+        <Field>
+            <FieldLabel>Vyplňte prosím tagy</FieldLabel>
+            <SpaceTags Tags="@NFT.Tags" TagsChanged="@onTagsChangedHandler"/>
+            <FieldHelp>Oddělujte prosím tagy mezerou. Nedávejte před tagy znak #.</FieldHelp>
+        </Field>
+
+        <Field>
+            <FieldLabel>Vyplňte prosím krátký popis NFT</FieldLabel>
+            <TextEdit Placeholder="Vyplňte krátký popis" @bind-Text="@NFT.Description"/>
+            <FieldHelp>Pro delší text prosím použijte pole Text výše.</FieldHelp>
+        </Field>
+
+    </Column>
+</Row>
+
+<Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
+    <Column>
+        @if (!string.IsNullOrEmpty(NFT.Text))
+        {
+            <Button Color="Color.Primary" Clicked="@CreateImagesForNFT" Loading="@CreatingImage" Block>4. Vytvoř 4 obrázky pomocí AI. Může to chvíli trvat...</Button>
+        }
+        else
+        {
+            <Button Color="Color.Primary" Clicked="@CreateImagesForNFT" Loading="@CreatingImage" Disabled Block>4. Vytvoř 4 obrázky pomocí AI. Může to chvíli trvat...</Button>
+            <Span>Vyplňte prosím prvně hlavní text.</Span>
+        }
+    </Column>
+</Row>
+
+<Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
+    <Column>
+        <CardDeck>
+            @foreach(var item in NFT.DataItems)
+            {
+                var link = VEDriversLite.StorageDriver.Helpers.IPFSHelpers.GetIPFSLinkFromHash(item.Hash);
+                @if (item.Type == DataItemType.Image)
+                {
+                    var rating = GetRatingOfItem(item);
+                    var complexity = GetRatingComplexityOfItem(item);
+                    <Card>
+                        <CardImage Source="@link" Style="max-width:350px;" />
+                        <CardBody>
+                            <CardTitle>Ohodnoťe prosím</CardTitle>
+                            <Field>
+                                <FieldLabel>Výstižnost</FieldLabel>
+                                <Rating Color="Color.Warning" SelectedValue="rating" SelectedValueChanged="@((e) => onRatingOfItemChanged(e, item))" />                     
+                            </Field>
+                            <Field>
+                                <FieldLabel>Propracovanost</FieldLabel>
+                                <Rating Color="Color.Warning" SelectedValue="complexity" SelectedValueChanged="@((e) => onRatingComplexityOfItemChanged(e, item))" />
+                            </Field>
+                            <Row Flex="Flex.AlignItems.Baseline" Margin="Margin.Is2.FromBottom.Is2.FromTop">
+                                <Column>
+                                    <Row>
+                                        <Column Flex="Flex.JustifyContent.Center">
+                                            <Check Checked="@item.IsMain" TValue="bool" CheckedChanged="@((e) => onCheckedChangedHandler(e, item))">Tento je nejlepší</Check>
+                                            </Column>
+                                        </Row>
+                                </Column>
+                            </Row>
+                       </CardBody>
+                    </Card>
+                }
+            }
+        </CardDeck>
+    </Column>
+</Row>
+
+<Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
+    <Column>
+        <Span>Volitelné: Pokud chcete zašleme Vám toto NFT zdarma na Vaši adresu. Budete potřebovat novou verzi VENFT App. Blockchain Adresu si můžete zdarma vytvořit <Link To="https://apptest.ve-nft.com/" Target="Target.Blank">zde</Link>.</Span>
+        <Span>Pokud nemáte o výsledné NFT zájem, tak nechte prosím pole pro Příjemce prázdné.</Span>
+    </Column>
+</Row>
+
+<Row Flex="Flex.AlignItems.Center" Margin="Margin.Is1.FromTop">
+    <Column>
+        <Field>
+            <FieldLabel>Příjemce:</FieldLabel>
+            <VEFramework.VEBlazor.Components.Account.NeblioAddressInput WithBookmarksList="false" Receiver="@Receiver" AddressCheckedInputed="@onAddressInputedHandler" />
+            <FieldHelp>Vypňte prosím Neblio Blockchain Address vytvořenou v nové VENFT App.</FieldHelp>
+        </Field>
+    </Column>
+</Row>
+
+<Row Flex="Flex.AlignItems.Center" Margin="Margin.Is1.FromTop">
+    <Column>
+        <Field>
+            <FieldLabel>Autor:</FieldLabel>
+            <TextEdit @bind-Text="NFT.Author"  Placeholder="Jméno nebo přezdívka"/>
+            <FieldHelp>Volitelné: Vyplňte prosím své jméno či přezdívku.</FieldHelp>
+        </Field>
+    </Column>
+</Row>
+
+<Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
+    <Column>
+        @if (!string.IsNullOrEmpty(NFT.Text) && !string.IsNullOrEmpty(NFT.Name) && !string.IsNullOrEmpty(NFT.Tags) && !string.IsNullOrEmpty(NFT.Description) && NFT.DataItems.Count > 0)
+        {
+            <Button Color=" Color.Primary" Clicked="@MintNFT" Loading="@MintingNFT" Block>5. Vytvoř NFT</Button>
+        }
+        else
+        {
+            <Button Color="Color.Primary" Clicked="@MintNFT" Loading="@MintingNFT" Disabled Block>5. Vytvoř NFT</Button>
+            <Span>Vyplňte prosím prvně Text, Jméno, Popis, Tagy a vytvořte obrázky s AI aby bylo možné vymintovat NFT.</Span>
+        }
+    </Column>
+</Row>
+
+<Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
+    <Column>
+        NFT Id Transakce: <Link To = "@("https://explorer.nebl.io/tx/" + @NFTTxId)" Target="Target.Blank">@NFTTxId</Link>
+    </Column>
+</Row>
+
+<Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
+    <Column>
+        Odkaz na <Link To="@("/search?txid=" + @NFTTxId + "&index=0")" Target="Target.Blank">zobrazení NFT</Link>
+    </Column>
+</Row>
+
+<Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop.Is5.FromBottom">
+    <Column>
+        <VEFramework.VEBlazor.Components.Display.CopyButton TextToCopy="@(Navigator.BaseUri + "/search?txid=" + @NFTTxId + "&index=0")" ButtonText="Zkopíruj odkaz na sdílení NFT" />
+    </Column>
+</Row>
+
+
+@code{
+    public class AdditionalInfo
+    {
+        public string OrigUserBaseText { get; set; } = string.Empty;
+        public string OrigAIText { get; set; } = string.Empty;
+        public string OrigAIName { get; set; } = string.Empty;
+        public string OrigAIDescription { get; set; } = string.Empty;
+        public string OrigAITags { get; set; } = string.Empty;
+
+    }
+
+    GetText getTextRef;
+
+    INFT NFT = new PostNFT("");
+
+    AdditionalInfo additionalInfo = new AdditionalInfo();
+    bool CreatingInfo = false;
+    bool CreatingImage = false;
+    bool MintingNFT = false;
+
+    string Receiver = string.Empty;
+    string NFTTxId = string.Empty;
+
+    private void onTextCreatedHandler((string,string) e)
+    {
+        if (!string.IsNullOrEmpty(e.Item2))
+        {
+            NFT.Text = e.Item2;
+            additionalInfo.OrigUserBaseText = e.Item1;
+            additionalInfo.OrigAIText = e.Item2;
+        }
+    }
+
+    public int GetRatingOfItem(NFTDataItem item)
+    {
+        var rating = item.TagsList.FirstOrDefault(t => t.Contains("rating:"));
+        if (rating != null)
+        {
+            var split = rating.Split(":");
+            if (split.Length > 0)
+                return Convert.ToInt32(split[1].Trim());
+
+        }
+
+        return 0;
+    }
+
+    public void onRatingOfItemChanged(int newValue, NFTDataItem item)
+    {
+        if (item.TagsList == null)
+        {
+            item.TagsList = new List<string>() { $"rating:{newValue}" };
+            return;
+        }
+        else if (item.TagsList.Count == 0)
+        {
+            item.TagsList.Add($"rating:{newValue}");
+            return;
+        }
+
+        var rating = item.TagsList.FirstOrDefault(t => t.Contains("rating:"));
+        if (rating == null)
+        {
+            rating = $"rating:{newValue}";
+            item.TagsList.Add(rating);
+        }
+        var indx = item.TagsList.IndexOf(rating);
+
+        item.TagsList[indx] = $"rating:{newValue}";
+    }
+
+    public int GetRatingComplexityOfItem(NFTDataItem item)
+    {
+        var rating = item.TagsList.FirstOrDefault(t => t.Contains("complexity:"));
+        if (rating != null)
+        {
+            var split = rating.Split(":");
+            if (split.Length > 0)
+                return Convert.ToInt32(split[1].Trim());
+
+        }
+
+        return 0;
+    }
+
+    public void onRatingComplexityOfItemChanged(int newValue, NFTDataItem item)
+    {
+        if (item.TagsList == null)
+        {
+            item.TagsList = new List<string>() { $"complexity:{newValue}" };
+            return;
+        }
+        else if (item.TagsList.Count == 0)
+        {
+            item.TagsList.Add($"complexity:{newValue}");
+            return;
+        }
+
+        var rating = item.TagsList.FirstOrDefault(t => t.Contains("complexity:"));
+        if (rating == null)
+        {
+            rating = $"complexity:{newValue}";
+            item.TagsList.Add(rating);
+        }
+        var indx = item.TagsList.IndexOf(rating);
+
+        item.TagsList[indx] = $"complexity:{newValue}";
+    }
+
+    public void onCheckedChangedHandler(bool e, VEDriversLite.NFT.Dto.NFTDataItem item)
+    {
+        if (NFT.DataItems is not null && NFT.DataItems.Count > 0)
+        {
+            foreach (var i in NFT.DataItems)
+                i.IsMain = false;
+
+            item.IsMain = e;
+            if (e) NFT.ImageLink = VEDriversLite.StorageDriver.Helpers.IPFSHelpers.GetIPFSLinkFromHash(item.Hash);
+
+            StateHasChanged();
+        }
+    }
+
+    private async Task onTagsChangedHandler(string e)
+    {
+        if (e != null)
+            NFT.Tags = e;
+        await InvokeAsync(StateHasChanged);
+    }
+    private async Task onAddressInputedHandler(string e)
+    {
+        if (e != null)
+            Receiver = e;
+    }
+
+    private async Task CreateInfoAction()
+    {
+        if (string.IsNullOrEmpty(getTextRef.TextByAI))
+            return;
+        else
+            NFT.Text = getTextRef.TextByAI;
+        
+        CreatingInfo = true;
+        await InvokeAsync(StateHasChanged);
+
+        using (var content = new StringContent("{ \"text\": \"" + NFT.Text.Replace("\n", string.Empty).Replace("\"", "\\\"") + "\"}", System.Text.Encoding.UTF8, "application/json"))
+        {
+            HttpResponseMessage result = await Http.PostAsync("/api/AIGetNFTData", content);
+            if (result.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                var returnStr = await result.Content.ReadAsStringAsync();
+
+                try
+                {
+                    var returnValue = JsonConvert.DeserializeObject<NewDataForNFTResult>(returnStr);
+                    if (returnValue != null)
+                    {
+                        NFT.Name = returnValue.Name;
+                        NFT.Description = returnValue.Description;
+                        NFT.Tags = returnValue.Tags.Replace(",", string.Empty).Replace(";", string.Empty).Replace("#", string.Empty);
+                        additionalInfo.OrigAIName = returnValue.Name;
+                        additionalInfo.OrigAIDescription = returnValue.Description;
+                        additionalInfo.OrigAITags = returnValue.Tags;
+                    }
+                }
+                catch(Exception ex)
+                {
+                    Console.WriteLine("Cannot deserialize NFT Info. " + ex.Message);                        
+                }
+            }
+        }
+        CreatingInfo = false;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task CreateImagesForNFT()
+    {
+        CreatingImage = true;
+        await InvokeAsync(StateHasChanged);
+
+        var dalleRequest = string.Empty;
+
+        var text = NFT.Text;
+        if (string.IsNullOrEmpty(NFT.Text))
+            text = NFT.Description;
+
+        for(int i = 0; i < 2; i++)
+        {
+            using (var content = new StringContent("{ \"text\": \"" + NFT.Text.Replace("\n", string.Empty).Replace("\"", "\\\"") + "\"}", System.Text.Encoding.UTF8, "application/json"))
+            {
+                HttpResponseMessage result = await Http.PostAsync("/api/AIGetNFTImages", content);
+                if (result.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    var returnStr = await result.Content.ReadAsStringAsync();
+
+                    try
+                    {
+                        var returnValue = JsonConvert.DeserializeObject<List<NFTDataItem>>(returnStr);
+                        if (returnValue != null)
+                        {
+                            foreach (var item in returnValue)
+                            {
+                                var it = NFT.DataItems.FirstOrDefault(itm => itm.IsMain);
+                                if (it != null)
+                                    it.IsMain = false;
+
+                                NFT.DataItems.Add(item);
+                            }
+                            await InvokeAsync(StateHasChanged);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Cannot get NFT Images. " + ex.Message);
+                    }
+                }
+            }
+        }
+
+        CreatingImage = false;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task MintNFT()
+    {
+        MintingNFT = true;
+        await InvokeAsync(StateHasChanged);
+
+        additionalInfo.OrigUserBaseText = additionalInfo.OrigUserBaseText.Replace("\n", "%0A");
+        additionalInfo.OrigAIText = additionalInfo.OrigAIText.Replace("\n", "%0A");
+
+        var obj = new
+        {
+            receiver = Receiver,
+            text = NFT.Text.Replace("\n", "%0A"),
+            name = NFT.Name,
+            description = NFT.Description,
+            tags = NFT.Tags,
+            author = NFT.Author,
+            dataitems = NFT.DataItems,
+            additionalinfo = additionalInfo
+        };
+
+        var cnt = JsonConvert.SerializeObject(obj);
+
+        using (var content = new StringContent(cnt, System.Text.Encoding.UTF8, "application/json"))
+        {
+            HttpResponseMessage result = await Http.PostAsync("/api/MintPostNFT", content);
+            if (result.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                var returnStr = await result.Content.ReadAsStringAsync();
+
+                if (returnStr != null)
+                    NFTTxId = returnStr;
+            }
+        }
+
+        MintingNFT = false;
+        await InvokeAsync(StateHasChanged);
+    }
+
+}
