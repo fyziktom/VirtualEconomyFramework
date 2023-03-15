@@ -374,7 +374,16 @@ namespace VEFramework.VEBlazor.Components.Base
         {
             return NFTSent.InvokeAsync(e);
         }
-        
+
+        internal virtual async Task onDataItemCreatedHandler(VEDriversLite.NFT.Dto.NFTDataItem item)
+        {
+            if (item != null)
+            {
+                NFT.DataItems.Add(item);
+                await InvokeAsync(StateHasChanged);
+            }
+        }
+
     }
     
     public abstract class NFTDetailsBase : NFTComponentBase

@@ -35,7 +35,23 @@
             </Row>
             <Row Flex="Flex.AlignItems.Center">
                 <Column>
-                    <Span>Please input some base story for the AI. Prefiled text is from NFT field Text now.</Span>
+                    <Span>Please input some base story for the AI. Prefiled text is from NFT field Text now. You can use the audio recorder too.</Span>
+                </Column>
+            </Row>
+
+            <Row Margin="Margin.Is2.FromTop">
+                <Column>
+                    <Field>
+                        <FieldLabel>Store Recording as NFTDataItem.</FieldLabel>
+                    <Check TValue="bool" @bind-Checked="@StoreRecordingAsNFTDataItem" />
+                    <FieldHelp>Check if you want to save original recording as DataItem in NFT.</FieldHelp>
+                    </Field>
+                </Column>
+            </Row>
+
+            <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
+                <Column>
+                    <AudioRecorder @ref=@audioRecorderRef OnTranscriptCreated="@OnTranscriptCreatedHandler" OnAudioSaved="@OnAudioSavedHandler" />
                 </Column>
             </Row>
 
@@ -71,11 +87,15 @@
     [Inject] INotificationService? NotificationService { get; set; }
 
     [Parameter] public string DefaultText { get; set; } = string.Empty;
+    [Parameter] public bool StoreRecordingAsNFTDataItem { get; set; } = false;
 
     [Parameter] public EventCallback<VEDriversLite.NFT.Dto.NFTDataItem> OnMermaidCreated { get; set; }
 
+    [Parameter] public EventCallback<VEDriversLite.NFT.Dto.NFTDataItem> OnAudioSaved { get; set; }
+
     Modal? CreateTextModal;
     MermaidEditor? mermaidEditorRef;
+    AudioRecorder? audioRecorderRef;
     MermaidGraphTypes mermaidGraphType = MermaidGraphTypes.Sequence;
 
     VEDriversLite.NFT.Dto.NFTDataItem item = new VEDriversLite.NFT.Dto.NFTDataItem()
@@ -88,6 +108,8 @@
     bool Creating = false;
     bool loadingToNFT = false;
     (bool, string) Result = (false, string.Empty);
+
+    bool lastRecordingSavedToNFT = false;
 
     public void ShowModal()
     {
@@ -105,6 +127,35 @@
     public void HideModal()
     {
         CreateTextModal?.Hide();
+    }
+
+    async Task OnTranscriptCreatedHandler((string, byte[]) e)
+    {
+        if (!string.IsNullOrEmpty(e.Item1))
+        {
+            baseText = e.Item1;
+            await InvokeAsync(StateHasChanged);
+
+            if (StoreRecordingAsNFTDataItem)
+            {
+                if (audioRecorderRef != null)
+                    await audioRecorderRef.UploadRecordingToIPFS(null);
+            }
+        }
+    }
+
+    async Task onAudioRecordingStoppedHandler(string e)
+    {
+        lastRecordingSavedToNFT = false;
+    }
+
+    async Task OnAudioSavedHandler(VEDriversLite.NFT.Dto.NFTDataItem item)
+    {
+        if (item != null)
+        {
+            await OnAudioSaved.InvokeAsync(item);
+            lastRecordingSavedToNFT = true;
+        }
     }
 
     async Task CreateTextAction()
@@ -200,6 +251,21 @@
 
                     if (NotificationService != null)
                         await NotificationService.Success("Mermaid saved to NFT.", "Success");
+
+                    if (StoreRecordingAsNFTDataItem && !lastRecordingSavedToNFT)
+                    {
+                        if (audioRecorderRef != null)
+                        {
+                            await audioRecorderRef.UploadRecordingToIPFS(null);
+
+                            var attempts = 20;
+                            while (!lastRecordingSavedToNFT && attempts > 0)
+                            {
+                                await Task.Delay(500);
+                                attempts--;
+                            }
+                        }
+                    }
 
                     await Task.Delay(500);
                     loadingToNFT = false;

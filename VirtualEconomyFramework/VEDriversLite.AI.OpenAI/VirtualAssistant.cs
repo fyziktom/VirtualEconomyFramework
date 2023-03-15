@@ -6,6 +6,8 @@ using System.Text;
 using VEDriversLite.AI.OpenAI.Dto;
 using Newtonsoft.Json;
 using VEDriversLite.Common.Enums;
+using OpenAI.GPT3.Interfaces;
+using System.Security.Cryptography;
 
 namespace VEDriversLite.AI.OpenAI
 {
@@ -516,6 +518,46 @@ namespace VEDriversLite.AI.OpenAI
                 }
             }
             return result.ToString();
+        }
+
+        public async Task<(bool, string)> GetTranscriptionOfAudio(byte[] bytes, string fileName = "")
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(fileName))
+                    fileName = $"audio-recording-{DateTime.UtcNow.ToString("yyyy_MM_ddThh-mm-ss")}.mp3";
+
+                var audioResult = await AIService.Audio.CreateTranscription(new AudioCreateTranscriptionRequest
+                {
+                    FileName = fileName,
+                    File = bytes,
+                    Model = Models.WhisperV1,
+                    ResponseFormat = StaticValues.AudioStatics.ResponseFormat.VerboseJson
+                });
+
+
+                if (audioResult.Successful)
+                {
+                    Console.WriteLine(string.Join("\n", audioResult.Text));
+                    return (true, audioResult.Text);
+                }
+                else
+                {
+                    if (audioResult.Error == null)
+                    {
+                        throw new Exception("Unknown Error");
+                    }
+
+                    Console.WriteLine($"{audioResult.Error.Code}: {audioResult.Error.Message}");
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+
+            return (false, string.Empty);
         }
     }
 }

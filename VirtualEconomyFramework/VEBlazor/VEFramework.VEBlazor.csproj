@@ -33,6 +33,7 @@
     <PackageReference Include="Blazorise.Components" Version="1.2.1" />
     <PackageReference Include="Blazorise.DataGrid" Version="1.2.1" />
     <PackageReference Include="Blazorise.Icons.FontAwesome" Version="1.2.1" />
+    <PackageReference Include="Blazorise.LoadingIndicator" Version="1.2.1" />
     <PackageReference Include="Blazorise.Markdown" Version="1.2.1" />
     <PackageReference Include="Blazorise.QRCode" Version="1.2.1" />
     <PackageReference Include="Blazorise.Video" Version="1.2.1" />

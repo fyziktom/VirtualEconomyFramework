@@ -3,7 +3,7 @@
 <Button Color="Color.Primary" Clicked="@ShowModal" Block>Create text by ChatGPT</Button>
 
 <Modal @ref="CreateTextModal">
-    <ModalContent Centered>
+    <ModalContent Size="ModalSize.Large" Centered>
         <ModalHeader>
             <ModalTitle>Create Text By AI</ModalTitle>
             <CloseButton />
@@ -37,9 +37,25 @@
                 </Column>
             </Row>
             
-            <Row Flex="Flex.AlignItems.Center">
+            <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
                 <Column>
-                    <Span>Please input some base for the full create article by AI</Span>
+                    <Span>Please input some base for the full create article by AI. You can use the recorder to fill the text.</Span>
+                </Column>
+            </Row>
+
+            <Row Margin="Margin.Is2.FromTop">
+                <Column>
+                    <Field>
+                        <FieldLabel>Store Recording as NFTDataItem.</FieldLabel>
+                    <Check TValue="bool" @bind-Checked="@StoreRecordingAsNFTDataItem" />
+                    <FieldHelp>Check if you want to save original recording as DataItem in NFT.</FieldHelp>
+                    </Field>
+                </Column>
+            </Row>
+
+            <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
+                <Column>
+                    <AudioRecorder @ref=@audioRecorderRef OnTranscriptCreated="@OnTranscriptCreatedHandler" OnAudioSaved="@OnAudioSavedHandler" OnAudioRecordingStopped="@onAudioRecordingStoppedHandler" />
                 </Column>
             </Row>
 
@@ -73,14 +89,21 @@
 
     [Inject] INotificationService? NotificationService { get; set; }
 
+    [Parameter] public bool StoreRecordingAsNFTDataItem { get; set; } = false;
+
     [Parameter] public EventCallback<string> TextCreated { get; set; }
 
-    private Modal? CreateTextModal;
+    [Parameter] public EventCallback<VEDriversLite.NFT.Dto.NFTDataItem> OnAudioSaved { get; set; }
+
+    Modal? CreateTextModal;
+    AudioRecorder? audioRecorderRef;
 
     public string BaseText { get; set; } = string.Empty;
     bool Creating = false;
     (bool, string) Result = (false, string.Empty);
     PostLength postLength = PostLength.Medium;
+
+    bool lastRecordingSavedToNFT = false;
 
     public void ShowModal()
     {
@@ -95,6 +118,35 @@
     public void HideModal()
     {
         CreateTextModal?.Hide();
+    }
+
+    async Task OnAudioSavedHandler(VEDriversLite.NFT.Dto.NFTDataItem item)
+    {
+        if (item != null)
+        {
+            await OnAudioSaved.InvokeAsync(item);
+            lastRecordingSavedToNFT = true;
+        }
+    }
+
+    async Task onAudioRecordingStoppedHandler(string e)
+    {
+        lastRecordingSavedToNFT = false;
+    }
+
+    async Task OnTranscriptCreatedHandler((string, byte[]) e)
+    {
+        if (!string.IsNullOrEmpty(e.Item1))
+        {
+            BaseText = e.Item1;
+            await InvokeAsync(StateHasChanged);
+
+            if (StoreRecordingAsNFTDataItem)
+            {
+                if (audioRecorderRef != null)
+                    await audioRecorderRef.UploadRecordingToIPFS(null);
+            }
+        }
     }
 
     async Task CreateTextAction()
@@ -121,6 +173,21 @@
 
         if (Result.Item1)
             await TextCreated.InvokeAsync(Result.Item2);
+
+        if (StoreRecordingAsNFTDataItem && !lastRecordingSavedToNFT)
+        {
+            if (audioRecorderRef != null)
+            {
+                await audioRecorderRef.UploadRecordingToIPFS(null);
+
+                var attempts = 20;
+                while (!lastRecordingSavedToNFT && attempts > 0)
+                {
+                    await Task.Delay(500);
+                    attempts--;
+                }
+            }
+        }
 
         Creating = false;
         //close automatically after 2 seconds

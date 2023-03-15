@@ -40,7 +40,7 @@
                 </Row>
                 <Row Margin="Margin.Is2.FromTop">
                     <Column>
-                        <VEFramework.VEBlazor.Components.AI.CreateMermaidByAIButton OnMermaidCreated="@onMermaidCrearedHandler" DefaultText="@NFT.Text" />
+                        <CreateMermaidByAIButton OnMermaidCreated="@onDataItemCreatedHandler" DefaultText="@NFT.Text" OnAudioSaved="@onDataItemCreatedHandler" />
                     </Column>
                 </Row>
                 @if (uploadingImage)
@@ -516,15 +516,6 @@
         {
             if (NotificationService != null)
                 await NotificationService.Warning("Cannot use AI without setup of OpenAI API Key. Please fill it in the profile tab in settings.", "OpenAI API Key missing");
-        }
-    }
-
-    private async Task onMermaidCrearedHandler(VEDriversLite.NFT.Dto.NFTDataItem item)
-    {
-        if (item != null)
-        {
-            NFT.DataItems.Add(item);
-            await InvokeAsync(StateHasChanged);
         }
     }
 

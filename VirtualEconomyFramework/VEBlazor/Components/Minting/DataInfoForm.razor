@@ -30,7 +30,7 @@
                 <TextEdit Placeholder="Enter short description" @bind-Text="@NFT.Description"/>
                 <FieldHelp>If you need to write longer description please use the text field.</FieldHelp>
             </Field>
-            <VEFramework.VEBlazor.Components.AI.CreateTextByAIButton TextCreated="@TextCreatedHandler" />
+            <CreateTextByAIButton TextCreated="@TextCreatedHandler" OnAudioSaved="@onDataItemCreatedHandler" />
             <Field>
                 <FieldLabel>Here you can enter the longer description.</FieldLabel>
                 <Markdown @ref="markdownRef" @bind-Value="@NFT.Text" AutoRefresh="@(new MarkdownAutoRefresh() {Delay = 300 })"/>
