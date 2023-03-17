@@ -14,9 +14,17 @@ namespace VEBlazor.Demo.AI.MintFreeForAI
 {
     public static class MainDataContext
     {
-        public static ConcurrentDictionary<string, INFT> MintedNFT = new ConcurrentDictionary<string, INFT>();
-
+        /// <summary>
+        /// Minted NFTs
+        /// </summary>
+        public static ConcurrentDictionary<string, INFT> MintedNFTs = new ConcurrentDictionary<string, INFT>();
+        /// <summary>
+        /// Main account for minting NFTs
+        /// </summary>
         public static string MainAccount { get; set; } = string.Empty;
+        /// <summary>
+        /// Virtual AI assistant
+        /// </summary>
         public static VirtualAssistant? Assistant { get; set; } = null;
     }
 }

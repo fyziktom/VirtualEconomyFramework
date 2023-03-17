@@ -171,7 +171,13 @@ namespace VEBlazor.Demo.AI.MintFreeForAI.Controllers
 
                 (bool, string) res = (false, string.Empty);
                 if (VEDLDataContext.Accounts.TryGetValue(MainDataContext.MainAccount, out var account))
+                {
                     res = await account.MintNFT(nft, data.receiver);
+                    await Task.Delay(500);
+                    var tnft = await NFTFactory.GetNFT(NFTHelpers.TokenId, res.Item2, 0, 0, true);
+                    if (tnft != null)
+                        MainDataContext.MintedNFTs.TryAdd(tnft.Utxo, tnft);
+                }
                 else
                     res.Item2 = "Cannot find MainAccount.";
                 

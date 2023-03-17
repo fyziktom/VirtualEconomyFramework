@@ -87,7 +87,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VEDriversLite.AI.OpenAI", "
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AI", "AI", "{5887B472-8067-4161-AA14-A394629FE12B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VEBlazor.Demo.AI.MintFreeForAI", "VEBlazor.Demo.AI.MintFreeForAI\VEBlazor.Demo.AI.MintFreeForAI.csproj", "{83EB47AF-E36E-4BDE-ACA0-3B7DD94D7A06}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VEBlazor.Demo.AI.MintFreeForAI", "VEBlazor.Demo.AI.MintFreeForAI\VEBlazor.Demo.AI.MintFreeForAI.csproj", "{83EB47AF-E36E-4BDE-ACA0-3B7DD94D7A06}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
