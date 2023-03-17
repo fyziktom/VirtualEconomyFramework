@@ -15,19 +15,19 @@ The library is based on the [great component library Blazorise](https://blazoris
 You can test [live demo here](https://apptest.ve-nft.com/)
 
 <p align="center">
-    <img width="400" alt="Main Page" src="https://ipfs.infura.io/ipfs/QmdmkGUG5nGsFUmXpNvs9APPHhqevium3HGuLjiXinR23B" />
+    <img width="400" alt="Main Page" src="https://ve-framework.com/ipfs/QmdmkGUG5nGsFUmXpNvs9APPHhqevium3HGuLjiXinR23B" />
 </p>
 
 <p align="center">
-    <img width="400" alt="Image Gallery" src="https://ipfs.infura.io/ipfs/QmQsRizVtG2vWjr7a6Xyb6V8RwQVypkm56AbxurjK2kcUp" />
+    <img width="400" alt="Image Gallery" src="https://ve-framework.com/ipfs/QmQsRizVtG2vWjr7a6Xyb6V8RwQVypkm56AbxurjK2kcUp" />
 </p>
 
 <p align="center">
-    <img width="400" alt="Minting Page Images" src="https://ipfs.infura.io/ipfs/QmYJ1Wtdhz5W5wHXtUUaqpMrSZqtb4sVVctTmFf3o25Xs7" />
+    <img width="400" alt="Minting Page Images" src="https://ve-framework.com/ipfs/QmYJ1Wtdhz5W5wHXtUUaqpMrSZqtb4sVVctTmFf3o25Xs7" />
 </p>
 
 <p align="center">
-    <img width="400" alt="Minting Page Data" src="https://ipfs.infura.io/ipfs/QmRzXJrdrBJB1XPGx8JVtEVGjddar6ijGhs4GqwS51sYqb" />
+    <img width="400" alt="Minting Page Data" src="https://ve-framework.com/ipfs/QmRzXJrdrBJB1XPGx8JVtEVGjddar6ijGhs4GqwS51sYqb" />
 </p>
 
 If you would like to participate on development and testing please [contact us here](mailto:tomas.svoboda@technicinsider.com).
@@ -92,6 +92,7 @@ Here is the Example:
     <script src="_content/BlazorPanzoom/panzoom.min.js"></script>
     <script src="_content/BlazorPanzoom/blazorpanzoom.js"></script>
     <script src="_content/Texnomic.Blazor.JsonViewer/scripts/JsonViewer.js"></script>
+    <script src="_content/VEFramework.VEBlazor/AudioRecorder.js"></script>
     <script src="_content/VEFramework.VEBlazor/veblazor.js"></script>
 
     <div id="blazor-error-ui">
@@ -135,6 +136,8 @@ Please check the demos for the details.
 @using VEBlazor.Menu
 @using Blazorise
 ```
+
+Based on the components what you need to use please add another usings, for example VEBlazor.Components.AI
 
 - Add services to Program.cs:
 
@@ -384,6 +387,15 @@ Main Layout automatically switches the menus from the Side (on Tablet and bigger
 - [Work Tab Content](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/Tabs/WorkTabContent.razor)
     - Work tab is used in the BDP App. It is opened for change of the properties or other functions in future. You can forbid this function [like this](https://github.com/fyziktom/VirtualEconomyFramework/blob/4ddd9550051934386f48da6260c927c62cee2b6a/VirtualEconomyFramework/VEBlazor.Demo.VENFTApp.Client/App.razor#L30). It will hide all buttons/labels in other related components around automatically.
 
+## AI
+
+- [AI Settings](https://github.com/fyziktom/VirtualEconomyFramework/blob/Development/VirtualEconomyFramework/VEBlazor/Components/AI/AISettings.razor)
+- [CreateMermaidByAIButton](https://github.com/fyziktom/VirtualEconomyFramework/blob/Development/VirtualEconomyFramework/VEBlazor/Components/AI/CreateMermaidByAIButton.razor)
+- [CreateTextByAIButton](https://github.com/fyziktom/VirtualEconomyFramework/blob/Development/VirtualEconomyFramework/VEBlazor/Components/AI/CreateTextByAIButton.razor)
+
+## Audio
+
+- [AudioRecorder](https://github.com/fyziktom/VirtualEconomyFramework/blob/Development/VirtualEconomyFramework/VEBlazor/Components/Audio/AudioRecorder.razor)
 
 ## Account
 
@@ -396,6 +408,7 @@ Main Layout automatically switches the menus from the Side (on Tablet and bigger
     - Allow to import the standard VENFT backup file. Or you can import the raw or encrypted key.
 - [Unlock Account](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/Account/UnlockAccount.razor)
 - [Neblio Address Input](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/Account/NeblioAddressInput.razor)
+- [Show Address As QR]()
 
 Neblio Address Input loads bookmarks and allow to use already saved address. It load part of the Unstoppable Domains. We will need to do some updates in API, but part of the addresses works fine. You will type UD name and it will change it to the Neblio Address.
 
@@ -432,6 +445,8 @@ Send Neblio Transaction component offers multiple different transactions:
     - Wrapped [Blazorise Progress bar](https://blazorise.com/docs/components/progress) with way to setup Name before and Unit with use of the [Blazorise Field component](https://blazorise.com/docs/components/field).
 - [PanzoomImage](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/Display/PanzoomImage.razor)
     - Wrap for the image with [BlazorPanzoom](https://github.com/shaigem/BlazorPanzoom) component.
+- [MermaidEditor](https://github.com/fyziktom/VirtualEconomyFramework/blob/Development/VirtualEconomyFramework/VEBlazor/Components/Display/MermaidEditor.razor)
+- [PanzoomMermaid](https://github.com/fyziktom/VirtualEconomyFramework/blob/Development/VirtualEconomyFramework/VEBlazor/Components/Display/PanzoomMermaid.razor)
 
 ## NFTs
 
@@ -455,7 +470,7 @@ You can upload different files now:
 - HTML: *.html
 - PDF: *.pdf
 
-If you are using the upload to the IPFS you need to setup your API key. (please create account on infura.io, and you can pass the key and the secret in/via the NFTHelpers.cs). Infura offeres way to allow just some origins.
+The upload now contains the option to create images or Mermaid with AI. Go to AI section to see the available components.
 
 ### Minting
 
@@ -465,28 +480,28 @@ For example Tags input with Autocomplete, Markdown editor, etc.
 Most of these components are wrapped components from the [Blazorise library](https://blazorise.com).
 I recommend to browse all [Blazorise components in their demo here](https://bootstrapdemo.blazorise.com/) to check all possibilities.
 
-- Data Info from
-- Fast Number Input
-- Load And Display NFT
-- Load NFT From Template
-- Minting Toolbar
-- Toolbar Button
-- Multimint Form
-- Precise Slider
-- Space Tags
+- [Data Info from](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/Minting/DataInfoForm.razor)
+- [Fast Number Input](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/Minting/FastNumberInput.razor)
+- [Load And Display NFT](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/Minting/LoadAndDisplayNFTModal.razor)
+- [Load NFT From Template](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/Minting/LoadNFTFromTemplate.razor)
+- [Minting Toolbar](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/Minting/MintingToolbar.razor)
+- [Toolbar Button](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/Minting/ToolbarButton.razor)
+- [Multimint Form](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/Minting/MultimintForm.razor)
+- [Precise Slider](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/Minting/PreciseSlider.razor)
+- [Space Tags](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/Minting/SpaceTags.razor)
 
 ### NFT Actions
 
 NFT Actions are used in the NFT Details. You can use them separately on any page.
 It takes the NFT refference and then send it and inform with EventCallback about sent.
 
-- NFT Action Control
-- Destroy NFT
-- Save NFT
-- Send NFT
-- Set NFT Price
-- Share NFT
-- Storage Info and Actions
+- [NFT Action Control](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/NFTs/Actions/NFTActionControl.razor)
+- [Destroy NFT](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/NFTs/Actions/DestroyNFT.razor)
+- [Save NFT](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/NFTs/Actions/SaveNFT.razor)
+- [Send NFT](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/NFTs/Actions/SendNFT.razor)
+- [Set NFT Price](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/NFTs/Actions/SetNFTPrice.razor)
+- [Share NFT](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/NFTs/Actions/ShareNFT.razor)
+- [Storage Info and Actions](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/NFTs/Actions/StorageInfoActions.razor)
 
 ### NFT Display
 
@@ -494,65 +509,65 @@ It takes the NFT refference and then send it and inform with EventCallback about
 
 The NFT Details can be injected with your specific NFT Details Form. Check the OpenNFTDetailsFactory as example how to build some simple logic to feed the NFT Details with own specific form.
 
-- NFT Basic Info
-- NFT Card
-- NFT Data Item
-- NFT Details
-- NFT Text
-- Open NFT Details Factory
+- [NFT Basic Info](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/NFTs/Common/NFTBasicInfo.razor)
+- [NFT Card](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/NFTs/Common/NFTCard.razor)
+- [NFT Data Item](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/NFTs/Common/NFTDataItem.razor)
+- [NFT Details](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/NFTs/Common/NFTDetails.razor)
+- [NFT Text](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/NFTs/Common/NFTText.razor)
+- [Open NFT Details Factory](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/NFTs/Common/OpenNFTDetailsFactory.razor)
 
 #### Lists
 
-- NFT Card List
-- NFT Payment List
-- NFT Receipts List
+- [NFT Card List](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/NFTs/Lists/NFTCardList.razor)
+- [NFT Payments List](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/NFTs/Lists/NFTPaymentsList.razor)
+- [NFT Receipts List](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/NFTs/Lists/NFTReceiptsList.razor)
 
 #### Verification
 
 - This code is unique for 60 seconds. It is refreshed after this time with new digital signature.
 
-- Ownership QR Code
+- [Ownership QR Code](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/NFTs/Verification/OwnershipQRCode.razor)
 
 #### Events And Tickets
 
-- Event Details
-- Event Specific Minting Form
-- Ticket Details
-- Ticket Specific Minting Form
-- Use Ticket
+- [Event Details](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/NFTs/EventsAndTickets/EventDetails.razor)
+- [Event Specific Minting Form](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/NFTs/EventsAndTickets/EventSpecificMintForm.razor)
+- [Ticket Details](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/NFTs/EventsAndTickets/TicketDetails.razor)
+- [Ticket Specific Minting Form](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/NFTs/EventsAndTickets/TicketSpecificMintForm.razor)
+- [Use Ticket](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/NFTs/EventsAndTickets/UseTicket.razor)
 
 #### Imaging - X-Ray
 
-- X-Ray Image Exposure Params Form
-- X-Ray Params Values
-- X-Ray Image Details
-- X-Ray Image Editor Toolbar
-- X-Ray Image Editor
+- [X-Ray Image Exposure Params Form](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/NFTs/Imaging/Xray/XrayExposureParamsForm.razor)
+- [X-Ray Params Values](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/NFTs/Imaging/Xray/XrayParamsValues.razor)
+- [X-Ray Image Details](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/NFTs/Imaging/Xray/XrayImagesDetails.razor)
+- [X-Ray Image Editor Toolbar](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/NFTs/Imaging/Xray/XrayImageEditorToolbar.razor)
+- [X-Ray Image Editor](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/NFTs/Imaging/Xray/XrayImageNFTEditor.razor)
 
 #### Payments
 
-- NFT Payment Details
-- NFT Receipt Details
+- [NFT Payment Details](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/NFTs/Payments/NFTPaymentDetails.razor)
+- [NFT Receipt Details](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/NFTs/Payments/NFTReceiptDetails.razor)
 
 #### Profile
 
 Profile in the MyAccount is NFT also. These components display it and allows to create/edit it.
 
-- Account Profile NFT
-- Edit Profile NFT
+- [Account Profile NFT](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/NFTs/Profile/AccountProfile.razor)
+- [Edit Profile NFT](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/NFTs/Profile/EditProfile.razor)
 
 ### Tags
 
 Tags displayed on the NFT Card and in NFT Details Basic Info
 
-- Tags 
+- [Tags](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/Tags/Tags.razor)
 
 #### Blockchains
 
-- Neblio Tags
-- Dogecoin Tags
-- Dogepalooza Tags
+- [Neblio Tags](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/Tags/Blockchains/NeblioTags.razor)
+- [Dogecoin Tags](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/Tags/Blockchains/DogecoinTags.razor)
+- [Dogepalooza Tags](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/Tags/Blockchains/DogepaloozaTags.razor)
 
 #### NFTs
 
-- NFT Card Badge
+- [NFT Card Badge](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/Tags/NFTs/NFTCardBadge.razor)
