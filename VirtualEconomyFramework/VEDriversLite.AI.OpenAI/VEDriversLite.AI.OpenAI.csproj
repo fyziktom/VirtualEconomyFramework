@@ -12,7 +12,7 @@
 	  <PackageProjectUrl>https://veframework.com/</PackageProjectUrl>
 	  <RepositoryUrl>https://github.com/fyziktom/VirtualEconomyFramework</RepositoryUrl>
 	  <RepositoryType>Git</RepositoryType>
-	  <PackageTags>VEFramework, Blazor, MAUI, Cryptocurrencies, Crypto, NFT, NFTs, NFTTech, NFTIoT, Bitcoin, ReddCoin, Neblio, Nebl, Doge, Dogecoin, Blockchain, eCommerce, dApps, WooCommerce, WordPress</PackageTags>
+	  <PackageTags>VEFramework, Blazor, AI, OpenAI, ChatGPT, DALL-E, Whisper, Mermaid, Assistant, MAUI, NFT, NFTs, NFTTech, NFTXray</PackageTags>
 	  <Copyright>fyziktom</Copyright>
 	  <PackageReleaseNotes>
 		  - Greeting new user
@@ -21,6 +21,7 @@
 		  - Take simple dialogue
 		  - Create NFT Name, Description, Tags
 		  - Create Images for NFT
+		  - Create Mermaid From Text
 		  - Transcript audio
 	  </PackageReleaseNotes>
 	  <PackageReadmeFile>Readme.md</PackageReadmeFile>
