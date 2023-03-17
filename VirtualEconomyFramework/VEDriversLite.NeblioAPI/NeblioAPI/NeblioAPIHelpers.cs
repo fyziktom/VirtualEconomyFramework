@@ -1116,7 +1116,7 @@ namespace VEDriversLite.NeblioAPI
         /// <returns></returns>
         public static async Task<GetTxsResponse> GetTxsAsync(string addr, string block, double? pageNum = 100)
         {
-            if (string.IsNullOrEmpty(block) && string.IsNullOrEmpty(block))
+            if (string.IsNullOrEmpty(addr) && string.IsNullOrEmpty(block))
             {
                 return new GetTxsResponse();
             }
