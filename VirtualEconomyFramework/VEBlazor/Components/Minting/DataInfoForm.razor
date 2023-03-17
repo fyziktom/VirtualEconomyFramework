@@ -1,10 +1,13 @@
-﻿@inherits NFTComponentBase
+﻿@inject AppData AppData
+@inherits NFTComponentBase
 
 <Card Margin="Margin.Is4.FromBottom" Shadow="Shadow.Small">
     <CardBody>
         <CardTitle>
             Information about the data
         </CardTitle>
+        <Button Color="Color.Primary" Clicked="@CreateDescriptionForNFT" Loading="creatingDescription" Block>Create description by ChatGPT based on TextField</Button>
+
         <Validations @ref="@validationsRef" Mode="ValidationMode.Manual">
             <Validation Validator="ValidationRule.IsNotEmpty">
                 <Field>
@@ -27,6 +30,7 @@
                 <TextEdit Placeholder="Enter short description" @bind-Text="@NFT.Description"/>
                 <FieldHelp>If you need to write longer description please use the text field.</FieldHelp>
             </Field>
+            <CreateTextByAIButton TextCreated="@TextCreatedHandler" OnAudioSaved="@onDataItemCreatedHandler" />
             <Field>
                 <FieldLabel>Here you can enter the longer description.</FieldLabel>
                 <Markdown @ref="markdownRef" @bind-Value="@NFT.Text" AutoRefresh="@(new MarkdownAutoRefresh() {Delay = 300 })"/>
@@ -37,8 +41,12 @@
 </Card>
 
 @code {
+    [Inject] INotificationService? NotificationService { get; set; }
+
     Validations validationsRef;
     Markdown markdownRef;
+
+    bool creatingDescription = false;
 
     public Task<bool> IsValidated()
     {
@@ -48,5 +56,61 @@
     public void Refresh()
     {
         markdownRef.SetValueAsync( NFT.Text );
+    }
+
+    public async Task TextCreatedHandler(string e)
+    {
+        if (!string.IsNullOrEmpty(e))
+        {
+            NFT.Text = e;
+            await markdownRef.SetValueAsync(NFT.Text);
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    public async Task CreateDescriptionForNFT()
+    {
+        if (string.IsNullOrEmpty(NFT.Text))
+        {
+            if (NotificationService != null)
+                await NotificationService.Error("Cannot create NFT Info without filled Text field.", "Fill the Text field");
+
+            return;
+        }
+
+        if (AppData.Assistant != null)
+        {
+            creatingDescription = true;
+            await InvokeAsync(StateHasChanged);
+
+            if (NotificationService != null)
+                await NotificationService.Info("Createing NFT Name, Description and Tags...", "AI working");
+
+            var res = await AppData.Assistant.GetNewDataForNFT(NFT.Text);
+            if (res.Item1)
+            {
+                if (NotificationService != null)
+                    await NotificationService.Success("NFT info created...", "Done");
+
+                NFT.Name = res.Item2.Name;
+                NFT.Description = res.Item2.Description;
+                NFT.Tags = res.Item2.Tags;
+                await InvokeAsync(StateHasChanged);
+            }
+            else
+            {
+                if (NotificationService != null)
+                    await NotificationService.Error("Cannot create NFT Info.", "Error");
+            }
+
+            creatingDescription = false;
+            await InvokeAsync(StateHasChanged);
+
+        }
+        else
+        {
+            if (NotificationService != null)
+                await NotificationService.Warning("Cannot use AI without setup of OpenAI API Key. Please fill it in the profile tab in settings.", "OpenAI API Key missing");                  
+        }
     }
 }

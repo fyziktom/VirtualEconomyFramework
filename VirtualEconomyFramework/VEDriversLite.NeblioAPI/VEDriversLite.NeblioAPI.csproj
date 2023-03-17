@@ -5,7 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 	  <PackageId>VEFramework.VEDriversLite.NeblioAPI</PackageId>
-	  <Version>0.3.3</Version>
+	  <Version>0.3.31</Version>
 	  <Authors>fyziktom</Authors>
 	  <Company>VEFramework</Company>
 	  <Description>.NET drivers for communication with Neblio API</Description>
@@ -15,8 +15,8 @@
 	  <PackageTags>VEFramework, Cryptocurrencies, Crypto, NFT, NFTs, Bitcoin, ReddCoin, Neblio, Nebl, Doge, Dogecoin, Blockchain, eCommerce, dApps, WooCommerce, WordPress</PackageTags>
 	  <Copyright>fyziktom</Copyright>
 	  <PackageReleaseNotes>
-		  - Removed dependency to NBitcoin
-		  - Created NeblioAPIHelpers class
+		  - Added GetBlock command in APIHelpers
+		  - Added GetTxs command in APIHelpers
 	  </PackageReleaseNotes>
 	  <PackageReadmeFile>README.md</PackageReadmeFile>
 	  <PackageLicenseExpression>MIT</PackageLicenseExpression>

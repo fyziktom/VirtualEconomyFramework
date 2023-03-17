@@ -9,8 +9,13 @@
                 <Heading Size="HeadingSize.Is6" CopyToClipboard="true" TextOverflow="TextOverflow.Wrap">@AppData.Account.Address</Heading>
             </Tooltip> 
         </Field>
+        <Row Margin="Margin.Is2.FromTop">
+            <Column>
+                <ShowAddressAsQR Address="@AppData.Account.Address" DisplayButton="true" />
+            </Column>
+        </Row>
         <CardText>
-           <Row>
+            <Row Margin="Margin.Is2.FromTop">
                <Column>
                    Neblio: @(Math.Round(NeblioBalance, 8)) NEBL <Figure Size="FigureSize.Is16x16"><FigureImage Source="@AppData.NeblioImageLink" /></Figure>
                </Column>

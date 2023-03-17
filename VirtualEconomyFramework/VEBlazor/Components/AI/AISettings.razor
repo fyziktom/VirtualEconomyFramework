@@ -1,0 +1,58 @@
+﻿@inject AppData AppData
+
+<Row>
+    <Column>
+        <Field>
+            <FieldLabel>OpenAI API Key</FieldLabel>
+            <FieldBody>
+                <Addons>
+                    <Addon AddonType="AddonType.Body">
+                        <TextEdit Placeholder="Enter OpenAI API Key" @bind-Text="OpenAIApiKey" />
+                    </Addon>
+                    @if (!string.IsNullOrEmpty(OpenAIApiKey))
+                    {
+                        <Addon AddonType="AddonType.End">
+                            <Button Color="Color.Primary" Clicked="@SaveAPIKey" Loading="@Loading" Block>Save</Button>
+                        </Addon>
+                    }
+                </Addons>
+            </FieldBody>
+        </Field>
+    </Column>
+</Row>
+
+@code {
+    [Inject] INotificationService? NotificationService { get; set; }
+
+    public string OpenAIApiKey { get; set; } = string.Empty;
+    public bool Loading {get;set;} = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var res = await AppData.GetAndDecryptOpenAIApiKey();
+        if (!string.IsNullOrEmpty(res))
+        {
+            OpenAIApiKey = res;
+        }
+    }
+
+    private async Task SaveAPIKey()
+    {
+        Loading = true;
+        await InvokeAsync(StateHasChanged);
+
+        if (await AppData.InitAssistant(OpenAIApiKey))
+        {
+            if (NotificationService != null)
+                await NotificationService.Success("Api Key Saved.", "Saved");
+        }
+        else
+        {
+            if (NotificationService != null)
+                await NotificationService.Error("Cannot save Api Key.", "Error");
+        }
+
+        Loading = false;
+        await InvokeAsync(StateHasChanged);
+    }
+}

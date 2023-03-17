@@ -1,0 +1,283 @@
+@using VEDriversLite.Common.Enums
+@using VEDriversLite.NFT.Dto
+
+@inject AppData AppData
+
+<Button Color="Color.Primary" Clicked="@ShowModal" Block>Create Mermaid by ChatGPT</Button>
+
+<Modal @ref="CreateTextModal">
+    <ModalContent Size="ModalSize.Fullscreen" Centered>
+        <ModalHeader>
+            <ModalTitle>Create Mermaid By AI</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <Row Flex="Flex.AlignItems.Center">
+                <Column>
+                    <Field Horizontal>
+                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">Mermaid Graph Type:</FieldLabel>
+                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                            <Select Display="Display.None.OnDesktop.InlineBlock.OnTablet" SelectedValue="@mermaidGraphType" SelectedValueChanged="@mermaidGraphTypeChanged" TValue="MermaidGraphTypes">
+                                @foreach (var gtype in Enum.GetValues<MermaidGraphTypes>())
+                                {
+                                    <SelectItem TValue="MermaidGraphTypes" @key="@gtype" Value="@gtype">@(Enum.GetName(typeof(MermaidGraphTypes), gtype))</SelectItem>
+                                }
+                            </Select>
+                            <RadioGroup Display="Display.None.OnMobile.None.OnTablet.InlineBlock.OnDesktop" CheckedValue="@mermaidGraphType" CheckedValueChanged="@mermaidGraphTypeChanged" TValue="MermaidGraphTypes" Name="graphtype" Orientation="Orientation.Horizontal" Buttons Color="Color.Light">
+                                @foreach (var gtype in Enum.GetValues<MermaidGraphTypes>())
+                                {
+                                    <Radio TValue="MermaidGraphTypes" @key="@gtype" Value="@gtype">@(Enum.GetName(typeof(MermaidGraphTypes), gtype))</Radio>
+                                }
+                            </RadioGroup>
+                        </FieldBody>
+                    </Field>
+                </Column>
+            </Row>
+            <Row Flex="Flex.AlignItems.Center">
+                <Column>
+                    <Span>Please input some base story for the AI. Prefiled text is from NFT field Text now. You can use the audio recorder too.</Span>
+                </Column>
+            </Row>
+
+            <Row Margin="Margin.Is2.FromTop">
+                <Column>
+                    <Field>
+                        <FieldLabel>Store Recording as NFTDataItem.</FieldLabel>
+                    <Check TValue="bool" @bind-Checked="@StoreRecordingAsNFTDataItem" />
+                    <FieldHelp>Check if you want to save original recording as DataItem in NFT.</FieldHelp>
+                    </Field>
+                </Column>
+            </Row>
+
+            <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
+                <Column>
+                    <AudioRecorder @ref=@audioRecorderRef OnTranscriptCreated="@OnTranscriptCreatedHandler" OnAudioSaved="@OnAudioSavedHandler" />
+                </Column>
+            </Row>
+
+            <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is3.FromTop">
+                <Column>
+                    <Span>Please Mermaid Graph about...</Span>
+                </Column>
+            </Row>
+            <Row Flex="Flex.AlignItems.Center">
+                <Column>
+                    <MemoEdit Rows="6" Placeholder="Contiune with what about Mermaid graph should be..." @bind-Text="baseText" />
+                </Column>
+            </Row>
+            <Row Flex="Flex.AlignItems.Center">
+                <Column>
+                    <Button Color="Color.Primary" Clicked="@CreateTextAction" Loading="@Creating" Block>Create Mermaid</Button>
+                </Column>
+            </Row>
+            <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is3.FromTop">
+                <Column>
+                    <Button Color="Color.Secondary" Clicked="@LoadToNFT" Loading="@loadingToNFT" Block>Load to the NFT</Button>
+                </Column>
+            </Row>
+            <Row Flex="Flex.AlignItems.Center">
+                <Column>
+                    <MermaidEditor @ref=mermaidEditorRef OnDataSaved="@onMermaidDataSavedHandler" /> 
+                </Column>
+            </Row>
+        </ModalBody>
+    </ModalContent>
+</Modal>
+@code {
+    [Inject] INotificationService? NotificationService { get; set; }
+
+    [Parameter] public string DefaultText { get; set; } = string.Empty;
+    [Parameter] public bool StoreRecordingAsNFTDataItem { get; set; } = false;
+
+    [Parameter] public EventCallback<VEDriversLite.NFT.Dto.NFTDataItem> OnMermaidCreated { get; set; }
+
+    [Parameter] public EventCallback<VEDriversLite.NFT.Dto.NFTDataItem> OnAudioSaved { get; set; }
+
+    Modal? CreateTextModal;
+    MermaidEditor? mermaidEditorRef;
+    AudioRecorder? audioRecorderRef;
+    MermaidGraphTypes mermaidGraphType = MermaidGraphTypes.Sequence;
+
+    VEDriversLite.NFT.Dto.NFTDataItem item = new VEDriversLite.NFT.Dto.NFTDataItem()
+        {
+            Storage = DataItemStorageType.IPFS,
+            Type = DataItemType.Mermaid
+        };
+
+    string baseText = string.Empty;
+    bool Creating = false;
+    bool loadingToNFT = false;
+    (bool, string) Result = (false, string.Empty);
+
+    bool lastRecordingSavedToNFT = false;
+
+    public void ShowModal()
+    {
+        if (string.IsNullOrEmpty(baseText))
+            baseText = DefaultText;
+
+        if (AppData.Assistant != null)
+            CreateTextModal?.Show();
+        else
+        {
+            if (NotificationService != null)
+                NotificationService.Warning("Cannot use AI without setup of OpenAI API Key. Please fill it in the profile tab in settings.", "OpenAI API Key missing");
+        }
+    }
+    public void HideModal()
+    {
+        CreateTextModal?.Hide();
+    }
+
+    async Task OnTranscriptCreatedHandler((string, byte[]) e)
+    {
+        if (!string.IsNullOrEmpty(e.Item1))
+        {
+            baseText = e.Item1;
+            await InvokeAsync(StateHasChanged);
+
+            if (StoreRecordingAsNFTDataItem)
+            {
+                if (audioRecorderRef != null)
+                    await audioRecorderRef.UploadRecordingToIPFS(null);
+            }
+        }
+    }
+
+    async Task onAudioRecordingStoppedHandler(string e)
+    {
+        lastRecordingSavedToNFT = false;
+    }
+
+    async Task OnAudioSavedHandler(VEDriversLite.NFT.Dto.NFTDataItem item)
+    {
+        if (item != null)
+        {
+            await OnAudioSaved.InvokeAsync(item);
+            lastRecordingSavedToNFT = true;
+        }
+    }
+
+    async Task CreateTextAction()
+    {
+        Creating = true;
+        await InvokeAsync(StateHasChanged);
+
+        if (NotificationService != null)
+            await NotificationService.Info("Creating text...", "AI working");
+
+        if (AppData.Assistant != null)
+            Result = await AppData.Assistant.GetMermaidFromText( baseText, mermaidGraphType , 1000);
+
+        if (NotificationService != null)
+        {
+            if (Result.Item1)
+            {
+                item = new VEDriversLite.NFT.Dto.NFTDataItem()
+                    {
+                        Storage = DataItemStorageType.IPFS,
+                        Type = DataItemType.Mermaid
+                    };
+
+                if (mermaidEditorRef != null)
+                    await mermaidEditorRef.LoadText(Result.Item2);
+
+                await NotificationService.Success("Text creation was successfull.", "Success");
+            }
+            else
+                await NotificationService.Warning(Result.Item2, "Cannot create text");
+        }
+
+        Creating = false;
+        await InvokeAsync(StateHasChanged);
+
+    }
+
+    private async Task onMermaidDataSavedHandler(string hash)
+    {
+        if (!string.IsNullOrEmpty(hash))
+        {
+            Console.WriteLine($"Mermaid graph saved on IPFS with hash: {hash}");
+            if (NotificationService != null)
+                await NotificationService.Success("Mermaid saved to IPFS.", "Success");
+
+            var dataitem = new VEDriversLite.NFT.Dto.NFTDataItem()
+                {
+                    Hash = hash,
+                    Type = DataItemType.Mermaid,
+                    Storage = DataItemStorageType.IPFS
+                };
+
+            item = dataitem;
+        }
+        else
+        {
+            if (NotificationService != null)
+                await NotificationService.Error("Cannot save mermaid to IPFS", "Error");
+        }
+    }
+
+    private async Task mermaidGraphTypeChanged(MermaidGraphTypes type)
+    {
+        mermaidGraphType = type;
+    }
+
+    private async Task LoadToNFT()
+    {
+        loadingToNFT = true;
+        await InvokeAsync(StateHasChanged);
+
+        if (!string.IsNullOrEmpty(item.Hash))
+        {
+            await OnMermaidCreated.InvokeAsync(item);
+
+            if (NotificationService != null)
+                await NotificationService.Success("Mermaid saved to NFT.", "Success");
+
+            await Task.Delay(500);
+            loadingToNFT = false;
+            HideModal();
+        }
+        else
+        {
+            if (mermaidEditorRef != null)
+            {
+                await mermaidEditorRef.Save();
+                item.Hash = mermaidEditorRef.LastSavedHash;
+
+                if (!string.IsNullOrEmpty(item.Hash))
+                {
+                    await OnMermaidCreated.InvokeAsync(item);
+
+                    if (NotificationService != null)
+                        await NotificationService.Success("Mermaid saved to NFT.", "Success");
+
+                    if (StoreRecordingAsNFTDataItem && !lastRecordingSavedToNFT)
+                    {
+                        if (audioRecorderRef != null)
+                        {
+                            await audioRecorderRef.UploadRecordingToIPFS(null);
+
+                            var attempts = 20;
+                            while (!lastRecordingSavedToNFT && attempts > 0)
+                            {
+                                await Task.Delay(500);
+                                attempts--;
+                            }
+                        }
+                    }
+
+                    await Task.Delay(500);
+                    loadingToNFT = false;
+                    HideModal();
+                }
+                else
+                {
+                    if (NotificationService != null)
+                        await NotificationService.Error("Cannot save mermaid to NFT. Save the mermaid first in the editor please.", "Error");
+                    loadingToNFT = false;
+                }
+            }
+        }
+    }
+}

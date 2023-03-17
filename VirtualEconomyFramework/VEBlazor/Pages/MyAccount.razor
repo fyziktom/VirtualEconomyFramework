@@ -74,7 +74,7 @@
         AppData.LockUnlockAccount += LockUnlockAccountHandler;
         await CheckAccount();
     }
-    
+
     protected override async Task OnAfterRenderAsync( bool firstRender )
     {
         if ( firstRender )
@@ -109,6 +109,7 @@
         IsAccountStored = true;
         NotificationService?.Success( "Account Created :)", "Created" );
         await InvokeAsync(StateHasChanged);
+        AppData.AccountLoadedOrImportedEcho();
     }
     
     async Task AccountImportedHandler( string e )
@@ -117,5 +118,6 @@
         IsAccountStored = true;
         NotificationService?.Success( "Account Imported :)", "Imported" );
         await InvokeAsync(StateHasChanged);
+        AppData.AccountLoadedOrImportedEcho();
     }    
 }

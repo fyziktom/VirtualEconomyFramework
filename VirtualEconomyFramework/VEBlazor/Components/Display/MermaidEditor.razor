@@ -38,6 +38,8 @@
 
     [Parameter] public EventCallback<string> OnDataSaved { get; set; }
 
+    public string LastSavedHash {get;set;} = string.Empty;
+
     PanzoomMermaid? mermaidViewRef;
     Markdown? markdownRef;
 
@@ -126,6 +128,8 @@
             if (result.Item1)
             {
                 var hash = VEDriversLite.StorageDriver.Helpers.IPFSHelpers.GetHashFromIPFSLink(result.Item2);
+
+                LastSavedHash = hash;
 
                 if (NotificationService != null)
                     await NotificationService.Success( "Data saved.", "Saved" );

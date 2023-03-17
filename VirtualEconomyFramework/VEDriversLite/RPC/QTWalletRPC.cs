@@ -20,6 +20,8 @@ namespace VEDriversLite.Common
         /// </summary>
         public static Dictionary<string, Func<string, string, string[], JsonClient, Task<string>>> ApiFunctions = new Dictionary<string, Func<string, string, string[], JsonClient, Task<string>>>
         {
+            { "gettransaction", CommonOneParameterRequest },
+            { "getblock", CommonOneParameterRequest },
             { "getaccount", CommonOneParameterRequest },
             { "getnewaddress", CommonOneParameterRequest },
             { "dumpprivatekey", CommonOneParameterRequest },
@@ -36,6 +38,7 @@ namespace VEDriversLite.Common
             { "listunspent", CommonMultipleParameterRequest },
             { "listaddressgroupings", CommonMultipleParameterRequest },
             { "getaccountaddress", CommonOneParameterRequest },
+            { "sendrawtransaction", CommonOneParameterRequest },
             { "getaddressesbyaccount", CommonOneParameterRequest },
             { "sendntp1toaddress", CommonMultipleParameterRequest }
         };

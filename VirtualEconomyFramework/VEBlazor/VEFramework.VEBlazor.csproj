@@ -5,7 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
 	  <PackageId>VEFramework.VEBlazor</PackageId>
-	  <Version>0.3.3</Version>
+	  <Version>0.3.31</Version>
 	  <Authors>fyziktom</Authors>
 	  <Company>VEFramework</Company>
 	  <Description>.NET6 Blazor component and dApp template library. It contains lots of components related to blockchain, IPFS, NFTs and other web3 and Industry4.0 technologies.</Description>
@@ -15,8 +15,9 @@
 	  <PackageTags>VEFramework, Blazor, MAUI, Cryptocurrencies, Crypto, NFT, NFTs, NFTTech, NFTIoT, Bitcoin, ReddCoin, Neblio, Nebl, Doge, Dogecoin, Blockchain, eCommerce, dApps, WooCommerce, WordPress</PackageTags>
 	  <Copyright>fyziktom</Copyright>
 	  <PackageReleaseNotes>
-		  - Added Storage Driver
-		  - Transaction List bugfix
+		  - Added AI Components
+		  - Added Audio Recorder
+		  - Added Component for display of address as QR Code
 	  </PackageReleaseNotes>
 	  <PackageReadmeFile>Readme.md</PackageReadmeFile>
 	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -28,21 +29,23 @@
 
   <ItemGroup>
     <PackageReference Include="Blazored.LocalStorage" Version="4.2.0" />
-    <PackageReference Include="Blazorise" Version="1.1.1" />
-    <PackageReference Include="Blazorise.Bootstrap" Version="1.1.1" />
-    <PackageReference Include="Blazorise.Components" Version="1.1.1" />
-    <PackageReference Include="Blazorise.DataGrid" Version="1.1.1" />
-    <PackageReference Include="Blazorise.Icons.FontAwesome" Version="1.1.1" />
-    <PackageReference Include="Blazorise.Markdown" Version="1.1.1" />
-    <PackageReference Include="Blazorise.QRCode" Version="1.1.1" />
-    <PackageReference Include="Blazorise.Video" Version="1.1.1" />
+    <PackageReference Include="Blazorise" Version="1.2.1" />
+    <PackageReference Include="Blazorise.Bootstrap" Version="1.2.1" />
+    <PackageReference Include="Blazorise.Components" Version="1.2.1" />
+    <PackageReference Include="Blazorise.DataGrid" Version="1.2.1" />
+    <PackageReference Include="Blazorise.Icons.FontAwesome" Version="1.2.1" />
+    <PackageReference Include="Blazorise.LoadingIndicator" Version="1.2.1" />
+    <PackageReference Include="Blazorise.Markdown" Version="1.2.1" />
+    <PackageReference Include="Blazorise.QRCode" Version="1.2.1" />
+    <PackageReference Include="Blazorise.Video" Version="1.2.1" />
     <PackageReference Include="BlazorPanzoom" Version="0.2.1" />
     <PackageReference Include="Markdig" Version="0.30.4" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.9" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.14" />
     <PackageReference Include="Texnomic.Blazor.JsonViewer" Version="0.1.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\VEDriversLite.AI.OpenAI\VEDriversLite.AI.OpenAI.csproj" />
     <ProjectReference Include="..\VEDriversLite\VEDriversLite.csproj" />
   </ItemGroup>
 

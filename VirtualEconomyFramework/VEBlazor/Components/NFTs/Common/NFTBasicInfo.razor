@@ -48,6 +48,14 @@
         
         @if (!string.IsNullOrEmpty(NFT.Utxo))
         {
+            @if (!string.IsNullOrEmpty(NFT.Link))
+            {
+                <Row Margin="Margin.Is2.FromTop">
+                    <Column>
+                        <Button Color="Color.Secondary" Type="ButtonType.Link" To="@NFT.Link" Target="Target.Blank" Block>Open NFT Link</Button>
+                    </Column>
+                </Row>
+            }
             <Row Margin="Margin.Is2.FromTop"> 
                 <Column> 
                     <CopyButton TextToCopy="@($"{AppData.AppShareNFTUrl}/gallery?utxo={NFT.Utxo}:{NFT.UtxoIndex}")" ButtonText="Copy Share Link" /> 
