@@ -17962,6 +17962,19 @@ references:
   isSpec: "True"
   fullName: VEDriversLite.NeblioAPI.NeblioAPIHelpers.GetAddressUtxosObjects
   nameWithType: NeblioAPIHelpers.GetAddressUtxosObjects
+- uid: VEDriversLite.NeblioAPI.NeblioAPIHelpers.GetBlock(System.String)
+  name: GetBlock(String)
+  href: api/VEDriversLite.NeblioAPI.NeblioAPIHelpers.html#VEDriversLite_NeblioAPI_NeblioAPIHelpers_GetBlock_System_String_
+  commentId: M:VEDriversLite.NeblioAPI.NeblioAPIHelpers.GetBlock(System.String)
+  fullName: VEDriversLite.NeblioAPI.NeblioAPIHelpers.GetBlock(System.String)
+  nameWithType: NeblioAPIHelpers.GetBlock(String)
+- uid: VEDriversLite.NeblioAPI.NeblioAPIHelpers.GetBlock*
+  name: GetBlock
+  href: api/VEDriversLite.NeblioAPI.NeblioAPIHelpers.html#VEDriversLite_NeblioAPI_NeblioAPIHelpers_GetBlock_
+  commentId: Overload:VEDriversLite.NeblioAPI.NeblioAPIHelpers.GetBlock
+  isSpec: "True"
+  fullName: VEDriversLite.NeblioAPI.NeblioAPIHelpers.GetBlock
+  nameWithType: NeblioAPIHelpers.GetBlock
 - uid: VEDriversLite.NeblioAPI.NeblioAPIHelpers.GetClient
   name: GetClient()
   href: api/VEDriversLite.NeblioAPI.NeblioAPIHelpers.html#VEDriversLite_NeblioAPI_NeblioAPIHelpers_GetClient
@@ -18137,6 +18150,22 @@ references:
   isSpec: "True"
   fullName: VEDriversLite.NeblioAPI.NeblioAPIHelpers.GetTxHex
   nameWithType: NeblioAPIHelpers.GetTxHex
+- uid: VEDriversLite.NeblioAPI.NeblioAPIHelpers.GetTxsAsync(System.String,System.String,System.Nullable{System.Double})
+  name: GetTxsAsync(String, String, Nullable<Double>)
+  href: api/VEDriversLite.NeblioAPI.NeblioAPIHelpers.html#VEDriversLite_NeblioAPI_NeblioAPIHelpers_GetTxsAsync_System_String_System_String_System_Nullable_System_Double__
+  commentId: M:VEDriversLite.NeblioAPI.NeblioAPIHelpers.GetTxsAsync(System.String,System.String,System.Nullable{System.Double})
+  name.vb: GetTxsAsync(String, String, Nullable(Of Double))
+  fullName: VEDriversLite.NeblioAPI.NeblioAPIHelpers.GetTxsAsync(System.String, System.String, System.Nullable<System.Double>)
+  fullName.vb: VEDriversLite.NeblioAPI.NeblioAPIHelpers.GetTxsAsync(System.String, System.String, System.Nullable(Of System.Double))
+  nameWithType: NeblioAPIHelpers.GetTxsAsync(String, String, Nullable<Double>)
+  nameWithType.vb: NeblioAPIHelpers.GetTxsAsync(String, String, Nullable(Of Double))
+- uid: VEDriversLite.NeblioAPI.NeblioAPIHelpers.GetTxsAsync*
+  name: GetTxsAsync
+  href: api/VEDriversLite.NeblioAPI.NeblioAPIHelpers.html#VEDriversLite_NeblioAPI_NeblioAPIHelpers_GetTxsAsync_
+  commentId: Overload:VEDriversLite.NeblioAPI.NeblioAPIHelpers.GetTxsAsync
+  isSpec: "True"
+  fullName: VEDriversLite.NeblioAPI.NeblioAPIHelpers.GetTxsAsync
+  nameWithType: NeblioAPIHelpers.GetTxsAsync
 - uid: VEDriversLite.NeblioAPI.NeblioAPIHelpers.IsEnoughConfirmationsForSend(System.Int32)
   name: IsEnoughConfirmationsForSend(Int32)
   href: api/VEDriversLite.NeblioAPI.NeblioAPIHelpers.html#VEDriversLite_NeblioAPI_NeblioAPIHelpers_IsEnoughConfirmationsForSend_System_Int32_
