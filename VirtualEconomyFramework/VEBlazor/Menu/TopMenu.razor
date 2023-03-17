@@ -72,10 +72,13 @@
                         }
                         else
                         {
-                            <BarDropdownItem Clicked="@Unlock">
-                                <Icon Name="IconName.Unlock" TextColor="TextColor.Success" />
-                                Login
-                            </BarDropdownItem>
+                            @if (doesAccountExist)
+                            {
+                                <BarDropdownItem Clicked="@Unlock">
+                                    <Icon Name="  IconName.Unlock" TextColor=" TextColor.Success" />
+                                    Login
+                                </BarDropdownItem>
+                            }
                         }
                         <BarDropdownDivider />
                         <BarDropdownItem To="@AppData.AppHomeWebsiteUrl" Target="Target.Blank">
@@ -95,6 +98,27 @@
     [Inject] INotificationService? NotificationService { get; set; }
 
     private UnlockAccount? UnlockAccountComponent;
+
+    bool doesAccountExist = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            AppData.AccountLoadedOrImported += AccountLoadedOrImportedHandler;
+
+            doesAccountExist = await AppData.DoesAccountExist();
+        }
+    }
+
+    void AccountLoadedOrImportedHandler(object sender, bool e)
+    {
+        if (e)
+        {
+            doesAccountExist = true;
+            StateHasChanged();
+        }
+    }
 
     void Unlock()
     {

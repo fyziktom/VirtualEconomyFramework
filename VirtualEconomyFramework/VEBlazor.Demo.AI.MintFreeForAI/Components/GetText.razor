@@ -1,0 +1,98 @@
+﻿@using Newtonsoft.Json
+@inject HttpClient Http
+
+<Row Flex="Flex.AlignItems.Center">
+    <Column>
+        <Span>Vyplňte prosím základní info pro text, který by měla AI vytvořit.</Span>
+    </Column>
+</Row>
+
+<Row Flex="Flex.AlignItems.Center" Margin="Margin.Is3.FromTop">
+    <Column>
+        <Span>Vytvoř prosím text o ...</Span>
+    </Column>
+</Row>
+<Row Flex="Flex.AlignItems.Center">
+    <Column>
+        <MemoEdit Rows="6" Placeholder="pokračujte tím o čem by měl článek být..." @bind-Text="BaseText" />
+    </Column>
+</Row>
+<Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
+    <Column>
+        <Button Color="Color.Primary" Clicked="@CreateTextAction" Loading="@Creating" Block>2. Vytvoř text pomocí AI</Button>
+    </Column>
+</Row>
+
+<Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
+    <Column>
+        <Markdown @ref="markdownRef" @bind-Value="@TextByAI" AutoRefresh="@(new MarkdownAutoRefresh() {Delay = 300 })" />
+    </Column>
+</Row>
+
+@code {
+    public enum PostLength
+    {
+        Tiny = 100,
+        Short = 250,
+        Medium = 500,
+        Long = 750
+    }
+
+    [Inject] INotificationService? NotificationService { get; set; }
+
+    [Parameter] public EventCallback<(string,string)> TextCreated { get; set; }
+
+    [Parameter] public string BaseText { get; set; } = string.Empty;
+
+    private Modal? CreateTextModal;
+    Markdown markdownRef;
+
+    public string TextByAI { get; set; } = string.Empty;
+    bool Creating = false;
+    (bool, string) Result = (false, string.Empty);
+    PostLength postLength = PostLength.Medium;
+
+    public async Task LoadText(string text = "")
+    {
+        if (!string.IsNullOrEmpty(text))
+        {
+            BaseText = text;
+            await markdownRef.SetValueAsync(text);
+        }
+    }
+
+    async Task CreateTextAction()
+    {
+        Creating = true;
+        await InvokeAsync(StateHasChanged);
+
+        if (NotificationService != null)
+            await NotificationService.Info("Vytvářím text...", "AI pracuje");
+
+        var baset = "Vytvoř prosím krátký článek o " + BaseText.Replace("\"", "\\\"") + ". Výstup bude Markdown.";
+
+        using (var content = new StringContent("{ \"basetext\": \"" + baset + "\"}", System.Text.Encoding.UTF8, "application/json"))
+        {
+            HttpResponseMessage result = await Http.PostAsync("/api/AIGetText", content);
+            if (result.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                string returnValue = await result.Content.ReadAsStringAsync();
+                if (returnValue != null)
+                    TextByAI = returnValue;
+                
+                await TextCreated.InvokeAsync((BaseText, TextByAI));
+            }
+        }
+
+        if (NotificationService != null)
+        {
+            if (!string.IsNullOrEmpty(TextByAI))
+                await NotificationService.Success("Text byl vytvořen.", "Úspěch");
+            else
+                await NotificationService.Warning(Result.Item2, "Nemůžu vytvořit text.");
+        }
+
+        Creating = false;
+        await InvokeAsync(StateHasChanged);
+    }
+}

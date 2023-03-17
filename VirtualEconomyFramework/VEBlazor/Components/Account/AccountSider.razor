@@ -47,6 +47,26 @@
                         <Column>
                             <Button Clicked="@(()=>collapse1Visible = !collapse1Visible)">
                                 <Icon Name="@(collapse1Visible ? IconName.AngleUp : IconName.AngleDown)" />
+                                Settings
+                            </Button>
+                        </Column>
+                        <Column>
+                        </Column>
+                    </Row>
+                    <Heading Size="HeadingSize.Is5">
+
+                    </Heading>
+                </CollapseHeader>
+                <CollapseBody>
+                    <AccountSettings />
+                </CollapseBody>
+            </Collapse>
+            <Collapse Visible="@collapse1Visible">
+                <CollapseHeader Padding="Padding.Is0.FromBottom">
+                    <Row>
+                        <Column>
+                            <Button Clicked="@(()=>collapse1Visible = !collapse1Visible)">
+                                <Icon Name="@(collapse1Visible ? IconName.AngleUp : IconName.AngleDown)" />
                                 Bookmarks
                             </Button>
                         </Column>

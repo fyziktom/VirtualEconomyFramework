@@ -1,0 +1,73 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@if (DisplayButton)
+{
+    <Row>
+        <Column Flex="Flex.JustifyContent.Center">
+            <Button Color="Color.Secondary" Clicked="showQRCode" Block>Show QR Code</Button>
+        </Column>
+    </Row>
+}
+
+@if (!string.IsNullOrEmpty(Address))
+{
+    <Modal @ref="qrModal" Closed="OnOwnershipDialogQRCloseHandler">
+        <ModalContent Size="  ModalSize.Default">
+            <ModalHeader>
+                <ModalTitle>Address as QR Code</ModalTitle>
+                <CloseButton />
+            </ModalHeader>
+            <ModalBody>
+                <Row Flex="Flex.AlignItems.Center">
+                    <Column>
+                        <small>Address:</small>
+                    </Column>
+                </Row>
+                <Paragraph>@Address</Paragraph>
+                <Row Margin=" Margin.Is2.FromTop.Is2.FromBottom" Flex="Flex.AlignItems.Center">
+                    <Column>
+                        <QRCode Value="@Address" Style="max-width:inherit;width:inherit;max-height:inherit;height:inherit;" />
+                    </Column>
+                </Row>
+                <CopyButton TextToCopy="@Address" />
+            </ModalBody>
+        </ModalContent>
+    </Modal>
+}
+
+@code {
+    Modal? qrModal;
+
+    [Parameter] public bool DisplayButton { get; set; } = false;
+    [Parameter] public string Address { get; set; } = string.Empty;
+
+    [Parameter] public EventCallback<bool> DialogClosed { get; set; }
+
+    private bool showDialogVisible = false;
+    private bool dialogLoading = false;
+
+    private ElementReference qrCodeRef;
+
+    Task showQRCode()
+    {
+        return ShowQRCode();
+    }
+    public async Task ShowQRCode(string address = null)
+    {
+        if (string.IsNullOrEmpty(address) && string.IsNullOrEmpty(Address))
+            return;
+        else if (!string.IsNullOrEmpty(address) && string.IsNullOrEmpty(Address))
+            Address = address;
+
+        if (qrModal == null) return;
+        await qrModal.Show();
+        
+        await InvokeAsync(StateHasChanged);
+        await Task.Delay(1);
+    }
+
+    private async Task OnOwnershipDialogQRCloseHandler()
+    {
+        await DialogClosed.InvokeAsync(false);
+    }
+}

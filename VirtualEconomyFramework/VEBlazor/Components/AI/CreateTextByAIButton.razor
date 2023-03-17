@@ -1,0 +1,203 @@
+@inject AppData AppData
+
+<Button Color="Color.Primary" Clicked="@ShowModal" Block>Create text by ChatGPT</Button>
+
+<Modal @ref="CreateTextModal">
+    <ModalContent Size="ModalSize.Large" Centered>
+        <ModalHeader>
+            <ModalTitle>Create Text By AI</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+
+            <Row Flex="Flex.AlignItems.Center">
+                <Column>
+                    <Span>What should be the length of the post?</Span>
+                </Column>
+            </Row>
+
+            <Row Flex="Flex.AlignItems.Center">
+                <Column>
+                    <Field Horizontal>
+                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                            <Select Display="Display.None.OnDesktop.InlineBlock.OnTablet" SelectedValue="@postLength" SelectedValueChanged="@postLengthChanged" TValue="PostLength">
+                                @foreach (var length in Enum.GetValues<PostLength>())
+                                {
+                                    <SelectItem TValue="PostLength" @key="@length" Value="@length">@(Enum.GetName(typeof(PostLength), length))</SelectItem>
+                                }
+                            </Select>
+                            <RadioGroup Display="Display.None.OnMobile.None.OnTablet.InlineBlock.OnDesktop" CheckedValue="@postLength" CheckedValueChanged="@postLengthChanged" TValue="PostLength" Name="graphtype" Orientation="Orientation.Horizontal" Buttons Color="Color.Light">
+                                @foreach (var length in Enum.GetValues<PostLength>())
+                                {
+                                    <Radio TValue="PostLength" @key="@length" Value="@length">@(Enum.GetName(typeof(PostLength), length))</Radio>
+                                }
+                            </RadioGroup>
+                        </FieldBody>
+                    </Field>
+                </Column>
+            </Row>
+            
+            <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
+                <Column>
+                    <Span>Please input some base for the full create article by AI. You can use the recorder to fill the text.</Span>
+                </Column>
+            </Row>
+
+            <Row Margin="Margin.Is2.FromTop">
+                <Column>
+                    <Field>
+                        <FieldLabel>Store Recording as NFTDataItem.</FieldLabel>
+                    <Check TValue="bool" @bind-Checked="@StoreRecordingAsNFTDataItem" />
+                    <FieldHelp>Check if you want to save original recording as DataItem in NFT.</FieldHelp>
+                    </Field>
+                </Column>
+            </Row>
+
+            <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
+                <Column>
+                    <AudioRecorder @ref=@audioRecorderRef OnTranscriptCreated="@OnTranscriptCreatedHandler" OnAudioSaved="@OnAudioSavedHandler" OnAudioRecordingStopped="@onAudioRecordingStoppedHandler" />
+                </Column>
+            </Row>
+
+            <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is3.FromTop">
+                <Column>
+                    <Span>Please create text about ...</Span>
+                </Column>
+            </Row>
+            <Row Flex="Flex.AlignItems.Center">
+                <Column>
+                    <MemoEdit Rows="6" Placeholder="Contiune with what about text should be..." @bind-Text="BaseText" />
+                </Column>
+            </Row>
+            <Row Flex="Flex.AlignItems.Center">
+                <Column>
+                    <Button Color="Color.Danger" Clicked="@CreateTextAction" Loading="@Creating" Block>Create Text</Button>
+                </Column>
+            </Row>
+        </ModalBody>
+    </ModalContent>
+</Modal>
+@code {
+
+    public enum PostLength
+    {
+        Tiny = 100,
+        Short = 250,
+        Medium = 500,
+        Long = 750
+    }
+
+    [Inject] INotificationService? NotificationService { get; set; }
+
+    [Parameter] public bool StoreRecordingAsNFTDataItem { get; set; } = false;
+
+    [Parameter] public EventCallback<string> TextCreated { get; set; }
+
+    [Parameter] public EventCallback<VEDriversLite.NFT.Dto.NFTDataItem> OnAudioSaved { get; set; }
+
+    Modal? CreateTextModal;
+    AudioRecorder? audioRecorderRef;
+
+    public string BaseText { get; set; } = string.Empty;
+    bool Creating = false;
+    (bool, string) Result = (false, string.Empty);
+    PostLength postLength = PostLength.Medium;
+
+    bool lastRecordingSavedToNFT = false;
+
+    public void ShowModal()
+    {
+        if (AppData.Assistant != null)
+            CreateTextModal?.Show();
+        else
+        {
+            if (NotificationService != null)
+                NotificationService.Warning("Cannot use AI without setup of OpenAI API Key. Please fill it in the profile tab in settings.", "OpenAI API Key missing");
+        }
+    }
+    public void HideModal()
+    {
+        CreateTextModal?.Hide();
+    }
+
+    async Task OnAudioSavedHandler(VEDriversLite.NFT.Dto.NFTDataItem item)
+    {
+        if (item != null)
+        {
+            await OnAudioSaved.InvokeAsync(item);
+            lastRecordingSavedToNFT = true;
+        }
+    }
+
+    async Task onAudioRecordingStoppedHandler(string e)
+    {
+        lastRecordingSavedToNFT = false;
+    }
+
+    async Task OnTranscriptCreatedHandler((string, byte[]) e)
+    {
+        if (!string.IsNullOrEmpty(e.Item1))
+        {
+            BaseText = e.Item1;
+            await InvokeAsync(StateHasChanged);
+
+            if (StoreRecordingAsNFTDataItem)
+            {
+                if (audioRecorderRef != null)
+                    await audioRecorderRef.UploadRecordingToIPFS(null);
+            }
+        }
+    }
+
+    async Task CreateTextAction()
+    {
+        Creating = true;
+        await InvokeAsync(StateHasChanged);
+
+        if (NotificationService != null)
+            await NotificationService.Info("Creating text...", "AI working");
+
+        var baset = "Vytvoř prosím krátký článek o " + BaseText + ". Výstup bude Markdown.";
+
+        if (AppData.Assistant != null)
+            Result = await AppData.Assistant.SendSimpleQuestion( baset , (int)postLength);
+
+        if (NotificationService != null)
+        {
+            if (Result.Item1)
+                await NotificationService.Success("Text creation was successfull.", "Success");
+            else
+                await NotificationService.Warning(Result.Item2, "Cannot create text");
+        }
+        await InvokeAsync(StateHasChanged);
+
+        if (Result.Item1)
+            await TextCreated.InvokeAsync(Result.Item2);
+
+        if (StoreRecordingAsNFTDataItem && !lastRecordingSavedToNFT)
+        {
+            if (audioRecorderRef != null)
+            {
+                await audioRecorderRef.UploadRecordingToIPFS(null);
+
+                var attempts = 20;
+                while (!lastRecordingSavedToNFT && attempts > 0)
+                {
+                    await Task.Delay(500);
+                    attempts--;
+                }
+            }
+        }
+
+        Creating = false;
+        //close automatically after 2 seconds
+        await Task.Delay(2000);
+        HideModal();
+
+    }
+
+    private void postLengthChanged(PostLength e)
+    {
+        postLength = e;
+    }
+}

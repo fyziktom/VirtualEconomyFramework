@@ -9,6 +9,9 @@ using VEDriversLite.Bookmarks;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components;
 using System.Collections.Concurrent;
+using VEDriversLite.AI.OpenAI;
+using VEDriversLite.Security;
+using System.Text;
 
 public enum TabType
 {
@@ -120,6 +123,7 @@ public class AppData
 
     public NeblioAccount Account { get; set; } = new NeblioAccount();
     public DogeAccount DogeAccount { get; set; } = new DogeAccount();
+    public VirtualAssistant? Assistant { get; set; } = null;
     public bool IsAccountLoaded { get; set; } = false;
     public List<GalleryTab> OpenedTabs { get; set; } = new List<GalleryTab>();
     public Dictionary<string, VEDriversLite.NFT.Tags.Tag> DefaultTags { get; set; } = new Dictionary<string, VEDriversLite.NFT.Tags.Tag>();
@@ -135,6 +139,15 @@ public class AppData
     public void AccountLoadedOrImportedEcho()
     {
         AccountLoadedOrImported.Invoke(null, true);
+    }
+
+    public async Task<bool> DoesAccountExist()
+    {
+        var ekey = await localStorage.GetItemAsync<string>("key");
+        if (string.IsNullOrEmpty(ekey))
+            return false;
+        else
+            return true;
     }
 
     public async Task<(bool,string)> UnlockAccount(string password, bool withoutNFTs = false)
@@ -155,6 +168,8 @@ public class AppData
 
             await LoadBookmarks();
             await SaveCache();
+            // try init assistant if there is stored OpenAI api key in the browser local memory
+            await InitAssistant();
         }
         else
         {
@@ -165,6 +180,72 @@ public class AppData
         LockUnlockAccount?.Invoke(null, IsAccountLoaded);
         
         return (IsAccountLoaded,address);
+    }
+
+    /// <summary>
+    /// Initialize OpenAI assistant. If you will provide apikey it will take it and save into localStorage in browser.
+    /// If you will not provide apikey it will try to load it from the localStorage in browser.
+    /// work just with the loaded account because account private key is used to encrypt the apikey
+    /// </summary>
+    /// <param name="apikey"></param>
+    /// <returns></returns>
+    public async Task<bool> InitAssistant(string apikey = "")
+    {
+        if (!IsAccountLoaded)
+            return false;
+
+        if (string.IsNullOrEmpty(apikey))
+            apikey = await GetAndDecryptOpenAIApiKey();
+        
+        if (!string.IsNullOrEmpty(apikey))
+        {
+            Assistant = new VirtualAssistant(apikey);
+            if ((await Assistant.InitAssistant()).Item1)
+            {
+                if (await EncryptAndStoreOpenAIApiKey(apikey))
+                    return true;
+            }
+            else
+                Assistant = null;
+        }
+
+        return false;
+    }
+
+    public async Task<string?> GetAndDecryptOpenAIApiKey()
+    {
+        if (!IsAccountLoaded)
+            return null;
+
+        var OAIapikey = await localStorage.GetItemAsync<string>("OpenAIapiKey");
+        if (string.IsNullOrEmpty(OAIapikey))
+            return null;
+        else
+        {
+            var res = SymetricProvider.DecryptString(Account.Secret.ToString(), OAIapikey);
+            if (!string.IsNullOrEmpty(res))
+                return res;
+            else
+                return null;
+        }
+    }
+
+    public async Task<bool> EncryptAndStoreOpenAIApiKey(string apikey = "")
+    {
+        if (!IsAccountLoaded)
+            return false;
+
+        if (!string.IsNullOrEmpty(apikey))
+        {
+            var res = SymetricProvider.EncryptString(Account.Secret.ToString(), apikey);
+            if (!string.IsNullOrEmpty(res))
+            {
+                await localStorage.SetItemAsStringAsync("OpenAIapiKey", res);
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public bool LockAccount(bool clearAll = false)

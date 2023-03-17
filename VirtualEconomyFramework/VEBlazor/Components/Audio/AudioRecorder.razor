@@ -1,0 +1,238 @@
+﻿<!-- Based on the tutorial in this repository https://github.com/arvinboggs/AudioRecorder -->
+
+@inject IJSRuntime mJS
+@inject AppData AppData
+@inject HttpClient http
+
+<LoadingIndicator @ref=loadingIndicatorRef>
+    <Row>
+        <Column>
+            <Row>
+                <Column>
+                    <Tooltip Text="Start Recording or start new.">
+                        <Button Color="Color.Primary" Clicked="StartRecording" Disabled=@mDisableRecordAudioStart><Icon Name="IconName.Circle" /></Button>
+                    </Tooltip>
+                    <Tooltip Text="Pause Recording">
+                    <Button Color="Color.Primary" Clicked="PauseRecording" Disabled=@mDisableRecordAudioPause><Icon Name="IconName.Pause" /></Button>
+                    </Tooltip>
+                    <Tooltip Text="Resume Recording">
+                        <Button Color="Color.Primary" Clicked="ResumeAudioRecording" Disabled=@mDisableRecordAudioResume><Icon Name="IconName.Share" /></Button>
+                    </Tooltip>
+                    <Tooltip Text="Stop Recording and Process">
+                    <Button Color="Color.Primary" Clicked="StopRecording" Disabled=@mDisableRecordAudioStop><Icon Name="IconName.Stop" /></Button>
+                    </Tooltip>
+                    <Tooltip Text="Download Recording">
+                    <Button Color="Color.Primary" Clicked="DownloadRecording" Disabled=@mDisableDownloadBlob><Icon Name="IconName.Download" /></Button>
+                    </Tooltip>
+                </Column>
+            </Row>
+            <Row>
+                <Column>
+                    <audio controls autoplay src=@mUrl></audio>
+                </Column>
+            </Row>
+        </Column>
+    </Row>
+</LoadingIndicator>
+
+@if (WithTranscriptDisplay)
+{
+    <Row>
+        <Column>
+            <Heading Size=" HeadingSize.Is3">Transcript:</Heading>
+        </Column>
+    </Row>
+    <Row>
+        <Column>
+            <Span>@transcriptOfAudio</Span>
+        </Column>
+    </Row>
+
+    <Divider />
+
+    <!--
+    <div>
+        <h3>Cleaned Transcript:</h3>
+    </div>
+    <div>
+        <span>@transcriptOfAudioCleaned</span>
+    </div>
+    -->
+}
+
+@code {
+    [Inject] INotificationService? NotificationService { get; set; }
+
+    [Parameter] public EventCallback<(string, byte[])> OnTranscriptCreated { get; set; }
+    [Parameter] public bool WithTranscriptDisplay {get;set; } = false;
+    [Parameter] public EventCallback<VEDriversLite.NFT.Dto.NFTDataItem> OnAudioSaved { get; set; }
+    [Parameter] public EventCallback<string> OnAudioRecordingStopped { get; set; }
+    [Parameter] public EventCallback<string> OnAudioRecordingStarted { get; set; }
+
+    LoadingIndicator? loadingIndicatorRef;
+
+    string mUrl;
+    public const string FormatDateTimeStamp = "yyyy_MM_dd__HH_mm_ss_ffff";
+    bool mDisableRecordAudioStart;
+    bool mDisableRecordAudioPause = true;
+    bool mDisableRecordAudioResume = true;
+    bool mDisableRecordAudioStop = true;
+    bool mDisableDownloadBlob = true;
+
+    byte[]? lastRecordingBytes = null;
+
+    string transcriptOfAudio = string.Empty;
+    string transcriptOfAudioCleaned = string.Empty;
+
+    protected override async Task OnAfterRenderAsync(bool firstLoad)
+    {
+        await base.OnInitializedAsync();
+        //if (firstLoad)
+        await mJS.InvokeVoidAsync("BlazorAudioRecorder.Initialize", DotNetObjectReference.Create(this));
+    }
+
+    public async Task StartRecording(MouseEventArgs e)
+    {
+        mUrl = "";
+        mDisableRecordAudioStart = true;
+        mDisableRecordAudioPause = false;
+        mDisableRecordAudioResume = true;
+        mDisableRecordAudioStop = false;
+        mDisableDownloadBlob = true;
+        await mJS.InvokeVoidAsync("BlazorAudioRecorder.StartRecord");
+        await OnAudioRecordingStarted.InvokeAsync("recording started...");
+    }
+
+    public async Task PauseRecording(MouseEventArgs e)
+    {
+        mDisableRecordAudioStart = true;
+        mDisableRecordAudioPause = true;
+        mDisableRecordAudioResume = false;
+        mDisableRecordAudioStop = false;
+        mDisableDownloadBlob = true;
+        await mJS.InvokeVoidAsync("BlazorAudioRecorder.PauseRecord");
+    }
+
+    public async Task ResumeAudioRecording(MouseEventArgs e)
+    {
+        mDisableRecordAudioStart = true;
+        mDisableRecordAudioPause = false;
+        mDisableRecordAudioResume = true;
+        mDisableRecordAudioStop = false;
+        mDisableDownloadBlob = true;
+        await mJS.InvokeVoidAsync("BlazorAudioRecorder.ResumeRecord");
+    }
+
+    public async Task StopRecording(MouseEventArgs e)
+    {
+        mDisableRecordAudioStart = false;
+        mDisableRecordAudioPause = true;
+        mDisableRecordAudioResume = true;
+        mDisableRecordAudioStop = true;
+        mDisableDownloadBlob = false;
+        if (loadingIndicatorRef != null)
+            await loadingIndicatorRef.Show();
+
+        await mJS.InvokeVoidAsync("BlazorAudioRecorder.StopRecord");
+        await OnAudioRecordingStopped.InvokeAsync("recording stopped...");
+    }
+
+    public async Task DownloadRecording(MouseEventArgs e)
+    {
+        await mJS.InvokeVoidAsync("BlazorAudioRecorder.DownloadBlob", mUrl, "MyRecording_" + DateTimeStamp() + ".mp3");
+    }
+
+    public async Task UploadRecordingToIPFS(byte[]? data, string fileName = "")
+    {
+        if (data == null || data.Length == 0)
+        {
+            if (lastRecordingBytes != null)
+                data = lastRecordingBytes;
+        }
+
+        if (data != null && data.Length > 0)
+        {
+            if (loadingIndicatorRef != null)
+                await loadingIndicatorRef.Show();
+
+            if (string.IsNullOrEmpty(fileName))
+                fileName = $"audio-recording-{DateTime.UtcNow.ToString("yyyy_MM_ddThh-mm-ss")}.mp3";
+
+            using (Stream ms = new MemoryStream(data))
+            {
+                ms.Seek(0, SeekOrigin.Begin);
+                //var link = await NFTHelpers.UploadInfura(ms, "mermaid.mmd");
+                var result = await VEDriversLite.VEDLDataContext.Storage.SaveFileToIPFS(new VEDriversLite.StorageDriver.StorageDrivers.Dto.WriteStreamRequestDto()
+                    {
+                        Data = ms,
+                        Filename = fileName,
+                        DriverType = VEDriversLite.StorageDriver.StorageDrivers.StorageDriverType.IPFS,
+                        BackupInLocal = false
+                    });
+                if (result.Item1)
+                {
+                    var hash = VEDriversLite.StorageDriver.Helpers.IPFSHelpers.GetHashFromIPFSLink(result.Item2);
+
+                    if (NotificationService != null)
+                        await NotificationService.Success("Data saved.", "Saved");
+
+                    await OnAudioSaved.InvokeAsync( new VEDriversLite.NFT.Dto.NFTDataItem()
+                        {
+                            Hash = hash,
+                            Storage = VEDriversLite.NFT.Dto.DataItemStorageType.IPFS,
+                            IsMain = false,
+                            Type = VEDriversLite.NFT.Dto.DataItemType.AVMedia,
+                            TagsList = new List<string>() { $"filename:{fileName}"}
+                        });
+                }
+                else
+                {
+                    if (NotificationService != null)
+                        await NotificationService.Warning("Cannot save.", "Error");
+
+                }
+            }
+        }
+
+        if (loadingIndicatorRef != null)
+            await loadingIndicatorRef.Hide();
+
+    }
+
+    [JSInvokable]
+    public async Task OnAudioUrl(string vUrl)
+    {
+        mUrl = vUrl;
+
+        var bytes = await http.GetByteArrayAsync(mUrl);
+        if (bytes != null && bytes.Length > 0)
+        {
+            lastRecordingBytes = bytes;
+            Console.WriteLine("Sending request for transcript of audio...");
+            var transcript = await AppData.Assistant.GetTranscriptionOfAudio(bytes);
+            Console.WriteLine("Transcript request done.");
+            if (transcript.Item1)
+            {
+                transcriptOfAudio = transcript.Item2;
+                await OnTranscriptCreated.InvokeAsync((transcriptOfAudio, bytes));
+                /*
+                var tc = await AppData.Assistant.SendSimpleQuestion($"Můžeš mi prosím tento text trochu uspořádat a vrátit jako Markdown? Zde je text: \"{transcriptOfAudio}\".");
+                if (tc.Item1)
+                    transcriptOfAudioCleaned = tc.Item2;
+                    */
+            }
+        }
+
+        if (loadingIndicatorRef != null)
+            await loadingIndicatorRef.Hide();
+
+        await InvokeAsync(() => StateHasChanged());
+    }
+
+    public static string DateTimeStamp()
+    {
+        var pOut = DateTime.Now.ToString(FormatDateTimeStamp);
+        return pOut;
+    }
+
+}
