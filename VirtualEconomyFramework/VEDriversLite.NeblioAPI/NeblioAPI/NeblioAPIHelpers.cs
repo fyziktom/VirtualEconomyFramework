@@ -1108,5 +1108,37 @@ namespace VEDriversLite.NeblioAPI
             */
             return resp;
         }
+
+        /// <summary>
+        /// Return list of the transactions in the block
+        /// </summary>
+        /// <param name="addr"></param>
+        /// <returns></returns>
+        public static async Task<GetTxsResponse> GetTxsAsync(string addr, string block, double? pageNum = 100)
+        {
+            if (string.IsNullOrEmpty(block) && string.IsNullOrEmpty(block))
+            {
+                return new GetTxsResponse();
+            }
+
+            var address = await GetClient().GetTxsAsync(addr, block, pageNum);
+            return address;
+        }
+
+        /// <summary>
+        /// Return Block info object
+        /// </summary>
+        /// <param name="block">Hash of block</param>
+        /// <returns></returns>
+        public static async Task<GetBlockResponse> GetBlock(string block)
+        {
+            if (string.IsNullOrEmpty(block))
+            {
+                return new GetBlockResponse();
+            }
+
+            var address = await GetClient().GetBlockAsync(block);
+            return address;
+        }
     }
 }
