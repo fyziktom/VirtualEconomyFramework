@@ -4,30 +4,65 @@
 
 <Row Flex="Flex.AlignItems.Center">
     <Column>
-        <Span>Vyplňte prosím základní info o čem chcete mít lekci španělštiny.</Span>
+        @if (Language.Contains("en2"))
+        {
+            <Span>Please, fill the basic info of what the lesson should be about.</Span>
+        }
+        else
+        {
+            <Span>Vyplňte prosím základní info o čem chcete mít lekci španělštiny.</Span>
+        }
     </Column>
 </Row>
 
 <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is3.FromTop">
     <Column>
-        <Span>Vytvoř prosím lekci o ...</Span>
+        @if (Language.Contains("en2"))
+        {
+            <Span>Create lesson of spanish about...</Span>
+        }
+        else
+        {
+            <Span>Vytvoř lekci španělštiny o ...</Span>
+        }
     </Column>
 </Row>
 
 <Row Flex="Flex.AlignItems.Center">
     <Column>
-        <TextEdit Placeholder="pokračujte tím o čem by měla lekce být..." @bind-Text="BaseText" />
+        @if (Language.Contains("en2"))
+        {
+            <TextEdit Placeholder="continue with what the lesson should be about..." @bind-Text="BaseText" />
+        }
+        else
+        {
+            <TextEdit Placeholder="pokračujte tím o čem by měla lekce být..." @bind-Text="BaseText" />
+        }
     </Column>
 </Row>
 <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
     <Column>
-        <Button Color="Color.Primary" Clicked="@CreateTextAction" Loading="@Creating" Block>Vytvoř lekci pomocí AI</Button>
+        @if (Language.Contains("en2"))
+        {
+            <Button Color="Color.Primary" Clicked="@CreateTextAction" Loading="@Creating" Block>Create Lesson with AI</Button>
+        }
+        else
+        {
+            <Button Color="Color.Primary" Clicked="@CreateTextAction" Loading="@Creating" Block>Vytvoř lekci pomocí AI</Button>
+        }
     </Column>
 </Row>
 
 <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
     <Column>
+        @if (Language.Contains("en2"))
+        {
+        <Heading Size="HeadingSize.Is4">Spanish Lesson</Heading>
+        }
+        else
+        {
         <Heading Size="HeadingSize.Is4">Lekce Španělštiny</Heading>
+        }
     </Column>
 </Row>
 
@@ -37,7 +72,7 @@
     </Column>
 </Row>
 
-@code {
+    @code {
     public enum PostLength
     {
         Tiny = 100,
@@ -52,6 +87,8 @@
     [Parameter] public EventCallback<(string,string)> TextCreated { get; set; }
 
     [Parameter] public string BaseText { get; set; } = string.Empty;
+
+    [Parameter] public string Language { get; set; } = "cs2es";
 
     private Modal? CreateTextModal;
 
@@ -82,9 +119,21 @@
         await InvokeAsync(StateHasChanged);
 
         if (NotificationService != null)
-            await NotificationService.Info("Vytvářím text...", "AI pracuje");
+        {
+            if (Language.Contains("en2"))
+                await NotificationService.Info("Creating text...", "AI's working");
+            else
+                await NotificationService.Info("Vytvářím text...", "AI pracuje");
+        }
 
-        var baset = "Vytvoř prosím lekci španělštiny na téma " + BaseText.Replace("\"", "\\\"") + ". Výstup bude Markdown.";
+        var baset = string.Empty;
+
+        if (Language == "en2es")
+            baset = "Create please lesson of spain language on topic " + BaseText.Replace("\"", "\\\"") + ". Output will be Markdown.";
+        else if (Language == "cz2en")
+            baset = "Vytvoř prosím lekci angličtiny na téma " + BaseText.Replace("\"", "\\\"") + ". Výstup bude Markdown.";
+        else
+            baset = "Vytvoř prosím lekci španělštiny na téma " + BaseText.Replace("\"", "\\\"") + ". Výstup bude Markdown.";
 
         using (var content = new StringContent("{ \"basetext\": \"" + baset + "\"}", System.Text.Encoding.UTF8, "application/json"))
         {
@@ -94,17 +143,28 @@
                 string returnValue = await result.Content.ReadAsStringAsync();
                 if (returnValue != null)
                     TextByAI = returnValue;
-                
+
                 await TextCreated.InvokeAsync((BaseText, TextByAI));
             }
         }
 
         if (NotificationService != null)
         {
-            if (!string.IsNullOrEmpty(TextByAI))
-                await NotificationService.Success("Text byl vytvořen.", "Úspěch");
+            if (!Language.Contains("en2"))
+            {
+                if (!string.IsNullOrEmpty(TextByAI))
+                    await NotificationService.Success("Text byl vytvořen.", "Úspěch");
+                else
+                    await NotificationService.Warning(Result.Item2, "Nemůžu vytvořit text.");
+            }
             else
-                await NotificationService.Warning(Result.Item2, "Nemůžu vytvořit text.");
+            {
+                if (!string.IsNullOrEmpty(TextByAI))
+                    await NotificationService.Success("The text has been created.", "Success");
+                else
+                    await NotificationService.Warning(Result.Item2, "Cannot create the text.");
+            }
+
         }
 
         Creating = false;

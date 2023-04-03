@@ -96,7 +96,39 @@ namespace VEBlazor.Demo.AI.LearnLanguageWithAI.Controllers
                 {
                     if (VEDLDataContext.Accounts.TryGetValue(MainDataContext.MainAccount, out var account))
                     {
-                        var nfts = account.NFTs.Where(n => n.Type == NFTTypes.Post && n.Tags.Contains("lekce")).ToList();
+                        var nfts = account.NFTs.Where(n => n.Type == NFTTypes.Post && n.Tags.Contains("lekce") && n.Tags.Contains("čeština") && n.Tags.Contains("španělština")).ToList();
+                        if (nfts != null && nfts.Count > 0)
+                            return nfts;
+                    }
+
+                    return new List<INFT>();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new HttpResponseException((HttpStatusCode)501, $"Cannot get Lessons!");
+            }
+        }
+
+        /// <summary>
+        /// Get Last lessons of the spain
+        /// </summary>
+        /// <returns>NFTs list</returns>
+        [HttpGet]
+        [Route("GetLastEn2EsLessons")]
+        public async Task<List<INFT>> GetLastEn2EsLessons()
+        {
+            try
+            {
+                if (MainDataContext.MintedNFTs.Count > 20)
+                {
+                    return MainDataContext.MintedNFTs.Values.ToList();
+                }
+                else
+                {
+                    if (VEDLDataContext.Accounts.TryGetValue(MainDataContext.MainAccount, out var account))
+                    {
+                        var nfts = account.NFTs.Where(n => n.Type == NFTTypes.Post && n.Tags.Contains("lesson") && n.Tags.Contains("spanish") && n.Tags.Contains("english")).ToList();
                         if (nfts != null && nfts.Count > 0)
                             return nfts;
                     }

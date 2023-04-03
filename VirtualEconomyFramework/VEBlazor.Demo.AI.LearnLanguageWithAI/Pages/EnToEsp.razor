@@ -7,50 +7,45 @@
 @inject HttpClient Http
 @inject NavigationManager Navigator
 
-@page "/"
+@page "/en2es"
 
-<PageTitle>Učte se jazyk s AI</PageTitle>
+<PageTitle>Learn language with AI</PageTitle>
 
 
 <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
     <Column>
-        <Span>Naučte se Španělsky s AI zdarma.</Span>
+        <Span>Learn Spanish with AI for free.</Span>
     </Column>
 </Row>
 <Row Flex="Flex.AlignItems.Center">
     <Column>
-        <Span>ChatGPT pro Vás vytvoří krátkou lekci podle vašeho přání.</Span>
+        <Span>ChatGPT Will create the Spanish lesson for you.</Span>
     </Column>
 </Row>
 <Row Flex="Flex.AlignItems.Center">
     <Column>
-        <Span>Budeme rádi za ohodnocení lekce krátkým komentářem. Tyto komentáře zlepší kvalitu budoucích výsledků.</Span>
+        <Span>We will be happy for the evaluation of the lesson with a short comment. These comments will improve the quality of future results.</Span>
     </Column>
 </Row>
-
-
 <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is3.FromTop">
     <Column>
-        <Heading Size="HeadingSize.Is4">Zadejte prosím základní informace pro lekci</Heading>
+        <Heading Size="HeadingSize.Is4">Please enter the basic information for the lesson</Heading>
     </Column>
 </Row>
-
 <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
     <Column>
-        <GetText @ref="getTextRef" TextCreated="@onTextCreatedHandler" Language="cz2es" />
+        <GetText @ref="getTextRef" TextCreated="@onTextCreatedHandler" Language="en2es" />
     </Column>
 </Row>
-
 <Divider />
-
 <Row Flex="Flex.AlignItems.Center">
     <Column>
         <Field>
-            <FieldLabel>Volitelné: Komentář k lekci</FieldLabel>
-            <MemoEdit Rows="3" Placeholder="Zde můžete přidat krátký komentář" MaxLength="160" @bind-Text="UserComment" />
-            <FieldHelp>Vyplňte prosím svůj komentář k lekci.</FieldHelp>
+            <FieldLabel>Optional: Comment on the lesson</FieldLabel>
+            <MemoEdit Rows="3" Placeholder="Here you can add a short comment" MaxLength="160" @bind-Text="UserComment" />
+            <FieldHelp>Please fill in your comment on the lesson.</FieldHelp>
         </Field>
-     </Column>
+    </Column>
 </Row>
 <!--
 <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
@@ -74,9 +69,9 @@
 <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is1.FromTop">
     <Column>
         <Field>
-            <FieldLabel>Autor:</FieldLabel>
-            <TextEdit @bind-Text="NFT.Author"  Placeholder="Jméno nebo přezdívka"/>
-            <FieldHelp>Volitelné: Vyplňte prosím své jméno či přezdívku.</FieldHelp>
+            <FieldLabel>Optional: Author:</FieldLabel>
+            <TextEdit @bind-Text="NFT.Author"  Placeholder="Name or Nickname"/>
+            <FieldHelp>Fill your name or nickname</FieldHelp>
         </Field>
     </Column>
 </Row>
@@ -85,12 +80,12 @@
     <Column>
         @if (!string.IsNullOrEmpty(NFT.Text))
         {
-            <Button Color=" Color.Primary" Clicked="@MintNFT" Loading="@MintingNFT" Block>Ulož lekci pro ostatní studenty</Button>
+            <Button Color=" Color.Primary" Clicked="@MintNFT" Loading="@MintingNFT" Block>Save lesson for other students</Button>
         }
         else
         {
-            <Button Color="Color.Primary" Clicked="@MintNFT" Loading="@MintingNFT" Disabled Block>Ulož lekci pro ostatní studenty</Button>
-            <Span>Vyplňte prosím prvně Text, aby bylo možné uložit lekci.</Span>
+            <Button Color="Color.Primary" Clicked="@MintNFT" Loading="@MintingNFT" Disabled Block>Save lesson for other students</Button>
+            <Span>Please create the lesson before you want to save the lesson.</Span>
         }
     </Column>
 </Row>
@@ -104,13 +99,13 @@
 -->
 <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
     <Column>
-        <Button Color="Color.Secondary" Block Type="ButtonType.Link" To="@("/search?txid=" + @NFTTxId + "&index=0")" Target="Target.Blank">Zobrazení lekce</Button>
+        <Button Color="Color.Secondary" Block Type="ButtonType.Link" To="@("/search?txid=" + @NFTTxId + "&index=0")" Target="Target.Blank">Show lesson</Button>
     </Column>
 </Row>
 
 <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop.Is5.FromBottom">
     <Column>
-        <VEFramework.VEBlazor.Components.Display.CopyButton TextToCopy="@(Navigator.BaseUri.Trim('/') + "/search?txid=" + @NFTTxId + "&index=0")" ButtonText="Zkopíruj odkaz na sdílení NFT" />
+        <VEFramework.VEBlazor.Components.Display.CopyButton TextToCopy="@(Navigator.BaseUri.Trim('/') + "/search?txid=" + @NFTTxId + "&index=0")" ButtonText="Copy link to the lesson" />
     </Column>
 </Row>
 
@@ -186,16 +181,16 @@
 
         await CreateInfoAction();
 
-        if (!NFT.Tags.Contains("lekce"))
-            NFT.Tags += " lekce";
-        if (!NFT.Tags.Contains("španělština"))
-            NFT.Tags += " španělština";
-        if (!NFT.Tags.Contains("čeština"))
-            NFT.Tags += " čeština";
+        if (!NFT.Tags.Contains("lesson"))
+            NFT.Tags += " lesson";
+        if (!NFT.Tags.Contains("spanish"))
+            NFT.Tags += " spanish";
+        if (!NFT.Tags.Contains("english"))
+            NFT.Tags += " english";
 
         if (!string.IsNullOrEmpty(UserComment))
         {
-            NFT.Text += " \n\n\n\n #### Komentář Studenta:\n\n" + UserComment;
+            NFT.Text += " \n\n\n\n #### Student Comment:\n\n" + UserComment;
         }
 
         var obj = new
@@ -221,7 +216,7 @@
                 {
                     NFTTxId = returnStr;
                     if (NotificationService != null)
-                        await NotificationService.Success("Lekce uložena.", "Uloženo");
+                        await NotificationService.Success("Lesson saved.", "Saved");
                 }
             }
         }
