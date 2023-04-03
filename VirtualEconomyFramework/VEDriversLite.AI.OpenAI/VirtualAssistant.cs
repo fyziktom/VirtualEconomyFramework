@@ -348,12 +348,15 @@ namespace VEDriversLite.AI.OpenAI
 
             try
             {
-
-                MessagesHistory.Add(ChatMessage.FromUser("Vytvoř data pro NFT ze zdrojového textu. Potřebuji jako výstup JSON: {\"Name\": \"\", \"Description\": \"\", \"Tags\":\"\" } kde Tags (tagy) jsou bez mezer na jednom řádku a jednotlivé tagy jsou v řádku oddělené mezerou. Potřebuji alespoň 5 tagů. Name (jméno) maximálně 30 znaků. Description (popis) by mělo být poutavé a o délce maximálně 160 znaků. Zde je zdrojový text: \"" + text.Substring(0, (int)(text.Length * 0.5)) + "\""));
+                //MessagesHistory.Add(ChatMessage.FromUser("Vytvoř data pro NFT ze zdrojového textu. Potřebuji jako výstup JSON: {\"Name\": \"\", \"Description\": \"\", \"Tags\":\"\" } kde Tags (tagy) jsou bez mezer na jednom řádku a jednotlivé tagy jsou v řádku oddělené mezerou. Minimálně 5 tagů. Name (jméno) maximálně 30 znaků. Description (popis) maximálně 160 znaků. Zdrojový text: \"" + text.Substring(0, (int)(text.Length * 0.5)) + "\""));
+                var question = "Vytvoř data pro NFT ze zdrojového textu. Potřebuji jako výstup JSON: {\"Name\": \"\", \"Description\": \"\", \"Tags\":\"\" } kde Tags (tagy) jsou bez mezer na jednom řádku a jednotlivé tagy jsou v řádku oddělené mezerou. Minimálně 5 tagů, maximálně 10. Name (jméno) maximálně 30 znaků. Description (popis) musí být výstižné a lákavé maximálně 160 znaků. Zdrojový text: \"" + text.Substring(0, (int)(text.Length * 0.5)) + "\"";
 
                 var completionResult = await AIService.ChatCompletion.CreateCompletion(new ChatCompletionCreateRequest
                 {
-                    Messages = MessagesHistory,
+                    Messages = new List<ChatMessage>()
+                    {
+                        ChatMessage.FromUser(question)
+                    },
                     Model = Models.ChatGpt3_5Turbo,
                     MaxTokens = maxTokens//optional
                 });

@@ -1,0 +1,125 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@using VEDriversLite.NFT.Dto
+@using VEDriversLite.StorageDriver
+@using Newtonsoft.Json
+@using VEDriversLite.AI.OpenAI.Dto;
+@inject HttpClient Http
+@inject NavigationManager Navigator
+
+@page "/search"
+
+<PageTitle>Hledat</PageTitle>
+
+<Row Flex="Flex.AlignItems.Center" Margin="Margin.Is1.FromTop">
+    <Column>
+        <Field>
+            <FieldLabel>Vyplňte prosím Id tranansakce NFT s uloženou lekcí:</FieldLabel>
+            <TextEdit Text="@NFTTxId" TextChanged="@((e) => { if (e != null && e != NFTTxId) { NFTTxId = e; } })" />
+        </Field>
+    </Column>
+</Row>
+
+<Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
+    <Column>
+        @if (!string.IsNullOrEmpty(NFTTxId))
+        {
+            <Button Color=" Color.Primary" Clicked="@LoadNFT" Loading="@LoadingNFT" Block>Načíst Lekci</Button>
+        }
+        else
+        {
+            <Button Color="Color.Primary" Clicked="@LoadNFT" Loading="@LoadingNFT" Disabled Block>Načíst Lekci</Button>
+            <Span>Vyplňte prosím prvně ID transakce NFT s uloženou lekcí. Teprve poté je možné načíst NFT.</Span>
+        }
+    </Column>
+</Row>
+
+
+<Card Margin="Margin.Is1.FromTop">
+    <CardBody>
+        <CardTitle Size="3">@NFT.Name</CardTitle>
+        <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is1.FromTop">
+            <Column>
+                <small><b>Autor:</b> @NFT.Author</small>
+            </Column>
+        </Row>
+        <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
+            <Column>
+                <Span><b>Popis:</b></Span>
+            </Column>
+        </Row>
+
+        <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is1.FromTop">
+            <Column>
+                <Span>@NFT.Description</Span>
+            </Column>
+        </Row>
+
+        <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
+            <Column>
+                <Span><b>Tagy:</b></Span>
+            </Column>
+        </Row>
+        <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is1.FromTop">
+            <Column>
+                <VEFramework.VEBlazor.Components.Tags.Tags NFTType="@NFTTypes.Post" TagsList="@NFT.TagsList" />
+            </Column>
+        </Row>
+
+        <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is1.FromTop">
+            <Column>
+                <VEFramework.VEBlazor.Components.NFTs.Common.NFTText Text="@NFT.Text" />
+            </Column>
+        </Row>
+
+    </CardBody>
+</Card>
+
+<Row Flex="Flex.AlignItems.Center" Margin="Margin.Is3.FromTop">
+    <Column>
+        <b>NFT Id Transakce:</b> <Link To="@("https://explorer.nebl.io/tx/" + @NFTTxId)" Target="Target.Blank">@NFTTxId</Link>
+    </Column>
+</Row>
+
+<Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
+    <Column>
+        <VEFramework.VEBlazor.Components.Display.CopyButton TextToCopy="@(Navigator.BaseUri + "/search?txid=" + @NFTTxId + "&index=0")" ButtonText="Zkopíruj odkaz na sdílení NFT" />
+    </Column>
+</Row>
+
+@code{
+
+    INFT NFT = new PostNFT("");
+
+    bool LoadingNFT = false;
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "txid")]
+    public string NFTTxId {get;set;} = string.Empty;
+
+    protected override async Task OnAfterRenderAsync(bool firstLoad)
+    {
+        if (firstLoad)
+        {
+            if (!string.IsNullOrEmpty(NFTTxId))
+                await LoadNFT();
+        }
+    }
+
+    private async Task LoadNFT()
+    {
+        LoadingNFT = true;
+        await InvokeAsync(StateHasChanged);
+
+        if (!string.IsNullOrEmpty(NFTTxId))
+        {
+            var nft = await NFTFactory.GetNFT(NFTHelpers.TokenId, NFTTxId, 0, 0, true, true, NFTTypes.Post);
+            if (nft != null)
+                NFT = nft;
+        }
+
+        LoadingNFT = false;
+        await InvokeAsync(StateHasChanged);
+    }
+
+}

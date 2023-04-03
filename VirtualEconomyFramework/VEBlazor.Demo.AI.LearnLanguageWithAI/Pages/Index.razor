@@ -1,0 +1,233 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@using VEDriversLite.NFT.Dto
+@using VEDriversLite.StorageDriver
+@using Newtonsoft.Json
+@using VEDriversLite.AI.OpenAI.Dto;
+@inject HttpClient Http
+@inject NavigationManager Navigator
+
+@page "/"
+
+<PageTitle>Učte se jazyk s AI</PageTitle>
+
+
+<Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
+    <Column>
+        <Span>Naučte se Španělsky s AI zdarma.</Span>
+    </Column>
+</Row>
+<Row Flex="Flex.AlignItems.Center">
+    <Column>
+        <Span>ChatGPT pro Vás vytvoří krátkou lekci podle vašeho přání.</Span>
+    </Column>
+</Row>
+<Row Flex="Flex.AlignItems.Center">
+    <Column>
+        <Span>Budeme rádi za ohodnocení lekce krátkým komentářem. Tyto komentáře zlepší kvalitu budoucích výsledků.</Span>
+    </Column>
+</Row>
+
+
+<Row Flex="Flex.AlignItems.Center" Margin="Margin.Is3.FromTop">
+    <Column>
+        <Heading Size="HeadingSize.Is4">Zadejte prosím základní informace pro lekci</Heading>
+    </Column>
+</Row>
+
+<Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
+    <Column>
+        <GetText @ref="getTextRef" TextCreated="@onTextCreatedHandler" />
+    </Column>
+</Row>
+
+<Divider />
+
+<Row Flex="Flex.AlignItems.Center">
+    <Column>
+        <Field>
+            <FieldLabel>Volitelné: Komentář k lekci</FieldLabel>
+            <MemoEdit Rows="3" Placeholder="Zde můžete přidat krátký komentář" MaxLength="160" @bind-Text="UserComment" />
+            <FieldHelp>Vyplňte prosím svůj komentář k lekci.</FieldHelp>
+        </Field>
+     </Column>
+</Row>
+<!--
+<Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
+    <Column>
+        <Span>Volitelné: Pokud chcete zašleme Vám tuto lekci jako NFT zdarma na Vaši adresu. Budete potřebovat novou verzi VENFT App. Blockchain Adresu si můžete zdarma vytvořit <Link To="https://apptest.ve-nft.com/" Target="Target.Blank">zde</Link>.</Span>
+        <Span>Pokud nemáte o výsledné NFT zájem, tak nechte prosím pole pro Příjemce prázdné.</Span>
+    </Column>
+</Row>
+
+<Row Flex="Flex.AlignItems.Center" Margin="Margin.Is1.FromTop">
+    <Column>
+        <Field>
+            <FieldLabel>Příjemce:</FieldLabel>
+            <VEFramework.VEBlazor.Components.Account.NeblioAddressInput WithBookmarksList="false" Receiver="@Receiver" AddressCheckedInputed="@onAddressInputedHandler" />
+            <FieldHelp>Vypňte prosím Neblio Blockchain Address vytvořenou v nové VENFT App.</FieldHelp>
+        </Field>
+    </Column>
+</Row>
+-->
+
+<Row Flex="Flex.AlignItems.Center" Margin="Margin.Is1.FromTop">
+    <Column>
+        <Field>
+            <FieldLabel>Autor:</FieldLabel>
+            <TextEdit @bind-Text="NFT.Author"  Placeholder="Jméno nebo přezdívka"/>
+            <FieldHelp>Volitelné: Vyplňte prosím své jméno či přezdívku.</FieldHelp>
+        </Field>
+    </Column>
+</Row>
+
+<Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
+    <Column>
+        @if (!string.IsNullOrEmpty(NFT.Text))
+        {
+            <Button Color=" Color.Primary" Clicked="@MintNFT" Loading="@MintingNFT" Block>Ulož lekci pro ostatní studenty</Button>
+        }
+        else
+        {
+            <Button Color="Color.Primary" Clicked="@MintNFT" Loading="@MintingNFT" Disabled Block>Ulož lekci pro ostatní studenty</Button>
+            <Span>Vyplňte prosím prvně Text, aby bylo možné uložit lekci.</Span>
+        }
+    </Column>
+</Row>
+
+<!--
+<Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
+    <Column>
+        NFT Id Transakce: <Link To = "@("https://explorer.nebl.io/tx/" + @NFTTxId)" Target="Target.Blank">@NFTTxId</Link>
+    </Column>
+</Row>
+-->
+<Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
+    <Column>
+        <Button Color="Color.Secondary" Block Type="ButtonType.Link" To="@("/search?txid=" + @NFTTxId + "&index=0")" Target="Target.Blank">Zobrazení lekce</Button>
+    </Column>
+</Row>
+
+<Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop.Is5.FromBottom">
+    <Column>
+        <VEFramework.VEBlazor.Components.Display.CopyButton TextToCopy="@(Navigator.BaseUri.Trim('/') + "/search?txid=" + @NFTTxId + "&index=0")" ButtonText="Zkopíruj odkaz na sdílení NFT" />
+    </Column>
+</Row>
+
+@code{
+
+    [Inject] INotificationService? NotificationService { get; set; }
+
+    GetText getTextRef;
+
+    INFT NFT = new PostNFT("");
+
+    bool CreatingInfo = false;
+    bool CreatingImage = false;
+    bool MintingNFT = false;
+
+    string Receiver = string.Empty;
+    string NFTTxId = string.Empty;
+    string UserComment = string.Empty;
+
+    private void onTextCreatedHandler((string,string) e)
+    {
+        if (!string.IsNullOrEmpty(e.Item2))
+            NFT.Text = e.Item2;
+    }
+
+    private async Task onAddressInputedHandler(string e)
+    {
+        if (e != null)
+            Receiver = e;
+    }
+
+    private async Task CreateInfoAction()
+    {
+        if (string.IsNullOrEmpty(getTextRef.TextByAI))
+            return;
+        else
+            NFT.Text = getTextRef.TextByAI;
+
+        CreatingInfo = true;
+        await InvokeAsync(StateHasChanged);
+
+        using (var content = new StringContent("{ \"text\": \"" + NFT.Text.Replace("\n", string.Empty).Replace("\"", "\\\"") + "\"}", System.Text.Encoding.UTF8, "application/json"))
+        {
+            HttpResponseMessage result = await Http.PostAsync("/api/AIGetNFTData", content);
+            if (result.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                var returnStr = await result.Content.ReadAsStringAsync();
+
+                try
+                {
+                    var returnValue = JsonConvert.DeserializeObject<NewDataForNFTResult>(returnStr);
+                    if (returnValue != null)
+                    {
+                        NFT.Name = returnValue.Name;
+                        NFT.Description = returnValue.Description;
+                        NFT.Tags = returnValue.Tags.Replace(",", string.Empty).Replace(";", string.Empty).Replace("#", string.Empty);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Cannot deserialize NFT Info. " + ex.Message);
+                }
+            }
+        }
+        CreatingInfo = false;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task MintNFT()
+    {
+        MintingNFT = true;
+        await InvokeAsync(StateHasChanged);
+
+        await CreateInfoAction();
+
+        if (!NFT.Tags.Contains("lekce"))
+            NFT.Tags += " lekce";
+        if (!NFT.Tags.Contains("španělština"))
+            NFT.Tags += " španělština";
+        if (!NFT.Tags.Contains("čeština"))
+            NFT.Tags += " čeština";
+
+        if (!string.IsNullOrEmpty(UserComment))
+        {
+            NFT.Text += " \n\n\n\n #### Komentář Studenta:\n\n" + UserComment;
+        }
+
+        var obj = new
+        {
+            receiver = Receiver,
+            text = NFT.Text.Replace("\n", "%0A"),
+            author = NFT.Author,
+            name = NFT.Name,
+            description = NFT.Description,
+            tags = NFT.Tags
+        };
+
+        var cnt = JsonConvert.SerializeObject(obj);
+
+        using (var content = new StringContent(cnt, System.Text.Encoding.UTF8, "application/json"))
+        {
+            HttpResponseMessage result = await Http.PostAsync("/api/MintPostNFT", content);
+            if (result.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                var returnStr = await result.Content.ReadAsStringAsync();
+
+                if (returnStr != null)
+                {
+                    NFTTxId = returnStr;
+                    if (NotificationService != null)
+                        await NotificationService.Success("Lekce uložena.", "Uloženo");
+                }
+            }
+        }
+
+        MintingNFT = false;
+        await InvokeAsync(StateHasChanged);
+    }
+
+}

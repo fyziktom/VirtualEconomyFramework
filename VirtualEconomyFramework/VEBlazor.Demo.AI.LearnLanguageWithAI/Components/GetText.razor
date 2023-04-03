@@ -1,0 +1,113 @@
+﻿@using Newtonsoft.Json
+@using Markdig
+@inject HttpClient Http
+
+<Row Flex="Flex.AlignItems.Center">
+    <Column>
+        <Span>Vyplňte prosím základní info o čem chcete mít lekci španělštiny.</Span>
+    </Column>
+</Row>
+
+<Row Flex="Flex.AlignItems.Center" Margin="Margin.Is3.FromTop">
+    <Column>
+        <Span>Vytvoř prosím lekci o ...</Span>
+    </Column>
+</Row>
+
+<Row Flex="Flex.AlignItems.Center">
+    <Column>
+        <TextEdit Placeholder="pokračujte tím o čem by měla lekce být..." @bind-Text="BaseText" />
+    </Column>
+</Row>
+<Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
+    <Column>
+        <Button Color="Color.Primary" Clicked="@CreateTextAction" Loading="@Creating" Block>Vytvoř lekci pomocí AI</Button>
+    </Column>
+</Row>
+
+<Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
+    <Column>
+        <Heading Size="HeadingSize.Is4">Lekce Španělštiny</Heading>
+    </Column>
+</Row>
+
+<Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
+    <Column>
+        <Span>@((MarkupString)NFTTextMarkuptext)</Span>
+    </Column>
+</Row>
+
+@code {
+    public enum PostLength
+    {
+        Tiny = 100,
+        Short = 250,
+        Medium = 500,
+        Long = 750
+    }
+
+    [Inject] INotificationService? NotificationService { get; set; }
+    [Inject] protected IJSRuntime? JS { get; set; } = null;
+
+    [Parameter] public EventCallback<(string,string)> TextCreated { get; set; }
+
+    [Parameter] public string BaseText { get; set; } = string.Empty;
+
+    private Modal? CreateTextModal;
+
+    public string TextByAI { get; set; } = string.Empty;
+    bool Creating = false;
+    (bool, string) Result = (false, string.Empty);
+    PostLength postLength = PostLength.Medium;
+
+    public string NFTTextMarkuptext => Markdig.Markdown.ToHtml(TextByAI, new MarkdownPipelineBuilder().UseAdvancedExtensions().Build());
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (this.JS is not null)
+        {
+            if (firstRender)
+            {
+                await this.JS.InvokeVoidAsync("veblazor.MermaidInitialize");
+            }
+
+            await this.JS.InvokeVoidAsync("veblazor.MermaidRender");
+        }
+    }
+
+    async Task CreateTextAction()
+    {
+        Creating = true;
+        await InvokeAsync(StateHasChanged);
+
+        if (NotificationService != null)
+            await NotificationService.Info("Vytvářím text...", "AI pracuje");
+
+        var baset = "Vytvoř prosím lekci španělštiny na téma " + BaseText.Replace("\"", "\\\"") + ". Výstup bude Markdown.";
+
+        using (var content = new StringContent("{ \"basetext\": \"" + baset + "\"}", System.Text.Encoding.UTF8, "application/json"))
+        {
+            HttpResponseMessage result = await Http.PostAsync("/api/AIGetText", content);
+            if (result.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                string returnValue = await result.Content.ReadAsStringAsync();
+                if (returnValue != null)
+                    TextByAI = returnValue;
+                
+                await TextCreated.InvokeAsync((BaseText, TextByAI));
+            }
+        }
+
+        if (NotificationService != null)
+        {
+            if (!string.IsNullOrEmpty(TextByAI))
+                await NotificationService.Success("Text byl vytvořen.", "Úspěch");
+            else
+                await NotificationService.Warning(Result.Item2, "Nemůžu vytvořit text.");
+        }
+
+        Creating = false;
+        await InvokeAsync(StateHasChanged);
+    }
+}

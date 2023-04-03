@@ -170,7 +170,7 @@ namespace VEDriversLiteConsoleAppExamples
         }
         private static async Task<bool> InitAccount(string password, string ekey, string addr)
         {
-            return await account.LoadAccount(password, ekey, addr, withoutNFTs:true); // put here your password, encrypted key and address
+            return await account.LoadAccount(password, ekey, addr, withoutNFTs:false); // put here your password, encrypted key and address
         }
 
         private static async Task<bool> LoadAccountFromVENFTBackup(string password, string filename)
@@ -180,7 +180,7 @@ namespace VEDriversLiteConsoleAppExamples
 
         private static async Task<bool> InitAccount(string password)
         {
-            return await account.LoadAccount(password, withoutNFTs:true); // put here your password
+            return await account.LoadAccount(password, withoutNFTs:false); // put here your password
         }
 
         private static async Task LoadAccountDetails()

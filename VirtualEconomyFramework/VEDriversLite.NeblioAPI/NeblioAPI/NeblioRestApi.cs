@@ -4467,7 +4467,18 @@ namespace VEDriversLite.NeblioAPI
         /// <returns>Object containing the JSON response from the Neblio node.</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<RpcResponse> RpcAsync(RpcRequest body, System.Threading.CancellationToken cancellationToken);
-    
+
+        /// <summary>Send a JSON-RPC call to a localhost neblio-Qt or nebliod node</summary>
+        /// <returns>Object containing the JSON response from the Neblio node.</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<RpcResponse> RpcIntAsync(RpcAdvancedRequest body);
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>Send a JSON-RPC call to a localhost neblio-Qt or nebliod node</summary>
+        /// <returns>Object containing the JSON response from the Neblio node.</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<RpcResponse> RpcIntAsync(RpcAdvancedRequest body, System.Threading.CancellationToken cancellationToken);
+
     }
     
     [System.CodeDom.Compiler.GeneratedCode("NSwag", "13.10.2.0 (NJsonSchema v10.3.4.0 (Newtonsoft.Json v11.0.0.0))")]
@@ -4530,7 +4541,8 @@ namespace VEDriversLite.NeblioAPI
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    var content_ = new System.Net.Http.StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(body, _settings.Value));
+                    var cnt = Newtonsoft.Json.JsonConvert.SerializeObject(body, _settings.Value);
+                    var content_ = new System.Net.Http.StringContent(cnt);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("POST");
@@ -4591,7 +4603,96 @@ namespace VEDriversLite.NeblioAPI
                     client_.Dispose();
             }
         }
-    
+
+        /// <summary>Send a JSON-RPC call to a localhost neblio-Qt or nebliod node</summary>
+        /// <returns>Object containing the JSON response from the Neblio node.</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        public System.Threading.Tasks.Task<RpcResponse> RpcIntAsync(RpcAdvancedRequest body)
+        {
+            return RpcIntAsync(body, System.Threading.CancellationToken.None);
+        }
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>Send a JSON-RPC call to a localhost neblio-Qt or nebliod node</summary>
+        /// <returns>Object containing the JSON response from the Neblio node.</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        public async System.Threading.Tasks.Task<RpcResponse> RpcIntAsync(RpcAdvancedRequest body, System.Threading.CancellationToken cancellationToken)
+        {
+            if (body == null)
+                throw new System.ArgumentNullException("body");
+
+            var urlBuilder_ = new System.Text.StringBuilder();
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/");
+
+            var client_ = _httpClient;
+            var disposeClient_ = false;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    var cnt = Newtonsoft.Json.JsonConvert.SerializeObject(body, _settings.Value);
+                    var content_ = new System.Net.Http.StringContent(cnt);
+                    content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
+                    request_.Content = content_;
+                    request_.Method = new System.Net.Http.HttpMethod("POST");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
+
+                    PrepareRequest(client_, request_, urlBuilder_);
+
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+
+                    PrepareRequest(client_, request_, url_);
+
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    var disposeResponse_ = true;
+                    try
+                    {
+                        var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+
+                        ProcessResponse(client_, response_);
+
+                        var status_ = (int)response_.StatusCode;
+                        if (status_ == 200)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<RpcResponse>(response_, headers_).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            return objectResponse_.Object;
+                        }
+                        else
+                        if (status_ == 401)
+                        {
+                            string responseText_ = (response_.Content == null) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new ApiException("Authentication information is missing or invalid", status_, responseText_, headers_, null);
+                        }
+                        else
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new ApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                        }
+                    }
+                    finally
+                    {
+                        if (disposeResponse_)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+                if (disposeClient_)
+                    client_.Dispose();
+            }
+        }
+
         protected struct ObjectResponseResult<T>
         {
             public ObjectResponseResult(T responseObject, string responseText)
@@ -5565,7 +5666,38 @@ namespace VEDriversLite.NeblioAPI
     
     
     }
-    
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.4.0 (Newtonsoft.Json v11.0.0.0)")]
+    public partial class RpcAdvancedRequest
+    {
+        /// <summary>JSON-RPC version</summary>
+        [Newtonsoft.Json.JsonProperty("jsonrpc", Required = Newtonsoft.Json.Required.Always)]
+        public string Jsonrpc { get; set; } = "1.0";
+
+        /// <summary>Identifier of RCP caller</summary>
+        [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.Always)]
+        public string Id { get; set; } = "neblio-apis";
+
+        /// <summary>Name of the Neblio RPC method to call</summary>
+        [Newtonsoft.Json.JsonProperty("method", Required = Newtonsoft.Json.Required.Always)]
+        public string Method { get; set; }
+
+        /// <summary>Array of string params that should be passed to the RPC method.</summary>
+        [Newtonsoft.Json.JsonProperty("params", Required = Newtonsoft.Json.Required.Always)]
+        public System.Collections.Generic.ICollection<object> Params { get; set; } = new System.Collections.ObjectModel.Collection<object>();
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties = new System.Collections.Generic.Dictionary<string, object>();
+
+        [Newtonsoft.Json.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties; }
+            set { _additionalProperties = value; }
+        }
+
+
+    }
+
     /// <summary>Object containing the JSON response from the Neblio node.</summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.4.0 (Newtonsoft.Json v11.0.0.0)")]
     public partial class RpcResponse 
