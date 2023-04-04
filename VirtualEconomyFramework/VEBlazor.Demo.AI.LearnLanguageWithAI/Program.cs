@@ -38,8 +38,8 @@ builder.Services
     .AddBootstrapProviders()
     .AddFontAwesomeIcons();
 
-var baseadd = "https://localhost:7161/";
-//var baseadd = "https://learnlanguagewithai.azurewebsites.net";
+//var baseadd = "https://localhost:7161/";
+var baseadd = "https://learnlanguagewithai.azurewebsites.net";
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(baseadd) });
 

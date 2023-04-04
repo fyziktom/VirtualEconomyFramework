@@ -8,90 +8,80 @@
 @inject NavigationManager Navigator
 @inherits NFTComponentBase
 
-@page "/"
+@page "/de2es"
 
-<PageTitle>Učte se jazyk s AI</PageTitle>
-
-
-<Row Flex="Flex.JustifyContent.Center" Margin="Margin.Is2.FromTop">
+<PageTitle>Sprache mit AI lernen</PageTitle>
+<Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
     <Column>
-        <Heading Size="HeadingSize.Is3">Naučte se Španělsky s AI zdarma.</Heading>
+        <Span>Lerne kostenlos Spanisch mit AI.</Span>
+    </Column>
+</Row>
+<Row Flex="Flex.JustifyContent.Center">
+    <Column>
+        <Heading Size="HeadingSize.Is3">ChatGPT erstellt die Spanisch-Lektion für dich.</Heading>
     </Column>
 </Row>
 <Row Flex="Flex.AlignItems.Center">
     <Column>
-        <Span>ChatGPT pro Vás vytvoří krátkou lekci podle vašeho přání.</Span>
+        <Span>Wir würden uns über eine Bewertung der Lektion mit einem kurzen Kommentar freuen. Diese Kommentare werden die Qualität zukünftiger Ergebnisse verbessern.</Span>
     </Column>
 </Row>
-<Row Flex="Flex.AlignItems.Center">
-    <Column>
-        <Span>Budeme rádi za ohodnocení lekce krátkým komentářem. Tyto komentáře zlepší kvalitu budoucích výsledků.</Span>
-    </Column>
-</Row>
-
 <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is3.FromTop">
     <Column>
-        <Heading Size="HeadingSize.Is4">Zadejte prosím základní informace pro lekci</Heading>
+        <Heading Size="HeadingSize.Is4">Bitte gib die grundlegenden Informationen für die Lektion ein.</Heading>
     </Column>
 </Row>
 
 <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
     <Column>
-        <GetText @ref="getTextRef" TextCreated="@onTextCreatedHandler" Language="@Languages.cz2es" />
+        <GetText @ref="getTextRef" TextCreated="@onTextCreatedHandler" Language="@Languages.de2es" />
     </Column>
 </Row>
-
 <Divider />
-
 <Row Flex="Flex.AlignItems.Center">
     <Column>
         <Field>
-            <FieldLabel>Volitelné: Komentář k lekci</FieldLabel>
-            <MemoEdit Rows="3" Placeholder="Zde můžete přidat krátký komentář" MaxLength="160" @bind-Text="UserComment" />
-            <FieldHelp>Vyplňte prosím svůj komentář k lekci.</FieldHelp>
-        </Field>
-     </Column>
-</Row>
-
-<Row Flex="Flex.AlignItems.Center" Margin="Margin.Is1.FromTop">
-    <Column>
-        <Field>
-            <FieldLabel>Autor:</FieldLabel>
-            <TextEdit @bind-Text="NFT.Author"  Placeholder="Jméno nebo přezdívka"/>
-            <FieldHelp>Volitelné: Vyplňte prosím své jméno či přezdívku.</FieldHelp>
+            <FieldLabel>Optional: Kommentar zur Lektion</FieldLabel>
+            <MemoEdit Rows="3" Placeholder="Hier können Sie einen kurzen Kommentar hinzufügen" MaxLength="160" @bind-Text="UserComment" />
+            <FieldHelp>Bitte füllen Sie Ihren Kommentar zur Lektion aus.</FieldHelp>
         </Field>
     </Column>
 </Row>
-
+<Row Flex="Flex.AlignItems.Center" Margin="Margin.Is1.FromTop">
+    <Column>
+        <Field>
+            <FieldLabel>Optional: Autor:</FieldLabel>
+            <TextEdit @bind-Text="NFT.Author" Placeholder="Name oder Spitzname" />
+            <FieldHelp>Füllen Sie Ihren Namen oder Spitznamen aus.</FieldHelp>
+        </Field>
+    </Column>
+</Row>
 <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
     <Column>
         @if (!string.IsNullOrEmpty(NFT.Text))
         {
-            <Button Color=" Color.Primary" Clicked="@MintNFT" Loading="@MintingNFT" Block>Ulož lekci pro ostatní studenty</Button>
+            <Button Color=" Color.Primary" Clicked="@MintNFT" Loading="@MintingNFT" Block>Lektion für andere Schüler speichern</Button>
         }
         else
         {
-            <Button Color="Color.Primary" Clicked="@MintNFT" Loading="@MintingNFT" Disabled Block>Ulož lekci pro ostatní studenty</Button>
-            <Span>Vyplňte prosím prvně Text, aby bylo možné uložit lekci.</Span>
+            <Button Color="Color.Primary" Clicked="@MintNFT" Loading="@MintingNFT" Disabled Block>Lektion für andere Schüler speichern</Button>
+            <Span>Bitte erstellen Sie die Lektion, bevor Sie die Lektion speichern möchten.</Span>
         }
     </Column>
 </Row>
 
 <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
     <Column>
-        <Button Color="Color.Secondary" Block Type="ButtonType.Link" To="@("/search?txid=" + @NFTTxId + "&index=0")" Target="Target.Blank">Zobrazení lekce</Button>
+        <Button Color="Color.Secondary" Block Type="ButtonType.Link" To="@("/search?txid=" + @NFTTxId + "&index=0")" Target="Target.Blank">Lektion anzeigen</Button>
     </Column>
 </Row>
-
 <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop.Is5.FromBottom">
     <Column>
-        <VEFramework.VEBlazor.Components.Display.CopyButton TextToCopy="@(Navigator.BaseUri.Trim('/') + "/search?txid=" + @NFTTxId + "&index=0")" ButtonText="Zkopíruj odkaz na sdílení NFT" />
+        <VEFramework.VEBlazor.Components.Display.CopyButton TextToCopy="@(Navigator.BaseUri.Trim('/') + "/search?txid=" + @NFTTxId + "&index=0")" ButtonText="Link zur Lektion kopieren" />
     </Column>
 </Row>
 
 @code{
-
-    [Inject] INotificationService? NotificationService { get; set; }
 
     GetText getTextRef;
 
@@ -114,16 +104,16 @@
     private async Task MintNFT()
     {
         await MintingStatus(true);
-        
+
         if (!string.IsNullOrEmpty(UserComment))
-            NFT.Text += " \n\n\n\n #### Komentář Studenta:\n\n" + UserComment;
+            NFT.Text += " \n\n\n\n #### Studentenkommentar:\n\n" + UserComment;
         
         var obj = new
         {
             receiver = Receiver,
             text = NFT.Text.Replace("\n", "%0A"),
             author = NFT.Author,
-            language = Languages.cz2es
+            language = Languages.de2es
         };
 
         var cnt = JsonConvert.SerializeObject(obj);
@@ -138,7 +128,7 @@
                 if (returnStr != null)
                 {
                     NFTTxId = returnStr;
-                    await NotifySuccess("Lekce uložena.", "Uloženo");
+                    await NotifySuccess("Lektion gespeichert.", "Gespeichert");
                 }
             }
         }

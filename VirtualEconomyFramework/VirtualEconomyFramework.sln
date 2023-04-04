@@ -89,7 +89,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AI", "AI", "{5887B472-8067-
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VEBlazor.Demo.AI.MintFreeForAI", "VEBlazor.Demo.AI.MintFreeForAI\VEBlazor.Demo.AI.MintFreeForAI.csproj", "{83EB47AF-E36E-4BDE-ACA0-3B7DD94D7A06}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VEBlazor.Demo.AI.LearnLanguageWithAI", "VEBlazor.Demo.AI.LearnLanguageWithAI\VEBlazor.Demo.AI.LearnLanguageWithAI.csproj", "{CBFF47B3-F1A7-4561-AAB2-38FD95C9BAA2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VEBlazor.Demo.AI.LearnLanguageWithAI", "VEBlazor.Demo.AI.LearnLanguageWithAI\VEBlazor.Demo.AI.LearnLanguageWithAI.csproj", "{CBFF47B3-F1A7-4561-AAB2-38FD95C9BAA2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

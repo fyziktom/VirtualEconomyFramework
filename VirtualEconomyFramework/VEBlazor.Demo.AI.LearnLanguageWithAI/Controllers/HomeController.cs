@@ -83,11 +83,24 @@ namespace VEBlazor.Demo.AI.LearnLanguageWithAI.Controllers
         /// </summary>
         /// <returns>NFTs list</returns>
         [HttpGet]
-        [Route("GetLastLessons")]
-        public async Task<List<INFT>> GetLastLessons()
+        [Route("GetLastLessons/{language}")]
+        public async Task<List<INFT>> GetLastLessons(string language)
         {
             try
             {
+                var lang = Languages.cz2es;
+
+                try
+                {
+                    var l = (Languages)Enum.Parse(typeof(Languages), language);
+                    if (l != null)
+                        lang = l;
+                }
+                catch(Exception ex)
+                {
+                    throw new HttpResponseException((HttpStatusCode)501, $"Wrong language input!");
+                }
+
                 if (MainDataContext.MintedNFTs.Count > 20)
                 {
                     return MainDataContext.MintedNFTs.Values.ToList();
@@ -96,41 +109,24 @@ namespace VEBlazor.Demo.AI.LearnLanguageWithAI.Controllers
                 {
                     if (VEDLDataContext.Accounts.TryGetValue(MainDataContext.MainAccount, out var account))
                     {
-                        var nfts = account.NFTs.Where(n => n.Type == NFTTypes.Post && n.Tags.Contains("lekce") && n.Tags.Contains("čeština") && n.Tags.Contains("španělština")).ToList();
-                        if (nfts != null && nfts.Count > 0)
-                            return nfts;
-                    }
-
-                    return new List<INFT>();
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new HttpResponseException((HttpStatusCode)501, $"Cannot get Lessons!");
-            }
-        }
-
-        /// <summary>
-        /// Get Last lessons of the spain
-        /// </summary>
-        /// <returns>NFTs list</returns>
-        [HttpGet]
-        [Route("GetLastEn2EsLessons")]
-        public async Task<List<INFT>> GetLastEn2EsLessons()
-        {
-            try
-            {
-                if (MainDataContext.MintedNFTs.Count > 20)
-                {
-                    return MainDataContext.MintedNFTs.Values.ToList();
-                }
-                else
-                {
-                    if (VEDLDataContext.Accounts.TryGetValue(MainDataContext.MainAccount, out var account))
-                    {
-                        var nfts = account.NFTs.Where(n => n.Type == NFTTypes.Post && n.Tags.Contains("lesson") && n.Tags.Contains("spanish") && n.Tags.Contains("english")).ToList();
-                        if (nfts != null && nfts.Count > 0)
-                            return nfts;
+                        if (lang == Languages.cz2es)
+                        {
+                            var nfts = account.NFTs.Where(n => n.Type == NFTTypes.Post && (n.Tags.Contains(language) || (n.Tags.Contains("lekce") && n.Tags.Contains("španělština") && n.Tags.Contains("čeština")))).ToList();
+                            if (nfts != null && nfts.Count > 0)
+                                return nfts;
+                        }
+                        else if (lang == Languages.en2es)
+                        {
+                            var nfts = account.NFTs.Where(n => n.Type == NFTTypes.Post && (n.Tags.Contains(language) || (n.Tags.Contains("lesson") && n.Tags.Contains("spanish") && n.Tags.Contains("english")))).ToList();
+                            if (nfts != null && nfts.Count > 0)
+                                return nfts;
+                        }
+                        else
+                        {
+                            var nfts = account.NFTs.Where(n => n.Type == NFTTypes.Post && n.Tags.Contains(language)).ToList();
+                            if (nfts != null && nfts.Count > 0)
+                                return nfts;
+                        }
                     }
 
                     return new List<INFT>();
@@ -169,6 +165,10 @@ namespace VEBlazor.Demo.AI.LearnLanguageWithAI.Controllers
             /// </summary>
             public string author { get; set; } = string.Empty;
             /// <summary>
+            /// selected language
+            /// </summary>
+            public Languages language { get; set; } = Languages.cz2es;
+            /// <summary>
             /// Input NFT Link
             /// </summary>
             public List<NFTDataItem> dataitems { get; set; } = new List<NFTDataItem>();
@@ -183,9 +183,9 @@ namespace VEBlazor.Demo.AI.LearnLanguageWithAI.Controllers
                 var nft = new PostNFT("");
                 nft.Text = data.text.Replace("%0A","\n");
                 nft.Author = data.author;
-                nft.Name = data.name;
-                nft.Tags = data.tags;
-                nft.Description = data.description;
+                //nft.Name = data.name;
+                //nft.Tags = data.tags;
+                //nft.Description = data.description;
 
                 nft.DataItems.Add(new NFTDataItem()
                 {
@@ -194,6 +194,62 @@ namespace VEBlazor.Demo.AI.LearnLanguageWithAI.Controllers
                     Storage = DataItemStorageType.IPFS,
                     Type = DataItemType.Image
                 });
+
+                var tx = nft.Text;
+                if (tx.Length > 500)
+                    tx = tx.Substring(0, 500);
+
+                var txt = await MainDataContext.Assistant.GetNewDataForNFT(tx);
+                if (txt.Item1)
+                {
+                    nft.Name = txt.Item2.Name;
+                    nft.Tags = txt.Item2.Tags.Replace("#", string.Empty);
+                    nft.Description = txt.Item2.Description;
+                }
+
+                var lang = Enum.GetName(typeof(Languages), data.language);
+                if (!nft.Tags.Contains(lang))
+                    nft.Tags += $" {lang}";
+
+                if (data.language == Languages.cz2es)
+                {
+                    if (!nft.Tags.Contains("lekce"))
+                        nft.Tags += " lekce";
+                    if (!nft.Tags.Contains("španělština"))
+                        nft.Tags += " španělština";
+                    if (!nft.Tags.Contains("čeština"))
+                        nft.Tags += " čeština";
+                }
+                else if (data.language == Languages.en2es)
+                {
+                    if (!nft.Tags.Contains("lesson"))
+                        nft.Tags += " lesson";
+                    if (!nft.Tags.Contains("spanish"))
+                        nft.Tags += " spanish";
+                    if (!nft.Tags.Contains("english"))
+                        nft.Tags += " english";
+                }
+                else if (data.language == Languages.de2es)
+                {
+                    if (!nft.Tags.Contains("lektion"))
+                        nft.Tags += " lektion";
+                    if (!nft.Tags.Contains("spanisch"))
+                        nft.Tags += " spanisch";
+                    if (!nft.Tags.Contains("deutch"))
+                        nft.Tags += " deutch";
+                }
+                else if (data.language == Languages.nl2es)
+                {
+                    if (!nft.Tags.Contains("les"))
+                        nft.Tags += " les";
+                    if (!nft.Tags.Contains("spaans"))
+                        nft.Tags += " spaans";
+                    if (!nft.Tags.Contains("nederlands"))
+                        nft.Tags += " nederlands";
+                }
+
+                nft.Price = 0.5;
+                nft.SellJustCopy = true;
 
                 (bool, string) res = (false, string.Empty);
                 if (VEDLDataContext.Accounts.TryGetValue(MainDataContext.MainAccount, out var account))

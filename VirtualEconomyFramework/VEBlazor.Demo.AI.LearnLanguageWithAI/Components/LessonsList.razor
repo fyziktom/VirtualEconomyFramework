@@ -1,0 +1,55 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@using VEDriversLite.NFT.Dto
+@using VEDriversLite.StorageDriver
+@using Newtonsoft.Json
+@using VEDriversLite.AI.OpenAI.Dto;
+@inject HttpClient Http
+@inherits NFTComponentBase
+
+@if (NFTs.Count > 0)
+{
+    @foreach (var NFT in NFTs)
+    {
+        <Row>
+            <Column>
+                <LessonListCard NFT="@NFT" Language="@Language" />
+            </Column>
+        </Row>
+    }
+}
+
+@code {
+
+    List<PostNFT> NFTs = new List<PostNFT>();
+
+    protected override async Task OnAfterRenderAsync(bool firstLoad)
+    {
+        await LoadNFT();
+    }
+
+    private async Task LoadNFT()
+    {
+        await LoadingStatus(true);
+
+        var result = await Http.GetAsync($"/api/GetLastLessons/{Enum.GetName(typeof(Languages),Language)}");
+        if (result.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            var returnStr = await result.Content.ReadAsStringAsync();
+
+            try
+            {
+                var nfts = JsonConvert.DeserializeObject<List<PostNFT>>(returnStr);
+                if (nfts != null)
+                    NFTs = nfts;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Cannot deserialize the NFT list: " + ex.Message);
+            }
+        }
+
+        await LoadingStatus(false);
+    }
+
+}

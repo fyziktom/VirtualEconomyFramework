@@ -6,6 +6,7 @@
 @using VEDriversLite.AI.OpenAI.Dto;
 @inject HttpClient Http
 @inject NavigationManager Navigator
+@inherits NFTComponentBase
 
 @page "/search"
 
@@ -24,56 +25,17 @@
     <Column>
         @if (!string.IsNullOrEmpty(NFTTxId))
         {
-            <Button Color=" Color.Primary" Clicked="@LoadNFT" Loading="@LoadingNFT" Block>Načíst Lekci</Button>
+            <Button Color=" Color.Primary" Clicked="@(async () => await LoadNFT(NFTTxId))" Loading="@Loading" Block>Načíst Lekci</Button>
         }
         else
         {
-            <Button Color="Color.Primary" Clicked="@LoadNFT" Loading="@LoadingNFT" Disabled Block>Načíst Lekci</Button>
+            <Button Color="Color.Primary" Clicked="@(async () => await LoadNFT(NFTTxId))" Loading="@Loading" Disabled Block>Načíst Lekci</Button>
             <Span>Vyplňte prosím prvně ID transakce NFT s uloženou lekcí. Teprve poté je možné načíst NFT.</Span>
         }
     </Column>
 </Row>
 
-
-<Card Margin="Margin.Is1.FromTop">
-    <CardBody>
-        <CardTitle Size="3">@NFT.Name</CardTitle>
-        <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is1.FromTop">
-            <Column>
-                <small><b>Autor:</b> @NFT.Author</small>
-            </Column>
-        </Row>
-        <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
-            <Column>
-                <Span><b>Popis:</b></Span>
-            </Column>
-        </Row>
-
-        <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is1.FromTop">
-            <Column>
-                <Span>@NFT.Description</Span>
-            </Column>
-        </Row>
-
-        <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
-            <Column>
-                <Span><b>Tagy:</b></Span>
-            </Column>
-        </Row>
-        <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is1.FromTop">
-            <Column>
-                <VEFramework.VEBlazor.Components.Tags.Tags NFTType="@NFTTypes.Post" TagsList="@NFT.TagsList" />
-            </Column>
-        </Row>
-
-        <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is1.FromTop">
-            <Column>
-                <VEFramework.VEBlazor.Components.NFTs.Common.NFTText Text="@NFT.Text" />
-            </Column>
-        </Row>
-
-    </CardBody>
-</Card>
+<LessonListCard NFT="@NFT" Language="Languages.cz2es" DisplayButtons="false" CutText="false" />
 
 <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is3.FromTop">
     <Column>
@@ -81,17 +43,22 @@
     </Column>
 </Row>
 
+@if (NFT.PriceActive)
+{
+    <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
+        <Column>
+            <Button Color="Color.Secondary" Block Type="ButtonType.Link" To="@("https://apptest.ve-nft.com/buynft?utxo=" + NFT.Utxo + "&index=0")" Target="Target.Blank">@BuyLesson</Button>
+        </Column>
+    </Row>
+}
+
 <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
     <Column>
-        <VEFramework.VEBlazor.Components.Display.CopyButton TextToCopy="@(Navigator.BaseUri + "/search?txid=" + @NFTTxId + "&index=0")" ButtonText="Zkopíruj odkaz na sdílení NFT" />
+        <VEFramework.VEBlazor.Components.Display.CopyButton TextToCopy="@(Navigator.BaseUri + "/search?txid=" + @NFTTxId + "&index=0")" ButtonText="@CopyLessonLink" />
     </Column>
 </Row>
 
 @code{
-
-    INFT NFT = new PostNFT("");
-
-    bool LoadingNFT = false;
 
     [Parameter]
     [SupplyParameterFromQuery(Name = "txid")]
@@ -102,24 +69,37 @@
         if (firstLoad)
         {
             if (!string.IsNullOrEmpty(NFTTxId))
-                await LoadNFT();
+                await LoadNFT(NFTTxId);
         }
     }
 
-    private async Task LoadNFT()
+    public string BuyLesson
     {
-        LoadingNFT = true;
-        await InvokeAsync(StateHasChanged);
-
-        if (!string.IsNullOrEmpty(NFTTxId))
+        get
         {
-            var nft = await NFTFactory.GetNFT(NFTHelpers.TokenId, NFTTxId, 0, 0, true, true, NFTTypes.Post);
-            if (nft != null)
-                NFT = nft;
+            if (NFT.Tags.Contains(Enum.GetName(typeof(Languages), Languages.en2es)))
+                return "Buy Lesson";
+            else if (NFT.Tags.Contains(Enum.GetName(typeof(Languages), Languages.cz2es)))
+                return "Koupit Lekci";
+            else if (NFT.Tags.Contains(Enum.GetName(typeof(Languages), Languages.de2es)))
+                return "Lektion kaufen";
+            else
+                return "Koupit Lekci";
         }
-
-        LoadingNFT = false;
-        await InvokeAsync(StateHasChanged);
     }
 
+    public string CopyLessonLink
+    {
+        get
+        {
+            if (NFT.Tags.Contains(Enum.GetName(typeof(Languages), Languages.en2es)))
+                return "Copy link to share NFT";
+            else if (NFT.Tags.Contains(Enum.GetName(typeof(Languages), Languages.cz2es)))
+                return "Zkopíruj odkaz na sdílení NFT";
+            else if (NFT.Tags.Contains(Enum.GetName(typeof(Languages), Languages.de2es)))
+                return "Link kopieren, um NFT zu teilen";
+            else
+                return "Zkopíruj odkaz na sdílení NFT";
+        }
+    }
 }

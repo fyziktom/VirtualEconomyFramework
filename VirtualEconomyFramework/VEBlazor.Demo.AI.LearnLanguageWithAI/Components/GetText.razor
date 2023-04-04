@@ -1,68 +1,35 @@
 ﻿@using Newtonsoft.Json
 @using Markdig
 @inject HttpClient Http
+@inherits CommonComponentBase
 
 <Row Flex="Flex.AlignItems.Center">
     <Column>
-        @if (Language.Contains("en2"))
-        {
-            <Span>Please, fill the basic info of what the lesson should be about.</Span>
-        }
-        else
-        {
-            <Span>Vyplňte prosím základní info o čem chcete mít lekci španělštiny.</Span>
-        }
+        <Span>@Intro</Span>
     </Column>
 </Row>
 
 <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is3.FromTop">
     <Column>
-        @if (Language.Contains("en2"))
-        {
-            <Span>Create lesson of spanish about...</Span>
-        }
-        else
-        {
-            <Span>Vytvoř lekci španělštiny o ...</Span>
-        }
+        <Span>@FieldTitle</Span>
     </Column>
 </Row>
 
 <Row Flex="Flex.AlignItems.Center">
     <Column>
-        @if (Language.Contains("en2"))
-        {
-            <TextEdit Placeholder="continue with what the lesson should be about..." @bind-Text="BaseText" />
-        }
-        else
-        {
-            <TextEdit Placeholder="pokračujte tím o čem by měla lekce být..." @bind-Text="BaseText" />
-        }
+        <TextEdit Placeholder="@Hint" @bind-Text="BaseText" />
+        
     </Column>
 </Row>
 <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
     <Column>
-        @if (Language.Contains("en2"))
-        {
-            <Button Color="Color.Primary" Clicked="@CreateTextAction" Loading="@Creating" Block>Create Lesson with AI</Button>
-        }
-        else
-        {
-            <Button Color="Color.Primary" Clicked="@CreateTextAction" Loading="@Creating" Block>Vytvoř lekci pomocí AI</Button>
-        }
+        <Button Color="Color.Primary" Clicked="@CreateTextAction" Loading="@Loading" Block>@ButtonCaptionText</Button>
     </Column>
 </Row>
 
 <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
     <Column>
-        @if (Language.Contains("en2"))
-        {
-        <Heading Size="HeadingSize.Is4">Spanish Lesson</Heading>
-        }
-        else
-        {
-        <Heading Size="HeadingSize.Is4">Lekce Španělštiny</Heading>
-        }
+        <Heading Size="HeadingSize.Is4">@LessonTitle</Heading>
     </Column>
 </Row>
 
@@ -73,6 +40,97 @@
 </Row>
 
     @code {
+
+    public string Intro
+    {
+        get
+        {
+            if (Language == Languages.en2es)
+                return "Please, fill the basic info of what the lesson should be about.";
+            if (Language == Languages.cz2es)
+                return "Vyplňte prosím základní info o čem chcete mít lekci španělštiny.";
+            if (Language == Languages.de2es)
+                return "Bitte füllen Sie die grundlegenden Informationen darüber aus, welche Art von Spanisch-Lektion Sie wünschen möchten.";
+
+            return "Please, fill the basic info of what the lesson should be about.";
+        }
+    }
+
+    public string FieldTitle
+    {
+        get
+        {
+            if (Language == Languages.en2es)
+                return "Create lesson of spanish about...";
+            if (Language == Languages.cz2es)
+                return "Vytvoř lekci španělštiny o ...";
+            if (Language == Languages.de2es)
+                return "Erstelle eine Spanisch-Lektion über ...";
+
+            return "Create lesson of spanish about...";
+        }
+    }
+
+    public string Hint
+    {
+        get
+        {
+            if (Language == Languages.en2es)
+                return "continue with what the lesson should be about...";
+            if (Language == Languages.cz2es)
+                return "pokračujte tím o čem by měla lekce být...";
+            if (Language == Languages.de2es)
+                return "das Thema, das Sie gerne in der Spanisch-Lektion behandelt hätten...";
+
+            return "continue with what the lesson should be about...";
+        }
+    }
+
+    public string ButtonCaption
+    {
+        get
+        {
+            if (Language == Languages.en2es)
+                return "Create Lesson with AI";
+            if (Language == Languages.cz2es)
+                return "Vytvoř lekci pomocí AI";
+            if (Language == Languages.de2es)
+                return "Erstelle eine Lektion mit Hilfe von AI.";
+
+            return "Create Lesson with AI";
+        }
+    }
+
+    public string ButtonCaptionText
+    {
+        get
+        {
+            if (Language == Languages.en2es)
+                return "Create Lesson with AI";
+            if (Language == Languages.cz2es)
+                return "Vytvoř lekci pomocí AI";
+            if (Language == Languages.de2es)
+                return "Erstelle eine Lektion mit Hilfe von AI.";
+
+            return "Create Lesson with AI";
+        }
+    }
+
+    public string LessonTitle
+    {
+        get
+        {
+            if (Language == Languages.en2es)
+                return "Spanish Lesson";
+            if (Language == Languages.cz2es)
+                return "Lekce Španělštiny";
+            if (Language == Languages.de2es)
+                return "Spanisch-Lektion";
+
+            return "Spanish Lesson";
+        }
+    }
+
     public enum PostLength
     {
         Tiny = 100,
@@ -88,12 +146,9 @@
 
     [Parameter] public string BaseText { get; set; } = string.Empty;
 
-    [Parameter] public string Language { get; set; } = "cs2es";
-
     private Modal? CreateTextModal;
 
     public string TextByAI { get; set; } = string.Empty;
-    bool Creating = false;
     (bool, string) Result = (false, string.Empty);
     PostLength postLength = PostLength.Medium;
 
@@ -105,9 +160,7 @@
         if (this.JS is not null)
         {
             if (firstRender)
-            {
                 await this.JS.InvokeVoidAsync("veblazor.MermaidInitialize");
-            }
 
             await this.JS.InvokeVoidAsync("veblazor.MermaidRender");
         }
@@ -115,25 +168,28 @@
 
     async Task CreateTextAction()
     {
-        Creating = true;
-        await InvokeAsync(StateHasChanged);
+        await LoadingStatus(true);
 
         if (NotificationService != null)
         {
-            if (Language.Contains("en2"))
+            if (Language == Languages.en2es)
                 await NotificationService.Info("Creating text...", "AI's working");
+            else if (Language == Languages.de2es)
+                await NotificationService.Info("Erstelle Text...", "AI arbeitet");
             else
                 await NotificationService.Info("Vytvářím text...", "AI pracuje");
         }
 
         var baset = string.Empty;
 
-        if (Language == "en2es")
-            baset = "Create please lesson of spain language on topic " + BaseText.Replace("\"", "\\\"") + ". Output will be Markdown.";
-        else if (Language == "cz2en")
-            baset = "Vytvoř prosím lekci angličtiny na téma " + BaseText.Replace("\"", "\\\"") + ". Výstup bude Markdown.";
-        else
+        if (Language == Languages.en2es)
+            baset = "Create please English to Spanish lesson for learning spanish language on topic " + BaseText.Replace("\"", "\\\"") + ". Please add vocabularies and sentenses in both languages. Output will be Markdown.";
+        else if (Language == Languages.de2es)
+            baset = "Bitte erstellen Sie eine Deutsch-Spanisch-Lektion zum Thema " + BaseText.Replace("\"", "\\\"") + ". Bitte fügen Sie Vokabeln und Sätze in beiden Sprachen hinzu. Die Ausgabe erfolgt in Markdown.";
+        else if (Language == Languages.cz2es)
             baset = "Vytvoř prosím lekci španělštiny na téma " + BaseText.Replace("\"", "\\\"") + ". Výstup bude Markdown.";
+        else
+            baset = "Vytvoř prosím Česko-Španělskou lekci pro výuku španělštiny na téma " + BaseText.Replace("\"", "\\\"") + ". Prosím o slovíčka i věty v obou jazycích. Výstup bude Markdown.";
 
         using (var content = new StringContent("{ \"basetext\": \"" + baset + "\"}", System.Text.Encoding.UTF8, "application/json"))
         {
@@ -150,12 +206,19 @@
 
         if (NotificationService != null)
         {
-            if (!Language.Contains("en2"))
+            if (Language == Languages.cz2es)
             {
                 if (!string.IsNullOrEmpty(TextByAI))
                     await NotificationService.Success("Text byl vytvořen.", "Úspěch");
                 else
                     await NotificationService.Warning(Result.Item2, "Nemůžu vytvořit text.");
+            }
+            else if (Language == Languages.de2es)
+            {
+                if (!string.IsNullOrEmpty(TextByAI))
+                    await NotificationService.Success("Der Text wurde erstellt.", "Erfolg");
+                else
+                    await NotificationService.Warning(Result.Item2, "Der Text kann nicht erstellt werden.");
             }
             else
             {
@@ -167,7 +230,6 @@
 
         }
 
-        Creating = false;
-        await InvokeAsync(StateHasChanged);
+        await LoadingStatus(false);
     }
 }
