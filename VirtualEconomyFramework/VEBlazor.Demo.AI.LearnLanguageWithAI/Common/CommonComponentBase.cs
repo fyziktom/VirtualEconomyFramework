@@ -45,6 +45,9 @@ namespace VEBlazor.Demo.AI.LearnLanguageWithAI.Common
         [Parameter]
         public bool MintingNFT { get; set; } = false;
 
+        public bool Minted { get; set; } = false;
+        public string LastMintedTx { get; set; } = string.Empty;
+
         public async Task MintingStatus(bool loading)
         {
             MintingNFT = loading;

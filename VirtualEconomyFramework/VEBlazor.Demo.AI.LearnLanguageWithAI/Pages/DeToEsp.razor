@@ -3,7 +3,8 @@
 @using VEDriversLite.NFT.Dto
 @using VEDriversLite.StorageDriver
 @using Newtonsoft.Json
-@using VEDriversLite.AI.OpenAI.Dto;
+@using VEDriversLite.AI.OpenAI.Dto
+@inject AppDataService AppDataService
 @inject HttpClient Http
 @inject NavigationManager Navigator
 @inherits NFTComponentBase
@@ -56,9 +57,9 @@
         </Field>
     </Column>
 </Row>
-<Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
+<Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop.Is2.FromBottom">
     <Column>
-        @if (!string.IsNullOrEmpty(NFT.Text))
+        @if (!string.IsNullOrEmpty(NFT.Text) && string.IsNullOrEmpty(NFTTxId))
         {
             <Button Color=" Color.Primary" Clicked="@MintNFT" Loading="@MintingNFT" Block>Lektion für andere Schüler speichern</Button>
         }
@@ -70,16 +71,21 @@
     </Column>
 </Row>
 
-<Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
-    <Column>
-        <Button Color="Color.Secondary" Block Type="ButtonType.Link" To="@("/search?txid=" + @NFTTxId + "&index=0")" Target="Target.Blank">Lektion anzeigen</Button>
-    </Column>
-</Row>
-<Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop.Is5.FromBottom">
-    <Column>
-        <VEFramework.VEBlazor.Components.Display.CopyButton TextToCopy="@(Navigator.BaseUri.Trim('/') + "/search?txid=" + @NFTTxId + "&index=0")" ButtonText="Link zur Lektion kopieren" />
-    </Column>
-</Row>
+@if (Minted)
+{
+    <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
+        <Column>
+            <Button Color="Color.Secondary"   
+        Block
+            Type="ButtonType.Link" To="@("/search?txid=" + LastMintedTx + "&index=0")" Target="Target.Blank">Lektion anzeigen</Button>
+        </Column>
+    </Row>
+    <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop.Is5.FromBottom">
+        <Column>
+            <VEFramework.VEBlazor.Components.Display.CopyButton TextToCopy="@(Navigator.BaseUri.Trim('/') + "/search?txid=" + LastMintedTx + "&index=0")" ButtonText="Link zur Lektion kopieren" />
+        </Column>
+    </Row>
+}
 
 @code{
 
@@ -89,10 +95,28 @@
     string NFTTxId = string.Empty;
     string UserComment = string.Empty;
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var res = await AppDataService.GetAuthor();
+            if (!string.IsNullOrEmpty(res))
+                NFT.Author = res;
+            else
+                NFT.Author = "Anonymer Schüler";
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
     private void onTextCreatedHandler((string,string) e)
     {
         if (!string.IsNullOrEmpty(e.Item2))
+        {
             NFT.Text = e.Item2;
+            NFTTxId = string.Empty;
+            Minted = false;
+            StateHasChanged();
+        }
     }
 
     private async Task onAddressInputedHandler(string e)
@@ -107,7 +131,10 @@
 
         if (!string.IsNullOrEmpty(UserComment))
             NFT.Text += " \n\n\n\n #### Studentenkommentar:\n\n" + UserComment;
-        
+
+        if (!string.IsNullOrEmpty(NFT.Author))
+            await AppDataService.SaveAuthor(NFT.Author);
+
         var obj = new
         {
             receiver = Receiver,
@@ -128,6 +155,8 @@
                 if (returnStr != null)
                 {
                     NFTTxId = returnStr;
+                    LastMintedTx = NFTTxId;
+                    Minted = true;
                     await NotifySuccess("Lektion gespeichert.", "Gespeichert");
                 }
             }

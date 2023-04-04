@@ -3,7 +3,8 @@
 @using VEDriversLite.NFT.Dto
 @using VEDriversLite.StorageDriver
 @using Newtonsoft.Json
-@using VEDriversLite.AI.OpenAI.Dto;
+@using VEDriversLite.AI.OpenAI.Dto
+@inject AppDataService AppDataService
 @inject HttpClient Http
 @inject NavigationManager Navigator
 @inherits NFTComponentBase
@@ -63,31 +64,36 @@
     </Column>
 </Row>
 
-<Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
+<Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop.Is2.FromBottom">
     <Column>
-        @if (!string.IsNullOrEmpty(NFT.Text))
+        @if (!string.IsNullOrEmpty(NFT.Text) && string.IsNullOrEmpty(NFTTxId))
         {
             <Button Color=" Color.Primary" Clicked="@MintNFT" Loading="@MintingNFT" Block>Ulož lekci pro ostatní studenty</Button>
         }
         else
         {
             <Button Color="Color.Primary" Clicked="@MintNFT" Loading="@MintingNFT" Disabled Block>Ulož lekci pro ostatní studenty</Button>
-            <Span>Vyplňte prosím prvně Text, aby bylo možné uložit lekci.</Span>
+            <Span>Vyplňte prosím prvně Text nebo vytvořte nový, aby bylo možné uložit lekci.</Span>
         }
     </Column>
 </Row>
 
-<Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
-    <Column>
-        <Button Color="Color.Secondary" Block Type="ButtonType.Link" To="@("/search?txid=" + @NFTTxId + "&index=0")" Target="Target.Blank">Zobrazení lekce</Button>
-    </Column>
-</Row>
+@if (Minted)
+{
+    <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
+        <Column>
+            <Button Color="Color.Secondary"   
+        Block
+            Type="ButtonType.Link" To="@("/search?txid=" + @NFTTxId + "&index=0")" Target="Target.Blank">Zobrazení lekce</Button>
+        </Column>
+    </Row>
 
-<Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop.Is5.FromBottom">
-    <Column>
-        <VEFramework.VEBlazor.Components.Display.CopyButton TextToCopy="@(Navigator.BaseUri.Trim('/') + "/search?txid=" + @NFTTxId + "&index=0")" ButtonText="Zkopíruj odkaz na sdílení NFT" />
-    </Column>
-</Row>
+    <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop.Is5.FromBottom">
+        <Column>
+            <VEFramework.VEBlazor.Components.Display.CopyButton TextToCopy="@(Navigator.BaseUri.Trim('/') + "/search?txid=" + @NFTTxId + "&index=0")" ButtonText="Zkopíruj odkaz na sdílení NFT" />
+        </Column>
+    </Row>
+}
 
 @code{
 
@@ -99,10 +105,28 @@
     string NFTTxId = string.Empty;
     string UserComment = string.Empty;
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var res = await AppDataService.GetAuthor();
+            if (!string.IsNullOrEmpty(res))
+                NFT.Author = res;
+            else
+                NFT.Author = "Anonymní student";
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
     private void onTextCreatedHandler((string,string) e)
     {
         if (!string.IsNullOrEmpty(e.Item2))
+        {
             NFT.Text = e.Item2;
+            NFTTxId = string.Empty;
+            Minted = false;
+            StateHasChanged();
+        }
     }
 
     private async Task onAddressInputedHandler(string e)
@@ -114,10 +138,13 @@
     private async Task MintNFT()
     {
         await MintingStatus(true);
-        
+
         if (!string.IsNullOrEmpty(UserComment))
             NFT.Text += " \n\n\n\n #### Komentář Studenta:\n\n" + UserComment;
-        
+
+        if (!string.IsNullOrEmpty(NFT.Author))
+            await AppDataService.SaveAuthor(NFT.Author);
+
         var obj = new
         {
             receiver = Receiver,
@@ -138,6 +165,8 @@
                 if (returnStr != null)
                 {
                     NFTTxId = returnStr;
+                    Minted = true;
+                    LastMintedTx = NFTTxId;
                     await NotifySuccess("Lekce uložena.", "Uloženo");
                 }
             }

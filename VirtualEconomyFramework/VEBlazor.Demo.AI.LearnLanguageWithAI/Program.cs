@@ -38,15 +38,20 @@ builder.Services
     .AddBootstrapProviders()
     .AddFontAwesomeIcons();
 
-//var baseadd = "https://localhost:7161/";
-var baseadd = "https://learnlanguagewithai.azurewebsites.net";
+#if DEBUG
+    var baseadd = "https://localhost:7161/";
+#else
+    var baseadd = "https://learnlanguagewithai.azurewebsites.net";
+#endif
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(baseadd) });
 
 builder.Services.AddScoped<AppData>();
+builder.Services.AddScoped<AppDataService>();
 builder.Services.AddSingleton<TransactionsService>();
 builder.Services.AddHostedService<VEDriversLiteCore>();
 
+builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddBlazorPanzoomServices();
 builder.Services.AddSwaggerGen();
 
