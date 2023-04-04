@@ -3,38 +3,38 @@
 @inject HttpClient Http
 @inherits CommonComponentBase
 
-<Row Flex="Flex.AlignItems.Center">
-    <Column>
+<Row >
+    <Column Flex="Flex.JustifyContent.Center">
         <Span>@Intro</Span>
     </Column>
 </Row>
 
-<Row Flex="Flex.AlignItems.Center" Margin="Margin.Is3.FromTop">
-    <Column>
+<Row Margin="Margin.Is3.FromTop">
+    <Column Flex="Flex.JustifyContent.Center">
         <Span>@FieldTitle</Span>
     </Column>
 </Row>
 
-<Row Flex="Flex.AlignItems.Center">
-    <Column>
+<Row Margin="Margin.Is2.FromTop">
+    <Column Flex="Flex.JustifyContent.Center">
         <TextEdit Placeholder="@Hint" @bind-Text="BaseText" />
         
     </Column>
 </Row>
-<Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
-    <Column>
+<Row Margin="Margin.Is2.FromTop">
+    <Column Flex="Flex.JustifyContent.Center">
         <Button Color="Color.Primary" Clicked="@CreateTextAction" Loading="@Loading" Block>@ButtonCaptionText</Button>
     </Column>
 </Row>
 
-<Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
-    <Column>
+<Row Margin="Margin.Is2.FromTop">
+    <Column Flex="Flex.JustifyContent.Center">
         <Heading Size="HeadingSize.Is4">@LessonTitle</Heading>
     </Column>
 </Row>
 
-<Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
-    <Column>
+<Row Margin="Margin.Is2.FromTop">
+    <Column Flex="Flex.JustifyContent.Center">
         <Span>@((MarkupString)NFTTextMarkuptext)</Span>
     </Column>
 </Row>

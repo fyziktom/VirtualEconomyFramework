@@ -14,23 +14,23 @@
 <PageTitle>Learn language with AI</PageTitle>
 
 
-<Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
-    <Column>
+<Row Margin="Margin.Is2.FromTop">
+    <Column Flex="Flex.JustifyContent.Center">
         <Span>Learn Spanish with AI for free.</Span>
     </Column>
 </Row>
-<Row Flex="Flex.JustifyContent.Center">
-    <Column>
+<Row Margin="Margin.Is2.FromTop">
+    <Column Flex="Flex.JustifyContent.Center">
         <Heading Size="HeadingSize.Is3">ChatGPT Will create the Spanish lesson for you.</Heading>
     </Column>
 </Row>
-<Row Flex="Flex.AlignItems.Center">
-    <Column>
+<Row Margin="Margin.Is2.FromTop">
+    <Column Flex="Flex.JustifyContent.Center">
         <Span>We will be happy for the evaluation of the lesson with a short comment. These comments will improve the quality of future results.</Span>
     </Column>
 </Row>
-<Row Flex="Flex.AlignItems.Center" Margin="Margin.Is3.FromTop">
-    <Column>
+<Row Margin="Margin.Is3.FromTop">
+    <Column Flex="Flex.JustifyContent.Center">
         <Heading Size="HeadingSize.Is4">Please enter the basic information for the lesson</Heading>
     </Column>
 </Row>
@@ -39,7 +39,9 @@
         <GetText @ref="getTextRef" TextCreated="@onTextCreatedHandler" Language="@Languages.en2es" />
     </Column>
 </Row>
+
 <Divider />
+
 <Row Flex="Flex.AlignItems.Center">
     <Column>
         <Field>

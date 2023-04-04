@@ -13,30 +13,37 @@
 {
     <Card Margin="Margin.Is1.FromTop">
         <CardBody Width="Width.Is100">
-            <CardTitle Size=" 3">@NFT.Name</CardTitle>
-            <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is1.FromTop">
+            @if (!string.IsNullOrEmpty(NFT.Name))
+            {
+                <CardTitle Size=" 3">@NFT.Name</CardTitle>
+            }
+            <Row Margin="Margin.Is1.FromTop">
                 <Column>
                     <small><b>@Author</b> @NFT.Author</small>
                 </Column>
             </Row>
-            <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
-                <Column>
+
+            @if (!string.IsNullOrEmpty(NFT.Description))
+            {
+                <Row Margin="Margin.Is2.FromTop">
+                    <Column>
                     <CardText><b>@Description</b></CardText>
                 </Column>
-            </Row>
+                </Row>
 
-            <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is1.FromTop">
-                <Column>
-                    <Small>@NFT.Description</Small>
-                </Column>
-            </Row>
+                <Row Margin="Margin.Is1.FromTop">
+                    <Column>
+                        <Small>@NFT.Description</Small>
+                    </Column>
+                </Row>
+            }
 
-            <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
+            <Row Margin="Margin.Is2.FromTop">
                 <Column>
                     <CardText><b>@Tags</b></CardText>
                 </Column>
             </Row>
-            <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is1.FromTop">
+            <Row Margin="Margin.Is1.FromTop">
                 <Column>
                     <VEFramework.VEBlazor.Components.Tags.Tags NFTType="@NFTTypes.Post" TagsList="@NFT.TagsList" />
                 </Column>
@@ -44,7 +51,7 @@
 
             <Divider />
 
-            <Row Flex="  Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
+            <Row Margin="Margin.Is2.FromTop">
                 <Column>
                     @if (CutText && NFT.Text.Length > 160)
                     {

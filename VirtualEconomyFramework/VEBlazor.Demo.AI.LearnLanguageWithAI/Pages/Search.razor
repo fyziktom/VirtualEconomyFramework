@@ -12,7 +12,7 @@
 
 <PageTitle>Hledat</PageTitle>
 
-<Row Flex="Flex.AlignItems.Center" Margin="Margin.Is1.FromTop">
+<Row Margin="Margin.Is1.FromTop">
     <Column>
         <Field>
             <FieldLabel>Vyplňte prosím Id tranansakce NFT s uloženou lekcí:</FieldLabel>
@@ -37,23 +37,25 @@
 
 <LessonListCard NFT="@NFT" Language="Languages.cz2es" DisplayButtons="false" CutText="false" />
 
-<Row Flex="Flex.AlignItems.Center" Margin="Margin.Is3.FromTop">
-    <Column>
+<Row Margin="Margin.Is3.FromTop">
+    <Column Flex="Flex.JustifyContent.Center">
         <b>NFT Id Transakce:</b> <Link To="@("https://explorer.nebl.io/tx/" + @NFTTxId)" Target="Target.Blank">@NFTTxId</Link>
     </Column>
 </Row>
 
 @if (NFT.PriceActive)
 {
-    <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
-        <Column>
-            <Button Color="Color.Secondary" Block Type="ButtonType.Link" To="@("https://apptest.ve-nft.com/buynft?utxo=" + NFT.Utxo + "&index=0")" Target="Target.Blank">@BuyLesson</Button>
+    <Row Margin="Margin.Is2.FromTop">
+        <Column Flex="Flex.JustifyContent.Center">
+            <Button Color="Color.Secondary"    
+    Block
+            Type="ButtonType.Link" To="@("https://apptest.ve-nft.com/buynft?utxo=" + NFT.Utxo + "&index=0")" Target="Target.Blank">@BuyLesson</Button>
         </Column>
     </Row>
 }
 
-<Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
-    <Column>
+<Row Margin="Margin.Is2.FromTop.Is2.FromBottom">
+    <Column Flex="Flex.JustifyContent.Center">
         <VEFramework.VEBlazor.Components.Display.CopyButton TextToCopy="@(Navigator.BaseUri + "/search?txid=" + @NFTTxId + "&index=0")" ButtonText="@CopyLessonLink" />
     </Column>
 </Row>

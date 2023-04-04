@@ -14,29 +14,29 @@
 <PageTitle>Učte se jazyk s AI</PageTitle>
 
 
-<Row Flex="Flex.JustifyContent.Center" Margin="Margin.Is2.FromTop">
-    <Column>
+<Row Margin="Margin.Is2.FromTop">
+    <Column Flex="Flex.JustifyContent.Center">
         <Heading Size="HeadingSize.Is3">Naučte se Španělsky s AI zdarma.</Heading>
     </Column>
 </Row>
-<Row Flex="Flex.AlignItems.Center">
-    <Column>
+<Row Margin="Margin.Is1.FromTop">
+    <Column Flex="Flex.JustifyContent.Center">
         <Span>ChatGPT pro Vás vytvoří krátkou lekci podle vašeho přání.</Span>
     </Column>
 </Row>
-<Row Flex="Flex.AlignItems.Center">
-    <Column>
+<Row Margin="Margin.Is1.FromTop">
+    <Column Flex="Flex.JustifyContent.Center">
         <Span>Budeme rádi za ohodnocení lekce krátkým komentářem. Tyto komentáře zlepší kvalitu budoucích výsledků.</Span>
     </Column>
 </Row>
 
-<Row Flex="Flex.AlignItems.Center" Margin="Margin.Is3.FromTop">
-    <Column>
+<Row Flex="Flex.JustifyContent.Center" Margin="Margin.Is3.FromTop">
+    <Column Flex="Flex.JustifyContent.Center">
         <Heading Size="HeadingSize.Is4">Zadejte prosím základní informace pro lekci</Heading>
     </Column>
 </Row>
 
-<Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
+<Row Flex="Flex.JustifyContent.Center" Margin="Margin.Is2.FromTop">
     <Column>
         <GetText @ref="getTextRef" TextCreated="@onTextCreatedHandler" Language="@Languages.cz2es" />
     </Column>
