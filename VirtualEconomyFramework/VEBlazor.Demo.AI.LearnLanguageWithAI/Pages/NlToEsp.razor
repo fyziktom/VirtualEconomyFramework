@@ -9,29 +9,28 @@
 @inject NavigationManager Navigator
 @inherits NFTComponentBase
 
-@page "/en2es"
+@page "/nl2es"
 
-<PageTitle>Learn language with AI</PageTitle>
-
+<PageTitle>Leer taal met AI</PageTitle>
 
 <Row Margin="Margin.Is2.FromTop">
     <Column Flex="Flex.JustifyContent.Center">
-        <Span>Learn Spanish with AI for free.</Span>
+        <Span>Leer gratis Spaans met AI.</Span>
     </Column>
 </Row>
 <Row Margin="Margin.Is2.FromTop">
     <Column Flex="Flex.JustifyContent.Center">
-        <Heading Size="HeadingSize.Is3">ChatGPT Will create the Spanish lesson for you.</Heading>
+        <Heading Size="HeadingSize.Is3">ChatGPT maakt de Spaanse les voor u.</Heading>
     </Column>
 </Row>
 <Row Margin="Margin.Is2.FromTop">
     <Column Flex="Flex.JustifyContent.Center">
-        <Span>We will be happy for the evaluation of the lesson with a short comment. These comments will improve the quality of future results.</Span>
+        <Span>We stellen het op prijs als u de les evalueert met een korte opmerking. Deze opmerkingen zullen de kwaliteit van toekomstige resultaten verbeteren.</Span>
     </Column>
 </Row>
 <Row Margin="Margin.Is3.FromTop">
     <Column Flex="Flex.JustifyContent.Center">
-        <Heading Size="HeadingSize.Is4">Please enter the basic information for the lesson</Heading>
+        <Heading Size="HeadingSize.Is4">Vul de basisinformatie voor de les in</Heading>
     </Column>
 </Row>
 <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
@@ -45,33 +44,31 @@
 <Row Flex="Flex.AlignItems.Center">
     <Column>
         <Field>
-            <FieldLabel>Optional: Comment on the lesson</FieldLabel>
-            <MemoEdit Rows="3" Placeholder="Here you can add a short comment" MaxLength="160" @bind-Text="UserComment" />
-            <FieldHelp>Please fill in your comment on the lesson.</FieldHelp>
+            <FieldLabel>Optioneel: Opmerking over de les</FieldLabel>
+            <MemoEdit Rows="3" Placeholder="Hier kunt u een korte opmerking toevoegen" MaxLength="160" @bind-Text="UserComment" />
+            <FieldHelp>Vul alstublieft uw opmerking over de les in.</FieldHelp>
         </Field>
     </Column>
 </Row>
-
 <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is1.FromTop">
     <Column>
         <Field>
-            <FieldLabel>Optional: Author:</FieldLabel>
-            <TextEdit @bind-Text="NFT.Author"  Placeholder="Name or Nickname"/>
-            <FieldHelp>Fill your name or nickname</FieldHelp>
+            <FieldLabel>Optioneel: Auteur:</FieldLabel>
+            <TextEdit @bind-Text="NFT.Author" Placeholder="Naam of bijnaam" />
+            <FieldHelp>Vul uw naam of bijnaam in</FieldHelp>
         </Field>
     </Column>
 </Row>
-
 <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop.Is2.FromBottom">
     <Column>
         @if (!string.IsNullOrEmpty(NFT.Text) && string.IsNullOrEmpty(NFTTxId))
         {
-            <Button Color=" Color.Primary" Clicked="@MintNFT" Loading="@MintingNFT" Block>Save lesson for other students</Button>
+            <Button Color=" Color.Primary" Clicked="@MintNFT" Loading="@MintingNFT" Block>Les opslaan voor andere studenten</Button>
         }
         else
         {
-            <Button Color="Color.Primary" Clicked="@MintNFT" Loading="@MintingNFT" Disabled Block>Save lesson for other students</Button>
-            <Span>Please create the lesson before you want to save the lesson.</Span>
+            <Button Color="Color.Primary" Clicked="@MintNFT" Loading="@MintingNFT" Disabled Block>Les opslaan voor andere studenten</Button>
+            <Span>Maak alstublieft de les voordat u de les wilt opslaan.</Span>
         }
     </Column>
 </Row>
@@ -80,13 +77,13 @@
 {
     <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
         <Column>
-            <Button Color="Color.Secondary" Block Type="ButtonType.Link" To="@("/search?txid=" + @NFTTxId + "&index=0")" Target="Target.Blank">Show lesson</Button>
+            <Button Color="Color.Secondary" Block Type="ButtonType.Link" To="@("/search?txid=" + @NFTTxId + "&index=0")" Target="Target.Blank">Les weergeven</Button>
         </Column>
     </Row>
 
     <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop.Is5.FromBottom">
         <Column>
-            <VEFramework.VEBlazor.Components.Display.CopyButton TextToCopy="@(Navigator.BaseUri.Trim('/') + "/search?txid=" + @NFTTxId + "&index=0")" ButtonText="Copy link to the lesson" />
+            <VEFramework.VEBlazor.Components.Display.CopyButton TextToCopy="@(Navigator.BaseUri.Trim('/') + "/search?txid=" + @NFTTxId + "&index=0")" ButtonText="Kopieer link naar de les" />
         </Column>
     </Row>
 }
@@ -103,7 +100,7 @@
     {
         if (firstRender)
         {
-            Language = Languages.en2es;
+            Language = Languages.nl2es;
             var res = await AppDataService.GetAuthor();
             if (!string.IsNullOrEmpty(res))
                 NFT.Author = res;
@@ -135,7 +132,7 @@
         await MintingStatus(true);
 
         if (!string.IsNullOrEmpty(UserComment))
-            NFT.Text += " \n\n\n\n #### Student Comment:\n\n" + UserComment;
+            NFT.Text += " \n\n\n\n #### Studentenopmerking:\n\n" + UserComment;
 
         if (!string.IsNullOrEmpty(NFT.Author))
             await AppDataService.SaveAuthor(NFT.Author);

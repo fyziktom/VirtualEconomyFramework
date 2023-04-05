@@ -17,7 +17,7 @@
 
 <Row Margin="Margin.Is2.FromTop">
     <Column Flex="Flex.JustifyContent.Center">
-        <TextEdit Placeholder="@Hint" @bind-Text="BaseText" />
+        <TextEdit Placeholder="@Hint" @bind-Text="BaseText" MaxLength="250" />
         
     </Column>
 </Row>
@@ -51,6 +51,8 @@
                 return "Vyplňte prosím základní info o čem chcete mít lekci španělštiny.";
             if (Language == Languages.de2es)
                 return "Bitte füllen Sie die grundlegenden Informationen darüber aus, welche Art von Spanisch-Lektion Sie wünschen möchten.";
+            if (Language == Languages.nl2es)
+                return "Vul alstublieft de basisinformatie in van waar de les over zou moeten gaan.";
 
             return "Please, fill the basic info of what the lesson should be about.";
         }
@@ -66,6 +68,8 @@
                 return "Vytvoř lekci španělštiny o ...";
             if (Language == Languages.de2es)
                 return "Erstelle eine Spanisch-Lektion über ...";
+            if (Language == Languages.nl2es)
+                return "Maak les Spaans over...";
 
             return "Create lesson of spanish about...";
         }
@@ -81,6 +85,8 @@
                 return "pokračujte tím o čem by měla lekce být...";
             if (Language == Languages.de2es)
                 return "das Thema, das Sie gerne in der Spanisch-Lektion behandelt hätten...";
+            if (Language == Languages.nl2es)
+                return "ga verder met waar de les over moet gaan";
 
             return "continue with what the lesson should be about...";
         }
@@ -96,6 +102,8 @@
                 return "Vytvoř lekci pomocí AI";
             if (Language == Languages.de2es)
                 return "Erstelle eine Lektion mit Hilfe von AI.";
+            if (Language == Languages.nl2es)
+                return "Maak een les met AI";
 
             return "Create Lesson with AI";
         }
@@ -111,6 +119,8 @@
                 return "Vytvoř lekci pomocí AI";
             if (Language == Languages.de2es)
                 return "Erstelle eine Lektion mit Hilfe von AI.";
+            if (Language == Languages.nl2es)
+                return "Maak een les met AI";
 
             return "Create Lesson with AI";
         }
@@ -126,6 +136,8 @@
                 return "Lekce Španělštiny";
             if (Language == Languages.de2es)
                 return "Spanisch-Lektion";
+            if (Language == Languages.nl2es)
+                return "Spaanse les";
 
             return "Spanish Lesson";
         }
@@ -176,16 +188,20 @@
                 await NotificationService.Info("Creating text...", "AI's working");
             else if (Language == Languages.de2es)
                 await NotificationService.Info("Erstelle Text...", "AI arbeitet");
+            else if (Language == Languages.nl2es)
+                await NotificationService.Info("Tekst maken...", "AI werkt");
             else
                 await NotificationService.Info("Vytvářím text...", "AI pracuje");
         }
 
-        var baset = "Vytvoř Česko-Španělskou lekci pro výuku španělštiny na téma " + BaseText.Replace("\"", "\\\"") + ". Prosím o vzorová slovíčka i věty v obou jazycích. Výstup bude Markdown."; ;
+        var baset = "Vytvoř Česko-Španělskou lekci pro výuku španělštiny na téma " + BaseText.Replace("\"", "\\\"") + ". Prosím o vzorová slovíčka i věty v obou jazycích. Přidej i cvičení s doplňováním slov. Výstup bude Markdown."; ;
 
         if (Language == Languages.en2es)
-            baset = "Create English to Spanish lesson for learning spanish language on topic " + BaseText.Replace("\"", "\\\"") + ". Please add example vocabularies and sentenses in both languages. Output will be Markdown.";
+            baset = "Create English to Spanish lesson for learning spanish language on topic " + BaseText.Replace("\"", "\\\"") + ". Please add example vocabularies and sentenses in both languages. Add excercise with missing words what students can fill up. Output will be Markdown.";
         else if (Language == Languages.de2es)
-            baset = "Bitte erstellen Sie eine Deutsch-Spanisch-Lektion zum Thema " + BaseText.Replace("\"", "\\\"") + ". Bitte fügen Sie Vokabeln und Sätze in beiden Sprachen hinzu. Die Ausgabe erfolgt in Markdown.";
+            baset = "Bitte erstellen Sie eine Deutsch-Spanisch-Lektion zum Thema " + BaseText.Replace("\"", "\\\"") + ". Bitte fügen Sie Vokabeln und Sätze in beiden Sprachen hinzu. Fügen Sie eine Übung mit fehlenden Wörtern hinzu, die die Schüler ergänzen können. Die Ausgabe erfolgt in Markdown.";
+        else if (Language == Languages.nl2es)
+            baset = "Maak een les Nederlands naar Spaans om de Spaanse taal over het onderwerp te leren " + BaseText.Replace("\"", "\\\"") + ". Voeg voorbeeldwoordenlijsten en zinnen in beide talen toe. Voeg oefening met ontbrekende woorden toe die leerlingen kunnen invullen. Uitvoer zal Markdown zijn.";
         
         using (var content = new StringContent("{ \"basetext\": \"" + baset + "\"}", System.Text.Encoding.UTF8, "application/json"))
         {
@@ -215,6 +231,13 @@
                     await NotificationService.Success("Der Text wurde erstellt.", "Erfolg");
                 else
                     await NotificationService.Warning(Result.Item2, "Der Text kann nicht erstellt werden.");
+            }
+            else if (Language == Languages.nl2es)
+            {
+                if (!string.IsNullOrEmpty(TextByAI))
+                    await NotificationService.Success("De tekst is aangemaakt.", "Succes");
+                else
+                    await NotificationService.Warning(Result.Item2, "Kan de tekst niet maken.");
             }
             else
             {

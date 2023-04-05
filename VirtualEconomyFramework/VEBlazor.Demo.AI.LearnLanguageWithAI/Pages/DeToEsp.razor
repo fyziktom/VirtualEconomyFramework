@@ -36,7 +36,7 @@
 
 <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
     <Column>
-        <GetText @ref="getTextRef" TextCreated="@onTextCreatedHandler" Language="@Languages.de2es" />
+        <GetText @ref="getTextRef" TextCreated="@onTextCreatedHandler" Language="@Language" />
     </Column>
 </Row>
 
@@ -102,6 +102,7 @@
     {
         if (firstRender)
         {
+            Language = Languages.de2es;
             var res = await AppDataService.GetAuthor();
             if (!string.IsNullOrEmpty(res))
                 NFT.Author = res;
@@ -143,7 +144,7 @@
             receiver = Receiver,
             text = NFT.Text.Replace("\n", "%0A"),
             author = NFT.Author,
-            language = Languages.de2es
+            language = Language
         };
 
         var cnt = JsonConvert.SerializeObject(obj);

@@ -183,9 +183,6 @@ namespace VEBlazor.Demo.AI.LearnLanguageWithAI.Controllers
                 var nft = new PostNFT("");
                 nft.Text = data.text.Replace("%0A","\n");
                 nft.Author = data.author;
-                //nft.Name = data.name;
-                //nft.Tags = data.tags;
-                //nft.Description = data.description;
 
                 nft.DataItems.Add(new NFTDataItem()
                 {
@@ -296,7 +293,7 @@ namespace VEBlazor.Demo.AI.LearnLanguageWithAI.Controllers
                     throw new HttpResponseException((HttpStatusCode)501, $"Assistant is out of the service. Try later please.");
 
                 (bool, string) res = (false, string.Empty);
-                res = await MainDataContext.Assistant.SendSimpleQuestion(data.basetext, 750);
+                res = await MainDataContext.Assistant.SendSimpleQuestion(data.basetext, 1000);
 
                 return res.Item2;
             }
