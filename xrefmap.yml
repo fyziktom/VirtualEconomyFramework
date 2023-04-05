@@ -16911,6 +16911,25 @@ references:
   isSpec: "True"
   fullName: VEDriversLite.NeblioAPI.IJsonClient.RpcAsync
   nameWithType: IJsonClient.RpcAsync
+- uid: VEDriversLite.NeblioAPI.IJsonClient.RpcIntAsync(VEDriversLite.NeblioAPI.RpcAdvancedRequest)
+  name: RpcIntAsync(RpcAdvancedRequest)
+  href: api/VEDriversLite.NeblioAPI.IJsonClient.html#VEDriversLite_NeblioAPI_IJsonClient_RpcIntAsync_VEDriversLite_NeblioAPI_RpcAdvancedRequest_
+  commentId: M:VEDriversLite.NeblioAPI.IJsonClient.RpcIntAsync(VEDriversLite.NeblioAPI.RpcAdvancedRequest)
+  fullName: VEDriversLite.NeblioAPI.IJsonClient.RpcIntAsync(VEDriversLite.NeblioAPI.RpcAdvancedRequest)
+  nameWithType: IJsonClient.RpcIntAsync(RpcAdvancedRequest)
+- uid: VEDriversLite.NeblioAPI.IJsonClient.RpcIntAsync(VEDriversLite.NeblioAPI.RpcAdvancedRequest,System.Threading.CancellationToken)
+  name: RpcIntAsync(RpcAdvancedRequest, CancellationToken)
+  href: api/VEDriversLite.NeblioAPI.IJsonClient.html#VEDriversLite_NeblioAPI_IJsonClient_RpcIntAsync_VEDriversLite_NeblioAPI_RpcAdvancedRequest_System_Threading_CancellationToken_
+  commentId: M:VEDriversLite.NeblioAPI.IJsonClient.RpcIntAsync(VEDriversLite.NeblioAPI.RpcAdvancedRequest,System.Threading.CancellationToken)
+  fullName: VEDriversLite.NeblioAPI.IJsonClient.RpcIntAsync(VEDriversLite.NeblioAPI.RpcAdvancedRequest, System.Threading.CancellationToken)
+  nameWithType: IJsonClient.RpcIntAsync(RpcAdvancedRequest, CancellationToken)
+- uid: VEDriversLite.NeblioAPI.IJsonClient.RpcIntAsync*
+  name: RpcIntAsync
+  href: api/VEDriversLite.NeblioAPI.IJsonClient.html#VEDriversLite_NeblioAPI_IJsonClient_RpcIntAsync_
+  commentId: Overload:VEDriversLite.NeblioAPI.IJsonClient.RpcIntAsync
+  isSpec: "True"
+  fullName: VEDriversLite.NeblioAPI.IJsonClient.RpcIntAsync
+  nameWithType: IJsonClient.RpcIntAsync
 - uid: VEDriversLite.NeblioAPI.IssueTokenRequest
   name: IssueTokenRequest
   href: api/VEDriversLite.NeblioAPI.IssueTokenRequest.html
@@ -17379,6 +17398,25 @@ references:
   isSpec: "True"
   fullName: VEDriversLite.NeblioAPI.JsonClient.RpcAsync
   nameWithType: JsonClient.RpcAsync
+- uid: VEDriversLite.NeblioAPI.JsonClient.RpcIntAsync(VEDriversLite.NeblioAPI.RpcAdvancedRequest)
+  name: RpcIntAsync(RpcAdvancedRequest)
+  href: api/VEDriversLite.NeblioAPI.JsonClient.html#VEDriversLite_NeblioAPI_JsonClient_RpcIntAsync_VEDriversLite_NeblioAPI_RpcAdvancedRequest_
+  commentId: M:VEDriversLite.NeblioAPI.JsonClient.RpcIntAsync(VEDriversLite.NeblioAPI.RpcAdvancedRequest)
+  fullName: VEDriversLite.NeblioAPI.JsonClient.RpcIntAsync(VEDriversLite.NeblioAPI.RpcAdvancedRequest)
+  nameWithType: JsonClient.RpcIntAsync(RpcAdvancedRequest)
+- uid: VEDriversLite.NeblioAPI.JsonClient.RpcIntAsync(VEDriversLite.NeblioAPI.RpcAdvancedRequest,System.Threading.CancellationToken)
+  name: RpcIntAsync(RpcAdvancedRequest, CancellationToken)
+  href: api/VEDriversLite.NeblioAPI.JsonClient.html#VEDriversLite_NeblioAPI_JsonClient_RpcIntAsync_VEDriversLite_NeblioAPI_RpcAdvancedRequest_System_Threading_CancellationToken_
+  commentId: M:VEDriversLite.NeblioAPI.JsonClient.RpcIntAsync(VEDriversLite.NeblioAPI.RpcAdvancedRequest,System.Threading.CancellationToken)
+  fullName: VEDriversLite.NeblioAPI.JsonClient.RpcIntAsync(VEDriversLite.NeblioAPI.RpcAdvancedRequest, System.Threading.CancellationToken)
+  nameWithType: JsonClient.RpcIntAsync(RpcAdvancedRequest, CancellationToken)
+- uid: VEDriversLite.NeblioAPI.JsonClient.RpcIntAsync*
+  name: RpcIntAsync
+  href: api/VEDriversLite.NeblioAPI.JsonClient.html#VEDriversLite_NeblioAPI_JsonClient_RpcIntAsync_
+  commentId: Overload:VEDriversLite.NeblioAPI.JsonClient.RpcIntAsync
+  isSpec: "True"
+  fullName: VEDriversLite.NeblioAPI.JsonClient.RpcIntAsync
+  nameWithType: JsonClient.RpcIntAsync
 - uid: VEDriversLite.NeblioAPI.Meta
   name: Meta
   href: api/VEDriversLite.NeblioAPI.Meta.html
@@ -18430,6 +18468,77 @@ references:
   isSpec: "True"
   fullName: VEDriversLite.NeblioAPI.PreviousOutput.Type
   nameWithType: PreviousOutput.Type
+- uid: VEDriversLite.NeblioAPI.RpcAdvancedRequest
+  name: RpcAdvancedRequest
+  href: api/VEDriversLite.NeblioAPI.RpcAdvancedRequest.html
+  commentId: T:VEDriversLite.NeblioAPI.RpcAdvancedRequest
+  fullName: VEDriversLite.NeblioAPI.RpcAdvancedRequest
+  nameWithType: RpcAdvancedRequest
+- uid: VEDriversLite.NeblioAPI.RpcAdvancedRequest.AdditionalProperties
+  name: AdditionalProperties
+  href: api/VEDriversLite.NeblioAPI.RpcAdvancedRequest.html#VEDriversLite_NeblioAPI_RpcAdvancedRequest_AdditionalProperties
+  commentId: P:VEDriversLite.NeblioAPI.RpcAdvancedRequest.AdditionalProperties
+  fullName: VEDriversLite.NeblioAPI.RpcAdvancedRequest.AdditionalProperties
+  nameWithType: RpcAdvancedRequest.AdditionalProperties
+- uid: VEDriversLite.NeblioAPI.RpcAdvancedRequest.AdditionalProperties*
+  name: AdditionalProperties
+  href: api/VEDriversLite.NeblioAPI.RpcAdvancedRequest.html#VEDriversLite_NeblioAPI_RpcAdvancedRequest_AdditionalProperties_
+  commentId: Overload:VEDriversLite.NeblioAPI.RpcAdvancedRequest.AdditionalProperties
+  isSpec: "True"
+  fullName: VEDriversLite.NeblioAPI.RpcAdvancedRequest.AdditionalProperties
+  nameWithType: RpcAdvancedRequest.AdditionalProperties
+- uid: VEDriversLite.NeblioAPI.RpcAdvancedRequest.Id
+  name: Id
+  href: api/VEDriversLite.NeblioAPI.RpcAdvancedRequest.html#VEDriversLite_NeblioAPI_RpcAdvancedRequest_Id
+  commentId: P:VEDriversLite.NeblioAPI.RpcAdvancedRequest.Id
+  fullName: VEDriversLite.NeblioAPI.RpcAdvancedRequest.Id
+  nameWithType: RpcAdvancedRequest.Id
+- uid: VEDriversLite.NeblioAPI.RpcAdvancedRequest.Id*
+  name: Id
+  href: api/VEDriversLite.NeblioAPI.RpcAdvancedRequest.html#VEDriversLite_NeblioAPI_RpcAdvancedRequest_Id_
+  commentId: Overload:VEDriversLite.NeblioAPI.RpcAdvancedRequest.Id
+  isSpec: "True"
+  fullName: VEDriversLite.NeblioAPI.RpcAdvancedRequest.Id
+  nameWithType: RpcAdvancedRequest.Id
+- uid: VEDriversLite.NeblioAPI.RpcAdvancedRequest.Jsonrpc
+  name: Jsonrpc
+  href: api/VEDriversLite.NeblioAPI.RpcAdvancedRequest.html#VEDriversLite_NeblioAPI_RpcAdvancedRequest_Jsonrpc
+  commentId: P:VEDriversLite.NeblioAPI.RpcAdvancedRequest.Jsonrpc
+  fullName: VEDriversLite.NeblioAPI.RpcAdvancedRequest.Jsonrpc
+  nameWithType: RpcAdvancedRequest.Jsonrpc
+- uid: VEDriversLite.NeblioAPI.RpcAdvancedRequest.Jsonrpc*
+  name: Jsonrpc
+  href: api/VEDriversLite.NeblioAPI.RpcAdvancedRequest.html#VEDriversLite_NeblioAPI_RpcAdvancedRequest_Jsonrpc_
+  commentId: Overload:VEDriversLite.NeblioAPI.RpcAdvancedRequest.Jsonrpc
+  isSpec: "True"
+  fullName: VEDriversLite.NeblioAPI.RpcAdvancedRequest.Jsonrpc
+  nameWithType: RpcAdvancedRequest.Jsonrpc
+- uid: VEDriversLite.NeblioAPI.RpcAdvancedRequest.Method
+  name: Method
+  href: api/VEDriversLite.NeblioAPI.RpcAdvancedRequest.html#VEDriversLite_NeblioAPI_RpcAdvancedRequest_Method
+  commentId: P:VEDriversLite.NeblioAPI.RpcAdvancedRequest.Method
+  fullName: VEDriversLite.NeblioAPI.RpcAdvancedRequest.Method
+  nameWithType: RpcAdvancedRequest.Method
+- uid: VEDriversLite.NeblioAPI.RpcAdvancedRequest.Method*
+  name: Method
+  href: api/VEDriversLite.NeblioAPI.RpcAdvancedRequest.html#VEDriversLite_NeblioAPI_RpcAdvancedRequest_Method_
+  commentId: Overload:VEDriversLite.NeblioAPI.RpcAdvancedRequest.Method
+  isSpec: "True"
+  fullName: VEDriversLite.NeblioAPI.RpcAdvancedRequest.Method
+  nameWithType: RpcAdvancedRequest.Method
+- uid: VEDriversLite.NeblioAPI.RpcAdvancedRequest.Params
+  name: Params
+  href: api/VEDriversLite.NeblioAPI.RpcAdvancedRequest.html#VEDriversLite_NeblioAPI_RpcAdvancedRequest_Params
+  commentId: P:VEDriversLite.NeblioAPI.RpcAdvancedRequest.Params
+  fullName: VEDriversLite.NeblioAPI.RpcAdvancedRequest.Params
+  nameWithType: RpcAdvancedRequest.Params
+- uid: VEDriversLite.NeblioAPI.RpcAdvancedRequest.Params*
+  name: Params
+  href: api/VEDriversLite.NeblioAPI.RpcAdvancedRequest.html#VEDriversLite_NeblioAPI_RpcAdvancedRequest_Params_
+  commentId: Overload:VEDriversLite.NeblioAPI.RpcAdvancedRequest.Params
+  isSpec: "True"
+  fullName: VEDriversLite.NeblioAPI.RpcAdvancedRequest.Params
+  nameWithType: RpcAdvancedRequest.Params
 - uid: VEDriversLite.NeblioAPI.RpcRequest
   name: RpcRequest
   href: api/VEDriversLite.NeblioAPI.RpcRequest.html
