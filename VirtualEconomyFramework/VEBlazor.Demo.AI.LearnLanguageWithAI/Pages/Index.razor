@@ -1,0 +1,179 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@using VEDriversLite.NFT.Dto
+@using VEDriversLite.StorageDriver
+@using Newtonsoft.Json
+@using VEDriversLite.AI.OpenAI.Dto
+@inject AppDataService AppDataService
+@inject HttpClient Http
+@inject NavigationManager Navigator
+@inherits NFTComponentBase
+
+@page "/"
+
+<PageTitle>Učte se jazyk s AI</PageTitle>
+
+
+<Row Margin="Margin.Is2.FromTop">
+    <Column Flex="Flex.JustifyContent.Center">
+        <Heading Size="HeadingSize.Is3">Naučte se Španělsky s AI zdarma.</Heading>
+    </Column>
+</Row>
+<Row Margin="Margin.Is1.FromTop">
+    <Column Flex="Flex.JustifyContent.Center">
+        <Span>ChatGPT pro Vás vytvoří krátkou lekci podle vašeho přání.</Span>
+    </Column>
+</Row>
+<Row Margin="Margin.Is1.FromTop">
+    <Column Flex="Flex.JustifyContent.Center">
+        <Span>Budeme rádi za ohodnocení lekce krátkým komentářem. Tyto komentáře zlepší kvalitu budoucích výsledků.</Span>
+    </Column>
+</Row>
+
+<Row Flex="Flex.JustifyContent.Center" Margin="Margin.Is3.FromTop">
+    <Column Flex="Flex.JustifyContent.Center">
+        <Heading Size="HeadingSize.Is4">Zadejte prosím základní informace pro lekci</Heading>
+    </Column>
+</Row>
+
+<Row Flex="Flex.JustifyContent.Center" Margin="Margin.Is2.FromTop">
+    <Column>
+        <GetText @ref="getTextRef" TextCreated="@onTextCreatedHandler" Language="@Language" />
+    </Column>
+</Row>
+
+<Divider />
+
+<Row Flex="Flex.AlignItems.Center">
+    <Column>
+        <Field>
+            <FieldLabel>Volitelné: Komentář k lekci</FieldLabel>
+            <MemoEdit Rows="3" Placeholder="Zde můžete přidat krátký komentář" MaxLength="160" @bind-Text="UserComment" />
+            <FieldHelp>Vyplňte prosím svůj komentář k lekci.</FieldHelp>
+        </Field>
+     </Column>
+</Row>
+
+<Row Flex="Flex.AlignItems.Center" Margin="Margin.Is1.FromTop">
+    <Column>
+        <Field>
+            <FieldLabel>Autor:</FieldLabel>
+            <TextEdit @bind-Text="NFT.Author"  Placeholder="Jméno nebo přezdívka"/>
+            <FieldHelp>Volitelné: Vyplňte prosím své jméno či přezdívku.</FieldHelp>
+        </Field>
+    </Column>
+</Row>
+
+<Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop.Is2.FromBottom">
+    <Column>
+        @if (!string.IsNullOrEmpty(NFT.Text) && string.IsNullOrEmpty(NFTTxId))
+        {
+            <Button Color=" Color.Primary" Clicked="@MintNFT" Loading="@MintingNFT" Block>Ulož lekci pro ostatní studenty</Button>
+        }
+        else
+        {
+            <Button Color="Color.Primary" Clicked="@MintNFT" Loading="@MintingNFT" Disabled Block>Ulož lekci pro ostatní studenty</Button>
+            <Span>Vyplňte prosím prvně Text nebo vytvořte nový, aby bylo možné uložit lekci.</Span>
+        }
+    </Column>
+</Row>
+
+@if (Minted)
+{
+    <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
+        <Column>
+            <Button Color="Color.Secondary"   
+        Block
+            Type="ButtonType.Link" To="@("/search?txid=" + @NFTTxId + "&index=0")" Target="Target.Blank">Zobrazení lekce</Button>
+        </Column>
+    </Row>
+
+    <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop.Is5.FromBottom">
+        <Column>
+            <VEFramework.VEBlazor.Components.Display.CopyButton TextToCopy="@(Navigator.BaseUri.Trim('/') + "/search?txid=" + @NFTTxId + "&index=0")" ButtonText="Zkopíruj odkaz na sdílení NFT" />
+        </Column>
+    </Row>
+}
+
+@code{
+
+    [Inject] INotificationService? NotificationService { get; set; }
+
+    GetText getTextRef;
+
+    string Receiver = string.Empty;
+    string NFTTxId = string.Empty;
+    string UserComment = string.Empty;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            Language = Languages.cz2es;
+            var res = await AppDataService.GetAuthor();
+            if (!string.IsNullOrEmpty(res))
+                NFT.Author = res;
+            else
+                NFT.Author = "Anonymní student";
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private void onTextCreatedHandler((string,string) e)
+    {
+        if (!string.IsNullOrEmpty(e.Item2))
+        {
+            NFT.Text = e.Item2;
+            NFTTxId = string.Empty;
+            Minted = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task onAddressInputedHandler(string e)
+    {
+        if (e != null)
+            Receiver = e;
+    }
+
+    private async Task MintNFT()
+    {
+        await MintingStatus(true);
+
+        if (!string.IsNullOrEmpty(UserComment))
+            NFT.Text += " \n\n\n\n #### Komentář Studenta:\n\n" + UserComment;
+
+        if (!string.IsNullOrEmpty(NFT.Author))
+            await AppDataService.SaveAuthor(NFT.Author);
+
+        var obj = new
+        {
+            receiver = Receiver,
+            text = NFT.Text.Replace("\n", "%0A"),
+            author = NFT.Author,
+            language = Language
+        };
+
+        var cnt = JsonConvert.SerializeObject(obj);
+
+        using (var content = new StringContent(cnt, System.Text.Encoding.UTF8, "application/json"))
+        {
+            HttpResponseMessage result = await Http.PostAsync("/api/MintPostNFT", content);
+            if (result.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                var returnStr = await result.Content.ReadAsStringAsync();
+
+                if (returnStr != null)
+                {
+                    NFTTxId = returnStr;
+                    Minted = true;
+                    LastMintedTx = NFTTxId;
+                    await NotifySuccess("Lekce uložena.", "Uloženo");
+                }
+            }
+        }
+
+        await MintingStatus(false);
+    }
+
+}

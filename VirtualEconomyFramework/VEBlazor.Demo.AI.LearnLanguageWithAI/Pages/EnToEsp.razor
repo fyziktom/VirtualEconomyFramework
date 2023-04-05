@@ -1,0 +1,173 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@using VEDriversLite.NFT.Dto
+@using VEDriversLite.StorageDriver
+@using Newtonsoft.Json
+@using VEDriversLite.AI.OpenAI.Dto
+@inject AppDataService AppDataService
+@inject HttpClient Http
+@inject NavigationManager Navigator
+@inherits NFTComponentBase
+
+@page "/en2es"
+
+<PageTitle>Learn language with AI</PageTitle>
+
+
+<Row Margin="Margin.Is2.FromTop">
+    <Column Flex="Flex.JustifyContent.Center">
+        <Span>Learn Spanish with AI for free.</Span>
+    </Column>
+</Row>
+<Row Margin="Margin.Is2.FromTop">
+    <Column Flex="Flex.JustifyContent.Center">
+        <Heading Size="HeadingSize.Is3">ChatGPT Will create the Spanish lesson for you.</Heading>
+    </Column>
+</Row>
+<Row Margin="Margin.Is2.FromTop">
+    <Column Flex="Flex.JustifyContent.Center">
+        <Span>We will be happy for the evaluation of the lesson with a short comment. These comments will improve the quality of future results.</Span>
+    </Column>
+</Row>
+<Row Margin="Margin.Is3.FromTop">
+    <Column Flex="Flex.JustifyContent.Center">
+        <Heading Size="HeadingSize.Is4">Please enter the basic information for the lesson</Heading>
+    </Column>
+</Row>
+<Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
+    <Column>
+        <GetText @ref="getTextRef" TextCreated="@onTextCreatedHandler" Language="@Language" />
+    </Column>
+</Row>
+
+<Divider />
+
+<Row Flex="Flex.AlignItems.Center">
+    <Column>
+        <Field>
+            <FieldLabel>Optional: Comment on the lesson</FieldLabel>
+            <MemoEdit Rows="3" Placeholder="Here you can add a short comment" MaxLength="160" @bind-Text="UserComment" />
+            <FieldHelp>Please fill in your comment on the lesson.</FieldHelp>
+        </Field>
+    </Column>
+</Row>
+
+<Row Flex="Flex.AlignItems.Center" Margin="Margin.Is1.FromTop">
+    <Column>
+        <Field>
+            <FieldLabel>Optional: Author:</FieldLabel>
+            <TextEdit @bind-Text="NFT.Author"  Placeholder="Name or Nickname"/>
+            <FieldHelp>Fill your name or nickname</FieldHelp>
+        </Field>
+    </Column>
+</Row>
+
+<Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop.Is2.FromBottom">
+    <Column>
+        @if (!string.IsNullOrEmpty(NFT.Text) && string.IsNullOrEmpty(NFTTxId))
+        {
+            <Button Color=" Color.Primary" Clicked="@MintNFT" Loading="@MintingNFT" Block>Save lesson for other students</Button>
+        }
+        else
+        {
+            <Button Color="Color.Primary" Clicked="@MintNFT" Loading="@MintingNFT" Disabled Block>Save lesson for other students</Button>
+            <Span>Please create the lesson before you want to save the lesson.</Span>
+        }
+    </Column>
+</Row>
+
+@if (Minted)
+{
+    <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
+        <Column>
+            <Button Color="Color.Secondary" Block Type="ButtonType.Link" To="@("/search?txid=" + @NFTTxId + "&index=0")" Target="Target.Blank">Show lesson</Button>
+        </Column>
+    </Row>
+
+    <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop.Is5.FromBottom">
+        <Column>
+            <VEFramework.VEBlazor.Components.Display.CopyButton TextToCopy="@(Navigator.BaseUri.Trim('/') + "/search?txid=" + @NFTTxId + "&index=0")" ButtonText="Copy link to the lesson" />
+        </Column>
+    </Row>
+}
+
+@code{
+
+    GetText getTextRef;
+
+    string Receiver = string.Empty;
+    string NFTTxId = string.Empty;
+    string UserComment = string.Empty;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            Language = Languages.en2es;
+            var res = await AppDataService.GetAuthor();
+            if (!string.IsNullOrEmpty(res))
+                NFT.Author = res;
+            else
+                NFT.Author = "Annonymous student";
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private void onTextCreatedHandler((string,string) e)
+    {
+        if (!string.IsNullOrEmpty(e.Item2))
+        {
+            NFT.Text = e.Item2;
+            NFTTxId = string.Empty;
+            Minted = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task onAddressInputedHandler(string e)
+    {
+        if (e != null)
+            Receiver = e;
+    }
+
+    private async Task MintNFT()
+    {
+        await MintingStatus(true);
+
+        if (!string.IsNullOrEmpty(UserComment))
+            NFT.Text += " \n\n\n\n #### Student Comment:\n\n" + UserComment;
+
+        if (!string.IsNullOrEmpty(NFT.Author))
+            await AppDataService.SaveAuthor(NFT.Author);
+
+        var obj = new
+        {
+            receiver = Receiver,
+            text = NFT.Text.Replace("\n", "%0A"),
+            author = NFT.Author,
+            language = Language
+        };
+
+        var cnt = JsonConvert.SerializeObject(obj);
+
+        using (var content = new StringContent(cnt, System.Text.Encoding.UTF8, "application/json"))
+        {
+            HttpResponseMessage result = await Http.PostAsync("/api/MintPostNFT", content);
+            if (result.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                var returnStr = await result.Content.ReadAsStringAsync();
+
+                if (returnStr != null)
+                {
+                    NFTTxId = returnStr;
+                    LastMintedTx = NFTTxId;
+                    Minted = true;
+                    await NotifySuccess("Lesson saved.", "Saved");
+                }
+            }
+        }
+
+        await MintingStatus(false);
+    }
+
+}
