@@ -71,8 +71,9 @@
     {
         if (values.Count == 0 && TagNames.Count >= values.Count + 1)
             return;
-        
+
         Tags = string.Join( " ", values ?? Enumerable.Empty<string>() ).Trim();
+        await Task.Delay(250);
         await TagsChanged.InvokeAsync( Tags );
     }
 
@@ -85,6 +86,8 @@
             Tags += $"{tag}";
         else
             Tags += $" {tag}";
+
+        await Task.Delay(250);
 
         await InvokeAsync(StateHasChanged);
         await TagsChanged.InvokeAsync( Tags );

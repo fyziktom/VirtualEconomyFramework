@@ -1,0 +1,215 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@using VEDriversLite.NFT.Dto
+@using VEDriversLite.AI.OpenAI.Dto
+@using VEFramework.VEBlazor.Components.NFTs.Common
+@using VEBlazor.Demo.AI.LanguageImproverForAI.Common
+@using Blazorise;
+@using Blazorise.Components;
+@using Blazorise.Markdown;
+@inherits NFTComponentBase
+
+@if (NFT != null)
+{
+    <Card Margin="Margin.Is1.FromTop">
+        <CardBody Width="Width.Is100">
+            @if (!string.IsNullOrEmpty(NFT.Name))
+            {
+                <CardTitle Size=" 3">@NFT.Name</CardTitle>
+            }
+            <Row Margin="Margin.Is1.FromTop">
+                <Column>
+                    <small><b>@Author</b> @NFT.Author</small>
+                </Column>
+            </Row>
+
+            <Row Margin="Margin.Is2.FromTop">
+                <Column>
+                    <CardText><b>@Tags</b></CardText>
+                </Column>
+            </Row>
+            <Row Margin="Margin.Is1.FromTop">
+                <Column>
+                    <VEFramework.VEBlazor.Components.Tags.Tags NFTType="@NFTTypes.Post" TagsList="@NFT.TagsList" />
+                </Column>
+            </Row>
+
+            <Divider />
+
+            <Row Margin="Margin.Is2.FromTop">
+                <Column>
+                    @if (CutText && NFT.Text.Length > 160)
+                    {
+                        
+                        @if (string.IsNullOrEmpty(ParsedInfo.OrigAIText))
+                        {
+                            <NFTText Text="@(NFT.Text.Substring(0, 160) + "...")" IsOnCard="false" />
+                        }
+                        else
+                        {
+                            <Heading Size="HeadingSize.Is5" Margin="Margin.Is2.FromTop">Original Text</Heading>
+                            <CardText Margin="Margin.Is1.FromTop">@ParsedInfo.OrigAIText</CardText>
+                            <Heading Size="HeadingSize.Is5" Margin="Margin.Is2.FromTop">User Translation</Heading>
+                            <CardText Margin="Margin.Is1.FromTop">@ParsedInfo.UserTranslation</CardText>
+                        }
+                    }
+                    else
+                    {
+                        @if (string.IsNullOrEmpty(ParsedInfo.OrigAIText))
+                        {
+                            <NFTText Text="@NFT.Text" IsOnCard="false" />
+                        }
+                        else
+                        {
+                            <Heading Size="HeadingSize.Is5" Margin="Margin.Is2.FromTop">Original Text</Heading>
+                            <CardText Margin="Margin.Is1.FromTop">@ParsedInfo.OrigAIText</CardText>
+                            <Heading Size="HeadingSize.Is5" Margin="Margin.Is2.FromTop">Original Translation</Heading>
+                            <CardText Margin="Margin.Is1.FromTop">@ParsedInfo.OrigTranslation</CardText>
+                            <Heading Size="HeadingSize.Is5" Margin="Margin.Is2.FromTop">User Translation</Heading>
+                            <CardText Margin="Margin.Is1.FromTop">@ParsedInfo.UserTranslation</CardText>
+                            <Heading Size="HeadingSize.Is5" Margin="Margin.Is2.FromTop">User Variation of Translation</Heading>
+                            <CardText Margin="Margin.Is1.FromTop">@ParsedInfo.UserVariation1</CardText>
+                            <Heading Size="HeadingSize.Is5" Margin="Margin.Is2.FromTop">User Variation of Translation</Heading>
+                            <CardText Margin="Margin.Is1.FromTop">@ParsedInfo.UserVariation2</CardText>
+                        }
+                    }
+                </Column>
+            </Row>
+
+            @if (DisplayButtons)
+            {
+                <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
+                    <Column>
+                        <Button Color="Color.Secondary"     
+                Block
+                        Type="ButtonType.Link" To="@("/search?txid=" + NFT.Utxo + "&index=0")" Target="Target.Blank">@FullLesson</Button>
+                    </Column>
+                </Row>
+                @if (NFT.PriceActive)
+                {
+                    <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
+                        <Column>
+                            <Button Color="Color.Secondary" 
+                Block
+                            Type="ButtonType.Link" To="@("https://apptest.ve-nft.com/buynft?utxo=" + NFT.Utxo + "&index=0")" Target="Target.Blank">@BuyLesson</Button>
+                        </Column>
+                    </Row>
+                }
+            }
+        </CardBody>
+    </Card>
+}
+
+@code {
+    [Parameter]
+    public bool DisplayButtons { get; set; } = true;
+    [Parameter]
+    public bool CutText { get; set; } = true;
+
+    public AdditionalInfo ParsedInfo { get; set; } = new AdditionalInfo();
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (NFT != null)
+        {
+            if (!string.IsNullOrEmpty(NFT.Text) && NFT.Text.Contains("OrigUserBaseText"))
+            {
+                try{
+                    ParsedInfo = Newtonsoft.Json.JsonConvert.DeserializeObject<AdditionalInfo>(NFT.Text);
+                    if (ParsedInfo != null)
+                        StateHasChanged();
+                    else
+                        ParsedInfo = new AdditionalInfo();
+                }
+                catch(Exception ex)
+                {
+                    Console.WriteLine("Cannot deserialize the content of the NFT.Text field to AdditionalInfo object. Exception: " + ex.Message);
+                }
+            }
+        }
+    }
+
+    public string Author
+    {
+        get
+        {
+            if (Language == Languages.en2es)
+                return "Author";
+            else if (Language == Languages.cz2es)
+                return "Autor";
+            else if (Language == Languages.de2es)
+                return "Autor";
+            else if (Language == Languages.nl2es)
+                return "Auteur";
+            else
+                return "Author";
+        }
+    }
+
+    public string Description
+    {
+        get
+        {
+            if (Language == Languages.en2es)
+                return "Description";
+            else if (Language == Languages.cz2es)
+                return "Popis";
+            else if (Language == Languages.de2es)
+                return "Beschreibung";
+            else if (Language == Languages.nl2es)
+                return "Labels";
+            else
+                return "Description";
+        }
+    }
+    public string Tags
+    {
+        get
+        {
+            if (Language == Languages.en2es)
+                return "Tags";
+            else if (Language == Languages.cz2es)
+                return "Tagy";
+            else if (Language == Languages.de2es)
+                return "Stichworte";
+            else if (Language == Languages.nl2es)
+                return "";
+            else
+                return "Tags";
+        }
+    }
+
+    public string FullLesson
+    {
+        get
+        {
+            if (Language == Languages.en2es)
+                return "Full Lesson";
+            else if (Language == Languages.cz2es)
+                return "Celá Lekce";
+            else if (Language == Languages.de2es)
+                return "Vollständige Lektion";
+            else if (Language == Languages.nl2es)
+                return "Volledige les";
+            else
+                return "Full Record";
+        }
+    }
+
+    public string BuyLesson
+    {
+        get
+        {
+            if (Language == Languages.en2es)
+                return "Buy Lesson";
+            else if (Language == Languages.cz2es)
+                return "Koupit Lekci";
+            else if (Language == Languages.de2es)
+                return "Lektion kaufen";
+            else if (Language == Languages.nl2es)
+                return "Koop les";
+            else
+                return "Buy Record";
+        }
+    }
+}

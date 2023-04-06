@@ -91,6 +91,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VEBlazor.Demo.AI.MintFreeFo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VEBlazor.Demo.AI.LearnLanguageWithAI", "VEBlazor.Demo.AI.LearnLanguageWithAI\VEBlazor.Demo.AI.LearnLanguageWithAI.csproj", "{CBFF47B3-F1A7-4561-AAB2-38FD95C9BAA2}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VEBlazor.Demo.AI.LanguageImproverForAI", "VEBlazor.Demo.AI.LanguageImproverForAI\VEBlazor.Demo.AI.LanguageImproverForAI.csproj", "{B6AD6CD2-56EA-4AD8-9E25-17AFF491C327}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -581,6 +583,18 @@ Global
 		{CBFF47B3-F1A7-4561-AAB2-38FD95C9BAA2}.Release|x64.Build.0 = Release|Any CPU
 		{CBFF47B3-F1A7-4561-AAB2-38FD95C9BAA2}.Release|x86.ActiveCfg = Release|Any CPU
 		{CBFF47B3-F1A7-4561-AAB2-38FD95C9BAA2}.Release|x86.Build.0 = Release|Any CPU
+		{B6AD6CD2-56EA-4AD8-9E25-17AFF491C327}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B6AD6CD2-56EA-4AD8-9E25-17AFF491C327}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B6AD6CD2-56EA-4AD8-9E25-17AFF491C327}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{B6AD6CD2-56EA-4AD8-9E25-17AFF491C327}.Debug|x64.Build.0 = Debug|Any CPU
+		{B6AD6CD2-56EA-4AD8-9E25-17AFF491C327}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B6AD6CD2-56EA-4AD8-9E25-17AFF491C327}.Debug|x86.Build.0 = Debug|Any CPU
+		{B6AD6CD2-56EA-4AD8-9E25-17AFF491C327}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B6AD6CD2-56EA-4AD8-9E25-17AFF491C327}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B6AD6CD2-56EA-4AD8-9E25-17AFF491C327}.Release|x64.ActiveCfg = Release|Any CPU
+		{B6AD6CD2-56EA-4AD8-9E25-17AFF491C327}.Release|x64.Build.0 = Release|Any CPU
+		{B6AD6CD2-56EA-4AD8-9E25-17AFF491C327}.Release|x86.ActiveCfg = Release|Any CPU
+		{B6AD6CD2-56EA-4AD8-9E25-17AFF491C327}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -599,6 +613,7 @@ Global
 		{5887B472-8067-4161-AA14-A394629FE12B} = {DCD69FD2-C35F-433E-BC8A-BE9E4D5EC8D6}
 		{83EB47AF-E36E-4BDE-ACA0-3B7DD94D7A06} = {5887B472-8067-4161-AA14-A394629FE12B}
 		{CBFF47B3-F1A7-4561-AAB2-38FD95C9BAA2} = {5887B472-8067-4161-AA14-A394629FE12B}
+		{B6AD6CD2-56EA-4AD8-9E25-17AFF491C327} = {5887B472-8067-4161-AA14-A394629FE12B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5CBC4B1A-B2F2-465F-9BC6-8E8E7475316A}

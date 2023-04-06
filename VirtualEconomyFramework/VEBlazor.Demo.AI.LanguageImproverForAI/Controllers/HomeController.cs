@@ -11,16 +11,15 @@ using VEDriversLite.Admin.Dto;
 using VEDriversLite.NFT;
 using static VEDriversLite.AccountHandler;
 using VEDriversLite.NeblioAPI;
-using VEBlazor.Demo.AI.LearnLanguageWithAI.Common;
+using VEBlazor.Demo.AI.LanguageImproverForAI.Common;
 using VEDriversLite.NFT.Dto;
 using VEDriversLite.StorageDriver.Helpers;
 using VEDriversLite.AI.OpenAI.Dto;
 using System.IO;
 using Newtonsoft.Json;
 using Blazorise;
-using NBitcoin;
 
-namespace VEBlazor.Demo.AI.LearnLanguageWithAI.Controllers
+namespace VEBlazor.Demo.AI.LanguageImproverForAI.Controllers
 {
     [Route("api")]
     [ApiController]
@@ -65,7 +64,7 @@ namespace VEBlazor.Demo.AI.LearnLanguageWithAI.Controllers
         {
             try
             {
-                if(!string.IsNullOrEmpty(utxo))
+                if (!string.IsNullOrEmpty(utxo))
                 {
                     var nft = await NFTFactory.GetNFT(NFTHelpers.TokenId, utxo, 0, 0, true);
                     return nft;
@@ -80,16 +79,16 @@ namespace VEBlazor.Demo.AI.LearnLanguageWithAI.Controllers
         }
 
         /// <summary>
-        /// Get Last lessons of the spain
+        /// Get Last records
         /// </summary>
         /// <returns>NFTs list</returns>
         [HttpGet]
-        [Route("GetLastLessons/{language}")]
-        public async Task<List<INFT>> GetLastLessons(string language)
+        [Route("GetLastRecords/{language}")]
+        public async Task<List<INFT>> GetLastRecords(string language)
         {
             try
             {
-                var lang = Languages.cz2es;
+                var lang = Languages.en2pap;
 
                 try
                 {
@@ -97,7 +96,7 @@ namespace VEBlazor.Demo.AI.LearnLanguageWithAI.Controllers
                     if (l != null)
                         lang = l;
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     throw new HttpResponseException((HttpStatusCode)501, $"Wrong language input!");
                 }
@@ -110,24 +109,9 @@ namespace VEBlazor.Demo.AI.LearnLanguageWithAI.Controllers
                 {
                     if (VEDLDataContext.Accounts.TryGetValue(MainDataContext.MainAccount, out var account))
                     {
-                        if (lang == Languages.cz2es)
-                        {
-                            var nfts = account.NFTs.Where(n => n.Type == NFTTypes.Post && (n.Tags.Contains(language) || (n.Tags.Contains("lekce") && n.Tags.Contains("španělština") && n.Tags.Contains("čeština")))).ToList();
-                            if (nfts != null && nfts.Count > 0)
-                                return nfts;
-                        }
-                        else if (lang == Languages.en2es)
-                        {
-                            var nfts = account.NFTs.Where(n => n.Type == NFTTypes.Post && (n.Tags.Contains(language) || (n.Tags.Contains("lesson") && n.Tags.Contains("spanish") && n.Tags.Contains("english")))).ToList();
-                            if (nfts != null && nfts.Count > 0)
-                                return nfts;
-                        }
-                        else
-                        {
-                            var nfts = account.NFTs.Where(n => n.Type == NFTTypes.Post && n.Tags.Contains(language)).ToList();
-                            if (nfts != null && nfts.Count > 0)
-                                return nfts;
-                        }
+                        var nfts = account.NFTs.Where(n => n.Type == NFTTypes.Post && n.Tags.Contains(language)).ToList();
+                        if (nfts != null && nfts.Count > 0)
+                            return nfts;
                     }
 
                     return new List<INFT>();
@@ -154,10 +138,6 @@ namespace VEBlazor.Demo.AI.LearnLanguageWithAI.Controllers
             /// </summary>
             public string tags { get; set; } = string.Empty;
             /// <summary>
-            /// Input NFT Description
-            /// </summary>
-            public string description { get; set; } = string.Empty;
-            /// <summary>
             /// Input NFT Text
             /// </summary>
             public string text { get; set; } = string.Empty;
@@ -165,16 +145,19 @@ namespace VEBlazor.Demo.AI.LearnLanguageWithAI.Controllers
             /// Input NFT Author
             /// </summary>
             public string author { get; set; } = string.Empty;
-            /// <summary>
-            /// selected language
-            /// </summary>
-            public Languages language { get; set; } = Languages.cz2es;
-            /// <summary>
-            /// Input NFT Link
-            /// </summary>
-            public List<NFTDataItem> dataitems { get; set; } = new List<NFTDataItem>();
+
+            public Languages language { get; set; } = Languages.en2pap;
         }
 
+        public class AdditionalInfo
+        {
+            public string OrigUserBaseText { get; set; } = string.Empty;
+            public string OrigAIText { get; set; } = string.Empty;
+            public string OrigAIName { get; set; } = string.Empty;
+            public string OrigAIDescription { get; set; } = string.Empty;
+            public string OrigAITags { get; set; } = string.Empty;
+
+        }
         [HttpPost]
         [Route("MintPostNFT")]
         public async Task<string> MintPostNFT([FromBody] VEDLMintPostNFTDto data)
@@ -182,69 +165,14 @@ namespace VEBlazor.Demo.AI.LearnLanguageWithAI.Controllers
             try
             {
                 var nft = new PostNFT("");
-                nft.Text = data.text.Replace("%0A","\n");
+                nft.Name = data.name;
+                nft.Text = data.text;//.Replace("%0A","\n");
                 nft.Author = data.author;
-
-                nft.DataItems.Add(new NFTDataItem()
-                {
-                    Hash = "QmaNAgTmG53Ec9BZERreXpsEKkRE4fSCYQzLGWYQNCdToF",
-                    IsMain = true,
-                    Storage = DataItemStorageType.IPFS,
-                    Type = DataItemType.Image
-                });
-
-                var tx = nft.Text;
-                if (tx.Length > 500)
-                    tx = tx.Substring(0, 500);
-
-                var txt = await MainDataContext.Assistant.GetNewDataForNFT(tx);
-                if (txt.Item1)
-                {
-                    nft.Name = txt.Item2.Name;
-                    nft.Tags = txt.Item2.Tags.Replace("#", string.Empty);
-                    nft.Description = txt.Item2.Description;
-                }
+                nft.Tags = data.tags;
 
                 var lang = Enum.GetName(typeof(Languages), data.language);
                 if (!nft.Tags.Contains(lang))
                     nft.Tags += $" {lang}";
-
-                if (data.language == Languages.cz2es)
-                {
-                    if (!nft.Tags.Contains("lekce"))
-                        nft.Tags += " lekce";
-                    if (!nft.Tags.Contains("španělština"))
-                        nft.Tags += " španělština";
-                    if (!nft.Tags.Contains("čeština"))
-                        nft.Tags += " čeština";
-                }
-                else if (data.language == Languages.en2es)
-                {
-                    if (!nft.Tags.Contains("lesson"))
-                        nft.Tags += " lesson";
-                    if (!nft.Tags.Contains("spanish"))
-                        nft.Tags += " spanish";
-                    if (!nft.Tags.Contains("english"))
-                        nft.Tags += " english";
-                }
-                else if (data.language == Languages.de2es)
-                {
-                    if (!nft.Tags.Contains("lektion"))
-                        nft.Tags += " lektion";
-                    if (!nft.Tags.Contains("spanisch"))
-                        nft.Tags += " spanisch";
-                    if (!nft.Tags.Contains("deutch"))
-                        nft.Tags += " deutch";
-                }
-                else if (data.language == Languages.nl2es)
-                {
-                    if (!nft.Tags.Contains("les"))
-                        nft.Tags += " les";
-                    if (!nft.Tags.Contains("spaans"))
-                        nft.Tags += " spaans";
-                    if (!nft.Tags.Contains("nederlands"))
-                        nft.Tags += " nederlands";
-                }
 
                 nft.Price = 0.5;
                 nft.SellJustCopy = true;
@@ -252,9 +180,7 @@ namespace VEBlazor.Demo.AI.LearnLanguageWithAI.Controllers
                 (bool, string) res = (false, string.Empty);
                 if (VEDLDataContext.Accounts.TryGetValue(MainDataContext.MainAccount, out var account))
                 {
-                    var rcv = NeblioTransactionHelpers.ValidateNeblioAddress(data.receiver);
-
-                    res = await account.MintNFT(nft, rcv);
+                    res = await account.MintNFT(nft, data.receiver);
                     await Task.Delay(500);
                     var tnft = await NFTFactory.GetNFT(NFTHelpers.TokenId, res.Item2, 0, 0, true);
                     if (tnft != null)
@@ -262,7 +188,7 @@ namespace VEBlazor.Demo.AI.LearnLanguageWithAI.Controllers
                 }
                 else
                     res.Item2 = "Cannot find MainAccount.";
-                
+
                 return res.Item2;
             }
             catch (Exception ex)
@@ -282,6 +208,10 @@ namespace VEBlazor.Demo.AI.LearnLanguageWithAI.Controllers
             /// Base Text
             /// </summary>
             public string basetext { get; set; } = string.Empty;
+            /// <summary>
+            /// Length of the response
+            /// </summary>
+            public int tokens { get; set; } = 500;
         }
 
         [HttpPost]
@@ -290,13 +220,87 @@ namespace VEBlazor.Demo.AI.LearnLanguageWithAI.Controllers
         {
             try
             {
+                if (data.tokens <= 0)
+                    data.tokens = 500;
+
                 if (MainDataContext.Assistant == null)
                     throw new HttpResponseException((HttpStatusCode)501, $"Assistant is out of the service. Try later please.");
 
                 (bool, string) res = (false, string.Empty);
-                res = await MainDataContext.Assistant.SendSimpleQuestion(data.basetext, 1000);
+                res = await MainDataContext.Assistant.SendSimpleQuestion(data.basetext, data.tokens);
 
                 return res.Item2;
+            }
+            catch (Exception ex)
+            {
+                throw new HttpResponseException((HttpStatusCode)501, $"Cannot mint NFT!");
+            }
+        }
+
+        public class AIGetTextTranslateDto
+        {
+            /// <summary>
+            /// Base Text
+            /// </summary>
+            public string basetext { get; set; } = string.Empty;
+            /// <summary>
+            /// Length of the response
+            /// </summary>
+            public int tokens { get; set; } = 500;
+            /// <summary>
+            /// Length of the response
+            /// </summary>
+            public Languages language { get; set; } = Languages.en2pap;
+        }
+
+        public class AIGetTextTranslateResponseDto
+        {
+            /// <summary>
+            /// Result
+            /// </summary>
+            public bool result { get; set; } = false;
+            /// <summary>
+            /// Output text
+            /// </summary>
+            public string outputtext { get; set; } = string.Empty;
+            /// <summary>
+            /// Translation
+            /// </summary>
+            public string translation { get; set; } = string.Empty;
+        }
+    
+        [HttpPost]
+        [Route("AIGetTextAndTranslation")]
+        public async Task<AIGetTextTranslateResponseDto> AIGetTextAndTranslation([FromBody] AIGetTextDto data)
+        {
+            try
+            {
+                var outputText = string.Empty;
+                var translation = string.Empty;
+
+                if (MainDataContext.Assistant == null)
+                    throw new HttpResponseException((HttpStatusCode)501, $"Assistant is out of the service. Try later please.");
+
+                (bool, string) res = (false, string.Empty);
+                res = await MainDataContext.Assistant.SendSimpleQuestion(data.basetext, 250);
+                var outres = res.Item1;
+
+                if (res.Item1)
+                {
+                    outputText = res.Item2;
+                    var input = $"Please translate this text to Papiamento: \"{outputText}\"";
+                    res = await MainDataContext.Assistant.SendSimpleQuestion(input, 250);
+                    if (res.Item1)
+                        translation = res.Item2;
+                    outres = res.Item1;
+                }
+
+                return new AIGetTextTranslateResponseDto()
+                {
+                    outputtext = outputText,
+                    translation = translation,
+                    result = outres
+                };
             }
             catch (Exception ex)
             {

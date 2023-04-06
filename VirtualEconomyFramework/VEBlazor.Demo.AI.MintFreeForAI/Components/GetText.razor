@@ -40,7 +40,7 @@
 
     [Inject] INotificationService? NotificationService { get; set; }
 
-    [Parameter] public EventCallback<(string,string)> TextCreated { get; set; }
+    [Parameter] public EventCallback<(string, string)> TextCreated { get; set; }
 
     [Parameter] public string BaseText { get; set; } = string.Empty;
 
@@ -79,7 +79,7 @@
                 string returnValue = await result.Content.ReadAsStringAsync();
                 if (returnValue != null)
                     TextByAI = returnValue;
-                
+
                 await TextCreated.InvokeAsync((BaseText, TextByAI));
             }
         }

@@ -1,0 +1,134 @@
+﻿@using Newtonsoft.Json
+@using VEBlazor.Demo.AI.LanguageImproverForAI
+@inject HttpClient Http
+@inherits CommonComponentBase
+
+<Row Flex="Flex.AlignItems.Center" Margin="Margin.Is3.FromTop">
+    <Column>
+        <Span>Create base text on topic of...</Span>
+    </Column>
+</Row>
+
+<Row Flex="Flex.AlignItems.Center">
+    <Column>
+        <TextEdit Rows="1" Placeholder="@("example \"fishing\"...")" @bind-Text="BaseText" />
+    </Column>
+</Row>
+
+<Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
+    <Column>
+        <Button Color="Color.Primary" Clicked="@CreateTextAction" Loading="@Loading" Block>Create base text with AI</Button>
+    </Column>
+</Row>
+
+<Row Margin="Margin.Is4.FromTop">
+    <Column Flex="Flex.JustifyContent.Center">
+        <Heading Size="HeadingSize.Is4">Text by AI</Heading>
+    </Column>
+</Row>
+<Row Margin="Margin.Is2.FromTop">
+    <Column Flex="Flex.JustifyContent.Center">
+        <Span><b>@TextByAI</b></Span>
+    </Column>
+</Row>
+<Row Margin="Margin.Is2.FromTop">
+    <Column Flex="Flex.JustifyContent.Center">
+        <Heading Size="HeadingSize.Is4">Translation to Papiamento by AI</Heading>
+    </Column>
+</Row>
+<Row Margin="Margin.Is2.FromTop">
+    <Column Flex="Flex.JustifyContent.Center">
+        <Span><b>@TranslationByAI</b></Span>
+    </Column>
+</Row>
+
+@code {
+
+    public class AIGetTextTranslateResponseDto
+    {
+        /// <summary>
+        /// Result
+        /// </summary>
+        public bool result { get; set; } = false;
+        /// <summary>
+        /// Output text
+        /// </summary>
+        public string outputtext { get; set; } = string.Empty;
+        /// <summary>
+        /// Translation
+        /// </summary>
+        public string translation { get; set; } = string.Empty;
+    }
+
+    [Parameter] public EventCallback<(string, (string,string))> TextCreated { get; set; }
+
+    [Parameter] public string BaseText { get; set; } = string.Empty;
+
+    private Modal? CreateTextModal;
+    Markdown markdownRef;
+
+    public string TextByAI { get; set; } = string.Empty;
+    public string TranslationByAI { get; set; } = string.Empty;
+
+    (bool, string) Result = (false, string.Empty);
+
+    public async Task LoadText(string text = "")
+    {
+        if (!string.IsNullOrEmpty(text))
+        {
+            BaseText = text;
+            await markdownRef.SetValueAsync(text);
+        }
+    }
+
+    async Task CreateTextAction()
+    {
+        await LoadingStatus(true);
+
+        if (NotificationService != null)
+            await NotificationService.Info("Creating text...", "AI's working");
+
+        var baset = "Create short text about: " + BaseText.Replace("\"", "\\\"") + ". Output maximum two sentenses.";
+
+        var obj = new
+        {
+            basetext = baset,
+            tokens = 150,
+            language = Language
+        };
+
+        var cnt = JsonConvert.SerializeObject(obj);
+
+        using (var content = new StringContent(cnt, System.Text.Encoding.UTF8, "application/json"))
+        {
+            HttpResponseMessage result = await Http.PostAsync("/api/AIGetTextAndTranslation", content);
+            if (result.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                string returnValue = await result.Content.ReadAsStringAsync();
+                try
+                {
+                    var res = JsonConvert.DeserializeObject<AIGetTextTranslateResponseDto>(returnValue);
+
+                    if (res.result)
+                    {
+                        TextByAI = res.outputtext;
+                        TranslationByAI = res.translation;
+                    }
+                }
+                catch(Exception ex) {}
+
+                await TextCreated.InvokeAsync((BaseText, (TextByAI, TranslationByAI)));
+            }
+        }
+
+        if (NotificationService != null)
+        {
+            if (!string.IsNullOrEmpty(TextByAI))
+                await NotificationService.Success("Text has been created", "Success");
+            else
+                await NotificationService.Warning(Result.Item2, "Cannot create text.");
+        }
+
+        await LoadingStatus(false);
+    }
+}

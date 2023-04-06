@@ -15,7 +15,7 @@
 <Row Margin="Margin.Is1.FromTop">
     <Column>
         <Field>
-            <FieldLabel>Vyplňte prosím Id tranansakce NFT s uloženou lekcí:</FieldLabel>
+            <FieldLabel>Fill the ID of the record:</FieldLabel>
             <TextEdit Text="@NFTTxId" TextChanged="@((e) => { if (e != null && e != NFTTxId) { NFTTxId = e; } })" />
         </Field>
     </Column>
@@ -25,17 +25,17 @@
     <Column>
         @if (!string.IsNullOrEmpty(NFTTxId))
         {
-            <Button Color=" Color.Primary" Clicked="@(async () => await LoadNFT(NFTTxId))" Loading="@Loading" Block>Načíst Lekci</Button>
+            <Button Color=" Color.Primary" Clicked="@(async () => await LoadNFT(NFTTxId))" Loading="@Loading" Block>Load record</Button>
         }
         else
         {
-            <Button Color="Color.Primary" Clicked="@(async () => await LoadNFT(NFTTxId))" Loading="@Loading" Disabled Block>Načíst Lekci</Button>
-            <Span>Vyplňte prosím prvně ID transakce NFT s uloženou lekcí. Teprve poté je možné načíst NFT.</Span>
+            <Button Color="Color.Primary" Clicked="@(async () => await LoadNFT(NFTTxId))" Loading="@Loading" Disabled Block>Load record</Button>
+            <Span>Please fill the Id of the record first.</Span>
         }
     </Column>
 </Row>
 
-<LessonListCard NFT="@NFT" Language="Languages.cz2es" DisplayButtons="false" CutText="false" />
+<LessonListCard NFT="@NFT" Language="Languages.en2pap" DisplayButtons="false" CutText="false" />
 
 <Row Margin="Margin.Is3.FromTop">
     <Column Flex="Flex.JustifyContent.Center">
@@ -53,7 +53,7 @@
                     To="@("https://apptest.ve-nft.com/buynft?utxo=" + NFT.Utxo + "&index=0")" 
                     Target="Target.Blank">
                         @BuyLesson
-                    </Button>
+            </Button>
         </Column>
     </Row>
 }
@@ -84,7 +84,7 @@
         get
         {
             if (NFT.Tags.Contains(Enum.GetName(typeof(Languages), Languages.en2es)))
-                return "Buy Lesson";
+                return "Buy Record";
             else if (NFT.Tags.Contains(Enum.GetName(typeof(Languages), Languages.cz2es)))
                 return "Koupit Lekci";
             else if (NFT.Tags.Contains(Enum.GetName(typeof(Languages), Languages.de2es)))
@@ -92,7 +92,7 @@
             else if (NFT.Tags.Contains(Enum.GetName(typeof(Languages), Languages.nl2es)))
                 return "Koop les";
             else
-                return "Koupit Lekci";
+                return "Buy Record";
         }
     }
 
@@ -101,7 +101,7 @@
         get
         {
             if (NFT.Tags.Contains(Enum.GetName(typeof(Languages), Languages.en2es)))
-                return "Copy link to share NFT";
+                return "Copy link to share Record";
             else if (NFT.Tags.Contains(Enum.GetName(typeof(Languages), Languages.cz2es)))
                 return "Zkopíruj odkaz na sdílení NFT";
             else if (NFT.Tags.Contains(Enum.GetName(typeof(Languages), Languages.de2es)))
@@ -109,7 +109,7 @@
             else if (NFT.Tags.Contains(Enum.GetName(typeof(Languages), Languages.nl2es)))
                 return "Kopieer link om NFT te delen";
             else
-                return "Zkopíruj odkaz na sdílení NFT";
+                return "Copy link to share Record";
         }
     }
 }
