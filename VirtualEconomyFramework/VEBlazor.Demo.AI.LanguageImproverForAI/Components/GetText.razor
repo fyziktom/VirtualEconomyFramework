@@ -1,6 +1,7 @@
 ﻿@using Newtonsoft.Json
 @using VEBlazor.Demo.AI.LanguageImproverForAI
 @inject HttpClient Http
+@inject AppDataService AppDataService
 @inherits CommonComponentBase
 
 <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is3.FromTop">
@@ -17,7 +18,7 @@
 
 <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
     <Column>
-        <Button Color="Color.Primary" Clicked="@CreateTextAction" Loading="@Loading" Block>Create base text with AI</Button>
+        <Button Color="Color.Primary" Clicked="@CreateTextQuestion" Loading="@Loading" Block>Create base text with AI</Button>
     </Column>
 </Row>
 
@@ -42,6 +43,42 @@
     </Column>
 </Row>
 
+<Modal @ref="wantsToContinueModalRef">
+    <ModalContent Centered Size="ModalSize.ExtraLarge">
+        <ModalHeader>
+            <ModalTitle>Create new text</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <Row>
+                <Column>
+                    You have not saved last item yet. Please save it first and then create new text.
+                </Column>
+            </Row>
+            <Row>
+                <Column>
+                    If you still want to continue, please click to "Continue" button.
+                </Column>
+            </Row>
+            <Row>
+                <Column>
+                    If you want to save your work first, please click to Cancel button and save item with button at the end of the page.
+                </Column>
+            </Row>
+            <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
+                <Column>
+                    <Button Color="Color.Primary" Clicked="@WantsCancel" Loading="@Loading" Block>Cancel</Button>
+                </Column>
+            </Row>
+            <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
+                <Column>
+                    <Button Color="Color.Primary" Clicked="@WantsContinue" Loading="@Loading" Block>Continue</Button>
+                </Column>
+            </Row>
+        </ModalBody>
+    </ModalContent>
+</Modal>
+
 @code {
 
     public class AIGetTextTranslateResponseDto
@@ -63,14 +100,28 @@
     [Parameter] public EventCallback<(string, (string,string))> TextCreated { get; set; }
 
     [Parameter] public string BaseText { get; set; } = string.Empty;
+    [Parameter] public bool IsLastSaved { get; set; } = false;
 
-    private Modal? CreateTextModal;
+    private Modal? wantsToContinueModalRef;
     Markdown markdownRef;
 
     public string TextByAI { get; set; } = string.Empty;
     public string TranslationByAI { get; set; } = string.Empty;
 
     (bool, string) Result = (false, string.Empty);
+
+    AdditionalInfo additionalInfo = new AdditionalInfo();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        additionalInfo = await AppDataService.GetAdditionalInfoAsync();
+        if (string.IsNullOrEmpty(BaseText) && !string.IsNullOrEmpty(additionalInfo.OrigUserBaseText))
+        {
+            BaseText = additionalInfo.OrigUserBaseText;
+            TextByAI = additionalInfo.OrigAIText;
+            TranslationByAI = additionalInfo.OrigTranslation;
+        }
+    }
 
     public async Task LoadText(string text = "")
     {
@@ -79,6 +130,34 @@
             BaseText = text;
             await markdownRef.SetValueAsync(text);
         }
+    }
+
+    async Task CreateTextQuestion()
+    {
+        if (IsLastSaved)
+        {
+            await CreateTextAction();
+        }
+        else if (!IsLastSaved && string.IsNullOrEmpty(additionalInfo.UserTranslation)
+                              && string.IsNullOrEmpty(additionalInfo.UserVariation1)
+                              && string.IsNullOrEmpty(additionalInfo.UserVariation2))
+        {
+            if (wantsToContinueModalRef != null)
+                await wantsToContinueModalRef.Show();
+        }
+    }
+
+    async Task WantsCancel()
+    {
+        if (wantsToContinueModalRef != null)
+            await wantsToContinueModalRef.Hide();
+    }
+
+    async Task WantsContinue()
+    {
+        if (wantsToContinueModalRef != null)
+            await wantsToContinueModalRef.Hide();
+        await CreateTextAction();
     }
 
     async Task CreateTextAction()

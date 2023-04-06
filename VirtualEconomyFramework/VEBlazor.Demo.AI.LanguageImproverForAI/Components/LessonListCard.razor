@@ -61,6 +61,8 @@
                         }
                         else
                         {
+                            <Heading Size="HeadingSize.Is5" Margin="Margin.Is2.FromTop">Original User Input Base</Heading>
+                            <CardText Margin="Margin.Is1.FromTop">@ParsedInfo.OrigUserBaseText</CardText>
                             <Heading Size="HeadingSize.Is5" Margin="Margin.Is2.FromTop">Original Text</Heading>
                             <CardText Margin="Margin.Is1.FromTop">@ParsedInfo.OrigAIText</CardText>
                             <Heading Size="HeadingSize.Is5" Margin="Margin.Is2.FromTop">Original Translation</Heading>
@@ -85,16 +87,18 @@
                         Type="ButtonType.Link" To="@("/search?txid=" + NFT.Utxo + "&index=0")" Target="Target.Blank">@FullLesson</Button>
                     </Column>
                 </Row>
-                @if (NFT.PriceActive)
+                <!--
+                if (NFT.PriceActive)
                 {
                     <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
                         <Column>
                             <Button Color="Color.Secondary" 
                 Block
-                            Type="ButtonType.Link" To="@("https://apptest.ve-nft.com/buynft?utxo=" + NFT.Utxo + "&index=0")" Target="Target.Blank">@BuyLesson</Button>
+                            Type="ButtonType.Link" To="("https://apptest.ve-nft.com/buynft?utxo=" + NFT.Utxo + "&index=0")" Target="Target.Blank">BuyLesson</Button>
                         </Column>
                     </Row>
                 }
+                -->
             }
         </CardBody>
     </Card>

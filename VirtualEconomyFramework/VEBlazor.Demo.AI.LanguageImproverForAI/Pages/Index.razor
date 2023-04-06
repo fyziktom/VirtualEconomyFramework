@@ -53,25 +53,25 @@
 
 <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop.Is3.FromBottom">
     <Column>
-        <GetText @ref="getTextRef" TextCreated="@onTextCreatedHandler" Language="@Language" />
+        <GetText @ref="getTextRef" TextCreated="@onTextCreatedHandler" Language="@Language" IsLastSaved="@Minted" />
     </Column>
 </Row>
 
 <Field>
     <FieldLabel>Your translation</FieldLabel>
-    <MemoEdit Rows="2" Placeholder="Fill your version of translation" @bind-Text="@additionalInfo.UserTranslation" />
+    <MemoEdit Rows="2" Placeholder="Fill your version of translation" Text="@additionalInfo.UserTranslation" TextChanged="onUserTranslationChangedHandler" />
     <FieldHelp>Input your version of correct Papiamento translation of basic text.</FieldHelp>
 </Field>
 
 <Field>
     <FieldLabel>Variation 1</FieldLabel>
-    <MemoEdit Rows="2" Placeholder="Fill your version of translation" @bind-Text="@additionalInfo.UserVariation1" />
+    <MemoEdit Rows="2" Placeholder="Fill your version of translation" Text="@additionalInfo.UserVariation1" TextChanged="onUserVariation1ChangedHandler" />
     <FieldHelp>Create some alternative exmplanation of same meaning in Papiamento.</FieldHelp>
 </Field>
 
 <Field>
     <FieldLabel>Variation 2</FieldLabel>
-    <MemoEdit Rows="2" Placeholder="Fill your version of translation" @bind-Text="@additionalInfo.UserVariation2" />
+    <MemoEdit Rows="2" Placeholder="Fill your version of translation" Text="@additionalInfo.UserVariation2" TextChanged="onUserVariation2ChangedHandler" />
     <FieldHelp>Create some second alternative exmplanation of same meaning in Papiamento.</FieldHelp>
 </Field>
 
@@ -79,7 +79,7 @@
     <Column>
         <Field>
             <FieldLabel>Fill name of the record</FieldLabel>
-            <TextEdit Placeholder="some name for this record" @bind-Text="@NFT.Name" />
+            <TextEdit Placeholder="some name for this record" Text="@NFT.Name" TextChanged="onNameChangedHandler" />
         </Field>
         <Field>
             <FieldLabel>Fill some tags</FieldLabel>
@@ -104,9 +104,9 @@
 
 <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
     <Column>
-        @if (!string.IsNullOrEmpty(additionalInfo.UserTranslation) && !string.IsNullOrEmpty(additionalInfo.UserVariation1) && !string.IsNullOrEmpty(additionalInfo.UserVariation2) && !string.IsNullOrEmpty(NFT.Name) && !string.IsNullOrEmpty(NFT.Tags))
+        @if (!Minted && !string.IsNullOrEmpty(additionalInfo.UserTranslation) && !string.IsNullOrEmpty(additionalInfo.UserVariation1) && !string.IsNullOrEmpty(additionalInfo.UserVariation2) && !string.IsNullOrEmpty(NFT.Name) && !string.IsNullOrEmpty(NFT.Tags))
         {
-            <Button Color=" Color.Primary" Clicked="@MintNFT" Loading="@MintingNFT" Block>Save NFT</Button>
+            <Button Color=" Color.Primary" Clicked="@MintNFT" Loading="@MintingNFT" Block>Save Record</Button>
         }
         else
         {
@@ -117,20 +117,14 @@
 </Row>
 
 <Row Margin="Margin.Is2.FromTop">
-    <Column Flex="Flex.JustifyContent.Center">
-        NFT Id of Transaction: <Link To="@("https://explorer.nebl.io/tx/" + @NFTTxId)" Target="Target.Blank">@NFTTxId</Link>
-    </Column>
-</Row>
-
-<Row Margin="Margin.Is2.FromTop">
     <Column>
-        Link to <Link To="@("/search?txid=" + @NFTTxId + "&index=0")" Target="Target.Blank">Show NFT</Link>
+        Link to <Link To="@("/search?txid=" + @LastMintedTx + "&index=0")" Target="Target.Blank">Show Record</Link>
     </Column>
 </Row>
 
 <Row Margin="Margin.Is2.FromTop.Is5.FromBottom">
     <Column>
-        <VEFramework.VEBlazor.Components.Display.CopyButton TextToCopy="@(Navigator.BaseUri + "/search?txid=" + @NFTTxId + "&index=0")" ButtonText="Copy link to NFT" />
+        <VEFramework.VEBlazor.Components.Display.CopyButton TextToCopy="@(Navigator.BaseUri + "/search?txid=" + @LastMintedTx + "&index=0")" ButtonText="Copy link to Record" />
     </Column>
 </Row>
 
@@ -151,6 +145,7 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        
         if (firstRender)
         {
             Language = Languages.en2pap;
@@ -159,24 +154,89 @@
                 NFT.Author = res;
             else
                 NFT.Author = "Anonymní student";
+
+            additionalInfo = await AppDataService.GetAdditionalInfoAsync();
+            var nt = await AppDataService.GetNameAndTagsAsync();
+            if (nt.Item1 != null && nt.Item2 != null)
+            {
+                NFT.Name = nt.Item1;
+                NFT.Tags = nt.Item2;
+            }
+            else
+            {
+                NFT.Name = string.Empty;
+                NFT.Tags = string.Empty;
+            }
+
             await InvokeAsync(StateHasChanged);
         }
     }
+
+    private async Task onUserTranslationChangedHandler(string e)
+    {
+        if (e != null)
+        {
+            additionalInfo.UserTranslation = e;
+            await AppDataService.SaveAdditionalInfoAsync(additionalInfo);
+        }
+    }
+
+    private async Task onUserVariation1ChangedHandler(string e)
+    {
+        if (e != null)
+        {
+            additionalInfo.UserVariation1 = e;
+            await AppDataService.SaveAdditionalInfoAsync(additionalInfo);
+        }
+    }
+
+    private async Task onUserVariation2ChangedHandler(string e)
+    {
+        if (e != null)
+        {
+            additionalInfo.UserVariation2 = e;
+            await AppDataService.SaveAdditionalInfoAsync(additionalInfo);
+        }
+    }
+    
+    private async Task onNameChangedHandler(string e)
+    {
+        if (e != null)
+        {
+            NFT.Name = e;
+            await AppDataService.SaveNameAndTagsAsync(NFT.Name, NFT.Tags);
+        }
+    }
+
 
     private void onTextCreatedHandler((string, (string, string)) e)
     {
         if (!string.IsNullOrEmpty(e.Item2.Item1))
         {
+            NFTTxId = string.Empty;
+            Minted = false;
+
             additionalInfo.OrigUserBaseText = e.Item1;
             additionalInfo.OrigAIText = e.Item2.Item1;
             additionalInfo.OrigTranslation = e.Item2.Item2;
+
+            additionalInfo.UserTranslation = string.Empty;
+            additionalInfo.UserVariation1 = string.Empty;
+            additionalInfo.UserVariation2 = string.Empty;
+
+            AppDataService.SaveAdditionalInfo(additionalInfo);
+
+            StateHasChanged();
         }
     }
 
     private async Task onTagsChangedHandler(string e)
     {
         if (e != null)
+        {
             NFT.Tags = e;
+            await AppDataService.SaveNameAndTagsAsync(NFT.Name, NFT.Tags);
+        }
         await InvokeAsync(StateHasChanged);
     }
 
@@ -185,14 +245,18 @@
         MintingNFT = true;
         await InvokeAsync(StateHasChanged);
 
-        additionalInfo.OrigUserBaseText = additionalInfo.OrigUserBaseText.Replace("\n", "%0A");
-        additionalInfo.OrigAIText = additionalInfo.OrigAIText.Replace("\n", "%0A");
-        additionalInfo.OrigTranslation = additionalInfo.OrigTranslation.Replace("\n", "%0A");
-        additionalInfo.UserTranslation = additionalInfo.UserTranslation.Replace("\n", "%0A");
-        additionalInfo.UserVariation1 = additionalInfo.UserVariation1.Replace("\n", "%0A");
-        additionalInfo.UserVariation2 = additionalInfo.UserVariation2.Replace("\n", "%0A");
+        await AppDataService.SaveAdditionalInfoAsync(additionalInfo);
+        await AppDataService.SaveNameAndTagsAsync(NFT.Name, NFT.Tags);
 
-        NFT.Text = JsonConvert.SerializeObject(additionalInfo);
+        var addInfo = new AdditionalInfo();
+        addInfo.OrigUserBaseText = additionalInfo.OrigUserBaseText.Replace("\n", "%0A");
+        addInfo.OrigAIText = additionalInfo.OrigAIText.Replace("\n", "%0A");
+        addInfo.OrigTranslation = additionalInfo.OrigTranslation.Replace("\n", "%0A");
+        addInfo.UserTranslation = additionalInfo.UserTranslation.Replace("\n", "%0A");
+        addInfo.UserVariation1 = additionalInfo.UserVariation1.Replace("\n", "%0A");
+        addInfo.UserVariation2 = additionalInfo.UserVariation2.Replace("\n", "%0A");
+
+        NFT.Text = JsonConvert.SerializeObject(addInfo);
 
         var obj = new
         {
@@ -205,16 +269,22 @@
         };
 
         var cnt = JsonConvert.SerializeObject(obj);
-
-        using (var content = new StringContent(cnt, System.Text.Encoding.UTF8, "application/json"))
+        if (cnt != null)
         {
-            HttpResponseMessage result = await Http.PostAsync("/api/MintPostNFT", content);
-            if (result.StatusCode == System.Net.HttpStatusCode.OK)
+            using (var content = new StringContent(cnt, System.Text.Encoding.UTF8, "application/json"))
             {
-                var returnStr = await result.Content.ReadAsStringAsync();
+                HttpResponseMessage result = await Http.PostAsync("/api/MintPostNFT", content);
+                if (result.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    var returnStr = await result.Content.ReadAsStringAsync();
 
-                if (returnStr != null)
-                    NFTTxId = returnStr;
+                    if (returnStr != null)
+                    {
+                        NFTTxId = returnStr;
+                        LastMintedTx = NFTTxId;
+                        Minted = true;
+                    }
+                }
             }
         }
 
