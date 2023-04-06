@@ -134,16 +134,26 @@
 
     async Task CreateTextQuestion()
     {
-        if (IsLastSaved)
+        if (IsLastSaved && string.IsNullOrEmpty(additionalInfo.UserTranslation)
+                        && string.IsNullOrEmpty(additionalInfo.OrigTranslation)
+                        && string.IsNullOrEmpty(additionalInfo.OrigAIText)
+                        && string.IsNullOrEmpty(additionalInfo.UserVariation1)
+                        && string.IsNullOrEmpty(additionalInfo.UserVariation2))
         {
             await CreateTextAction();
         }
-        else if (!IsLastSaved && string.IsNullOrEmpty(additionalInfo.UserTranslation)
-                              && string.IsNullOrEmpty(additionalInfo.UserVariation1)
-                              && string.IsNullOrEmpty(additionalInfo.UserVariation2))
+        else if (!IsLastSaved && !string.IsNullOrEmpty(additionalInfo.UserTranslation)
+                              && !string.IsNullOrEmpty(additionalInfo.OrigTranslation)
+                              && !string.IsNullOrEmpty(additionalInfo.OrigAIText)
+                              && !string.IsNullOrEmpty(additionalInfo.UserVariation1)
+                              && !string.IsNullOrEmpty(additionalInfo.UserVariation2))
         {
             if (wantsToContinueModalRef != null)
                 await wantsToContinueModalRef.Show();
+        }
+        else
+        {
+            await CreateTextAction();
         }
     }
 
@@ -166,6 +176,9 @@
 
         if (NotificationService != null)
             await NotificationService.Info("Creating text...", "AI's working");
+
+        if (string.IsNullOrEmpty(BaseText))
+            BaseText = "something what makes people happy";
 
         var baset = "Create short text about: " + BaseText.Replace("\"", "\\\"") + ". Output maximum two sentenses.";
 
