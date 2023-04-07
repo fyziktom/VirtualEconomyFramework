@@ -132,6 +132,14 @@
         }
     }
 
+    public void Clear()
+    {
+        BaseText = string.Empty;
+        additionalInfo = new AdditionalInfo();
+        TextByAI = string.Empty;
+        TranslationByAI = string.Empty;
+    }
+
     async Task CreateTextQuestion()
     {
         if (IsLastSaved && string.IsNullOrEmpty(additionalInfo.UserTranslation)

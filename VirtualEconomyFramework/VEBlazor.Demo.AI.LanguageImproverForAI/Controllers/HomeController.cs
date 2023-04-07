@@ -18,6 +18,7 @@ using VEDriversLite.AI.OpenAI.Dto;
 using System.IO;
 using Newtonsoft.Json;
 using Blazorise;
+using VEDriversLite.NFT.Tags;
 
 namespace VEBlazor.Demo.AI.LanguageImproverForAI.Controllers
 {
@@ -77,6 +78,93 @@ namespace VEBlazor.Demo.AI.LanguageImproverForAI.Controllers
                 throw new HttpResponseException((HttpStatusCode)501, $"Cannot get NFT {utxo}!");
             }
         }
+
+        [HttpGet("GetNFTTags")]
+        public async Task<Dictionary<string, Tag>> GetNFTTags()
+        {
+            var dict = new Dictionary<string, Tag>();
+            var tags = NFTDataContext.Tags.Values.ToList()?.OrderByDescending(t => t.Count).ToList();
+            if (tags == null) return dict;
+
+            foreach (var tag in tags)
+                dict.Add(tag.Name, tag);
+            return dict;
+        }
+        [HttpGet("GetNFTTags/{skip}/{take}")]
+        public async Task<Dictionary<string, Tag>> GetNFTTags(int skip = 0, int take = 25)
+        {
+            var dict = new Dictionary<string, Tag>();
+            var tags = NFTDataContext.Tags.Values.ToList()?.OrderByDescending(t => t.Count).ToList().Skip(skip).Take(take);
+            if (tags == null) return dict;
+
+            foreach (var tag in tags)
+                dict.Add(tag.Name, tag);
+            return dict;
+        }
+
+        [HttpGet("GetNFTPostsByTags/{tagName}")]
+        public async Task<Dictionary<string, PostNFT>> GetNFTPostsByTags(string tagName)
+        {
+            return await GetNFTPostsByTags(tagName, 0);
+        }
+
+        [HttpGet("GetNFTPostsByTags/{tagName}/{settings}/{skip}/{take}")]
+        public async Task<Dictionary<string, PostNFT>> GetNFTPostsByTags(string tagName, int settings = 0, int skip = 0, int take = 25)
+        {
+            var dict = new Dictionary<string, PostNFT>();
+
+            if (VEDLDataContext.Accounts.TryGetValue(MainDataContext.MainAccount, out var account))
+            {
+                foreach (var nft in account.NFTs.Where(n => n.Type == NFTTypes.Post).Where(n => n.TagsList.Contains(tagName)).Skip(skip).Take(take))
+                {
+                    nft.TxDetails = null;
+                    dict.Add($"{nft.Utxo}:{nft.UtxoIndex}", nft as PostNFT);
+                }
+            }
+
+            return dict;
+        }
+
+        public class PostByTagsRequestDto
+        {
+            public string tags { get; set; } = string.Empty;
+            public int skip { get; set; } = 0;
+            public int take { get; set; } = 25;
+        }
+
+        [HttpPost("GetNFTPostsByMultipleTags")]
+        public async Task<Dictionary<string, PostNFT>> GetNFTPostsByMultipleTags(PostByTagsRequestDto data)
+        {
+            var dict = new Dictionary<string, PostNFT>();
+
+            if (string.IsNullOrEmpty(data.tags))
+                return dict;
+
+            var splitTags = data.tags.Split(' ');
+
+            if (splitTags.Length == 0)
+                return dict;
+
+            // remove same tags
+            var finTags = new HashSet<string>(splitTags);
+
+            if (VEDLDataContext.Accounts.TryGetValue(MainDataContext.MainAccount, out var account))
+            {
+                var filteredNFTs = account.NFTs.Where(n => n.Type == NFTTypes.Post &&
+                                                            finTags.All(tag => n.TagsList.Contains(tag)))
+                                                .Skip(data.skip)
+                                                .Take(data.take);
+
+                foreach (var nft in filteredNFTs)
+                {
+                    nft.TxDetails = null;
+                    dict.Add($"{nft.Utxo}:{nft.UtxoIndex}", nft as PostNFT);
+                }
+            }
+
+            return dict;
+        }
+
 
         /// <summary>
         /// Get Last records

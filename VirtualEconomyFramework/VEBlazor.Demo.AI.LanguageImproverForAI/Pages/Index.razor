@@ -96,7 +96,7 @@
     <Column>
         <Field>
             <FieldLabel>Author:</FieldLabel>
-            <TextEdit @bind-Text="NFT.Author" Placeholder="Name or Nickname" />
+            <TextEdit Text="@NFT.Author" TextChanged="@onAuthorChangedHandler" Placeholder="Name or Nickname" />
             <FieldHelp>Optional: Plese fill your name or nickname</FieldHelp>
         </Field>
     </Column>
@@ -128,10 +128,47 @@
     </Column>
 </Row>
 
+<Modal @ref="wantsToCreateAnotherModalRef">
+    <ModalContent Centered Size="ModalSize.ExtraLarge">
+        <ModalHeader>
+            <ModalTitle>Create new record</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <Row>
+                <Column>
+                    Do you want to create another record? Each record helps us.
+                </Column>
+            </Row>
+            <Row>
+                <Column>
+                    There are so many topics you can try to translate. 
+                </Column>
+            </Row>
+            <Row>
+                <Column>
+                    If you want to continue please click to "Next" button. If you want to end please click "Cancel" button.
+                </Column>
+            </Row>
+            <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
+                <Column>
+                    <Button Color="Color.Secondary" Clicked="@WantsCancel" Loading="@Loading" Block>Cancel</Button>
+                </Column>
+            </Row>
+            <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
+                <Column>
+                    <Button Color="Color.Primary" Clicked="@WantsContinue" Loading="@Loading" Block>Next</Button>
+                </Column>
+            </Row>
+        </ModalBody>
+    </ModalContent>
+</Modal>
+
 
 @code {
 
     GetText getTextRef;
+    Modal? wantsToCreateAnotherModalRef;
 
     INFT NFT = new PostNFT("");
 
@@ -143,17 +180,14 @@
     string Receiver = string.Empty;
     string NFTTxId = string.Empty;
 
+    Dictionary<string, VEDriversLite.NFT.Tags.Tag> SourceTags = new Dictionary<string, VEDriversLite.NFT.Tags.Tag>();
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        
         if (firstRender)
         {
             Language = Languages.en2pap;
-            var res = await AppDataService.GetAuthor();
-            if (!string.IsNullOrEmpty(res))
-                NFT.Author = res;
-            else
-                NFT.Author = "Anonymní student";
+            await GetAuthor();
 
             additionalInfo = await AppDataService.GetAdditionalInfoAsync();
             var nt = await AppDataService.GetNameAndTagsAsync();
@@ -170,6 +204,40 @@
 
             await InvokeAsync(StateHasChanged);
         }
+    }
+
+
+    private async Task GetAuthor()
+    {
+        var res = await AppDataService.GetAuthor();
+        if (!string.IsNullOrEmpty(res))
+            NFT.Author = res;
+        else
+            NFT.Author = "Estudiante anónimo";
+    }
+
+    private async Task WantsCancel()
+    {
+        if (wantsToCreateAnotherModalRef != null)
+            await wantsToCreateAnotherModalRef.Hide();
+    }
+
+    private async Task WantsContinue()
+    {
+        if (wantsToCreateAnotherModalRef != null)
+            await wantsToCreateAnotherModalRef.Hide();
+
+        NFT = new PostNFT("");
+        additionalInfo = new AdditionalInfo();
+        Minted = false;
+        await AppDataService.SaveAdditionalInfoAsync(additionalInfo);
+        await AppDataService.SaveNameAndTagsAsync(NFT.Name, NFT.Tags);
+        getTextRef.Clear();
+        await GetAuthor();
+
+        await InvokeAsync(StateHasChanged);
+
+        Navigator.NavigateTo("/");
     }
 
     private async Task onUserTranslationChangedHandler(string e)
@@ -198,13 +266,23 @@
             await AppDataService.SaveAdditionalInfoAsync(additionalInfo);
         }
     }
-    
+
     private async Task onNameChangedHandler(string e)
     {
         if (e != null)
         {
             NFT.Name = e;
             await AppDataService.SaveNameAndTagsAsync(NFT.Name, NFT.Tags);
+        }
+    }
+
+    private async Task onAuthorChangedHandler(string e)
+    {
+        if (e != null)
+        {
+            NFT.Author = e;
+            if (NFT.Author != "Estudiante anónimo" || NFT.Author != string.Empty)
+                await AppDataService.SaveAuthor(NFT.Author);
         }
     }
 
@@ -235,9 +313,27 @@
         if (e != null)
         {
             NFT.Tags = e;
-            await AppDataService.SaveNameAndTagsAsync(NFT.Name, NFT.Tags);
+            if (NFT.Name != "")
+                await AppDataService.SaveNameAndTagsAsync(NFT.Name, NFT.Tags);
         }
         await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task GetTags()
+    {
+        var res = await Http.GetStringAsync("/api/GetNFTTags/0/50");
+        if (!string.IsNullOrEmpty(res))
+        {
+            try
+            {
+                var tags = JsonConvert.DeserializeObject<Dictionary<string,VEDriversLite.NFT.Tags.Tag>>(res);
+                if (tags != null)
+                {
+                    SourceTags = tags;
+                }
+            }
+            catch { }
+        }
     }
 
     private async Task MintNFT()
@@ -283,6 +379,9 @@
                         NFTTxId = returnStr;
                         LastMintedTx = NFTTxId;
                         Minted = true;
+
+                        if (wantsToCreateAnotherModalRef != null)
+                            await wantsToCreateAnotherModalRef.Show();
                     }
                 }
             }
