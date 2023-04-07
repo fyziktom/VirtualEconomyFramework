@@ -17,7 +17,7 @@ namespace VEFramework.VEBlazor.Models
         public string OpenAPIKey { get; set; }
     }
 
-    public class SubAccountAccountInfo : AccountExportDto
+    public class SubAccountInfo : AccountExportDto
     {
         [System.ComponentModel.DataAnnotations.Key]
         public long Id { get; set; }

@@ -45,8 +45,8 @@
                 <CollapseHeader Padding="Padding.Is0.FromBottom">
                     <Row>
                         <Column>
-                            <Button Clicked="@(()=>collapse1Visible = !collapse1Visible)">
-                                <Icon Name="@(collapse1Visible ? IconName.AngleUp : IconName.AngleDown)" />
+                            <Button Clicked="@(()=>collapse0Visible = !collapse0Visible)">
+                                <Icon Name="@(collapse0Visible ? IconName.AngleUp : IconName.AngleDown)" />
                                 Settings
                             </Button>
                         </Column>
@@ -178,6 +178,7 @@
         }
     }
 
+    bool collapse0Visible = false;
     bool collapse1Visible = false;
     bool collapse2Visible = true;
     bool collapseNFTSalesVisible = true;

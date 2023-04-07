@@ -14,6 +14,8 @@ using VEDriversLite.Security;
 using System.Text;
 using VEFramework.VEBlazor.Models;
 using IndexedDB.Blazor;
+using VEDriversLite.Dto;
+using Newtonsoft.Json;
 
 public enum TabType
 {
@@ -192,8 +194,7 @@ public class AppData
         if (await Account.LoadAccount(password, ekey, "", withoutNFTs))
         {
             address = Account.Address;
-            IsAccountLoaded = true;
-            
+                        
             if (migrateToDb)
             {
                 await Console.Out.WriteLineAsync("Migrating the keys to IndexedDb");
@@ -205,10 +206,40 @@ public class AppData
                 }
             }
 
+            var migSA = false;
+            var migSuc = false;
+            if (await localStorage.ContainKeyAsync("subAccounts"))
+                migSA = true;
+            else
+                migSuc = true;
+
+            if (migSA)
+                if (await MigrateSubAccountsToDb())
+                    migSuc = true;
+
+            if (migSuc)
+            {
+                var sas = await GetSubAccountsFromDb();
+                if (sas.Item1)
+                {
+                    var acnts = JsonConvert.SerializeObject(sas.Item2);
+                    if (!string.IsNullOrEmpty(acnts))
+                    {
+                        await Account.LoadSubAccounts(acnts);
+                        //if (migSA)
+                        //  if (await localStorage.ContainKeyAsync("subAccounts"))
+                        //     await localStorage.RemoveItemAsync("subAccounts");
+                    }
+                }
+            }
+
             await LoadBookmarks();
+
             await SaveCache();
             // try init assistant if there is stored OpenAI api key in the browser local memory
             await InitAssistant();
+
+            IsAccountLoaded = true;
         }
         else
         {
@@ -311,6 +342,184 @@ public class AppData
                 }
 
                 await db.SaveChanges();
+            }
+            return true;
+        }
+        catch (Exception ex)
+        {
+            await Console.Out.WriteLineAsync("Cannot save the record to the Db. Ex: " + ex.Message);
+        }
+        return false;
+    }
+
+    public async Task<bool> SaveSubAccountToDb(SubAccountInfo subAccount)
+    {
+        try
+        {
+            using (var db = await this.DbFactory.Create<VEFDb>())
+            {
+                var done = false;
+                try
+                {
+                    if (db.Accounts.Count > 0)
+                    {
+                        var account = db.SubAccounts.Single(x => x.Address == subAccount.Address);
+                        if (account != null)
+                        {
+                            if (subAccount.EKey != null)
+                                account.EKey = subAccount.EKey;
+                            if (subAccount.Address != null)
+                                account.Address = subAccount.Address;
+                            if (subAccount.Name != null)
+                                account.Name = subAccount.Name;
+                            if (subAccount.ESKey != null)
+                                account.ESKey = subAccount.ESKey;
+                            account.ConnectToMainShop = subAccount.ConnectToMainShop;
+                            account.IsDogeAccount = subAccount.IsDogeAccount;
+                            account.IsDepositAccount = subAccount.IsDepositAccount;
+                            account.IsReceivingAccount = subAccount.IsReceivingAccount;
+
+                            done = true;
+                        }
+                    }
+                }
+                catch { }
+
+                if (!done)
+                {
+                    var account = new SubAccountInfo();
+
+                    if (subAccount.EKey != null)
+                        account.EKey = subAccount.EKey;
+                    if (subAccount.Address != null)
+                        account.Address = subAccount.Address;
+                    if (subAccount.Name != null)
+                        account.Name = subAccount.Name;
+                    if (subAccount.ESKey != null)
+                        account.ESKey = subAccount.ESKey;
+                    account.ConnectToMainShop = subAccount.ConnectToMainShop;
+                    account.IsDogeAccount = subAccount.IsDogeAccount;
+                    account.IsDepositAccount = subAccount.IsDepositAccount;
+                    account.IsReceivingAccount = subAccount.IsReceivingAccount;
+
+                    db.SubAccounts.Add(account);
+                }
+
+                await db.SaveChanges();
+            }
+            return true;
+        }
+        catch (Exception ex)
+        {
+            await Console.Out.WriteLineAsync("Cannot save the record to the Db. Ex: " + ex.Message);
+        }
+        return false;
+    }
+
+    public async Task<bool> SaveSubAccountsToDb(List<SubAccountInfo> subAccounts)
+    {
+        try
+        {
+            using (var db = await this.DbFactory.Create<VEFDb>())
+            {
+                foreach (var subAccount in subAccounts)
+                {
+                    var done = false;
+                    try
+                    {
+                        if (db.Accounts.Count > 0)
+                        {
+                            var account = db.SubAccounts.Single(x => x.Address == subAccount.Address);
+                            if (account != null)
+                            {
+                                if (subAccount.EKey != null)
+                                    account.EKey = subAccount.EKey;
+                                if (subAccount.Address != null)
+                                    account.Address = subAccount.Address;
+                                if (subAccount.Name != null)
+                                    account.Name = subAccount.Name;
+                                if (subAccount.ESKey != null)
+                                    account.ESKey = subAccount.ESKey;
+                                account.ConnectToMainShop = subAccount.ConnectToMainShop;
+                                account.IsDogeAccount = subAccount.IsDogeAccount;
+                                account.IsDepositAccount = subAccount.IsDepositAccount;
+                                account.IsReceivingAccount = subAccount.IsReceivingAccount;
+
+                                done = true;
+                            }
+                        }
+                    }
+                    catch { }
+
+                    if (!done)
+                    {
+                        var account = new SubAccountInfo();
+
+                        if (subAccount.EKey != null)
+                            account.EKey = subAccount.EKey;
+                        if (subAccount.Address != null)
+                            account.Address = subAccount.Address;
+                        if (subAccount.Name != null)
+                            account.Name = subAccount.Name;
+                        if (subAccount.ESKey != null)
+                            account.ESKey = subAccount.ESKey;
+                        account.ConnectToMainShop = subAccount.ConnectToMainShop;
+                        account.IsDogeAccount = subAccount.IsDogeAccount;
+                        account.IsDepositAccount = subAccount.IsDepositAccount;
+                        account.IsReceivingAccount = subAccount.IsReceivingAccount;
+
+                        db.SubAccounts.Add(account);
+                    }
+                }
+
+                await db.SaveChanges();
+            }
+            return true;
+        }
+        catch (Exception ex)
+        {
+            await Console.Out.WriteLineAsync("Cannot save the record to the Db. Ex: " + ex.Message);
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// Get SubAccounts List if exists in the Db
+    /// </summary>
+    /// <returns>True if exists in the Db.</returns>
+    public async Task<(bool, List<SubAccountInfo>)> GetSubAccountsFromDb()
+    {
+        try
+        {
+            using (var db = await this.DbFactory.Create<VEFDb>())
+            {
+                var accounts = db.SubAccounts.Where(s => !string.IsNullOrEmpty(s.EKey)).ToList();
+                return (true, accounts);
+            }
+        }
+        catch (Exception ex)
+        {
+            await Console.Out.WriteLineAsync("Cannot save the record to the Db. Ex: " + ex.Message);
+        }
+        return (false, new List<SubAccountInfo>());
+    }
+
+    private async Task<bool> MigrateSubAccountsToDb()
+    {
+        try
+        {
+            var sas = await localStorage.GetItemAsync<string>("subAccounts");
+            if (!string.IsNullOrEmpty(sas))
+            {
+                var accnts = JsonConvert.DeserializeObject<List<SubAccountInfo>>(sas);
+                foreach (var a in accnts)
+                    a.Id = -1;
+
+                if (accnts == null)
+                    return false;
+
+                var res = await SaveSubAccountsToDb(accnts);
+                return res;
             }
             return true;
         }

@@ -12,6 +12,6 @@ namespace VEFramework.VEBlazor.Models
     {
         public VEFDb(IJSRuntime jSRuntime, string name, int version) : base(jSRuntime, name, version) { }
         public IndexedSet<AccountInfo> Accounts { get; set; }
-        public IndexedSet<SubAccountAccountInfo> SubAccounts { get; set; }
+        public IndexedSet<SubAccountInfo> SubAccounts { get; set; }
     }
 }
