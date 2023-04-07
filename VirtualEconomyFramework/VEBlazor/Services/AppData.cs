@@ -252,12 +252,8 @@ public class AppData
         {
             using (var db = await this.DbFactory.Create<VEFDb>())
             {
-                if (db.Accounts.Count > 0)
-                {
-                    var account = db.Accounts.Single(x => x.Id == 1);
-
-                    return (true, account.OpenAPIKey);
-                }
+                var account = db.Accounts.Single(x => x.Id == 1);
+                return (true, account.OpenAPIKey);
             }
         }
         catch (Exception ex)
@@ -348,9 +344,13 @@ public class AppData
             var ekey = SymetricProvider.EncryptString(ackey.PasswordHashString, key, ekeyIV);
             var keyToStore = SymetricProvider.JoinIVToString(ekey, ekeyIV);
 
-            var oaiIV = SymetricProvider.GetIV();
-            var eoai = SymetricProvider.EncryptString(ackey.PasswordHashString, openAPIKey, oaiIV);
-            var eoaiToStore = SymetricProvider.JoinIVToString(eoai, oaiIV);
+            string? eoaiToStore = null;
+            if (!string.IsNullOrEmpty(openAPIKey))
+            {
+                var oaiIV = SymetricProvider.GetIV();
+                var eoai = SymetricProvider.EncryptString(ackey.PasswordHashString, openAPIKey, oaiIV);
+                eoaiToStore = SymetricProvider.JoinIVToString(eoai, oaiIV);
+            }
 
             var checkAcc = await GetAccountInfoFromDb();
             if (checkAcc.Item1)
@@ -362,13 +362,16 @@ public class AppData
             {
                 using (var db = await this.DbFactory.Create<VEFDb>())
                 {
-                    db.Accounts.Add(new AccountInfo()
+                    var ai = new AccountInfo()
                     {
                         Address = address,
-                        Key = keyToStore,
-                        OpenAPIKey = eoaiToStore
-                    });
+                        Key = keyToStore
+                    };
 
+                    if (eoaiToStore != null)
+                        ai.OpenAPIKey = eoaiToStore;
+
+                    db.Accounts.Add(ai);
                     await db.SaveChanges();
 
                     var mresCheck = await GetAccountInfoFromDb();
@@ -425,6 +428,7 @@ public class AppData
         var accInfo = await GetOpenAPIKeyFromDb();
         if (accInfo.Item1)
         {
+            //await localStorage.RemoveItemAsync("OpenAIapiKey");
             return accInfo.Item2;
         }
         else
@@ -471,9 +475,16 @@ public class AppData
 
             if (!done)
             {
-                var res = SymetricProvider.DecryptString(Account.Secret.ToString(), OAIapikey);
-                if (!string.IsNullOrEmpty(res))
-                    return res;
+                try
+                {
+                    if (OAIapikey != string.Empty)
+                    {
+                        var res = SymetricProvider.DecryptString(Account.Secret.ToString(), OAIapikey);
+                        if (!string.IsNullOrEmpty(res))
+                            return res;
+                    }
+                }
+                catch { }
             }
         }
 
