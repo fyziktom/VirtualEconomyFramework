@@ -34,6 +34,10 @@ namespace VEDriversLite.Dto
         /// </summary>
         public string Key { get; set; } = string.Empty;
         /// <summary>
+        /// 
+        /// </summary>
+        public string OpenAIApiKey { get; set; } = string.Empty;
+        /// <summary>
         /// Main Dogecoin Address
         /// </summary>
         public string DogeAddress { get; set; } = string.Empty;

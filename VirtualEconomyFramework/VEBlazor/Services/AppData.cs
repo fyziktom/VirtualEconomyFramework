@@ -12,6 +12,8 @@ using System.Collections.Concurrent;
 using VEDriversLite.AI.OpenAI;
 using VEDriversLite.Security;
 using System.Text;
+using VEFramework.VEBlazor.Models;
+using IndexedDB.Blazor;
 
 public enum TabType
 {
@@ -62,10 +64,12 @@ public class MintingToolbarActionDto
 public class AppData
 {
     protected readonly ILocalStorageService localStorage;
+    protected readonly IIndexedDbFactory DbFactory;
 
-    public AppData(ILocalStorageService LocalStorage)
+    public AppData(ILocalStorageService LocalStorage, IIndexedDbFactory dbFactory)
     {
         localStorage = LocalStorage;
+        DbFactory = dbFactory;
     }
 
     public const string NeblioImageLink = "https://ve-framework.com/ipfs/QmPUvBN4qKvGyKKhADBJKSmNC7JGnr3Rwf5ndENGMfpX54";
@@ -143,16 +147,41 @@ public class AppData
 
     public async Task<bool> DoesAccountExist()
     {
-        var ekey = await localStorage.GetItemAsync<string>("key");
-        if (string.IsNullOrEmpty(ekey))
-            return false;
-        else
+        var res = await GetAccountInfoFromDb();
+        if (res.Item1)
             return true;
+        else
+        {
+            var ekey = await localStorage.GetItemAsync<string>("key");
+            if (!string.IsNullOrEmpty(ekey))
+                return true;
+        }
+
+        return false;
     }
 
     public async Task<(bool,string)> UnlockAccount(string password, bool withoutNFTs = false)
     {
-        var ekey = await localStorage.GetItemAsync<string>("key");
+        var ekey = string.Empty;
+        var address = string.Empty;
+        var migrateToDb = false;
+        var res = await GetAccountInfoFromDb();
+        if (res.Item1)
+        {
+            address = res.Item2.Item1;
+            ekey = res.Item2.Item2;
+            var m = SymetricProvider.ContainsIV(ekey);
+            if (!m)
+                migrateToDb = true;
+        }
+        else
+        {
+            // for the case that someone was not migrated yet
+            ekey = await localStorage.GetItemAsync<string>("key");
+            address = await localStorage.GetItemAsync<string>("address");
+            migrateToDb = true;
+        }
+
         if (string.IsNullOrEmpty(ekey))
             return (false, string.Empty);
 
@@ -160,11 +189,21 @@ public class AppData
         VEDLDataContext.AllowCache = true; //turn on/off NFT cache
 
         await LoadChache();
-        var address = string.Empty;
         if (await Account.LoadAccount(password, ekey, "", withoutNFTs))
         {
             address = Account.Address;
             IsAccountLoaded = true;
+            
+            if (migrateToDb)
+            {
+                await Console.Out.WriteLineAsync("Migrating the keys to IndexedDb");
+                var migres = await MigrateToIndexedDb(address, Account.Secret.ToString(), password);
+                if (migres)
+                {
+                    migrateToDb = false;
+                    await Console.Out.WriteLineAsync("Migration was successful.");
+                }
+            }
 
             await LoadBookmarks();
             await SaveCache();
@@ -180,6 +219,174 @@ public class AppData
         LockUnlockAccount?.Invoke(null, IsAccountLoaded);
         
         return (IsAccountLoaded,address);
+    }
+
+    /// <summary>
+    /// Returns Account Address and Encrypted Key if exists in the Db
+    /// </summary>
+    /// <returns>True if account exists in the Db. First returned string is Address, second is the Key</returns>
+    public async Task<(bool,(string,string))> GetAccountInfoFromDb()
+    {
+        try
+        {
+            using (var db = await this.DbFactory.Create<VEFDb>())
+            {
+                var account = db.Accounts.Single(x => x.Id == 1);
+                if (account != null)
+                    return (true, (account.Address, account.Key));
+            }
+        }
+        catch (Exception ex)
+        {
+            await Console.Out.WriteLineAsync("Cannot save the record to the Db. Ex: " + ex.Message);
+        }
+        return (false, (string.Empty, string.Empty));
+    }
+    /// <summary>
+    /// Get encrypted OpenAI API Key if exists in the Db
+    /// </summary>
+    /// <returns>True if exists in the Db. String is the encrypted OpenAI API Key</returns>
+    public async Task<(bool, string)> GetOpenAPIKeyFromDb()
+    {
+        try
+        {
+            using (var db = await this.DbFactory.Create<VEFDb>())
+            {
+                if (db.Accounts.Count > 0)
+                {
+                    var account = db.Accounts.Single(x => x.Id == 1);
+
+                    return (true, account.OpenAPIKey);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            await Console.Out.WriteLineAsync("Cannot save the record to the Db. Ex: " + ex.Message);
+        }
+        return (false, string.Empty);
+    }
+
+    /// <summary>
+    /// Save account in the Db
+    /// </summary>
+    /// <param name="address">Address of the account, if not necessary to save fill null</param>
+    /// <param name="key">Encrypted key of the account, if not necessary to save fill null</param>
+    /// <param name="openAPIKey">Encrypted OpenAI API key, if not necessary to save fill null</param>
+    /// <returns></returns>
+    public async Task<bool> SaveAccountInfoToDb(string address = null, string key = null, string openAPIKey = null)
+    {
+        try
+        {
+            using (var db = await this.DbFactory.Create<VEFDb>())
+            {
+                var done = false;
+                try
+                {
+                    if (db.Accounts.Count > 0)
+                    {
+                        var account = db.Accounts.FirstOrDefault();//.Single(x => x.Id == 1);
+                        if (account != null)
+                        {
+                            if (address != null)
+                                account.Address = address;
+                            if (key != null)
+                                account.Key = key;
+                            if (openAPIKey != null)
+                                account.OpenAPIKey = openAPIKey;
+                            done = true;
+                        }
+                    }
+                }
+                catch { }
+
+                if (!done)
+                {
+                    var acc = new AccountInfo();
+
+                    if (address != null)
+                        acc.Address = address;
+                    if (key != null)
+                        acc.Key = key;
+                    if (openAPIKey != null)
+                        acc.OpenAPIKey = openAPIKey;
+
+                    db.Accounts.Add(acc);
+                }
+
+                await db.SaveChanges();
+            }
+            return true;
+        }
+        catch (Exception ex)
+        {
+            await Console.Out.WriteLineAsync("Cannot save the record to the Db. Ex: " + ex.Message);
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// Function will migrate the Account info and OpenAI API Key to the IndexedDb. 
+    /// It will use new encryption step to use PasswordHash as pass and it uses IV.
+    /// </summary>
+    /// <param name="address"></param>
+    /// <param name="key"></param>
+    /// <param name="password"></param>
+    /// <returns></returns>
+    private async Task<bool> MigrateToIndexedDb(string address, string key, string password)
+    {
+        try
+        {
+            var openAPIKey = await GetAndDecryptOpenAIApiKey();
+            if (openAPIKey == null)
+                openAPIKey = string.Empty;
+
+            var ackey = new EncryptionKey();
+            ackey.LoadPassword(password);
+
+            var ekeyIV = SymetricProvider.GetIV();
+            var ekey = SymetricProvider.EncryptString(ackey.PasswordHashString, key, ekeyIV);
+            var keyToStore = SymetricProvider.JoinIVToString(ekey, ekeyIV);
+
+            var oaiIV = SymetricProvider.GetIV();
+            var eoai = SymetricProvider.EncryptString(ackey.PasswordHashString, openAPIKey, oaiIV);
+            var eoaiToStore = SymetricProvider.JoinIVToString(eoai, oaiIV);
+
+            var checkAcc = await GetAccountInfoFromDb();
+            if (checkAcc.Item1)
+            {
+                await SaveAccountInfoToDb(address, keyToStore, eoaiToStore);
+                return true;
+            }
+            else
+            {
+                using (var db = await this.DbFactory.Create<VEFDb>())
+                {
+                    db.Accounts.Add(new AccountInfo()
+                    {
+                        Address = address,
+                        Key = keyToStore,
+                        OpenAPIKey = eoaiToStore
+                    });
+
+                    await db.SaveChanges();
+
+                    var mresCheck = await GetAccountInfoFromDb();
+                    if (mresCheck.Item1)
+                    {
+                        //await localStorage.RemoveItemAsync("key");
+                        //await localStorage.RemoveItemAsync("address");
+                    }
+
+                    return true;
+                }
+            }
+        }
+        catch(Exception ex)
+        {
+            await Console.Out.WriteLineAsync("Cannot save the record to the Db. Ex: " + ex.Message);
+        }
+        return false;
     }
 
     /// <summary>
@@ -212,22 +419,65 @@ public class AppData
         return false;
     }
 
+
+    public async Task<string?> GetOpenAIApiKey()
+    {
+        var accInfo = await GetOpenAPIKeyFromDb();
+        if (accInfo.Item1)
+        {
+            return accInfo.Item2;
+        }
+        else
+        {
+            var OAIapikey = await localStorage.GetItemAsync<string>("OpenAIapiKey");
+            if (!string.IsNullOrEmpty(OAIapikey))
+                return OAIapikey;
+        }
+        return null;
+    }
+    public async Task<bool> SaveOpenAIApiKey(string key)
+    {
+        return await SaveAccountInfoToDb(null, null, key);
+    }
+
     public async Task<string?> GetAndDecryptOpenAIApiKey()
     {
         if (!IsAccountLoaded)
             return null;
 
-        var OAIapikey = await localStorage.GetItemAsync<string>("OpenAIapiKey");
+        var OAIapikey = await GetOpenAIApiKey();
         if (string.IsNullOrEmpty(OAIapikey))
             return null;
         else
         {
-            var res = SymetricProvider.DecryptString(Account.Secret.ToString(), OAIapikey);
-            if (!string.IsNullOrEmpty(res))
-                return res;
-            else
-                return null;
+            var done = false;
+            if (SymetricProvider.ContainsIV(OAIapikey))
+            {
+                try
+                {
+                    var parse = SymetricProvider.ParseIVFromString(OAIapikey);
+                    var res = SymetricProvider.DecryptString(Account.AccountKey.PasswordHashString, parse.etext, parse.iv);
+                    if (!string.IsNullOrEmpty(res))
+                    {
+                        done = true;
+                        return res;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    await Console.Out.WriteLineAsync("Cannot decrypt OpenAPIKey with pass hash, probably older format of encrypted key.");
+                }
+            }
+
+            if (!done)
+            {
+                var res = SymetricProvider.DecryptString(Account.Secret.ToString(), OAIapikey);
+                if (!string.IsNullOrEmpty(res))
+                    return res;
+            }
         }
+
+        return null;
     }
 
     public async Task<bool> EncryptAndStoreOpenAIApiKey(string apikey = "")
@@ -237,12 +487,11 @@ public class AppData
 
         if (!string.IsNullOrEmpty(apikey))
         {
-            var res = SymetricProvider.EncryptString(Account.Secret.ToString(), apikey);
-            if (!string.IsNullOrEmpty(res))
-            {
-                await localStorage.SetItemAsStringAsync("OpenAIapiKey", res);
-                return true;
-            }
+            var iv = SymetricProvider.GetIV();
+            var res = SymetricProvider.EncryptString(Account.AccountKey.PasswordHashString, apikey, iv);
+            var store = SymetricProvider.JoinIVToString(res, iv);
+            if (!string.IsNullOrEmpty(store))
+                return await SaveOpenAIApiKey(store);
         }
 
         return false;

@@ -308,7 +308,9 @@ namespace VEDriversLite
                 Address = address.ToString();
 
                 // todo load already encrypted key
-                AccountKey = new Security.EncryptionKey(privateKeyFromNetwork.ToString(), password);
+
+                var iv = SymetricProvider.GetIV();
+                AccountKey = new Security.EncryptionKey(privateKeyFromNetwork.ToString(), iv, password);
                 AccountKey.PublicKey = Address;
                 Secret = privateKeyFromNetwork;
 
@@ -360,7 +362,7 @@ namespace VEDriversLite
                     if (string.IsNullOrEmpty(Address))
                         Address = Secret.GetAddress(ScriptPubKeyType.Legacy).ToString();
                     
-                    LoadAccountKey(password, kdto.Key);
+                    await LoadAccountKey(password, kdto.Key);
 
                     SignMessage("init");
 
@@ -450,7 +452,7 @@ namespace VEDriversLite
                         bdto = JsonConvert.DeserializeObject<BackupDataDto>(fromString);
                     }
 
-                    LoadAccountKey(password, bdto.Key);
+                    await LoadAccountKey(password, bdto.Key);
 
                     if (Address != bdto.Address)
                         Address = bdto.Address;
@@ -509,7 +511,7 @@ namespace VEDriversLite
         {
             try
             {
-                var res = LoadAccountKey(password, encryptedKey);
+                var res = await LoadAccountKey(password, encryptedKey);
                 if (res)
                 {
                     //SignMessage("init");

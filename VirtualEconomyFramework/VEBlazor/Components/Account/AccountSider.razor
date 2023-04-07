@@ -211,13 +211,13 @@
         else if (name == "receipts")
             await nftReceiptsList.Load();
     }    
-    
+
     void NFTChangedHandler( INFT e )
     {
         if (e != null && e.Type == NFTTypes.Profile)
             AppData.Account.Profile = e as ProfileNFT;
     }
-    
+
     Task addNewTransaction()
     {
         return sendNeblioTxRef.Show();
@@ -237,8 +237,25 @@
         var subAccounts = await localStorage.GetItemAsync<string>( "subAccounts" );
         var browserTabs = await localStorage.GetItemAsync<string>( "browserTabs" );
         var messageTabs = await localStorage.GetItemAsync<string>( "messageTabs" );
-        var address = await localStorage.GetItemAsync<string>( "address" );
-        var key = await localStorage.GetItemAsync<string>( "key" );
+        var account = await AppData.GetAccountInfoFromDb();
+        var address = string.Empty;
+        var key = string.Empty;
+        
+        if (account.Item1)
+        {
+            address = account.Item2.Item1;
+            key = account.Item2.Item2;
+        }
+        else
+        {
+            address = await localStorage.GetItemAsync<string>("address");
+            key = await localStorage.GetItemAsync<string>("key");
+        }
+
+        var oaikey = string.Empty;
+        var oai = await AppData.GetOpenAPIKeyFromDb();
+        if (oai.Item1)
+            oaikey = oai.Item2;
 
         var dto = new BackupDataDto();
         if ( !string.IsNullOrEmpty( bookmarks ) )
@@ -253,6 +270,8 @@
             dto.Address = address;
         if ( !string.IsNullOrEmpty( key ) )
             dto.Key = key;
+        if (!string.IsNullOrEmpty(oaikey))
+            dto.OpenAIApiKey = oaikey;
 
         filename = "Backup-Export-" + AppData.Account.Address + "-" + DateTime.UtcNow.ToString( "dd-MM-yyyyThh_mm_ss" ) + ".txt";
         backupData = JsonConvert.SerializeObject( dto );
