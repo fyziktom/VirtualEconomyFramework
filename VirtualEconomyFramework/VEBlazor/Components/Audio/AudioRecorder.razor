@@ -8,7 +8,7 @@
     <Row>
         <Column>
             <Row>
-                <Column>
+                <Column Margin="Margin.Is5.FromStart">
                     <Tooltip Text="Start Recording or start new.">
                         <Button Color="Color.Primary" Clicked="StartRecording" Disabled=@mDisableRecordAudioStart><Icon Name="IconName.Circle" /></Button>
                     </Tooltip>
@@ -26,7 +26,7 @@
                     </Tooltip>
                 </Column>
             </Row>
-            <Row>
+            <Row Margin="Margin.Is2.FromTop.Is1.FromBottom">
                 <Column>
                     <audio controls autoplay src=@mUrl></audio>
                 </Column>

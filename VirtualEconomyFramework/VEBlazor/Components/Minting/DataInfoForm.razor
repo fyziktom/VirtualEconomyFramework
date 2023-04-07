@@ -21,7 +21,7 @@
             </Validation>
             <Field>
                 <FieldLabel>Please enter the tags.</FieldLabel>
-                <SpaceTags @bind-Tags="@NFT.Tags"/>
+                <SpaceTags @ref=spaceTagsRef @bind-Tags="@NFT.Tags" />
                 <FieldHelp>Please separate the tags with the space. You do not need to add # character as prefix.</FieldHelp>
             </Field>
 
@@ -45,6 +45,7 @@
 
     Validations validationsRef;
     Markdown markdownRef;
+    SpaceTags? spaceTagsRef;
 
     bool creatingDescription = false;
 
@@ -95,6 +96,9 @@
                 NFT.Name = res.Item2.Name;
                 NFT.Description = res.Item2.Description;
                 NFT.Tags = res.Item2.Tags;
+                if (spaceTagsRef != null)
+                    await spaceTagsRef.OnTagNamesChanged(NFT.TagsList);
+
                 await InvokeAsync(StateHasChanged);
             }
             else
