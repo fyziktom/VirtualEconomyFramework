@@ -302,6 +302,11 @@
             if (res)
             {
                 await AppData.SaveTags();
+
+                await AppData.SaveCache();
+                // try init assistant if there is stored OpenAI api key in the browser local memory
+                await AppData.InitAssistant();
+
                 accountImportError = false;
                 imported = true;
                 AppData.IsAccountLoaded = true;
@@ -402,6 +407,7 @@
                     await AppData.LoadChache();
                     AppData.Account.FirsLoadingStatus -= FirstLoadingStatusHandler;
                     AppData.Account.FirsLoadingStatus += FirstLoadingStatusHandler;
+                    // load Account and SubAccount and Bookmarks and Tabs
                     accountLoaded = await AppData.Account.LoadAccountFromVENFTBackup(importAccountPass, fileString);
                     AppData.Account.FirsLoadingStatus -= FirstLoadingStatusHandler;
 
@@ -409,10 +415,12 @@
                     {
                         await AppData.SaveCache();
                         await localStorage.SetItemAsStringAsync("bookmarks", backupData.Bookmarks);
-                        await localStorage.SetItemAsStringAsync("subAccounts", backupData.SubAccounts);
                         await localStorage.SetItemAsStringAsync("browserTabs", backupData.BrowserTabs);
                         await localStorage.SetItemAsStringAsync("messageTabs", backupData.MessageTabs);
 
+                        // Save SubAccounts
+                        await AppData.MigrateSubAccountsToDb(backupData.SubAccounts);
+                        
                         var ivkey = SymetricProvider.EncryptString(password, key, iv);
                         key = SymetricProvider.JoinIVToString(ivkey, iv);
                     }
@@ -436,7 +444,7 @@
                     password = string.Empty;
                     passwordConfirm = string.Empty;
                     importAccountPass = string.Empty;
-                    
+                                        
                     return true;
                 }
             }

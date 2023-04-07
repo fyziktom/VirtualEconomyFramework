@@ -504,14 +504,16 @@ public class AppData
         return (false, new List<SubAccountInfo>());
     }
 
-    private async Task<bool> MigrateSubAccountsToDb()
+    public async Task<bool> MigrateSubAccountsToDb(string inputSAS = null)
     {
         try
         {
-            var sas = await localStorage.GetItemAsync<string>("subAccounts");
-            if (!string.IsNullOrEmpty(sas))
+            if (inputSAS == null)
+               inputSAS = await localStorage.GetItemAsync<string>("subAccounts");
+
+            if (!string.IsNullOrEmpty(inputSAS))
             {
-                var accnts = JsonConvert.DeserializeObject<List<SubAccountInfo>>(sas);
+                var accnts = JsonConvert.DeserializeObject<List<SubAccountInfo>>(inputSAS);
                 foreach (var a in accnts)
                     a.Id = -1;
 

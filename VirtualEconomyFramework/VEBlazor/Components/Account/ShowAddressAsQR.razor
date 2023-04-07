@@ -18,14 +18,14 @@
                 <CloseButton />
             </ModalHeader>
             <ModalBody>
-                <Row Flex="Flex.AlignItems.Center">
-                    <Column>
+                <Row Margin="Margin.Is2.FromTop">
+                    <Column Flex="Flex.JustifyContent.Center">
                         <small>Address:</small>
                     </Column>
                 </Row>
                 <Paragraph>@Address</Paragraph>
-                <Row Margin=" Margin.Is2.FromTop.Is2.FromBottom" Flex="Flex.AlignItems.Center">
-                    <Column>
+                <Row Margin=" Margin.Is2.FromTop.Is2.FromBottom">
+                    <Column Flex="Flex.JustifyContent.Center">
                         <QRCode Value="@Address" Style="max-width:inherit;width:inherit;max-height:inherit;height:inherit;" />
                     </Column>
                 </Row>
