@@ -74,7 +74,7 @@
         </Field>
         <Field>
             <FieldLabel>Vyplňte prosím tagy</FieldLabel>
-            <SpaceTags Tags="@NFT.Tags" TagsChanged="@onTagsChangedHandler"/>
+            <SpaceTags @ref=spaceTagsRef TagsChanged="@onTagsChangedHandler"/>
             <FieldHelp>Oddělujte prosím tagy mezerou. Nedávejte před tagy znak #.</FieldHelp>
         </Field>
 
@@ -212,6 +212,7 @@
     }
 
     GetText getTextRef;
+    SpaceTags? spaceTagsRef;
 
     INFT NFT = new PostNFT("");
 
@@ -327,7 +328,7 @@
     {
         if (e != null)
             NFT.Tags = e;
-        await InvokeAsync(StateHasChanged);
+        //await InvokeAsync(StateHasChanged);
     }
     private async Task onAddressInputedHandler(string e)
     {
@@ -360,6 +361,9 @@
                         NFT.Name = returnValue.Name;
                         NFT.Description = returnValue.Description;
                         NFT.Tags = returnValue.Tags.Replace(",", string.Empty).Replace(";", string.Empty).Replace("#", string.Empty);
+                        if (spaceTagsRef != null)
+                            await spaceTagsRef.OnTagNamesChanged(NFT.TagsList);
+
                         additionalInfo.OrigAIName = returnValue.Name;
                         additionalInfo.OrigAIDescription = returnValue.Description;
                         additionalInfo.OrigAITags = returnValue.Tags;

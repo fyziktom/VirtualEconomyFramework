@@ -67,14 +67,25 @@
                                                                          .Select( t => t.Name );
     List<string> TagNames => Tags?.Split( " " )?.Where( x => !string.IsNullOrEmpty( x ) )?.ToList() ?? new List<string>();
 
-    async Task OnTagNamesChanged( List<string> values )
-    {
-        //if (values.Count == 0 && TagNames.Count >= values.Count + 1)
-        //    return;
+    private System.Threading.Timer timer;
+    bool debounce = false;
 
-        Tags = string.Join( " ", values ?? Enumerable.Empty<string>() ).Trim();
-        await Task.Delay(250);
-        await TagsChanged.InvokeAsync( Tags );
+    public async Task OnTagNamesChanged( List<string> values )
+    {
+        if (!debounce)
+        {
+            Tags = string.Join(" ", values ?? Enumerable.Empty<string>()).Trim();
+
+            debounce = true;
+            timer = new System.Threading.Timer(async (object stateInfo) =>
+            {
+                timer.Dispose();
+                debounce = false;
+            }, new System.Threading.AutoResetEvent(false), 500, 500);
+
+            await InvokeAsync(StateHasChanged);
+            await TagsChanged.InvokeAsync(Tags);
+        }
     }
 
     async Task AddTag( string tag )
@@ -87,11 +98,8 @@
         else
             Tags += $" {tag}";
 
-        await Task.Delay(250);
-
-        await InvokeAsync(StateHasChanged);
-        await TagsChanged.InvokeAsync( Tags );
-        await InvokeAsync(StateHasChanged);
+        debounce = false;
+        await OnTagNamesChanged(TagNames);
     }
 
     async Task Clear()

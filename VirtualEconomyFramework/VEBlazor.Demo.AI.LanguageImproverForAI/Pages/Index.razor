@@ -83,7 +83,7 @@
         </Field>
         <Field>
             <FieldLabel>Fill some tags</FieldLabel>
-            <SpaceTags Tags="@NFT.Tags" TagsChanged="@onTagsChangedHandler" />
+            <SpaceTags TagsChanged="@onTagsChangedHandler" />
             <FieldHelp>Use space as divider. do not use # infront of the tags.</FieldHelp>
         </Field>
 
@@ -313,10 +313,10 @@
         if (e != null)
         {
             NFT.Tags = e;
+            //await InvokeAsync(StateHasChanged);
             if (NFT.Name != "")
                 await AppDataService.SaveNameAndTagsAsync(NFT.Name, NFT.Tags);
         }
-        await InvokeAsync(StateHasChanged);
     }
 
     private async Task GetTags()
