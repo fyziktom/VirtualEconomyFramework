@@ -1,6 +1,8 @@
 ﻿@using VEDriversLite.NFT
 @inject AppData AppData
 
+@if (!Hidden)
+{
 <Card Height="Height.Is100">
     <CardHeader TextAlignment="TextAlignment.Center">
         <Row>
@@ -86,13 +88,14 @@
 </Card>
 
 <AddSubAccount @ref=addSubAccountRef DisplayButton="false" NewAddressCreated="@onNewSubAccountCreated" />
-
+}
 @code {
     AddSubAccount? addSubAccountRef;
     AccountSelector? accountSelectorRef;
 
     [Parameter] public string Address { get; set; } = string.Empty;
     [Parameter] public EventCallback<string> AddressChanged { get; set; }
+    [Parameter] public bool Hidden { get; set; } = false;
 
     public string AccountName
     {

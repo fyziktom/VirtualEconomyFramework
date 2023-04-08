@@ -27,7 +27,7 @@
                             <Column>
                                 <Addons>
                                     <Addon AddonType="AddonType.Body">
-                                        <NumericPicker TValue="double" Min="0" Max="@selectedAssetAmount" @bind-Value="@Value" Decimals="@(Type == TxType.Neblio ? 6 : 0)" />
+                                        <NumericPicker TValue="double" Min="0" Max="@SelectedAssetAmount" @bind-Value="@Value" Decimals="@(Type == TxType.Neblio ? 6 : 0)" />
                                     </Addon>
                                     <Addon AddonType="AddonType.End">
                                         <Dropdown Display="Display.Block">
@@ -35,14 +35,14 @@
                                                 <Image Source="@selectedAssetImage" Style="max-width:18px;max-height:18px;margin-bottom:1px;" />
                                             </DropdownToggle>
                                             <DropdownMenu MaxMenuHeight="250px" >
-                                                @foreach (var ts in AppData.Account.TokensSupplies)
+                                                @foreach (var ts in TokenSupplies)
                                                 {
                                                     <DropdownItem Value="@(ts.Key)" Clicked="@((e) => SetTxType(TxType.Token, ts.Value.TokenId, ts.Value.ImageUrl, ts.Value.Amount, ts.Value.TokenSymbol))">
                                                         <Span>@ts.Value.TokenSymbol</Span><Figure Size="FigureSize.Is16x16" Margin="Margin.Is2.FromStart"><FigureImage Source="@(ts.Value.ImageUrl)" /></Figure>
                                                     </DropdownItem>
                                                 }
-                                                <DropdownItem Value="@("NEBL")" Clicked="@((e) => SetTxType(TxType.Neblio, "", AppData.NeblioImageLink, AppData.Account.TotalSpendableBalance, "NEBL"))">
-                                                    <Span>NEBL</Span><Figure Size="FigureSize.Is16x16" Margin="Margin.Is2.FromStart"><FigureImage Source="@AppData.NeblioImageLink" /></Figure>
+                                                <DropdownItem Value="@("NEBL")" Clicked="@((e) => SetTxType(TxType.Neblio, "", AppData.NeblioImageLink, NeblioBalance, "NEBL"))">
+                                                <Span>NEBL</Span><Figure Size="FigureSize.Is16x16" Margin="Margin.Is2.FromStart"><FigureImage Source="@AppData.NeblioImageLink" /></Figure>
                                                 </DropdownItem>
                                             </DropdownMenu>
                                         </Dropdown>
@@ -55,12 +55,12 @@
                         {
                             <Row Margin="Margin.Is2.FromTop">
                                 <Column>
-                                    <b>Actual Balance:</b> @selectedAssetAmount @selectedAssetTokenSymbol<Figure Size="FigureSize.Is16x16"><FigureImage Source="@selectedAssetImage" /></Figure>
+                                    <b>Actual Balance:</b> @SelectedAssetAmount @selectedAssetTokenSymbol<Figure Size="FigureSize.Is16x16"><FigureImage Source="@selectedAssetImage" /></Figure>
                                 </Column>
                             </Row>
                             <Row Margin="Margin.Is2.FromTop">
                                 <Column>
-                                    <b>Remain After Tx:</b> @(selectedAssetAmount-Value) @selectedAssetTokenSymbol<Figure Size="FigureSize.Is16x16"><FigureImage Source="@selectedAssetImage" /></Figure>
+                                    <b>Remain After Tx:</b> @(SelectedAssetAmount-Value) @selectedAssetTokenSymbol<Figure Size="FigureSize.Is16x16"><FigureImage Source="@selectedAssetImage" /></Figure>
                                 </Column>
                             </Row>
                         }
@@ -68,12 +68,13 @@
                         {            
                             <Row Margin="Margin.Is2.FromTop">
                                 <Column>
-                                    <b>Actual Balance:</b> @(Math.Round(selectedAssetAmount, 8)) @selectedAssetTokenSymbol <Figure Size="FigureSize.Is16x16"><FigureImage Source="@AppData.NeblioImageLink" /></Figure>
+                                    <b>Actual Balance:</b> @(Math.Round(NeblioBalance, 8)) @selectedAssetTokenSymbol <Figure Size="FigureSize.Is16x16"><FigureImage Source="@AppData.NeblioImageLink" /></Figure>
                                 </Column>
                             </Row>
                             <Row Margin="Margin.Is2.FromTop">
                                 <Column>
-                                    <b>Remain After Tx:</b> @(Math.Round(selectedAssetAmount - Value, 8)) @selectedAssetTokenSymbol <Figure Size="FigureSize.Is16x16"><FigureImage Source="@AppData.NeblioImageLink" /></Figure>
+                                        <b>Remain After Tx:</b> @(Math.Round(NeblioBalance - Value, 8)) @selectedAssetTokenSymbol
+                                        <Figure Size="FigureSize.Is16x16"><FigureImage Source="@AppData.NeblioImageLink" /></Figure>
                                 </Column>
                             </Row>
                         }                        
@@ -90,7 +91,7 @@
                             <Column>
                                 <Addons>
                                     <Addon AddonType="AddonType.Body">
-                                        <NumericPicker TValue="double" Min="0" Max="@selectedAssetAmount" @bind-Value="@Value" Decimals="@(Type == TxType.Neblio ? 6 : 0)" />
+                                        <NumericPicker TValue="double" Min="0" Max="@SelectedAssetAmount" @bind-Value="@Value" Decimals="@(Type == TxType.Neblio ? 6 : 0)" />
                                     </Addon>
                                     <Addon AddonType="AddonType.End">
                                         <Dropdown Display="Display.Block">
@@ -98,13 +99,13 @@
                                                 <Image Source="@selectedAssetImage" Style="max-width:18px;max-height:18px;margin-bottom:1px;" />
                                             </DropdownToggle>
                                             <DropdownMenu MaxMenuHeight="250px" >
-                                                @foreach (var ts in AppData.Account.TokensSupplies)
+                                                @foreach (var ts in TokenSupplies)
                                                 {
                                                     <DropdownItem Value="@(ts.Key)" Clicked="@((e) => SetTxType(TxType.Token, ts.Value.TokenId, ts.Value.ImageUrl, ts.Value.Amount, ts.Value.TokenSymbol))">
                                                         <Span>@ts.Value.TokenSymbol</Span><Figure Size="FigureSize.Is16x16" Margin="Margin.Is2.FromStart"><FigureImage Source="@(ts.Value.ImageUrl)" /></Figure>
                                                     </DropdownItem>
                                                 }
-                                                <DropdownItem Value="@("NEBL")" Clicked="@((e) => SetTxType(TxType.Neblio, "", AppData.NeblioImageLink, AppData.Account.TotalSpendableBalance, "NEBL"))">
+                                                <DropdownItem Value="@("NEBL")" Clicked="@((e) => SetTxType(TxType.Neblio, "", AppData.NeblioImageLink, NeblioBalance, "NEBL"))">
                                                     <Span>NEBL</Span><Figure Size="FigureSize.Is16x16" Margin="Margin.Is2.FromStart"><FigureImage Source="@AppData.NeblioImageLink" /></Figure>
                                                 </DropdownItem>
                                             </DropdownMenu>
@@ -132,12 +133,12 @@
                         {
                             <Row Margin="Margin.Is2.FromTop">
                                 <Column>
-                                    <b>Actual Balance:</b> @selectedAssetAmount @selectedAssetTokenSymbol<Figure Size="FigureSize.Is16x16"><FigureImage Source="@selectedAssetImage" /></Figure>
+                                    <b>Actual Balance:</b> @SelectedAssetAmount @selectedAssetTokenSymbol<Figure Size="FigureSize.Is16x16"><FigureImage Source="@selectedAssetImage" /></Figure>
                                 </Column>
                             </Row>
                             <Row Margin="Margin.Is2.FromTop">
                                 <Column>
-                                    <b>Remain After Tx:</b> @(selectedAssetAmount-Value) @selectedAssetTokenSymbol<Figure Size="FigureSize.Is16x16"><FigureImage Source="@selectedAssetImage" /></Figure>
+                                    <b>Remain After Tx:</b> @(SelectedAssetAmount-(numberOfLots * Value)) @selectedAssetTokenSymbol<Figure Size="FigureSize.Is16x16"><FigureImage Source="@selectedAssetImage" /></Figure>
                                 </Column>
                             </Row>
                         }
@@ -145,12 +146,13 @@
                         {            
                             <Row Margin="Margin.Is2.FromTop">
                                 <Column>
-                                    <b>Actual Balance:</b> @(Math.Round(AppData.Account.TotalSpendableBalance, 8)) NEBL <Figure Size="FigureSize.Is16x16"><FigureImage Source="@AppData.NeblioImageLink" /></Figure>
+                                    <b>Actual Balance:</b> @(Math.Round(NeblioBalance, 8)) NEBL <Figure Size="FigureSize.Is16x16"><FigureImage Source="@AppData.NeblioImageLink" /></Figure>
                                 </Column>
                             </Row>
                             <Row Margin="Margin.Is2.FromTop">
                                 <Column>
-                                    <b>Remain After Tx:</b> @(Math.Round(AppData.Account.TotalSpendableBalance - Value, 8)) NEBL <Figure Size="FigureSize.Is16x16"><FigureImage Source="@AppData.NeblioImageLink" /></Figure>
+                                        <b>Remain After Tx:</b> @(Math.Round(NeblioBalance - (numberOfLots * Value), 8)) NEBL
+                                        <Figure Size="FigureSize.Is16x16"><FigureImage Source="@AppData.NeblioImageLink" /></Figure>
                                 </Column>
                             </Row>
                         }
@@ -167,7 +169,7 @@
                             <Column>
                                 <Addons>
                                     <Addon AddonType="AddonType.Body">
-                                        <NumericPicker TValue="double" Min="0" Max="@(AppData.Account.TotalSpendableBalance)" @bind-Value="@NeblioAirdropValue" Decimals="6" />
+                                            <NumericPicker TValue="double" Min="0" Max="@(NeblioBalance)" @bind-Value="@NeblioAirdropValue" Decimals="6" />
                                     </Addon>
                                     <Addon AddonType="AddonType.End">
                                         <Image Source="@AppData.NeblioImageLink" Margin="Margin.Is3.FromStart" Style="max-width:25px;max-height:25px;" />
@@ -180,7 +182,7 @@
                             <Column>
                                 <Addons>
                                     <Addon AddonType="AddonType.Body">
-                                        <NumericPicker TValue="double" Min="0" Max="@selectedAssetAmount" @bind-Value="@TokensAirdropValue" Decimals="0" />
+                                        <NumericPicker TValue="double" Min="0" Max="@SelectedAssetAmount" @bind-Value="@TokensAirdropValue" Decimals="0" />
                                     </Addon>
                                     <Addon AddonType="AddonType.End">
                                         <Dropdown Display="Display.Block">
@@ -188,7 +190,7 @@
                                                 <Image Source="@selectedAssetImage" Style="max-width:18px;max-height:18px;margin-bottom:1px;" />
                                             </DropdownToggle>
                                             <DropdownMenu MaxMenuHeight="250px" >
-                                                @foreach (var ts in AppData.Account.TokensSupplies)
+                                                @foreach (var ts in TokenSupplies)
                                                 {
                                                     <DropdownItem Value="@(ts.Key)" Clicked="@((e) => SetTxType(TxType.Token, ts.Value.TokenId, ts.Value.ImageUrl, ts.Value.Amount, ts.Value.TokenSymbol))">
                                                         <Span>@ts.Value.TokenSymbol</Span><Figure Size="FigureSize.Is16x16" Margin="Margin.Is2.FromStart"><FigureImage Source="@(ts.Value.ImageUrl)" /></Figure>
@@ -203,22 +205,22 @@
 
                         <Row Margin="Margin.Is2.FromTop">
                             <Column>
-                                <b>Actual Balance:</b> @selectedAssetAmount @selectedAssetTokenSymbol<Figure Size="FigureSize.Is16x16"><FigureImage Source="@selectedAssetImage" /></Figure>
+                                <b>Actual Balance:</b> @SelectedAssetAmount @selectedAssetTokenSymbol<Figure Size="FigureSize.Is16x16"><FigureImage Source="@selectedAssetImage" /></Figure>
                             </Column>
                         </Row>
                         <Row Margin="Margin.Is2.FromTop">
                             <Column>
-                                <b>Remain After Tx:</b> @(selectedAssetAmount-TokensAirdropValue) @selectedAssetTokenSymbol<Figure Size="FigureSize.Is16x16"><FigureImage Source="@selectedAssetImage" /></Figure>
+                                <b>Remain After Tx:</b> @(SelectedAssetAmount-TokensAirdropValue) @selectedAssetTokenSymbol<Figure Size="FigureSize.Is16x16"><FigureImage Source="@selectedAssetImage" /></Figure>
                             </Column>
                         </Row>  
                         <Row Margin="Margin.Is2.FromTop">
                             <Column>
-                                <b>Actual Balance:</b> @(Math.Round(AppData.Account.TotalSpendableBalance, 8)) NEBL <Figure Size="FigureSize.Is16x16"><FigureImage Source="@AppData.NeblioImageLink" /></Figure>
+                                <b>Actual Balance:</b> @(Math.Round(NeblioBalance, 8)) NEBL <Figure Size="FigureSize.Is16x16"><FigureImage Source="@AppData.NeblioImageLink" /></Figure>
                             </Column>
                         </Row>
                         <Row Margin="Margin.Is2.FromTop">
                             <Column>
-                                <b>Remain After Tx:</b> @(Math.Round(AppData.Account.TotalSpendableBalance - NeblioAirdropValue, 8)) NEBL <Figure Size="FigureSize.Is16x16"><FigureImage Source="@AppData.NeblioImageLink" /></Figure>
+                                <b>Remain After Tx:</b> @(Math.Round(NeblioBalance - NeblioAirdropValue, 8)) NEBL <Figure Size="FigureSize.Is16x16"><FigureImage Source="@AppData.NeblioImageLink" /></Figure>
                             </Column>
                         </Row>
                         
@@ -303,6 +305,87 @@
     double TokensAirdropValue = AppData.DefaultAirdropTokens;
     double numberOfLots = 1;
     ActionType actionType = ActionType.SendPayment;
+
+    public double NeblioBalance
+    {
+        get
+        {
+            if (!string.IsNullOrEmpty(Address) && Address != AppData.Account.Address)
+                if (AppData.Account.SubAccounts.TryGetValue(Address, out var acc))
+                    return acc.TotalSpendableBalance;
+            return AppData.Account.TotalSpendableBalance;
+        }
+    }
+    public double NeblioBalanceUnconfirmed
+    {
+        get
+        {
+            if (!string.IsNullOrEmpty(Address) && Address != AppData.Account.Address)
+                if (AppData.Account.SubAccounts.TryGetValue(Address, out var acc))
+                    return acc.TotalUnconfirmedBalance;
+            return AppData.Account.TotalUnconfirmedBalance;
+        }
+    }
+    public double TokensBalance
+    {
+        get
+        {
+            if (!string.IsNullOrEmpty(Address) && Address != AppData.Account.Address)
+                if (AppData.Account.SubAccounts.TryGetValue(Address, out var acc))
+                    return acc.SourceTokensBalance;
+            return AppData.Account.SourceTokensBalance;
+        }
+    }
+
+    public Dictionary<string, VEDriversLite.NeblioAPI.TokenSupplyDto> TokenSupplies
+    {
+        get
+        {
+            if (!string.IsNullOrEmpty(Address) && Address != AppData.Account.Address)
+                if (AppData.Account.SubAccounts.TryGetValue(Address, out var acc))
+                    return acc.TokensSupplies;
+            return AppData.Account.TokensSupplies;
+        }
+    }
+
+    private double lastSelectedAssetTotalAmount = 0;
+    private string lastAddress = string.Empty;
+    public double SelectedAssetAmount
+    {
+        get
+        {
+            if (lastAddress != Address)
+            {
+                if (!string.IsNullOrEmpty(Address) && Address != AppData.Account.Address)
+                {
+                    if (AppData.Account.SubAccounts.TryGetValue(Address, out var acc))
+                    {
+                        var tk = acc.TokensSupplies.Values.FirstOrDefault(t => t.TokenSymbol == selectedAssetTokenSymbol);
+                        if (tk != null)
+                        {
+                            lastSelectedAssetTotalAmount = tk.Amount;
+                            lastAddress = Address;
+                            return tk.Amount;
+                        }
+                    }
+                }
+                else if (AppData.Account.Address == Address)
+                {
+                    var tk = AppData.Account.TokensSupplies.Values.FirstOrDefault(t => t.TokenSymbol == selectedAssetTokenSymbol);
+                    if (tk != null)
+                    {
+                        lastSelectedAssetTotalAmount = tk.Amount;
+                        lastAddress = Address;
+                        return tk.Amount;
+                    }
+                }
+            }
+            else
+                return lastSelectedAssetTotalAmount;
+
+            return 0;
+        }
+    }
 
     protected override Task OnInitializedAsync()
     {
