@@ -25,7 +25,7 @@
                     </Field>
                 </Column>
             </Row>
-            @if (AppData.Account.TotalSpendableBalance > AppData.DefaultAirdropMain && AppData.Account.SourceTokensBalance > AppData.DefaultAirdropTokens)
+            @if (AppData.Account.TotalSpendableBalance > AppData.DefaultAirdropMain && AppTokenAmount > AppData.DefaultAirdropTokens)
             {
                 <Row Margin="Margin.Is2.FromTop">
                     <Column>
@@ -34,7 +34,7 @@
                             <FieldBody>
                                 <Check @bind-Checked="sendInitPayment" />
                             </FieldBody>
-                            <FieldHelp>Keep checked if you want to send initial Airdrop of @AppData.DefaultAirdropMain NEBL and @AppData.DefaultAirdropTokens VENFT tokens on new SubAccount.</FieldHelp>
+                            <FieldHelp>Keep checked if you want to send initial Airdrop of @AppData.DefaultAirdropMain NEBL and @AppData.DefaultAirdropTokens @AppTokenSymbol tokens on new SubAccount.</FieldHelp>
                         </Field>
                     </Column>
                 </Row>
@@ -69,6 +69,30 @@
     private bool loading = false;
 
     Modal? newSubAccountModalRef;
+
+    public double AppTokenAmount
+    {
+        get
+        {
+            var tk = AppData.Account.TokensSupplies.Values.FirstOrDefault(t => t.TokenId == AppData.AppTokenId);
+            if (tk != null)
+                return tk.Amount;
+            else
+                return 0;
+        }
+    }
+
+    public string AppTokenSymbol
+    {
+        get
+        {
+            var tk = AppData.Account.TokensSupplies.Values.FirstOrDefault(t => t.TokenId == AppData.AppTokenId);
+            if (tk != null)
+                return tk.TokenSymbol;
+            else
+                return "VENFT";
+        }
+    }
 
     public async Task showNewSubAccountModal(MouseEventArgs e)
     {

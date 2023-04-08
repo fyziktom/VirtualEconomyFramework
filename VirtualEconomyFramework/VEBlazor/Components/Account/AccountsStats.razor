@@ -22,12 +22,12 @@
         <Field Margin="Margin.Is2.FromTop">
             <FieldLabel>Your Address</FieldLabel>
             <Tooltip Text="Click to copy to clipboard" Placement="TooltipPlacement.Bottom">                   
-                <Heading Size="HeadingSize.Is6" CopyToClipboard="true" TextOverflow="TextOverflow.Wrap">@AppData.Account.Address</Heading>
+                <Heading Size="HeadingSize.Is6" CopyToClipboard="true" TextOverflow="TextOverflow.Wrap">@Address</Heading>
             </Tooltip> 
         </Field>
         <Row Margin="Margin.Is2.FromTop">
             <Column>
-                <ShowAddressAsQR Address="@AppData.Account.Address" DisplayButton="true" />
+                <ShowAddressAsQR Address="@Address" DisplayButton="true" />
             </Column>
         </Row>
         <CardText>
@@ -172,20 +172,36 @@
     {
         get
         {
-            if (AppData.Account.TokensSupplies.TryGetValue(NFTHelpers.BDPTokenId, out var tokens))
-                return Convert.ToInt32(tokens.Amount);
-            else
-                return 0;
+            if (Address == AppData.Account.Address)
+            {
+                if (AppData.Account.TokensSupplies.TryGetValue(NFTHelpers.BDPTokenId, out var tokens))
+                    return Convert.ToInt32(tokens.Amount);
+            }
+            else if (AppData.Account.SubAccounts.TryGetValue(Address, out var sa))
+            {
+                if (sa.TokensSupplies.TryGetValue(NFTHelpers.BDPTokenId, out var tokens))
+                    return Convert.ToInt32(tokens.Amount);
+            }
+            
+            return 0;
         }
     }
     public int WDOGEBalance
     {
         get
         {
-            if (AppData.Account.TokensSupplies.TryGetValue(NFTHelpers.WDOGETokenId, out var tokens))
-                return Convert.ToInt32(tokens.Amount);
-            else
-                return 0;
+            if (Address == AppData.Account.Address)
+            {
+                if (AppData.Account.TokensSupplies.TryGetValue(NFTHelpers.WDOGETokenId, out var tokens))
+                    return Convert.ToInt32(tokens.Amount);
+            }
+            else if (AppData.Account.SubAccounts.TryGetValue(Address, out var sa))
+            {
+                if (sa.TokensSupplies.TryGetValue(NFTHelpers.WDOGETokenId, out var tokens))
+                    return Convert.ToInt32(tokens.Amount);
+            }
+
+            return 0;
         }
     }
 
