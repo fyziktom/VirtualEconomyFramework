@@ -48,9 +48,40 @@
 
     private (bool, VEDriversLite.Bookmarks.Bookmark) bookmark = (false, new VEDriversLite.Bookmarks.Bookmark());
 
+    private string lastAddressCheck = string.Empty;
+
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
         bookmark = AppData.Account.IsInTheBookmarks( Address );
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstLoad)
+    {
+        if (lastAddressCheck != Address)
+        {
+            if (Address != AppData.Account.Address)
+            {
+                var res = AppData.Account.GetSubAccountNameByAddress(Address);
+                if (res.Item1)
+                {
+                    IsSubAccount = true;
+                    IsOwnNFT = true;
+                }
+                else
+                {
+                    IsSubAccount = false;
+                    IsOwnNFT = false;
+                }
+            }
+            else if (Address == AppData.Account.Address)
+            {
+                IsSubAccount = false;
+                IsOwnNFT = true;
+            }
+
+            lastAddressCheck = Address;
+            await InvokeAsync(StateHasChanged);
+        }
     }
 }

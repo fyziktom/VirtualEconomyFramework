@@ -1,0 +1,230 @@
+﻿@using VEDriversLite.NFT
+@inject AppData AppData
+
+<Card Height="Height.Is100">
+    <CardHeader TextAlignment="TextAlignment.Center">
+        <Row>
+            <Column Flex="Flex.JustifyContent.Center">
+                    Accounts
+            </Column>
+            <Column>
+                <Button Color="Color.Light" Clicked="@addNewSubAccount" Float="Float.End">
+                    <Icon Name="IconName.Add" /> Add
+                </Button>
+            </Column>
+        </Row>
+    </CardHeader>
+    <CardBody>
+        <AccountSelector @ref=accountSelectorRef AddressChanged="@onSelectAddressHandler" />
+
+        <Field Margin="Margin.Is2.FromTop">
+            <FieldLabel>Your Address</FieldLabel>
+            <Tooltip Text="Click to copy to clipboard" Placement="TooltipPlacement.Bottom">                   
+                <Heading Size="HeadingSize.Is6" CopyToClipboard="true" TextOverflow="TextOverflow.Wrap">@AppData.Account.Address</Heading>
+            </Tooltip> 
+        </Field>
+        <Row Margin="Margin.Is2.FromTop">
+            <Column>
+                <ShowAddressAsQR Address="@AppData.Account.Address" DisplayButton="true" />
+            </Column>
+        </Row>
+        <CardText>
+            <Row Margin="Margin.Is2.FromTop">
+               <Column>
+                   Neblio: @(Math.Round(NeblioBalance, 8)) NEBL <Figure Size="FigureSize.Is16x16"><FigureImage Source="@AppData.NeblioImageLink" /></Figure>
+               </Column>
+           </Row>
+           <Row>
+               <Column>
+                   Unconfirmed: @(Math.Round(NeblioBalanceUnconfirmed, 8)) NEBL <Figure Size="FigureSize.Is16x16"><FigureImage Source="@AppData.NeblioImageLink" /></Figure>
+               </Column>
+           </Row>
+           <Row>
+               <Column>
+                   Tokens: @TokensBalance VENFT <Figure Size="FigureSize.Is16x16"><FigureImage Source="@AppData.VENFTImageLink" /></Figure>
+               </Column>
+           </Row>
+            @if (AppData.AppTokenId != NFTHelpers.TokenId)
+            {
+                @if (AppData.AppTokenId == VEDriversLite.NFT.NFTHelpers.BDPTokenId)
+                {
+                    <Row>
+                        <Column>
+                            Tokens: @BDPBalance BDP <Figure Size="FigureSize.Is16x16"><FigureImage Source="@AppData.BDPImageLink" /></Figure>
+                        </Column>
+                    </Row>
+                }
+                else if (AppData.AppTokenId == VEDriversLite.NFT.NFTHelpers.WDOGETokenId)
+                {
+                    <Row>
+                        <Column>
+                            Tokens: @WDOGEBalance WDOGE <Figure Size="FigureSize.Is16x16"><FigureImage Source="@AppData.WDOGEImageLink" /></Figure>
+                        </Column>
+                    </Row>
+                }
+                else if (!string.IsNullOrEmpty(AppData.AppTokenId) && (AppData.AppTokenId != VEDriversLite.NFT.NFTHelpers.BDPTokenId) && (AppData.AppTokenId != VEDriversLite.NFT.NFTHelpers.BDPTokenId))
+                {
+                    @if (AppData.Account.TokensSupplies.ContainsKey(AppData.AppTokenId))
+                    {
+                        <Row>
+                            <Column>
+                                Tokens: @(Math.Round(AppData.Account.TokensSupplies[AppData.AppTokenId].Amount, 0)) @AppData.Account.TokensSupplies[AppData.AppTokenId].TokenSymbol
+                                <Figure Size="FigureSize.Is16x16"><FigureImage Source="@AppData.Account.TokensSupplies[AppData.AppTokenId].ImageUrl" /></Figure>
+                            </Column>
+                        </Row>
+                    }
+
+                }
+            }
+            <Row>
+               <Column>
+                   NFTs: @NFTsCount
+               </Column>
+           </Row>           
+        </CardText>
+    </CardBody>
+</Card>
+
+<AddSubAccount @ref=addSubAccountRef DisplayButton="false" NewAddressCreated="@onNewSubAccountCreated" />
+
+@code {
+    AddSubAccount? addSubAccountRef;
+    AccountSelector? accountSelectorRef;
+
+    [Parameter] public string Address { get; set; } = string.Empty;
+    [Parameter] public EventCallback<string> AddressChanged { get; set; }
+
+    public string AccountName
+    {
+        get
+        {
+            if (!string.IsNullOrEmpty(Address) && Address != AppData.Account.Address)
+                if (AppData.Account.SubAccounts.TryGetValue(Address, out var acc))
+                    return acc.Name;
+            return "Main Account";
+        }
+    }
+    public double NeblioBalance
+    {
+        get
+        {
+            if (!string.IsNullOrEmpty(Address) && Address != AppData.Account.Address)
+                if (AppData.Account.SubAccounts.TryGetValue(Address, out var acc))
+                    return acc.TotalSpendableBalance;
+            return AppData.Account.TotalSpendableBalance;
+        }
+    }
+    public double NeblioBalanceUnconfirmed
+    {
+        get
+        {
+            if (!string.IsNullOrEmpty(Address) && Address != AppData.Account.Address)
+                if (AppData.Account.SubAccounts.TryGetValue(Address, out var acc))
+                    return acc.TotalUnconfirmedBalance;
+            return AppData.Account.TotalUnconfirmedBalance;
+        }
+    }
+    public double TokensBalance
+    {
+        get
+        {
+            if (!string.IsNullOrEmpty(Address) && Address != AppData.Account.Address)
+                if (AppData.Account.SubAccounts.TryGetValue(Address, out var acc))
+                    return acc.SourceTokensBalance;
+            return AppData.Account.SourceTokensBalance;
+        }
+    }
+    public double SelectedAccountTotalSourceCORZT
+    {
+        get
+        {
+            if (!string.IsNullOrEmpty(Address) && Address != AppData.Account.Address)
+                if (AppData.Account.SubAccounts.TryGetValue(Address, out var acc))
+                    return acc.CoruzantSourceTokensBalance;
+            return AppData.Account.CoruzantSourceTokensBalance;
+        }
+    }
+    public int NFTsCount
+    {
+        get
+        {
+            if (!string.IsNullOrEmpty(Address) && Address != AppData.Account.Address)
+                if (AppData.Account.SubAccounts.TryGetValue(Address, out var acc))
+                    return acc.NFTs.Count;
+            return AppData.Account.NFTs.Count;
+        }
+    }
+
+    public int TokenBalance
+    {
+        get
+        {
+            if (AppData.Account.TokensSupplies.TryGetValue(NFTHelpers.TokenId, out var tokens))
+                return Convert.ToInt32(tokens.Amount);
+            else
+                return 0;
+        }
+    }
+    public int BDPBalance
+    {
+        get
+        {
+            if (AppData.Account.TokensSupplies.TryGetValue(NFTHelpers.BDPTokenId, out var tokens))
+                return Convert.ToInt32(tokens.Amount);
+            else
+                return 0;
+        }
+    }
+    public int WDOGEBalance
+    {
+        get
+        {
+            if (AppData.Account.TokensSupplies.TryGetValue(NFTHelpers.WDOGETokenId, out var tokens))
+                return Convert.ToInt32(tokens.Amount);
+            else
+                return 0;
+        }
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        AppData.Account.Refreshed -= RefreshedHandler;
+        AppData.Account.Refreshed += RefreshedHandler;
+        base.OnAfterRender(firstRender);
+    }
+
+    private async void RefreshedHandler(object? sender, EventArgs e)
+    {
+        if (string.IsNullOrEmpty(Address))
+            Address = AppData.Account.Address;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task onSelectAddressHandler(string address)
+    {
+        if (!string.IsNullOrEmpty(address))
+            Address = address;
+        else
+            Address = AppData.Account.Address;
+        await AddressChanged.InvokeAsync(Address);
+    }
+
+    private async Task addNewSubAccount(MouseEventArgs e)
+    {
+        if (addSubAccountRef != null)
+            await addSubAccountRef.showNewSubAccountModal(e);
+    }
+
+    private async Task onNewSubAccountCreated(string address)
+    {
+        if (!string.IsNullOrEmpty(address))
+        {
+            Address = address;
+            await AddressChanged.InvokeAsync(Address);
+            if (accountSelectorRef != null)
+                await accountSelectorRef.LoadAddress(Address);
+
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+}

@@ -15,12 +15,7 @@
         </ErrorBoundary>
     </Column>
     <Column>
-        <AccountBalances NeblioBalance="@AppData.Account.TotalSpendableBalance"
-                         NeblioBalanceUnconfirmed="@AppData.Account.TotalUnconfirmedBalance"
-                         TokensBalance="@TokenSupply"
-                         BDPBalance="@BDPSupply"
-                         WDOGEBalance="@WDOGESupply"
-                         NFTsCount="@AppData.Account.NFTs.Count" />
+        <AccountsStats AddressChanged="@onAddressChanedHandler" />
     </Column>
     <Column>
         <Card>
@@ -136,7 +131,7 @@
                     </Row>
                 </CollapseHeader>
                 <CollapseBody>
-                    <TransactionsList Address="@AppData.Account.Address" IsSubAccount="false" />
+                    <TransactionsList Address="@Address" IsSubAccount="IsSubAccount" />
                 </CollapseBody>
             </Collapse>
         </Accordion>
@@ -201,6 +196,27 @@
     async void RefreshedHandler(object? sender, EventArgs e)
     {
         await OnSelectedTabChanged(selectedTab);
+
+        if (string.IsNullOrEmpty(Address))
+        {
+            Address = AppData.Account.Address;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    async Task onAddressChanedHandler(string address)
+    {
+        if (!string.IsNullOrEmpty(address))
+            Address = address;
+        else
+            Address = AppData.Account.Address;
+
+        if (AppData.Account.SubAccounts.ContainsKey(Address))
+            IsSubAccount = true;
+        else
+            IsSubAccount = false;
+
+        await AddressChanged.InvokeAsync(Address);
         await InvokeAsync(StateHasChanged);
     }
 

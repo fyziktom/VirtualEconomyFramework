@@ -122,13 +122,17 @@ else
     private int PerPage { get; set; } = 10;
     private int Offset { get; set; } = 0;
 
-    
     public IEnumerable<INFT> ReceiptsNFTs
     {
         get
         {
             //Load();
-            return AppData.Account.NFTs.Where(n => n.Type == NFTTypes.Receipt) ?? new List<INFT>();   
+            if (Address == AppData.Account.Address)
+                return AppData.Account.NFTs.Where(n => n.Type == NFTTypes.Receipt) ?? new List<INFT>();
+            else if (AppData.Account.SubAccounts.TryGetValue(Address, out var sa))
+                return sa.NFTs.Where(n => n.Type == NFTTypes.Receipt) ?? new List<INFT>();
+            else
+                return AppData.Account.NFTs.Where(n => n.Type == NFTTypes.Receipt) ?? new List<INFT>();
         }
     }
     public IEnumerable<INFT> NFTs
@@ -136,7 +140,12 @@ else
         get
         {
             //Load();
-            return AppData.Account.NFTs.Where(n => n.Type == NFTTypes.Receipt).Skip( Offset * PerPage ).Take( PerPage ) ?? new List<INFT>();   
+            if (Address == AppData.Account.Address)
+                return AppData.Account.NFTs.Where(n => n.Type == NFTTypes.Receipt)?.Skip(Offset * PerPage).Take(PerPage) ?? new List<INFT>();
+            else if (AppData.Account.SubAccounts.TryGetValue(Address, out var sa))
+                return sa.NFTs.Where(n => n.Type == NFTTypes.Receipt)?.Skip(Offset * PerPage).Take(PerPage) ?? new List<INFT>();
+            else
+                return AppData.Account.NFTs.Where(n => n.Type == NFTTypes.Receipt)?.Skip(Offset * PerPage).Take(PerPage) ?? new List<INFT>();
         }
     }
     private const string PREVIOUS = "previous";

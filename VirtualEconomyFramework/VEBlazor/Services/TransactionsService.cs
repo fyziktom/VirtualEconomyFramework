@@ -37,85 +37,106 @@ public class TransactionsService
 {
     public async Task<List<string>> LoadTransactions(string address, NeblioAccount account, bool subAccount)
     {
-        if (!subAccount)
+        if (string.IsNullOrEmpty(address))
+            return new List<string>();
+        try
         {
-            var inf = await NeblioAPIHelpers.AddressInfoAsync(account.Address);
-            return inf.Transactions?.Reverse().ToList() ?? new List<string>();
-        }
-        else
-        {
-            if (account.SubAccounts.TryGetValue(address, out _))
+            if (!subAccount)
             {
-                var inf = await NeblioAPIHelpers.AddressInfoAsync(address);
+                var inf = await NeblioAPIHelpers.AddressInfoAsync(account.Address);
                 return inf.Transactions?.Reverse().ToList() ?? new List<string>();
             }
+            else
+            {
+                if (account.SubAccounts.TryGetValue(address, out _))
+                {
+                    var inf = await NeblioAPIHelpers.AddressInfoAsync(address);
+                    return inf.Transactions?.Reverse().ToList() ?? new List<string>();
+                }
+            }
+        }
+        catch(Exception ex)
+        {
+            await Console.Out.WriteLineAsync("Cannot load txs: " + ex.Message);
         }
         return new List<string>();
+
     }
 
     public async Task<TxDetails> LoadTxDetails(string txid, NeblioAccount account)
     {
-        var tinfo = await NeblioAPIHelpers.GetTransactionInfo(txid);
-        if (tinfo == null)
+        if (string.IsNullOrEmpty(txid))
             return new TxDetails();
-        
-        string sender = await NeblioAPIHelpers.GetTransactionSender(txid, tinfo);
-        bool fromAnotherAccount = true;
-        bool fromSubAccount = true;
 
-        var sendbkm = account.IsInTheBookmarks(sender);
-
-        if (sender == account.Address)
+        try
         {
-            if (sendbkm.Item1)
-                sender = sendbkm.Item2.Name;
-            else
-                sender = "Main Account";
-            fromAnotherAccount = false;
-            fromSubAccount = false;
+            var tinfo = await NeblioAPIHelpers.GetTransactionInfo(txid);
+            if (tinfo == null)
+                return new TxDetails();
+
+            string sender = await NeblioAPIHelpers.GetTransactionSender(txid, tinfo);
+            bool fromAnotherAccount = true;
+            bool fromSubAccount = true;
+
+            var sendbkm = account.IsInTheBookmarks(sender);
+
+            if (sender == account.Address)
+            {
+                if (sendbkm.Item1)
+                    sender = sendbkm.Item2.Name;
+                else
+                    sender = "Main Account";
+                fromAnotherAccount = false;
+                fromSubAccount = false;
+            }
+            else if (account.SubAccounts.TryGetValue(sender, out var sacc))
+            {
+                if (!string.IsNullOrEmpty(sacc.Name))
+                    sender = sacc.Name;
+                else
+                    sender = sacc.BookmarkFromAccount.Name;
+
+                if (sendbkm.Item1)
+                    sender = sendbkm.Item2.Name;
+
+                fromAnotherAccount = false;
+                fromSubAccount = true;
+            }
+
+            string rec = await NeblioAPIHelpers.GetTransactionReceiver(txid, tinfo);
+            string receiver = string.Empty;
+            var recbkm = account.IsInTheBookmarks(rec);
+
+            if (rec == account.Address)
+            {
+                if (sendbkm.Item1)
+                    sender = sendbkm.Item2.Name;
+                else
+                    receiver = "Main Account";
+            }
+            else if (recbkm.Item1)
+                receiver = recbkm.Item2.Name;
+
+            if (string.IsNullOrEmpty(receiver))
+                receiver = rec;// NeblioTransactionHelpers.ShortenAddress(rec);
+
+            var time = TimeHelpers.UnixTimestampToDateTime((double)tinfo.Blocktime);
+
+            return new TxDetails()
+            {
+                FromAnotherAccount = fromAnotherAccount,
+                FromSubAccount = fromSubAccount,
+                Info = tinfo,
+                Receiver = receiver,
+                Sender = sender,
+                Time = time,
+            };
         }
-        else if (account.SubAccounts.TryGetValue(sender, out var sacc))
+        catch(Exception ex)
         {
-            if (!string.IsNullOrEmpty(sacc.Name))
-                sender = sacc.Name;
-            else
-                sender = sacc.BookmarkFromAccount.Name;
-            
-            if (sendbkm.Item1)
-                sender = sendbkm.Item2.Name;
-            
-            fromAnotherAccount = false;
-            fromSubAccount = true;
+            await Console.Out.WriteLineAsync("Cannot load tx details: " + ex.Message);
         }
-                
-        string rec = await NeblioAPIHelpers.GetTransactionReceiver(txid, tinfo);
-        string receiver = string.Empty;
-        var recbkm = account.IsInTheBookmarks(rec);
-
-        if (rec == account.Address)
-        {
-            if (sendbkm.Item1)
-                sender = sendbkm.Item2.Name;
-            else
-                receiver = "Main Account";
-        }            
-        else if (recbkm.Item1)
-            receiver = recbkm.Item2.Name;
-
-        if (string.IsNullOrEmpty(receiver))
-            receiver = rec;// NeblioTransactionHelpers.ShortenAddress(rec);
-
-        var time = TimeHelpers.UnixTimestampToDateTime((double)tinfo.Blocktime);
-
-        return new TxDetails()
-        {
-            FromAnotherAccount = fromAnotherAccount,
-            FromSubAccount = fromSubAccount,
-            Info = tinfo,
-            Receiver = receiver,
-            Sender = sender,
-            Time = time,
-        };
+        return new TxDetails();
     }
 }
 

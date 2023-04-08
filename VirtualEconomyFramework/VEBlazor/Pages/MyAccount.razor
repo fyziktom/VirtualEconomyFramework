@@ -11,7 +11,7 @@
         {
             <Row Margin="Margin.Is3.FromTop">
                 <Column Height="Height.Is100">
-                    <AccountSider Address="@Address" IsSubAccount="@IsSubAccount" />
+                    <AccountSider Address="@Address" IsSubAccount="@IsSubAccount" AddressChanged="@onAddressChanedHandler" />
                 </Column>
             </Row>
         }
@@ -111,4 +111,18 @@
         await InvokeAsync(StateHasChanged);
         AppData.AccountLoadedOrImportedEcho();
     }    
+    async Task onAddressChanedHandler(string address)
+    {
+        if (!string.IsNullOrEmpty(address))
+            Address = address;
+        else
+            Address = AppData.Account.Address;
+
+        if (AppData.Account.SubAccounts.ContainsKey(Address))
+            IsSubAccount = true;
+        else
+            IsSubAccount = false;
+
+        await AddressChanged.InvokeAsync(Address);
+    }
 }

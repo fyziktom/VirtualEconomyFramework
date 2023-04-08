@@ -12,6 +12,7 @@
         </ModalHeader>
         <ModalBody>
             <Container Fluid>
+            <AccountSelector Address="@Address" AddressChanged="@onAddressChanged" />
 
             <Tabs SelectedTab="@selectedTab" SelectedTabChanged="@TabChanged">
                 <Items>
@@ -298,8 +299,8 @@
     string selectedAssetTokenSymbol = "NEBL";
     double selectedAssetAmount = 0.0;
     string selectedTab = "basic";
-    double NeblioAirdropValue = 0.05;
-    double TokensAirdropValue = 100;
+    double NeblioAirdropValue = AppData.DefaultAirdropMain;
+    double TokensAirdropValue = AppData.DefaultAirdropTokens;
     double numberOfLots = 1;
     ActionType actionType = ActionType.SendPayment;
 
@@ -321,6 +322,21 @@
     public void Hide()
     {
         SendModal?.Hide();
+    }
+
+    async Task onAddressChanged(string address)
+    {
+        if (!string.IsNullOrEmpty(address))
+            Address = address;
+        else
+            Address = AppData.Account.Address;
+
+        if (Address == AppData.Account.Address)
+            IsSubAccount = false;
+        else if (AppData.Account.SubAccounts.ContainsKey(Address))
+            IsSubAccount = true;
+
+        await InvokeAsync(StateHasChanged);
     }
 
     async Task SetTxType(TxType type, string tokenId, string imageUrl, double assetAmount, string tokenSymbol)

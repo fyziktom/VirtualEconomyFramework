@@ -136,7 +136,12 @@ else
         get
         {
             //Load();
-            return AppData.Account.NFTs.Where(n => n.Type == NFTTypes.Payment) ?? new List<INFT>();   
+            if (Address == AppData.Account.Address)
+                return AppData.Account.NFTs.Where(n => n.Type == NFTTypes.Payment) ?? new List<INFT>(); 
+            else if (AppData.Account.SubAccounts.TryGetValue(Address, out var sa))
+                return sa.NFTs.Where(n => n.Type == NFTTypes.Payment) ?? new List<INFT>(); 
+            else
+                return AppData.Account.NFTs.Where(n => n.Type == NFTTypes.Payment) ?? new List<INFT>();
         }
     }    
     public IEnumerable<INFT> NFTs
@@ -144,7 +149,12 @@ else
         get
         {
             //Load();
-            return AppData.Account.NFTs.Where(n => n.Type == NFTTypes.Payment)?.Skip( Offset * PerPage ).Take( PerPage ) ?? new List<INFT>();   
+            if (Address == AppData.Account.Address)
+                return AppData.Account.NFTs.Where(n => n.Type == NFTTypes.Payment)?.Skip( Offset * PerPage ).Take( PerPage ) ?? new List<INFT>();   
+            else if (AppData.Account.SubAccounts.TryGetValue(Address, out var sa))
+                return sa.NFTs.Where(n => n.Type == NFTTypes.Payment)?.Skip( Offset * PerPage ).Take( PerPage ) ?? new List<INFT>();  
+            else
+                return AppData.Account.NFTs.Where(n => n.Type == NFTTypes.Payment)?.Skip(Offset * PerPage).Take(PerPage) ?? new List<INFT>();
         }
     }
     private const string PREVIOUS = "previous";

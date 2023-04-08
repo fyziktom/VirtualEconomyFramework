@@ -42,10 +42,7 @@
                 @if ( tab.Type == TabType.ActiveTab )
                 {
                     <TabPanel Name="@tab.Name">
-                        <GalleryTabContent Address="@tab.Address"
-                                                            IsSubAccount="false"
-                                                            IsOwnNFT="false"
-                                                            OpenNFTsInWorkTab="@OpenNFTsInWorkTabHandler" />
+                        <GalleryTabContent Address="@tab.Address" OpenNFTsInWorkTab="@OpenNFTsInWorkTabHandler" />
                     </TabPanel>
                 }
                 @if (AppData.AllowWorkTabs && tab.Type == TabType.WorkTab )
