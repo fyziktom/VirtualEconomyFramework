@@ -108,18 +108,18 @@
         if (modalRef != null)
             await modalRef.Show();
     }
-    
+
     async Task nameChanged( ChangeEventArgs e )
     {
         if (e == null || e.Value == null) return;
-        
+
         NFT.Name = (string)e.Value;
         await NFTChanged.InvokeAsync( NFT );
     }
     async Task surnameChanged( ChangeEventArgs e )
     {
         if (e == null || e.Value == null) return;        
-        
+
         ( NFT as ProfileNFT ).Surname = (string)e.Value;
         await NFTChanged.InvokeAsync( NFT );
     }
@@ -141,7 +141,7 @@
     {
         if ( e is null )
             return;
-            
+
         NFT = e;
         NFTChanged.InvokeAsync( NFT );
     }
@@ -151,12 +151,12 @@
         mintingChanges = true;
         if (PageProgressService != null)
             await PageProgressService.Go( null, options => { options.Color = Color.Primary; } );
-            
+
         if (NotificationService != null)
             await NotificationService.Info( "Sending data...", "Sending" );
-              
+
         await InvokeAsync( StateHasChanged );
-        
+
         if ( AppData.Account.TokensSupplies.TryGetValue( AppData.AppTokenId, out var supply ) )
         {
             if ( supply.Amount > 3 )
@@ -168,12 +168,22 @@
         {
             NFT.TokenId = NFTHelpers.TokenId;
         }
-            
+
         var res = (false, string.Empty);
-        if ( string.IsNullOrEmpty( NFT.Utxo ) )
-            res = await AppData.Account.MintNFT( NFT );
-        else
-            res = await AppData.Account.ChangeNFT( NFT );
+        if (Address == AppData.Account.Address)
+        {
+            if ( string.IsNullOrEmpty( NFT.Utxo ) )
+                res = await AppData.Account.MintNFT( NFT );
+            else
+                res = await AppData.Account.ChangeNFT( NFT );
+        }
+        else if (AppData.Account.SubAccounts.TryGetValue(Address, out var sa))
+        {
+            if (string.IsNullOrEmpty(NFT.Utxo))
+                res = await sa.MintNFT(NFT);
+            else
+                res = await sa.ChangeNFT(NFT);
+        }
 
         minted = res.Item1;
         result = res.Item2;

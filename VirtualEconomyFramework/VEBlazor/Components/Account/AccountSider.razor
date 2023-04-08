@@ -11,7 +11,10 @@
 <Row Margin="Margin.Is3.FromBottom.Is3.FromTop" Flex="Flex.JustifyContent.Between">
     <Column>
         <ErrorBoundary>
-            <AccountProfile NFT="@(AppData.Account.Profile as INFT)" NFTChanged="@NFTChangedHandler" />
+            <AccountProfile NFT="@Profile" 
+                            NFTChanged="@NFTChangedHandler"
+                            Address="@Address"
+                            IsSubAccount="@IsSubAccount" />
         </ErrorBoundary>
     </Column>
     <Column>
@@ -172,6 +175,16 @@
                 return 0;
         }
     }
+    public INFT Profile
+    {
+        get
+        {
+            if (!string.IsNullOrEmpty(Address) && Address != AppData.Account.Address)
+                if (AppData.Account.SubAccounts.TryGetValue(Address, out var acc))
+                    return acc.Profile as INFT;
+            return AppData.Account.Profile as INFT;
+        }
+    }
 
     bool collapse0Visible = false;
     bool collapse1Visible = false;
@@ -232,7 +245,12 @@
     void NFTChangedHandler( INFT e )
     {
         if (e != null && e.Type == NFTTypes.Profile)
-            AppData.Account.Profile = e as ProfileNFT;
+        {
+            if (Address == AppData.Account.Address)
+                AppData.Account.Profile = e as ProfileNFT;
+            else if (AppData.Account.SubAccounts.ContainsKey(Address))
+                AppData.Account.SubAccounts[Address].Profile = e as ProfileNFT;
+        }
     }
 
     async Task addNewTransaction()

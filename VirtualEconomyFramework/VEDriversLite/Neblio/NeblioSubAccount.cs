@@ -332,6 +332,12 @@ namespace VEDriversLite.Neblio
                             else
                             {
                                 await CheckPayments();
+                                if (string.IsNullOrEmpty(Profile.Utxo))
+                                {
+                                    var profile = NFTs.FirstOrDefault(n => n.Type == NFTTypes.Profile);
+                                    if (profile != null)
+                                        Profile = profile as ProfileNFT;
+                                }
                                 minorRefresh = 5;
                             }
                         }
