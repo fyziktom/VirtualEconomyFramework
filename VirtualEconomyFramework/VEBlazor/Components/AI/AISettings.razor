@@ -6,13 +6,25 @@
             <FieldLabel>OpenAI API Key</FieldLabel>
             <FieldBody>
                 <Addons>
+                    <Addon AddonType="AddonType.Start">
+                        <Button Color="Color.Secondary" Clicked="@ShowAPIKey" Disabled="@(string.IsNullOrEmpty(OpenAIApiKey))" Block>
+                            @if (textRole == TextRole.Password)
+                            {
+                                <Icon Name="IconName.Eye" />
+                            }
+                            else
+                            {
+                                <Icon Name="IconName.EyeSlash" />
+                            }
+                        </Button>
+                    </Addon>
                     <Addon AddonType="AddonType.Body">
-                        <TextEdit Placeholder="Enter OpenAI API Key" @bind-Text="OpenAIApiKey" />
+                        <TextEdit Placeholder="Enter OpenAI API Key" Role="@textRole" @bind-Text="OpenAIApiKey" />
                     </Addon>
                     @if (!string.IsNullOrEmpty(OpenAIApiKey))
                     {
                         <Addon AddonType="AddonType.End">
-                            <Button Color="Color.Primary" Clicked="@SaveAPIKey" Loading="@Loading" Block>Save</Button>
+                            <Button Color="Color.Secondary" Clicked="@SaveAPIKey" Loading="@Loading" Block>Save</Button>
                         </Addon>
                     }
                 </Addons>
@@ -26,13 +38,34 @@
 
     public string OpenAIApiKey { get; set; } = string.Empty;
     public bool Loading {get;set;} = false;
+    TextRole textRole = TextRole.Password;
+    private System.Threading.Timer timer;
 
     protected override async Task OnInitializedAsync()
     {
         var res = await AppData.GetAndDecryptOpenAIApiKey();
         if (!string.IsNullOrEmpty(res))
-        {
             OpenAIApiKey = res;
+    }
+
+    private async Task ShowAPIKey()
+    {
+        if (textRole == TextRole.Text)
+        {
+            textRole = TextRole.Password;
+            timer.Dispose();
+            await InvokeAsync(StateHasChanged);
+        }
+        else
+        {
+            textRole = TextRole.Text;
+            await InvokeAsync(StateHasChanged);
+            timer = new System.Threading.Timer(async (object stateInfo) =>
+            {
+                textRole = TextRole.Password;
+                await InvokeAsync(StateHasChanged);
+                timer.Dispose();
+            }, new System.Threading.AutoResetEvent(false), 5000, 5000);
         }
     }
 
