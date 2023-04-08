@@ -90,16 +90,22 @@
     {
         get
         {
-            if ( IsOwnNFT )
+            if ( IsOwnNFT  && !IsSubAccount)
+            {
                 return AppData.Account.NFTs.Where( n => AppData.AllowedNFTTypes.Contains(n.Type) );
+            }
+            else if (IsOwnNFT && IsSubAccount)
+            {
+                if (AppData.Account.SubAccounts.TryGetValue(Address, out var sa))
+                     return sa.NFTs.Where(n => AppData.AllowedNFTTypes.Contains(n.Type));
+            }
             else
             {
                 var tab = AppData.Account.Tabs.FirstOrDefault( t => t.Address == Address );
                 if ( tab != null )
-                    return tab.NFTs.Where( n => AppData.AllowedNFTTypes.Contains(n.Type) );
-                else
-                    return new List<INFT>();
+                    return tab.NFTs.Where( n => AppData.AllowedNFTTypes.Contains(n.Type) );                    
             }
+            return new List<INFT>();
         }
     }
 

@@ -33,9 +33,9 @@
         <Content>
             <TabPanel Name="gallery">
                 <GalleryTabContent Address="@AppData.Account.Address"
-                                                            IsSubAccount="false"
-                                                            IsOwnNFT="true"
-                                                            OpenNFTsInWorkTab="@OpenNFTsInWorkTabHandler" />
+                                   IsSubAccount="false"
+                                   IsOwnNFT="true"
+                                   OpenNFTsInWorkTab="@OpenNFTsInWorkTabHandler" />
             </TabPanel>
             @foreach ( var tab in AppData.OpenedTabs )
             {
@@ -49,11 +49,11 @@
                 {
                     <TabPanel Name="@tab.Name" Height="Height.Is100">
                         <WorkTabContent NFTs="@GetWTNFTs(tab)"
-                                                            Address="@Address"
-                                                            IsSubAccount="@IsSubAccount"
-                                                            IsOwnNFT="true"
-                                                            WorkTabName="@tab.Name"
-                                                            OpenNFTsInWorkTab="@OpenNFTsInWorkTabHandler" />
+                                        Address="@Address"
+                                        IsSubAccount="@IsSubAccount"
+                                        IsOwnNFT="true"
+                                        WorkTabName="@tab.Name"
+                                        OpenNFTsInWorkTab="@OpenNFTsInWorkTabHandler" />
                     </TabPanel>
                 }
             }

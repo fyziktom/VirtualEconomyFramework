@@ -238,10 +238,11 @@ public class AppData
             await LoadBookmarks();
 
             await SaveCache();
-            // try init assistant if there is stored OpenAI api key in the browser local memory
-            await InitAssistant();
 
             IsAccountLoaded = true;
+
+            // try init assistant if there is stored OpenAI api key in the browser local memory
+            await InitAssistant();
         }
         else
         {

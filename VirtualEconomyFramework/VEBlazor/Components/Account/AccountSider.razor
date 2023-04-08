@@ -18,7 +18,7 @@
         </ErrorBoundary>
     </Column>
     <Column>
-        <AccountsStats AddressChanged="@onAddressChanedHandler" />
+        <AccountsStats AddressChanged="@onAddressChangedHandler" />
     </Column>
     <Column>
         <Card>
@@ -217,7 +217,7 @@
         }
     }
 
-    async Task onAddressChanedHandler(string address)
+    async Task onAddressChangedHandler(string address)
     {
         if (!string.IsNullOrEmpty(address))
             Address = address;

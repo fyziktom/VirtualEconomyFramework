@@ -55,10 +55,10 @@
         await base.OnInitializedAsync();
         bookmark = AppData.Account.IsInTheBookmarks( Address );
     }
-
+    
     protected override async Task OnAfterRenderAsync(bool firstLoad)
     {
-        if (lastAddressCheck != Address)
+        if (!string.IsNullOrEmpty(Address) && lastAddressCheck != Address)
         {
             if (Address != AppData.Account.Address)
             {
@@ -83,5 +83,6 @@
             lastAddressCheck = Address;
             await InvokeAsync(StateHasChanged);
         }
+        
     }
 }
