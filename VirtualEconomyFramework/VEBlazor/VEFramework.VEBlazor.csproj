@@ -5,7 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
 	  <PackageId>VEFramework.VEBlazor</PackageId>
-	  <Version>0.3.31</Version>
+	  <Version>0.3.4</Version>
 	  <Authors>fyziktom</Authors>
 	  <Company>VEFramework</Company>
 	  <Description>.NET6 Blazor component and dApp template library. It contains lots of components related to blockchain, IPFS, NFTs and other web3 and Industry4.0 technologies.</Description>
@@ -15,9 +15,17 @@
 	  <PackageTags>VEFramework, Blazor, MAUI, Cryptocurrencies, Crypto, NFT, NFTs, NFTTech, NFTIoT, Bitcoin, ReddCoin, Neblio, Nebl, Doge, Dogecoin, Blockchain, eCommerce, dApps, WooCommerce, WordPress</PackageTags>
 	  <Copyright>fyziktom</Copyright>
 	  <PackageReleaseNotes>
-		  - Added AI Components
-		  - Added Audio Recorder
-		  - Added Component for display of address as QR Code
+		  - Saving of private keys in the IndexedDb. Including procedure for migration of old private keys from localStorage 
+		  - Applied new system of encryption of private keys (compatible with old system)
+		  - Fix SpaceTags
+		  - Add SubAccounts support
+		  - Add Cretate/Import Component
+		  - Add Accounts Stats Component
+		  - Add Account Selector Component
+		  - Integrate Switching of accounts into Account Sider
+		  - Integrate switching of account into sending transactions
+		  - Allow to work with NFTs in the opened tab if tab address is SubAccount
+		  - Few fixes in the AI components
 	  </PackageReleaseNotes>
 	  <PackageReadmeFile>Readme.md</PackageReadmeFile>
 	  <PackageLicenseExpression>MIT</PackageLicenseExpression>

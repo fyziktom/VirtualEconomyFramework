@@ -151,6 +151,7 @@ using Blazorise.Bootstrap;
 using Blazorise.Icons.FontAwesome;
 using Blazored.LocalStorage;
 using BlazorPanzoom;
+using IndexedDB.Blazor;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
@@ -228,6 +229,26 @@ await builder.Build().RunAsync();
         // Define ID of your Token. 
         // You can use some defaults or create own on Neblio blockchain
         AppData.AppTokenId = NFTHelpers.BDPTokenId;
+
+        VEDriversLite.StorageDriver.Helpers.IPFSHelpers.GatewayURL = "https://ve-framework.com/ipfs/"; //veframework public gateway
+
+        var res = await VEDLDataContext.Storage.AddDriver(new VEDriversLite.StorageDriver.StorageDrivers.Dto.StorageDriverConfigDto()   
+            {
+                Type = "IPFS",
+                Name = "BDP",
+                Location = "Cloud",
+                ID = "BDP",
+                IsPublicGateway = true,
+                IsLocal = false,
+                ConnectionParams = new StorageDriverConnectionParams()
+                {
+                    APIUrl = "https://ve-framework.com/",
+                    APIPort = 443,
+                    Secured = false,
+                    GatewayURL = "https://ve-framework.com/ipfs/",
+                    GatewayPort = 443,
+                }
+            });
 
         // Define minting tabs
         // Each of them must have also page added in Pages Foler
@@ -410,7 +431,10 @@ Main Layout automatically switches the menus from the Side (on Tablet and bigger
     - Allow to import the standard VENFT backup file. Or you can import the raw or encrypted key.
 - [Unlock Account](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/Account/UnlockAccount.razor)
 - [Neblio Address Input](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/Account/NeblioAddressInput.razor)
-- [Show Address As QR]()
+- [Show Address As QR](https://github.com/fyziktom/VirtualEconomyFramework/blob/Development/VirtualEconomyFramework/VEBlazor/Components/Account/ShowAddressAsQR.razor)
+- [Add/Import Sub Account](https://github.com/fyziktom/VirtualEconomyFramework/blob/Development/VirtualEconomyFramework/VEBlazor/Components/Account/ImportAccount.razor)
+- [Account Stats](https://github.com/fyziktom/VirtualEconomyFramework/blob/Development/VirtualEconomyFramework/VEBlazor/Components/Account/AccountsStats.razor)
+- [Account Selector](https://github.com/fyziktom/VirtualEconomyFramework/blob/Development/VirtualEconomyFramework/VEBlazor/Components/Account/AccountSelector.razor)
 
 Neblio Address Input loads bookmarks and allow to use already saved address. It load part of the Unstoppable Domains. We will need to do some updates in API, but part of the addresses works fine. You will type UD name and it will change it to the Neblio Address.
 

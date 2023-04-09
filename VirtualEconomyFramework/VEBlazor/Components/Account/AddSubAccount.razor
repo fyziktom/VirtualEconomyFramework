@@ -115,7 +115,7 @@
                 return "VENFT";
         }
     }
-    
+
     public async Task showNewSubAccountModal(MouseEventArgs e)
     {
         if (newSubAccountModalRef != null)
@@ -137,7 +137,7 @@
 
             if (!importAccount)
                 privateKey = string.Empty;
-            
+
             var res = await AppData.Account.AddSubAccount(newSubAccountName, 
                                                           sendInitPayment, 
                                                           AppData.DefaultAirdropMain, 
@@ -156,21 +156,28 @@
                     await NewAddressCreated.InvokeAsync(add.Item2);
                     if (NotificationService != null)
                         await NotificationService.Success("Sub Account Created...", "Created");
+                    privateKey = string.Empty;
+                    newSubAccountName = string.Empty;
+                    importAccount = false;
 
+                    if (newSubAccountModalRef != null)
+                        await newSubAccountModalRef.Hide();
                 }
                 else
                 {
                     if (NotificationService != null)
                         await NotificationService.Error("Cannot create SubAccount... " + add.Item2, "Error");
-
                 }
             }
+        }
+        catch(Exception ex)
+        {
+            if (NotificationService != null)
+                 await NotificationService.Error("Cannot create SubAccount... " + ex.Message, "Error");            
         }
         finally
         {
             loading = false;
-            if (newSubAccountModalRef != null)
-                await newSubAccountModalRef.Hide();
         }
     }
 

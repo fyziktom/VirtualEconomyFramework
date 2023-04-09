@@ -6,6 +6,7 @@ using Blazorise.Bootstrap;
 using Blazorise.Icons.FontAwesome;
 using Blazored.LocalStorage;
 using BlazorPanzoom;
+using IndexedDB.Blazor;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
@@ -23,6 +24,7 @@ builder.Services
 
 builder.Services.AddScoped<AppData>();
 builder.Services.AddScoped<TransactionsService>();
+builder.Services.AddSingleton<IIndexedDbFactory, IndexedDbFactory>();
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddBlazorPanzoomServices();
 
