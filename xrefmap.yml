@@ -7264,6 +7264,19 @@ references:
   isSpec: "True"
   fullName: VEDriversLite.Dto.BackupDataDto.MessageTabs
   nameWithType: BackupDataDto.MessageTabs
+- uid: VEDriversLite.Dto.BackupDataDto.OpenAIApiKey
+  name: OpenAIApiKey
+  href: api/VEDriversLite.Dto.BackupDataDto.html#VEDriversLite_Dto_BackupDataDto_OpenAIApiKey
+  commentId: P:VEDriversLite.Dto.BackupDataDto.OpenAIApiKey
+  fullName: VEDriversLite.Dto.BackupDataDto.OpenAIApiKey
+  nameWithType: BackupDataDto.OpenAIApiKey
+- uid: VEDriversLite.Dto.BackupDataDto.OpenAIApiKey*
+  name: OpenAIApiKey
+  href: api/VEDriversLite.Dto.BackupDataDto.html#VEDriversLite_Dto_BackupDataDto_OpenAIApiKey_
+  commentId: Overload:VEDriversLite.Dto.BackupDataDto.OpenAIApiKey
+  isSpec: "True"
+  fullName: VEDriversLite.Dto.BackupDataDto.OpenAIApiKey
+  nameWithType: BackupDataDto.OpenAIApiKey
 - uid: VEDriversLite.Dto.BackupDataDto.SubAccounts
   name: SubAccounts
   href: api/VEDriversLite.Dto.BackupDataDto.html#VEDriversLite_Dto_BackupDataDto_SubAccounts
@@ -12211,6 +12224,19 @@ references:
   commentId: E:VEDriversLite.Neblio.NeblioSubAccount.FirsLoadingStatus
   fullName: VEDriversLite.Neblio.NeblioSubAccount.FirsLoadingStatus
   nameWithType: NeblioSubAccount.FirsLoadingStatus
+- uid: VEDriversLite.Neblio.NeblioSubAccount.ImportAddress(NBitcoin.BitcoinSecret,System.String,System.String)
+  name: ImportAddress(BitcoinSecret, String, String)
+  href: api/VEDriversLite.Neblio.NeblioSubAccount.html#VEDriversLite_Neblio_NeblioSubAccount_ImportAddress_NBitcoin_BitcoinSecret_System_String_System_String_
+  commentId: M:VEDriversLite.Neblio.NeblioSubAccount.ImportAddress(NBitcoin.BitcoinSecret,System.String,System.String)
+  fullName: VEDriversLite.Neblio.NeblioSubAccount.ImportAddress(NBitcoin.BitcoinSecret, System.String, System.String)
+  nameWithType: NeblioSubAccount.ImportAddress(BitcoinSecret, String, String)
+- uid: VEDriversLite.Neblio.NeblioSubAccount.ImportAddress*
+  name: ImportAddress
+  href: api/VEDriversLite.Neblio.NeblioSubAccount.html#VEDriversLite_Neblio_NeblioSubAccount_ImportAddress_
+  commentId: Overload:VEDriversLite.Neblio.NeblioSubAccount.ImportAddress
+  isSpec: "True"
+  fullName: VEDriversLite.Neblio.NeblioSubAccount.ImportAddress
+  nameWithType: NeblioSubAccount.ImportAddress
 - uid: VEDriversLite.Neblio.NeblioSubAccount.IsAutoRefreshActive
   name: IsAutoRefreshActive
   href: api/VEDriversLite.Neblio.NeblioSubAccount.html#VEDriversLite_Neblio_NeblioSubAccount_IsAutoRefreshActive
@@ -12365,12 +12391,12 @@ references:
   commentId: E:VEDriversLite.NeblioAccount.AddressesAirdroped
   fullName: VEDriversLite.NeblioAccount.AddressesAirdroped
   nameWithType: NeblioAccount.AddressesAirdroped
-- uid: VEDriversLite.NeblioAccount.AddSubAccount(System.String,System.Boolean,System.Double,System.Boolean,System.Double,System.String)
-  name: AddSubAccount(String, Boolean, Double, Boolean, Double, String)
-  href: api/VEDriversLite.NeblioAccount.html#VEDriversLite_NeblioAccount_AddSubAccount_System_String_System_Boolean_System_Double_System_Boolean_System_Double_System_String_
-  commentId: M:VEDriversLite.NeblioAccount.AddSubAccount(System.String,System.Boolean,System.Double,System.Boolean,System.Double,System.String)
-  fullName: VEDriversLite.NeblioAccount.AddSubAccount(System.String, System.Boolean, System.Double, System.Boolean, System.Double, System.String)
-  nameWithType: NeblioAccount.AddSubAccount(String, Boolean, Double, Boolean, Double, String)
+- uid: VEDriversLite.NeblioAccount.AddSubAccount(System.String,System.Boolean,System.Double,System.Boolean,System.Double,System.String,System.String)
+  name: AddSubAccount(String, Boolean, Double, Boolean, Double, String, String)
+  href: api/VEDriversLite.NeblioAccount.html#VEDriversLite_NeblioAccount_AddSubAccount_System_String_System_Boolean_System_Double_System_Boolean_System_Double_System_String_System_String_
+  commentId: M:VEDriversLite.NeblioAccount.AddSubAccount(System.String,System.Boolean,System.Double,System.Boolean,System.Double,System.String,System.String)
+  fullName: VEDriversLite.NeblioAccount.AddSubAccount(System.String, System.Boolean, System.Double, System.Boolean, System.Double, System.String, System.String)
+  nameWithType: NeblioAccount.AddSubAccount(String, Boolean, Double, Boolean, Double, String, String)
 - uid: VEDriversLite.NeblioAccount.AddSubAccount*
   name: AddSubAccount
   href: api/VEDriversLite.NeblioAccount.html#VEDriversLite_NeblioAccount_AddSubAccount_
@@ -29194,6 +29220,19 @@ references:
   isSpec: "True"
   fullName: VEDriversLite.NFT.NFTFactory.CloneNFT
   nameWithType: NFTFactory.CloneNFT
+- uid: VEDriversLite.NFT.NFTFactory.GetEmptyNFT(VEDriversLite.NFT.NFTTypes)
+  name: GetEmptyNFT(NFTTypes)
+  href: api/VEDriversLite.NFT.NFTFactory.html#VEDriversLite_NFT_NFTFactory_GetEmptyNFT_VEDriversLite_NFT_NFTTypes_
+  commentId: M:VEDriversLite.NFT.NFTFactory.GetEmptyNFT(VEDriversLite.NFT.NFTTypes)
+  fullName: VEDriversLite.NFT.NFTFactory.GetEmptyNFT(VEDriversLite.NFT.NFTTypes)
+  nameWithType: NFTFactory.GetEmptyNFT(NFTTypes)
+- uid: VEDriversLite.NFT.NFTFactory.GetEmptyNFT*
+  name: GetEmptyNFT
+  href: api/VEDriversLite.NFT.NFTFactory.html#VEDriversLite_NFT_NFTFactory_GetEmptyNFT_
+  commentId: Overload:VEDriversLite.NFT.NFTFactory.GetEmptyNFT
+  isSpec: "True"
+  fullName: VEDriversLite.NFT.NFTFactory.GetEmptyNFT
+  nameWithType: NFTFactory.GetEmptyNFT
 - uid: VEDriversLite.NFT.NFTFactory.GetNFT(System.String,System.String,System.Int32,System.Double,System.Boolean,System.Boolean,VEDriversLite.NFT.NFTTypes,System.Boolean,VEDriversLite.NFT.NFTTypes,System.String,VEDriversLite.NeblioAPI.GetTransactionInfoResponse)
   name: GetNFT(String, String, Int32, Double, Boolean, Boolean, NFTTypes, Boolean, NFTTypes, String, GetTransactionInfoResponse)
   href: api/VEDriversLite.NFT.NFTFactory.html#VEDriversLite_NFT_NFTFactory_GetNFT_System_String_System_String_System_Int32_System_Double_System_Boolean_System_Boolean_VEDriversLite_NFT_NFTTypes_System_Boolean_VEDriversLite_NFT_NFTTypes_System_String_VEDriversLite_NeblioAPI_GetTransactionInfoResponse_
@@ -31849,6 +31888,21 @@ references:
   commentId: T:VEDriversLite.Security.EncryptionKey
   fullName: VEDriversLite.Security.EncryptionKey
   nameWithType: EncryptionKey
+- uid: VEDriversLite.Security.EncryptionKey.#ctor
+  name: EncryptionKey()
+  href: api/VEDriversLite.Security.EncryptionKey.html#VEDriversLite_Security_EncryptionKey__ctor
+  commentId: M:VEDriversLite.Security.EncryptionKey.#ctor
+  fullName: VEDriversLite.Security.EncryptionKey.EncryptionKey()
+  nameWithType: EncryptionKey.EncryptionKey()
+- uid: VEDriversLite.Security.EncryptionKey.#ctor(System.String,System.Byte[],System.String,System.Boolean)
+  name: EncryptionKey(String, Byte[], String, Boolean)
+  href: api/VEDriversLite.Security.EncryptionKey.html#VEDriversLite_Security_EncryptionKey__ctor_System_String_System_Byte___System_String_System_Boolean_
+  commentId: M:VEDriversLite.Security.EncryptionKey.#ctor(System.String,System.Byte[],System.String,System.Boolean)
+  name.vb: EncryptionKey(String, Byte(), String, Boolean)
+  fullName: VEDriversLite.Security.EncryptionKey.EncryptionKey(System.String, System.Byte[], System.String, System.Boolean)
+  fullName.vb: VEDriversLite.Security.EncryptionKey.EncryptionKey(System.String, System.Byte(), System.String, System.Boolean)
+  nameWithType: EncryptionKey.EncryptionKey(String, Byte[], String, Boolean)
+  nameWithType.vb: EncryptionKey.EncryptionKey(String, Byte(), String, Boolean)
 - uid: VEDriversLite.Security.EncryptionKey.#ctor(System.String,System.String,System.Boolean)
   name: EncryptionKey(String, String, Boolean)
   href: api/VEDriversLite.Security.EncryptionKey.html#VEDriversLite_Security_EncryptionKey__ctor_System_String_System_String_System_Boolean_
@@ -31940,6 +31994,19 @@ references:
   isSpec: "True"
   fullName: VEDriversLite.Security.EncryptionKey.IsPassLoaded
   nameWithType: EncryptionKey.IsPassLoaded
+- uid: VEDriversLite.Security.EncryptionKey.IV
+  name: IV
+  href: api/VEDriversLite.Security.EncryptionKey.html#VEDriversLite_Security_EncryptionKey_IV
+  commentId: P:VEDriversLite.Security.EncryptionKey.IV
+  fullName: VEDriversLite.Security.EncryptionKey.IV
+  nameWithType: EncryptionKey.IV
+- uid: VEDriversLite.Security.EncryptionKey.IV*
+  name: IV
+  href: api/VEDriversLite.Security.EncryptionKey.html#VEDriversLite_Security_EncryptionKey_IV_
+  commentId: Overload:VEDriversLite.Security.EncryptionKey.IV
+  isSpec: "True"
+  fullName: VEDriversLite.Security.EncryptionKey.IV
+  nameWithType: EncryptionKey.IV
 - uid: VEDriversLite.Security.EncryptionKey.LoadNewKey(System.String,System.String,System.Boolean)
   name: LoadNewKey(String, String, Boolean)
   href: api/VEDriversLite.Security.EncryptionKey.html#VEDriversLite_Security_EncryptionKey_LoadNewKey_System_String_System_String_System_Boolean_
@@ -32005,6 +32072,19 @@ references:
   isSpec: "True"
   fullName: VEDriversLite.Security.EncryptionKey.PasswordHash
   nameWithType: EncryptionKey.PasswordHash
+- uid: VEDriversLite.Security.EncryptionKey.PasswordHashString
+  name: PasswordHashString
+  href: api/VEDriversLite.Security.EncryptionKey.html#VEDriversLite_Security_EncryptionKey_PasswordHashString
+  commentId: P:VEDriversLite.Security.EncryptionKey.PasswordHashString
+  fullName: VEDriversLite.Security.EncryptionKey.PasswordHashString
+  nameWithType: EncryptionKey.PasswordHashString
+- uid: VEDriversLite.Security.EncryptionKey.PasswordHashString*
+  name: PasswordHashString
+  href: api/VEDriversLite.Security.EncryptionKey.html#VEDriversLite_Security_EncryptionKey_PasswordHashString_
+  commentId: Overload:VEDriversLite.Security.EncryptionKey.PasswordHashString
+  isSpec: "True"
+  fullName: VEDriversLite.Security.EncryptionKey.PasswordHashString
+  nameWithType: EncryptionKey.PasswordHashString
 - uid: VEDriversLite.Security.EncryptionKey.PublicKey
   name: PublicKey
   href: api/VEDriversLite.Security.EncryptionKey.html#VEDriversLite_Security_EncryptionKey_PublicKey
@@ -32082,6 +32162,19 @@ references:
   commentId: T:VEDriversLite.Security.SymetricProvider
   fullName: VEDriversLite.Security.SymetricProvider
   nameWithType: SymetricProvider
+- uid: VEDriversLite.Security.SymetricProvider.ContainsIV(System.String)
+  name: ContainsIV(String)
+  href: api/VEDriversLite.Security.SymetricProvider.html#VEDriversLite_Security_SymetricProvider_ContainsIV_System_String_
+  commentId: M:VEDriversLite.Security.SymetricProvider.ContainsIV(System.String)
+  fullName: VEDriversLite.Security.SymetricProvider.ContainsIV(System.String)
+  nameWithType: SymetricProvider.ContainsIV(String)
+- uid: VEDriversLite.Security.SymetricProvider.ContainsIV*
+  name: ContainsIV
+  href: api/VEDriversLite.Security.SymetricProvider.html#VEDriversLite_Security_SymetricProvider_ContainsIV_
+  commentId: Overload:VEDriversLite.Security.SymetricProvider.ContainsIV
+  isSpec: "True"
+  fullName: VEDriversLite.Security.SymetricProvider.ContainsIV
+  nameWithType: SymetricProvider.ContainsIV
 - uid: VEDriversLite.Security.SymetricProvider.DecryptBytes(System.Byte[],System.Byte[],System.Byte[])
   name: DecryptBytes(Byte[], Byte[], Byte[])
   href: api/VEDriversLite.Security.SymetricProvider.html#VEDriversLite_Security_SymetricProvider_DecryptBytes_System_Byte___System_Byte___System_Byte___
@@ -32107,12 +32200,15 @@ references:
   isSpec: "True"
   fullName: VEDriversLite.Security.SymetricProvider.DecryptBytes
   nameWithType: SymetricProvider.DecryptBytes
-- uid: VEDriversLite.Security.SymetricProvider.DecryptString(System.String,System.String)
-  name: DecryptString(String, String)
-  href: api/VEDriversLite.Security.SymetricProvider.html#VEDriversLite_Security_SymetricProvider_DecryptString_System_String_System_String_
-  commentId: M:VEDriversLite.Security.SymetricProvider.DecryptString(System.String,System.String)
-  fullName: VEDriversLite.Security.SymetricProvider.DecryptString(System.String, System.String)
-  nameWithType: SymetricProvider.DecryptString(String, String)
+- uid: VEDriversLite.Security.SymetricProvider.DecryptString(System.String,System.String,System.Byte[])
+  name: DecryptString(String, String, Byte[])
+  href: api/VEDriversLite.Security.SymetricProvider.html#VEDriversLite_Security_SymetricProvider_DecryptString_System_String_System_String_System_Byte___
+  commentId: M:VEDriversLite.Security.SymetricProvider.DecryptString(System.String,System.String,System.Byte[])
+  name.vb: DecryptString(String, String, Byte())
+  fullName: VEDriversLite.Security.SymetricProvider.DecryptString(System.String, System.String, System.Byte[])
+  fullName.vb: VEDriversLite.Security.SymetricProvider.DecryptString(System.String, System.String, System.Byte())
+  nameWithType: SymetricProvider.DecryptString(String, String, Byte[])
+  nameWithType.vb: SymetricProvider.DecryptString(String, String, Byte())
 - uid: VEDriversLite.Security.SymetricProvider.DecryptString*
   name: DecryptString
   href: api/VEDriversLite.Security.SymetricProvider.html#VEDriversLite_Security_SymetricProvider_DecryptString_
@@ -32145,12 +32241,15 @@ references:
   isSpec: "True"
   fullName: VEDriversLite.Security.SymetricProvider.EncryptBytes
   nameWithType: SymetricProvider.EncryptBytes
-- uid: VEDriversLite.Security.SymetricProvider.EncryptString(System.String,System.String)
-  name: EncryptString(String, String)
-  href: api/VEDriversLite.Security.SymetricProvider.html#VEDriversLite_Security_SymetricProvider_EncryptString_System_String_System_String_
-  commentId: M:VEDriversLite.Security.SymetricProvider.EncryptString(System.String,System.String)
-  fullName: VEDriversLite.Security.SymetricProvider.EncryptString(System.String, System.String)
-  nameWithType: SymetricProvider.EncryptString(String, String)
+- uid: VEDriversLite.Security.SymetricProvider.EncryptString(System.String,System.String,System.Byte[])
+  name: EncryptString(String, String, Byte[])
+  href: api/VEDriversLite.Security.SymetricProvider.html#VEDriversLite_Security_SymetricProvider_EncryptString_System_String_System_String_System_Byte___
+  commentId: M:VEDriversLite.Security.SymetricProvider.EncryptString(System.String,System.String,System.Byte[])
+  name.vb: EncryptString(String, String, Byte())
+  fullName: VEDriversLite.Security.SymetricProvider.EncryptString(System.String, System.String, System.Byte[])
+  fullName.vb: VEDriversLite.Security.SymetricProvider.EncryptString(System.String, System.String, System.Byte())
+  nameWithType: SymetricProvider.EncryptString(String, String, Byte[])
+  nameWithType.vb: SymetricProvider.EncryptString(String, String, Byte())
 - uid: VEDriversLite.Security.SymetricProvider.EncryptString*
   name: EncryptString
   href: api/VEDriversLite.Security.SymetricProvider.html#VEDriversLite_Security_SymetricProvider_EncryptString_
@@ -32158,6 +32257,60 @@ references:
   isSpec: "True"
   fullName: VEDriversLite.Security.SymetricProvider.EncryptString
   nameWithType: SymetricProvider.EncryptString
+- uid: VEDriversLite.Security.SymetricProvider.GetIV
+  name: GetIV()
+  href: api/VEDriversLite.Security.SymetricProvider.html#VEDriversLite_Security_SymetricProvider_GetIV
+  commentId: M:VEDriversLite.Security.SymetricProvider.GetIV
+  fullName: VEDriversLite.Security.SymetricProvider.GetIV()
+  nameWithType: SymetricProvider.GetIV()
+- uid: VEDriversLite.Security.SymetricProvider.GetIV*
+  name: GetIV
+  href: api/VEDriversLite.Security.SymetricProvider.html#VEDriversLite_Security_SymetricProvider_GetIV_
+  commentId: Overload:VEDriversLite.Security.SymetricProvider.GetIV
+  isSpec: "True"
+  fullName: VEDriversLite.Security.SymetricProvider.GetIV
+  nameWithType: SymetricProvider.GetIV
+- uid: VEDriversLite.Security.SymetricProvider.IVDivider
+  name: IVDivider
+  href: api/VEDriversLite.Security.SymetricProvider.html#VEDriversLite_Security_SymetricProvider_IVDivider
+  commentId: F:VEDriversLite.Security.SymetricProvider.IVDivider
+  fullName: VEDriversLite.Security.SymetricProvider.IVDivider
+  nameWithType: SymetricProvider.IVDivider
+- uid: VEDriversLite.Security.SymetricProvider.IVSize
+  name: IVSize
+  href: api/VEDriversLite.Security.SymetricProvider.html#VEDriversLite_Security_SymetricProvider_IVSize
+  commentId: F:VEDriversLite.Security.SymetricProvider.IVSize
+  fullName: VEDriversLite.Security.SymetricProvider.IVSize
+  nameWithType: SymetricProvider.IVSize
+- uid: VEDriversLite.Security.SymetricProvider.JoinIVToString(System.String,System.Byte[])
+  name: JoinIVToString(String, Byte[])
+  href: api/VEDriversLite.Security.SymetricProvider.html#VEDriversLite_Security_SymetricProvider_JoinIVToString_System_String_System_Byte___
+  commentId: M:VEDriversLite.Security.SymetricProvider.JoinIVToString(System.String,System.Byte[])
+  name.vb: JoinIVToString(String, Byte())
+  fullName: VEDriversLite.Security.SymetricProvider.JoinIVToString(System.String, System.Byte[])
+  fullName.vb: VEDriversLite.Security.SymetricProvider.JoinIVToString(System.String, System.Byte())
+  nameWithType: SymetricProvider.JoinIVToString(String, Byte[])
+  nameWithType.vb: SymetricProvider.JoinIVToString(String, Byte())
+- uid: VEDriversLite.Security.SymetricProvider.JoinIVToString*
+  name: JoinIVToString
+  href: api/VEDriversLite.Security.SymetricProvider.html#VEDriversLite_Security_SymetricProvider_JoinIVToString_
+  commentId: Overload:VEDriversLite.Security.SymetricProvider.JoinIVToString
+  isSpec: "True"
+  fullName: VEDriversLite.Security.SymetricProvider.JoinIVToString
+  nameWithType: SymetricProvider.JoinIVToString
+- uid: VEDriversLite.Security.SymetricProvider.ParseIVFromString(System.String)
+  name: ParseIVFromString(String)
+  href: api/VEDriversLite.Security.SymetricProvider.html#VEDriversLite_Security_SymetricProvider_ParseIVFromString_System_String_
+  commentId: M:VEDriversLite.Security.SymetricProvider.ParseIVFromString(System.String)
+  fullName: VEDriversLite.Security.SymetricProvider.ParseIVFromString(System.String)
+  nameWithType: SymetricProvider.ParseIVFromString(String)
+- uid: VEDriversLite.Security.SymetricProvider.ParseIVFromString*
+  name: ParseIVFromString
+  href: api/VEDriversLite.Security.SymetricProvider.html#VEDriversLite_Security_SymetricProvider_ParseIVFromString_
+  commentId: Overload:VEDriversLite.Security.SymetricProvider.ParseIVFromString
+  isSpec: "True"
+  fullName: VEDriversLite.Security.SymetricProvider.ParseIVFromString
+  nameWithType: SymetricProvider.ParseIVFromString
 - uid: VEDriversLite.SendTokenTxData
   name: SendTokenTxData
   href: api/VEDriversLite.SendTokenTxData.html
