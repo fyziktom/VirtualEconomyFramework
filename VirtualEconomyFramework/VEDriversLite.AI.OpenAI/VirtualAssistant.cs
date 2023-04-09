@@ -38,6 +38,10 @@ namespace VEDriversLite.AI.OpenAI
         /// OpenAI API wrapper service
         /// </summary>
         public OpenAIService? AIService { get; set; } = null;
+        /// <summary>
+        /// Main used model
+        /// </summary>
+        public string MainTextModel { get; set; } = Models.ChatGpt3_5Turbo;
 
         /// <summary>
         /// Init the assistants. It must be called before calls
@@ -69,11 +73,15 @@ namespace VEDriversLite.AI.OpenAI
             for (var i = 0; i < split.Length - 1; i++)
                 result.Append(split[i] + ".");
 
+            if (result.Length > 1)
+                result.Remove(result.Length - 1, 1);
+
             if (split.Length == 1)
                 result.Append(split[0]);
 
             return result.Append(".").ToString();
         }
+
         /// <summary>
         /// Create welcome phrase.
         /// </summary>
@@ -97,7 +105,7 @@ namespace VEDriversLite.AI.OpenAI
                     {
                         ChatMessage.FromSystem(input)
                     },
-                    Model = Models.ChatGpt3_5Turbo,
+                    Model = MainTextModel,
                     MaxTokens = maxTokens//optional
                 });
 
@@ -151,7 +159,7 @@ namespace VEDriversLite.AI.OpenAI
                 var completionResult = await AIService.ChatCompletion.CreateCompletion(new ChatCompletionCreateRequest
                 {
                     Messages = messages,
-                    Model = Models.ChatGpt3_5Turbo,
+                    Model = MainTextModel,
                     MaxTokens = maxTokens//optional
                 });
 
@@ -192,7 +200,7 @@ namespace VEDriversLite.AI.OpenAI
                 var completionResult = await AIService.ChatCompletion.CreateCompletion(new ChatCompletionCreateRequest
                 {
                     Messages = MessagesHistory,
-                    Model = Models.ChatGpt3_5Turbo,
+                    Model = MainTextModel,
                     MaxTokens = maxTokens//optional
                 });
 
@@ -232,7 +240,7 @@ namespace VEDriversLite.AI.OpenAI
                     { 
                         ChatMessage.FromUser(question)
                     },
-                    Model = Models.ChatGpt3_5Turbo,
+                    Model = MainTextModel,
                     MaxTokens = maxTokens//optional
                 });
 
@@ -313,7 +321,7 @@ namespace VEDriversLite.AI.OpenAI
                 var completionResult = await AIService.ChatCompletion.CreateCompletion(new ChatCompletionCreateRequest
                 {
                     Messages = MessagesHistory,
-                    Model = Models.ChatGpt3_5Turbo,
+                    Model = MainTextModel,
                     MaxTokens = maxTokens//optional
                 });
 
@@ -357,7 +365,7 @@ namespace VEDriversLite.AI.OpenAI
                     {
                         ChatMessage.FromUser(question)
                     },
-                    Model = Models.ChatGpt3_5Turbo,
+                    Model = MainTextModel,
                     MaxTokens = maxTokens//optional
                 });
 
@@ -482,8 +490,8 @@ namespace VEDriversLite.AI.OpenAI
                     {
                         ChatMessage.FromUser(requestMessage)
                     },
-                    Model = Models.ChatGpt3_5Turbo,
-                    MaxTokens = maxTokens//optional
+                    Model = MainTextModel,
+                    MaxTokens = maxTokens
                 });
 
                 if (completionResult.Successful)

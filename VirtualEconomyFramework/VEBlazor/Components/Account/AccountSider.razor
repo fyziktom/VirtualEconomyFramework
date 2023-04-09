@@ -11,16 +11,14 @@
 <Row Margin="Margin.Is3.FromBottom.Is3.FromTop" Flex="Flex.JustifyContent.Between">
     <Column>
         <ErrorBoundary>
-            <AccountProfile NFT="@(AppData.Account.Profile as INFT)" NFTChanged="@NFTChangedHandler" />
+            <AccountProfile NFT="@Profile" 
+                            NFTChanged="@NFTChangedHandler"
+                            Address="@Address"
+                            IsSubAccount="@IsSubAccount" />
         </ErrorBoundary>
     </Column>
     <Column>
-        <AccountBalances NeblioBalance="@AppData.Account.TotalSpendableBalance"
-                         NeblioBalanceUnconfirmed="@AppData.Account.TotalUnconfirmedBalance"
-                         TokensBalance="@TokenSupply"
-                         BDPBalance="@BDPSupply"
-                         WDOGEBalance="@WDOGESupply"
-                         NFTsCount="@AppData.Account.NFTs.Count" />
+        <AccountsStats AddressChanged="@onAddressChangedHandler" />
     </Column>
     <Column>
         <Card>
@@ -41,12 +39,12 @@
 <Row>
     <Column>
         <Accordion>
-            <Collapse Visible="@collapse1Visible">
+            <Collapse Visible="@collapse0Visible">
                 <CollapseHeader Padding="Padding.Is0.FromBottom">
                     <Row>
                         <Column>
-                            <Button Clicked="@(()=>collapse1Visible = !collapse1Visible)">
-                                <Icon Name="@(collapse1Visible ? IconName.AngleUp : IconName.AngleDown)" />
+                            <Button Clicked="@(()=>collapse0Visible = !collapse0Visible)">
+                                <Icon Name="@(collapse0Visible ? IconName.AngleUp : IconName.AngleDown)" />
                                 Settings
                             </Button>
                         </Column>
@@ -136,7 +134,7 @@
                     </Row>
                 </CollapseHeader>
                 <CollapseBody>
-                    <TransactionsList Address="@AppData.Account.Address" IsSubAccount="false" />
+                    <TransactionsList Address="@Address" IsSubAccount="IsSubAccount" />
                 </CollapseBody>
             </Collapse>
         </Accordion>
@@ -177,7 +175,18 @@
                 return 0;
         }
     }
+    public INFT Profile
+    {
+        get
+        {
+            if (!string.IsNullOrEmpty(Address) && Address != AppData.Account.Address)
+                if (AppData.Account.SubAccounts.TryGetValue(Address, out var acc))
+                    return acc.Profile as INFT;
+            return AppData.Account.Profile as INFT;
+        }
+    }
 
+    bool collapse0Visible = false;
     bool collapse1Visible = false;
     bool collapse2Visible = true;
     bool collapseNFTSalesVisible = true;
@@ -200,6 +209,27 @@
     async void RefreshedHandler(object? sender, EventArgs e)
     {
         await OnSelectedTabChanged(selectedTab);
+
+        if (string.IsNullOrEmpty(Address))
+        {
+            Address = AppData.Account.Address;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    async Task onAddressChangedHandler(string address)
+    {
+        if (!string.IsNullOrEmpty(address))
+            Address = address;
+        else
+            Address = AppData.Account.Address;
+
+        if (AppData.Account.SubAccounts.ContainsKey(Address))
+            IsSubAccount = true;
+        else
+            IsSubAccount = false;
+
+        await AddressChanged.InvokeAsync(Address);
         await InvokeAsync(StateHasChanged);
     }
 
@@ -211,17 +241,24 @@
         else if (name == "receipts")
             await nftReceiptsList.Load();
     }    
-    
+
     void NFTChangedHandler( INFT e )
     {
         if (e != null && e.Type == NFTTypes.Profile)
-            AppData.Account.Profile = e as ProfileNFT;
+        {
+            if (Address == AppData.Account.Address)
+                AppData.Account.Profile = e as ProfileNFT;
+            else if (AppData.Account.SubAccounts.ContainsKey(Address))
+                AppData.Account.SubAccounts[Address].Profile = e as ProfileNFT;
+        }
     }
-    
-    Task addNewTransaction()
+
+    async Task addNewTransaction()
     {
-        return sendNeblioTxRef.Show();
-    }  
+        if (sendNeblioTxRef != null)
+            await sendNeblioTxRef.Show();
+    }
+
     async Task addNewBookmark()
     {
         if (bookmarkIcon != null)
@@ -234,11 +271,33 @@
     async Task Backup()
     {
         var bookmarks = await localStorage.GetItemAsync<string>( "bookmarks" );
-        var subAccounts = await localStorage.GetItemAsync<string>( "subAccounts" );
+
+        var subAccounts = string.Empty;
+        var sas = await AppData.GetSubAccountsFromDb();
+        if (sas.Item1)
+            subAccounts = JsonConvert.SerializeObject(sas.Item2);
+        
         var browserTabs = await localStorage.GetItemAsync<string>( "browserTabs" );
         var messageTabs = await localStorage.GetItemAsync<string>( "messageTabs" );
-        var address = await localStorage.GetItemAsync<string>( "address" );
-        var key = await localStorage.GetItemAsync<string>( "key" );
+        var account = await AppData.GetAccountInfoFromDb();
+        var address = string.Empty;
+        var key = string.Empty;
+        
+        if (account.Item1)
+        {
+            address = account.Item2.Item1;
+            key = account.Item2.Item2;
+        }
+        else
+        {
+            address = await localStorage.GetItemAsync<string>("address");
+            key = await localStorage.GetItemAsync<string>("key");
+        }
+
+        var oaikey = string.Empty;
+        var oai = await AppData.GetOpenAPIKeyFromDb();
+        if (oai.Item1)
+            oaikey = oai.Item2;
 
         var dto = new BackupDataDto();
         if ( !string.IsNullOrEmpty( bookmarks ) )
@@ -253,6 +312,8 @@
             dto.Address = address;
         if ( !string.IsNullOrEmpty( key ) )
             dto.Key = key;
+        if (!string.IsNullOrEmpty(oaikey))
+            dto.OpenAIApiKey = oaikey;
 
         filename = "Backup-Export-" + AppData.Account.Address + "-" + DateTime.UtcNow.ToString( "dd-MM-yyyyThh_mm_ss" ) + ".txt";
         backupData = JsonConvert.SerializeObject( dto );

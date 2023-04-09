@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,6 +12,7 @@ namespace VEDriversLite.Security
     /// </summary>
     public class EncryptionKey
     {
+        public EncryptionKey() { }
         /// <summary>
         /// Constructor to load the key
         /// </summary>
@@ -19,6 +21,17 @@ namespace VEDriversLite.Security
         /// <param name="fromDb">if this is set it will not encrypt the key with the provided password and just store key as it is. Pass must be loaded separately</param>
         public EncryptionKey(string key, string password = "", bool fromDb = false)
         {
+            LoadNewKey(key, password, fromDb);
+            //if (!string.IsNullOrEmpty(password))
+            //    LoadPassword(password);
+
+            if (Id == Guid.Empty)
+                Id = Guid.NewGuid();
+        }
+
+        public EncryptionKey(string key, byte[] iv, string password = "", bool fromDb = false)
+        {
+            IV = iv;
             LoadNewKey(key, password, fromDb);
             //if (!string.IsNullOrEmpty(password))
             //    LoadPassword(password);
@@ -46,10 +59,17 @@ namespace VEDriversLite.Security
         /// </summary>
         public string PublicKey { get; set; }
         /// <summary>
+        /// IV
+        /// </summary>
+        public byte[] IV { get; set; } = null;
+        /// <summary>
         /// Password hash
         /// </summary>
-        public byte[] PasswordHash { get; set; }
+        public byte[] PasswordHash { get => Encoding.UTF8.GetBytes(loadedPassHash); }
+        public string PasswordHashString { get => loadedPassHash; }
+
         private string loadedPassword = string.Empty;
+        private string loadedPassHash = string.Empty;
         private bool passwordLoaded = false;
         /// <summary>
         /// Is the key encrypted flag
@@ -102,22 +122,33 @@ namespace VEDriversLite.Security
             }
 
             if (passwordLoaded && string.IsNullOrEmpty(password))
+            {
                 password = loadedPassword;
+                loadedPassHash = SecurityUtils.ComputeSha256Hash(loadedPassword);
+            }
 
             if (!passwordLoaded && string.IsNullOrEmpty(password))
                 return null;
 
             if (!string.IsNullOrEmpty(password))
             {
-                return SymetricProvider.DecryptString(password, _key);
+                var done = false;
+                try
+                {
+                    return SymetricProvider.DecryptString(loadedPassHash, _key, IV);
+                }
+                catch { }
+                if (!done)
+                {
+                    return SymetricProvider.DecryptString(password, _key, IV);
+                }
             }
             else
             {
                 if (!IsEncrypted)
                     return _key;
-                else
-                    return null;
             }
+            return null;
         }
 
         /// <summary>
@@ -142,8 +173,9 @@ namespace VEDriversLite.Security
             if (!string.IsNullOrEmpty(password))
             {
                 loadedPassword = password;
+                loadedPassHash = SecurityUtils.ComputeSha256Hash(loadedPassword);   
                 passwordLoaded = true;
-                _key = SymetricProvider.EncryptString(password, key);
+                _key = SymetricProvider.EncryptString(loadedPassHash, key, IV);
                 IsEncrypted = true;
                 return true;
             }
@@ -166,6 +198,7 @@ namespace VEDriversLite.Security
         public void Lock()
         {
             loadedPassword = string.Empty;
+            loadedPassHash = string.Empty;
             passwordLoaded = false;
         }
 
@@ -177,6 +210,7 @@ namespace VEDriversLite.Security
         public void LoadPassword(string password)
         {            
             loadedPassword = password;
+            loadedPassHash = SecurityUtils.ComputeSha256Hash(loadedPassword);
             passwordLoaded = true;
             if (!string.IsNullOrEmpty(password))
                 IsEncrypted = true;

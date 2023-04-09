@@ -32,7 +32,7 @@
                                           HideOpenInWorkTabButton="@HideOpenInWorkTabButton"
                                           IsOwnNFT="@IsOwnNFT" 
                                           OpenNFTsInWorkTab="@OpenNFTInWorkTabHandler"
-                                          NFT="@NFT" 
+                                          @bind-NFT="@NFT" 
                                           NFTSent="@NFTSentHandler" />
                         
                         <StorageInfoActions IPFSLink="@NFT.ImageLink" Utxo="@NFT.Utxo" UtxoIndex="@NFT.UtxoIndex" />
@@ -68,5 +68,4 @@
         NFTDetailsModal?.Hide();
         return true;
     }
-
 }

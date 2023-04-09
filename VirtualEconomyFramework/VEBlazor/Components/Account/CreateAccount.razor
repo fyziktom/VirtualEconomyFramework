@@ -1,5 +1,6 @@
 ﻿@using VEDriversLite
 @using VEDriversLite.Neblio
+@using VEDriversLite.Security;
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject AppData AppData
 
@@ -84,12 +85,17 @@
     {
         if (string.IsNullOrEmpty(password))
             return;
-        var ekey = await localStorage.GetItemAsync<string>("key");
-        if (!string.IsNullOrEmpty(ekey)) // exist if there is already some key in storage
+
+        if (await AppData.DoesAccountExist())
+        {
+            if (NotificationService != null)
+                await NotificationService.Error( "You already have the account. Please use the login page.", "Account already exists" );
             return;
+        }
 
         if (PageProgressService != null)
             await PageProgressService.Go( null, options => { options.Color = Color.Warning; } );
+
         CreatingAccount = true;
         if (CreateAccountModal != null)
             await CreateAccountModal.Show();
@@ -100,10 +106,12 @@
         {
             password = string.Empty;
             Address = AppData.Account.Address;
-            var keytostore = AppData.Account.AccountKey.GetEncryptedKey(returnEncrypted:true);
-            if (!string.IsNullOrEmpty(keytostore))
-                await localStorage.SetItemAsync("key", keytostore);
+            var ekey = AppData.Account.AccountKey.GetEncryptedKey(returnEncrypted:true);
+            var keytostore = SymetricProvider.JoinIVToString(ekey, AppData.Account.AccountKey.IV);
 
+            if (!string.IsNullOrEmpty(keytostore))
+                await AppData.SaveAccountInfoToDb(Address, keytostore);
+            
             IsAccountLoaded = true;
             AppData.IsAccountLoaded = true;
             await AccountCreated.InvokeAsync(Address);

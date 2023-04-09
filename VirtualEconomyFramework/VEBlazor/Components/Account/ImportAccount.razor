@@ -302,6 +302,11 @@
             if (res)
             {
                 await AppData.SaveTags();
+
+                await AppData.SaveCache();
+                // try init assistant if there is stored OpenAI api key in the browser local memory
+                await AppData.InitAssistant();
+
                 accountImportError = false;
                 imported = true;
                 AppData.IsAccountLoaded = true;
@@ -328,14 +333,16 @@
 
     public async Task<bool> LoadNeblioAccount()
     {
+        var iv = SymetricProvider.GetIV();
+
         if (string.IsNullOrEmpty(importAccountKey))
         {
             if (await AppData.Account.CreateNewAccount(password))
             {
                 address = AppData.Account.Address;
                 key = AppData.Account.AccountKey.GetEncryptedKey(returnEncrypted:true);
-                if (!string.IsNullOrEmpty(key))
-                    await localStorage.SetItemAsync("key", key);
+                var keyToStore = SymetricProvider.JoinIVToString(key, AppData.Account.AccountKey.IV);
+                await AppData.SaveAccountInfoToDb(address, key);
 
                 return true;
             }
@@ -349,10 +356,31 @@
             {
                 try
                 {
-                    key = SymetricProvider.DecryptString(importAccountPass, importAccountKey);
-                    res = NeblioTransactionHelpers.IsPrivateKeyValid(key);
-                    if (res == null)
-                        throw new Exception();
+                    var civ = SymetricProvider.ContainsIV(importAccountKey);
+                    if (civ)
+                    {
+                        var ivkey = SymetricProvider.ParseIVFromString(importAccountKey);
+                        if (!string.IsNullOrEmpty(ivkey.etext))
+                        {
+                            var ek = new EncryptionKey();
+                            ek.LoadPassword(password);
+
+                            var keyDec = SymetricProvider.DecryptString(ek.PasswordHashString, ivkey.etext, ivkey.iv);
+                            res = NeblioTransactionHelpers.IsPrivateKeyValid(keyDec);
+                            if (res == null)
+                                throw new Exception();
+
+                            key = ivkey.etext;
+                            iv = ivkey.iv;
+                        }
+                    }
+                    else
+                    {
+                        key = SymetricProvider.DecryptString(importAccountPass, importAccountKey);
+                        res = NeblioTransactionHelpers.IsPrivateKeyValid(key);
+                        if (res == null)
+                            throw new Exception();
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -375,21 +403,26 @@
                 {
                     AppData.Account.RunningAsVENFTBlazorApp = true; // block the start of the IoT NFTs, etc.
                     VEDLDataContext.AllowCache = true; //turn on/off NFT cache
-                    
+
                     await AppData.LoadChache();
                     AppData.Account.FirsLoadingStatus -= FirstLoadingStatusHandler;
                     AppData.Account.FirsLoadingStatus += FirstLoadingStatusHandler;
+                    // load Account and SubAccount and Bookmarks and Tabs
                     accountLoaded = await AppData.Account.LoadAccountFromVENFTBackup(importAccountPass, fileString);
                     AppData.Account.FirsLoadingStatus -= FirstLoadingStatusHandler;
-                    
+
                     if (accountLoaded)
                     {
                         await AppData.SaveCache();
                         await localStorage.SetItemAsStringAsync("bookmarks", backupData.Bookmarks);
-                        await localStorage.SetItemAsStringAsync("subAccounts", backupData.SubAccounts);
                         await localStorage.SetItemAsStringAsync("browserTabs", backupData.BrowserTabs);
                         await localStorage.SetItemAsStringAsync("messageTabs", backupData.MessageTabs);
-                        key = SymetricProvider.EncryptString(password, key);
+
+                        // Save SubAccounts
+                        await AppData.MigrateSubAccountsToDb(backupData.SubAccounts);
+                        
+                        var ivkey = SymetricProvider.EncryptString(password, key, iv);
+                        key = SymetricProvider.JoinIVToString(ivkey, iv);
                     }
                     else
                     {
@@ -400,16 +433,18 @@
                 }
                 else
                 {
-                    key = SymetricProvider.EncryptString(password, key);
+                    var ivkey = SymetricProvider.EncryptString(password, key, iv);
+                    key = SymetricProvider.JoinIVToString(ivkey, iv);
+
                     accountLoaded = await AppData.Account.LoadAccount(password, key, address); // put here your password
                 }
                 if (accountLoaded && !string.IsNullOrEmpty(key))
                 {
-                    await localStorage.SetItemAsStringAsync("key", key);
+                    await AppData.SaveAccountInfoToDb(AppData.Account.Address, key, backupData.OpenAIApiKey);
                     password = string.Empty;
                     passwordConfirm = string.Empty;
                     importAccountPass = string.Empty;
-                    
+                                        
                     return true;
                 }
             }

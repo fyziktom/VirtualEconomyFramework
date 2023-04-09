@@ -1,0 +1,185 @@
+﻿@using System.IO;
+@using VEDriversLite
+@using VEDriversLite.NFT
+@using VEDriversLite.Neblio
+@using VEDriversLite.NeblioAPI
+@inject AppData AppData
+
+@if (DisplayButton)
+{
+    <Button Color="Color.Primary" Clicked="@showNewSubAccountModal" Block>Create new SubAccount</Button>
+}
+
+<Modal @ref="newSubAccountModalRef">
+    <ModalContent Size="  ModalSize.Default">
+        <ModalHeader>
+            <ModalTitle>Add New SubAccount</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <Row Margin="Margin.Is2.FromTop">
+                <Column>
+                    <Field>
+                        <FieldLabel>Input SubAccount Name</FieldLabel>
+                        <TextEdit @bind-Text="@newSubAccountName" Placeholder="Input any name" MaxLength="30" />
+                    </Field>
+                </Column>
+            </Row>
+            <Row>
+                <Column Margin="Margin.Is2.FromTop">
+                    <Field>
+                        <FieldLabel>Import of Existing Account</FieldLabel>
+                        <FieldBody><Check @bind-Checked="@importAccount" >Check if you want to import existing account</Check></FieldBody>
+                    </Field>
+                    @if (importAccount)
+                    {
+                        <Row>
+                            <Column>
+                                <Field>
+                                    <FieldLabel>Input SubAccount Private Key</FieldLabel>
+                                    <MemoEdit Rows="3" @bind-Text="@privateKey" Placeholder="Input private key" MaxLength="100" />
+                                </Field>
+                            </Column>
+                        </Row>
+                    }
+                </Column>
+            </Row>
+
+            @if (AppData.Account.TotalSpendableBalance > AppData.DefaultAirdropMain && AppTokenAmount > AppData.DefaultAirdropTokens)
+            {
+                <Row Margin="Margin.Is2.FromTop">
+                    <Column>
+                        <Field>
+                            <FieldLabel>Send Airdrop</FieldLabel>
+                            <FieldBody>
+                                <Check @bind-Checked="sendInitPayment" />
+                            </FieldBody>
+                            <FieldHelp>Keep checked if you want to send initial Airdrop of @AppData.DefaultAirdropMain NEBL and @AppData.DefaultAirdropTokens @AppTokenSymbol tokens on new SubAccount.</FieldHelp>
+                        </Field>
+                    </Column>
+                </Row>
+            }
+            @if (!string.IsNullOrEmpty(newSubAccountName))
+            {
+                <Button Color="Color.Primary" Clicked="@addSubAccount" Loading="@loading" Block>@(importAccount ? "Import SubAccount" : "Create new SubAccount")</Button>
+            }
+            else
+            {
+                <Field>
+                    <FieldBody>
+                        <Button Color="Color.Secondary" Clicked="@addSubAccount" Disabled Block>@(importAccount ? "Import SubAccount" : "Create new SubAccount")</Button>
+                    </FieldBody>
+                    <FieldHelp>Fill the name first please.</FieldHelp>
+                </Field>
+            }
+        </ModalBody>
+    </ModalContent>
+</Modal>
+
+@code {
+    [Inject] INotificationService? NotificationService { get; set; }
+
+    [Parameter]
+    public EventCallback<string> NewAddressCreated { get; set; }
+    [Parameter]
+    public bool DisplayButton { get; set; } = true; 
+
+    private string newSubAccountName = string.Empty;
+    private string privateKey = string.Empty;
+    private bool sendInitPayment = true;
+    private bool loading = false;
+    private bool importAccount = false;
+
+    Modal? newSubAccountModalRef;
+
+    public double AppTokenAmount
+    {
+        get
+        {
+            var tk = AppData.Account.TokensSupplies.Values.FirstOrDefault(t => t.TokenId == AppData.AppTokenId);
+            if (tk != null)
+                return tk.Amount;
+            else
+                return 0;
+        }
+    }
+
+    public string AppTokenSymbol
+    {
+        get
+        {
+            var tk = AppData.Account.TokensSupplies.Values.FirstOrDefault(t => t.TokenId == AppData.AppTokenId);
+            if (tk != null)
+                return tk.TokenSymbol;
+            else
+                return "VENFT";
+        }
+    }
+
+    public async Task showNewSubAccountModal(MouseEventArgs e)
+    {
+        if (newSubAccountModalRef != null)
+            await newSubAccountModalRef.Show();
+    }
+    public async Task addSubAccountCancel(MouseEventArgs e)
+    {
+        if (newSubAccountModalRef != null)
+            await newSubAccountModalRef.Hide();
+    }
+
+    public async Task addSubAccount()
+    {
+        try
+        {
+            loading = true;
+            if (NotificationService != null)
+                await NotificationService.Info("Creating SubAccount...", "Working");
+
+            if (!importAccount)
+                privateKey = string.Empty;
+
+            var res = await AppData.Account.AddSubAccount(newSubAccountName, 
+                                                          sendInitPayment, 
+                                                          AppData.DefaultAirdropMain, 
+                                                          true, 
+                                                          AppData.DefaultAirdropTokens, 
+                                                          AppData.AppTokenId,
+                                                          privateKey:privateKey);
+            await Task.Delay(50);
+            if (res.Item1)
+            {
+                await AppData.MigrateSubAccountsToDb(res.Item2);
+
+                var add = await AppData.Account.GetSubAccountAddressByName(newSubAccountName);
+                if (add.Item1)
+                {
+                    await NewAddressCreated.InvokeAsync(add.Item2);
+                    if (NotificationService != null)
+                        await NotificationService.Success("Sub Account Created...", "Created");
+                    privateKey = string.Empty;
+                    newSubAccountName = string.Empty;
+                    importAccount = false;
+
+                    if (newSubAccountModalRef != null)
+                        await newSubAccountModalRef.Hide();
+                }
+                else
+                {
+                    if (NotificationService != null)
+                        await NotificationService.Error("Cannot create SubAccount... " + add.Item2, "Error");
+                }
+            }
+        }
+        catch(Exception ex)
+        {
+            if (NotificationService != null)
+                 await NotificationService.Error("Cannot create SubAccount... " + ex.Message, "Error");            
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
+
+}
+

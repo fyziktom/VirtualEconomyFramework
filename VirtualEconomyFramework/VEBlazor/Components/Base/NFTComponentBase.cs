@@ -115,7 +115,7 @@ namespace VEFramework.VEBlazor.Components.Base
                                 return VEDriversLite.StorageDriver.Helpers.IPFSHelpers.GetIPFSLinkFromHash(item.Hash);
                             else if (item.Storage == DataItemStorageType.Url)
                                 return item.Hash;
-                        }                            
+                        }
                     }
                     if (NFT.DataItems.Count > 0)
                     {
@@ -138,7 +138,7 @@ namespace VEFramework.VEBlazor.Components.Base
                             return item.Type;
                     }
                     if (NFT.DataItems.Count > 0)
-                        return NFT.DataItems.FirstOrDefault()?.Type ?? DataItemType.Image;                    
+                        return NFT.DataItems.FirstOrDefault()?.Type ?? DataItemType.Image;
                 }
                 return DataItemType.Image;
             }
@@ -161,7 +161,7 @@ namespace VEFramework.VEBlazor.Components.Base
                 {
                     var il = VEDriversLite.StorageDriver.Helpers.IPFSHelpers.GetIPFSLinkFromHash(nft.DataItems.FirstOrDefault()?.Hash);
                     return !string.IsNullOrEmpty(il) ? il : GetImageUrl();
-                }                    
+                }
             }
             return GetImageUrl();
         }
@@ -201,7 +201,7 @@ namespace VEFramework.VEBlazor.Components.Base
         public bool HideOpenInWorkTabButton { get; set; } = false;
 
         public bool Loading = false;
-        public NFTCard? nftCard;        
+        public NFTCard? nftCard;
 
         public async Task LoadNFT(INFT nft)
         {
@@ -210,7 +210,7 @@ namespace VEFramework.VEBlazor.Components.Base
                 NFT = nft;
                 Utxo = NFT.Utxo;
                 UtxoIndex = NFT.UtxoIndex;
-                await InvokeAsync( StateHasChanged );
+                await InvokeAsync(StateHasChanged);
             }
         }
 
@@ -231,12 +231,12 @@ namespace VEFramework.VEBlazor.Components.Base
                 }
                 else
                     NFT = new ImageNFT("");
-                
+
                 Loading = false;
             }
-            await InvokeAsync( StateHasChanged );
+            await InvokeAsync(StateHasChanged);
         }
-        
+
         /// <summary>
         /// Check if the NFT contains the ImageData in bytes. 
         /// If not, it will download it from IPFS and then convert as image base64 string
@@ -253,17 +253,17 @@ namespace VEFramework.VEBlazor.Components.Base
             {
                 //var imd = await NFTHelpers.IPFSDownloadFromInfuraAsync(VEDriversLite.StorageDriver.Helpers.IPFSHelpers.GetHashFromIPFSLink(NFT.ImageLink));
                 var result = await VEDriversLite.VEDLDataContext.Storage.GetFileFromIPFS(new VEDriversLite.StorageDriver.StorageDrivers.Dto.ReadFileRequestDto()
-                    {
-                        DriverType = VEDriversLite.StorageDriver.StorageDrivers.StorageDriverType.IPFS,
-                        Hash = VEDriversLite.StorageDriver.Helpers.IPFSHelpers.GetHashFromIPFSLink(NFT.ImageLink),
-                    });
+                {
+                    DriverType = VEDriversLite.StorageDriver.StorageDrivers.StorageDriverType.IPFS,
+                    Hash = VEDriversLite.StorageDriver.Helpers.IPFSHelpers.GetHashFromIPFSLink(NFT.ImageLink),
+                });
                 if (result.Item1)
                 {
                     NFT.ImageData = result.Item2;
                     return "data:image;base64," + Convert.ToBase64String(result.Item2);
                 }
             }
-            
+
             return EmptyImage;
         }
 
@@ -277,7 +277,7 @@ namespace VEFramework.VEBlazor.Components.Base
             if (NFT == null)
                 return EmptyImage;
             var di = NFT.DataItems.FirstOrDefault(x => x.Hash == hash);
-            
+
             if (di != null && di.Data.Length > 0)
                 return "data:image;base64," + Convert.ToBase64String(di.Data);
             else if (di != null && !string.IsNullOrEmpty(di.Hash))
@@ -329,17 +329,17 @@ namespace VEFramework.VEBlazor.Components.Base
         {
             if (NFT == null)
                 return EmptyImage;
-            
+
             if (item != null)
             {
-                    if (item.Storage == VEDriversLite.NFT.Dto.DataItemStorageType.IPFS)
-                        return VEDriversLite.StorageDriver.Helpers.IPFSHelpers.GetIPFSLinkFromHash(item.Hash);
-                    else if (item.Storage == VEDriversLite.NFT.Dto.DataItemStorageType.Url)
-                        return item.Hash;
+                if (item.Storage == VEDriversLite.NFT.Dto.DataItemStorageType.IPFS)
+                    return VEDriversLite.StorageDriver.Helpers.IPFSHelpers.GetIPFSLinkFromHash(item.Hash);
+                else if (item.Storage == VEDriversLite.NFT.Dto.DataItemStorageType.Url)
+                    return item.Hash;
             }
 
             return EmptyImage;
-        }        
+        }
         public List<string> GetImageGalleryUrls()
         {
             if (NFT == null)
@@ -348,28 +348,28 @@ namespace VEFramework.VEBlazor.Components.Base
             if (NFT.DataItems != null && NFT.DataItems.Count > 0)
             {
                 var urls = new List<string>();
-                foreach(var i in NFT.DataItems)
+                foreach (var i in NFT.DataItems)
                     urls.Add(GetImageGalleryUrl(i));
                 if (urls.Count > 0)
                     return urls;
-            }   
+            }
             return new List<string>() { EmptyImage };
         }
-        
+
         internal virtual async Task OpenNFTInWorkTab()
         {
             if (NFT == null)
                 return;
             await OpenNFTsInWorkTab.InvokeAsync(new List<INFT>() { NFT });
         }
-        
+
         internal virtual async Task OpenNFTInWorkTabHandler(List<INFT> e)
         {
             if (NFT == null)
                 return;
             await OpenNFTsInWorkTab.InvokeAsync(e);
         }
-        
+
         internal virtual Task NFTSentHandler(NFTSentResultDto e)
         {
             return NFTSent.InvokeAsync(e);
@@ -385,7 +385,7 @@ namespace VEFramework.VEBlazor.Components.Base
         }
 
     }
-    
+
     public abstract class NFTDetailsBase : NFTComponentBase
     {
         public NFTDetails? NFTDetailsComponent;
@@ -396,7 +396,7 @@ namespace VEFramework.VEBlazor.Components.Base
             else if (NFT == null && nft != null)
             {
                 NFT = nft;
-                InvokeAsync( StateHasChanged );
+                InvokeAsync(StateHasChanged);
             }
 
             if (nft != null)

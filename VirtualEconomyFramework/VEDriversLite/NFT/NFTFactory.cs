@@ -804,5 +804,95 @@ namespace VEDriversLite.NFT
                 return null;
             }
         }
+
+        /// <summary>
+        /// Get Empty NFT based on the type
+        /// </summary>
+        /// <param name="type">specify the type - you must turn on asType flag</param>
+        /// <returns>INFT compatible object based on type</returns>
+        public static async Task<INFT> GetEmptyNFT(NFTTypes type = NFTTypes.Image)
+        {
+            INFT nft = null;
+            switch (type)
+            {
+                case NFTTypes.Image:
+                    nft = new ImageNFT("");
+                    return nft;
+                case NFTTypes.Profile:
+                    nft = new ProfileNFT("");
+                    return nft;
+                case NFTTypes.Post:
+                    nft = new PostNFT("");
+                    return nft;
+                case NFTTypes.Music:
+                    nft = new MusicNFT("");
+                    return nft;
+                case NFTTypes.Payment:
+                    nft = new PaymentNFT("");
+                    return nft;
+                case NFTTypes.Receipt:
+                    nft = new ReceiptNFT("");
+                    return nft;
+                case NFTTypes.Invoice:
+                    nft = new InvoiceNFT("");
+                    return nft;
+                case NFTTypes.Order:
+                    nft = new OrderNFT("");
+                    return nft;
+                case NFTTypes.Product:
+                    nft = new ProductNFT("");
+                    return nft;
+                case NFTTypes.Message:
+                    nft = new MessageNFT("");
+                    return nft;
+                case NFTTypes.Ticket:
+                    nft = new TicketNFT("");
+                    return nft;
+                case NFTTypes.Event:
+                    nft = new EventNFT("");
+                    return nft;
+                case NFTTypes.CoruzantArticle:
+                    nft = new CoruzantArticleNFT("");
+                    return nft;
+                case NFTTypes.CoruzantProfile:
+                    nft = new CoruzantProfileNFT("");
+                    return nft;
+                case NFTTypes.Device:
+                    nft = new DeviceNFT("");
+                    return nft;
+                case NFTTypes.IoTDevice:
+                    nft = new IoTDeviceNFT("");
+                    return nft;
+                case NFTTypes.Protocol:
+                    nft = new ProtocolNFT("");
+                    return nft;
+                case NFTTypes.HWSrc:
+                    nft = new HWSrcNFT("");
+                    return nft;
+                case NFTTypes.FWSrc:
+                    nft = new FWSrcNFT("");
+                    return nft;
+                case NFTTypes.SWSrc:
+                    nft = new SWSrcNFT("");
+                    return nft;
+                case NFTTypes.MechSrc:
+                    nft = new MechSrcNFT("");
+                    return nft;
+                case NFTTypes.IoTMessage:
+                    nft = new IoTMessageNFT("");
+                    return nft;
+                case NFTTypes.Xray:
+                    nft = new XrayNFT("");
+                    return nft;
+                case NFTTypes.XrayImage:
+                    nft = new XrayImageNFT("");
+                    return nft;
+                case NFTTypes.App:
+                    nft = new AppNFT("");
+                    return nft;
+            }
+
+            return null;
+        }
     }
 }

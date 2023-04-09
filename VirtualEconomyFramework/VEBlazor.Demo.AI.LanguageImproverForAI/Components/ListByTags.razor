@@ -1,0 +1,117 @@
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@using VEDriversLite.NFT.Dto
+@using VEDriversLite.StorageDriver
+@using Newtonsoft.Json
+@using VEDriversLite.AI.OpenAI.Dto;
+@inject HttpClient Http
+@inherits NFTComponentBase
+
+<Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
+    <Column>
+        <Field>
+            <FieldLabel>Search Records by tags</FieldLabel>
+            <SpaceTags Tags="@tagsToSearch" TagsChanged="@onTagsChangedHandler" />
+            <FieldHelp>Use space as divider. do not use # infront of the tags.</FieldHelp>
+        </Field>
+
+    </Column>
+</Row>
+
+<Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
+    <Column>
+        <Button Color="Color.Primary" Clicked="@SearchPostsByTags" Loading="@Loading" Block>Search Records By Tags</Button>
+    </Column>
+</Row>
+
+<Divider />
+
+@if (NFTs.Count > 0)
+{
+    @foreach (var NFT in NFTs)
+    {
+        <Row>
+            <Column>
+                <LessonListCard NFT="@NFT" Language="@Language" />
+            </Column>
+        </Row>
+    }
+}
+
+@code {
+
+    List<PostNFT> NFTs = new List<PostNFT>();
+
+    string tagsToSearch = string.Empty;
+
+    private async Task GetPostsByTag(string tag = "colorido")
+    {
+        await LoadingStatus(true);
+
+        var res = await Http.GetStringAsync($"/api/GetNFTPostsByTags/{tag}");
+        if (!string.IsNullOrEmpty(res))
+        {
+            try
+            {
+                var posts = JsonConvert.DeserializeObject<Dictionary<string, PostNFT>>(res);
+                if (posts != null)
+                    NFTs = posts.Values.ToList();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Cannot deserialize the NFT list: " + ex.Message);
+            }
+        }
+        await LoadingStatus(false);
+
+    }
+
+    private async Task onTagsChangedHandler(string e)
+    {
+        if (!string.IsNullOrEmpty(e))
+            tagsToSearch = e;
+        else
+            tagsToSearch = "";
+    }
+
+    private async Task SearchPostsByTags()
+    {
+        await GetPostsByMultipleTags(tagsToSearch);
+    }
+
+    private async Task GetPostsByMultipleTags(string tags = "colorido en2pap")
+    {
+        await LoadingStatus(true);
+
+        var obj = new
+        {
+            tags = tags,
+            skip = 0,
+            take = 10
+        };
+
+        var cnt = JsonConvert.SerializeObject(obj);
+
+        using (var content = new StringContent(cnt, System.Text.Encoding.UTF8, "application/json"))
+        {
+            HttpResponseMessage result = await Http.PostAsync("/api/GetNFTPostsByMultipleTags", content);
+            if (result.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                string returnValue = await result.Content.ReadAsStringAsync();
+                try
+                {
+                    var posts = JsonConvert.DeserializeObject<Dictionary<string, PostNFT>>(returnValue);
+                    if (posts != null)
+                        NFTs = posts.Values.ToList();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Cannot deserialize the NFT list: " + ex.Message);
+                }
+            }
+        }
+
+        await LoadingStatus(false);
+    }
+
+}

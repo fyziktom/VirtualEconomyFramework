@@ -11,7 +11,7 @@
         {
             <Row Margin="Margin.Is3.FromTop">
                 <Column Height="Height.Is100">
-                    <AccountSider Address="@Address" IsSubAccount="@IsSubAccount" />
+                    <AccountSider Address="@Address" IsSubAccount="@IsSubAccount" AddressChanged="@onAddressChanedHandler" />
                 </Column>
             </Row>
         }
@@ -63,7 +63,7 @@
 </Container>
 
 @code {
-    [Inject] INotificationService? NotificationService { get; set; }
+        [Inject] INotificationService? NotificationService { get; set; }
 
     private bool IsAccountStored { get; set; } = false;
 
@@ -72,7 +72,7 @@
         await base.OnInitializedAsync();
         AppData.LockUnlockAccount -= LockUnlockAccountHandler;
         AppData.LockUnlockAccount += LockUnlockAccountHandler;
-        await CheckAccount();
+        IsAccountStored = await AppData.DoesAccountExist();
     }
 
     protected override async Task OnAfterRenderAsync( bool firstRender )
@@ -94,15 +94,6 @@
         await InvokeAsync(StateHasChanged);
     }
 
-    private async Task CheckAccount()
-    {
-        var key = await localStorage.GetItemAsync<string>( "key" );
-        if ( string.IsNullOrEmpty( key ) )
-            IsAccountStored = false;
-        else
-            IsAccountStored = true;
-    }
-
     async Task AccountCreatedHandler( string e )
     {
         Address = e;
@@ -120,4 +111,18 @@
         await InvokeAsync(StateHasChanged);
         AppData.AccountLoadedOrImportedEcho();
     }    
+    async Task onAddressChanedHandler(string address)
+    {
+        if (!string.IsNullOrEmpty(address))
+            Address = address;
+        else
+            Address = AppData.Account.Address;
+
+        if (AppData.Account.SubAccounts.ContainsKey(Address))
+            IsSubAccount = true;
+        else
+            IsSubAccount = false;
+
+        await AddressChanged.InvokeAsync(Address);
+    }
 }

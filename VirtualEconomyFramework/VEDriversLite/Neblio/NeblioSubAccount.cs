@@ -99,6 +99,61 @@ namespace VEDriversLite.Neblio
             }
         }
 
+        /// <summary>
+        /// Create Sub Account Address and Private Key
+        /// The Account Private key is encrypted with use of main account private key
+        /// </summary>
+        /// <param name="mainSecret">Main Account Private Key</param>
+        /// <param name="name">Name of the Sub Account</param>
+        /// <returns></returns>
+        public async Task<(bool, string)> ImportAddress(BitcoinSecret mainSecret, string name, string importPrivateKey)
+        {
+            if (!string.IsNullOrEmpty(Address))
+                return (false, "Account already contains address.");
+
+            try
+            {
+                var secret = NeblioTransactionHelpers.IsPrivateKeyValid(importPrivateKey);
+                if (secret == null)
+                {
+                    var k = ECDSAProvider.DecryptStringWithPrivateKey(importPrivateKey, mainSecret.PrivateKey);
+                    if (k == null)
+                        return (false, "Wrong Private Key");
+                    else
+                    {
+                        var s = NeblioTransactionHelpers.IsPrivateKeyValid(k);
+                        if (s == null)
+                            return (false, "Wrong Private Key");
+                        else
+                            secret = s;
+                    }
+                }
+
+                if (secret != null)
+                {
+                    var address = secret.PubKey.GetAddress(ScriptPubKeyType.Legacy, NeblioTransactionHelpers.Network);
+                    Address = address.ToString();
+                    Secret = secret;
+                    // todo load already encrypted key
+                    AccountKey = new Security.EncryptionKey(secret.ToString());
+                    AccountKey.PublicKey = Address;
+
+                    //ESKey = SymetricProvider.EncryptString(SecurityUtils.ComputeSha256Hash(mainSecret.PrivateKey.ToString()), privateKeyFromNetwork.ToString());
+                    EKey = ECDSAProvider.EncryptStringWithPublicKey(secret.ToString(), mainSecret.PubKey);// TODO: some preprocessor directive for run just in old version under .NETStandard2.1
+                                                                                                                            //EKey = mainSecret.PubKey.Encrypt(privateKeyFromNetwork.ToString());// TODO: some preprocessor directive for run just in old version under .NETStandard2.1
+                    Name = name;
+                    return (true, Address);
+                }
+                
+            }
+            catch (Exception ex)
+            {
+                //todo
+                return (false, ex.Message);
+            }
+            return (false, "Cannot import account.");
+        }
+
         private string DecryptEncryptedKey(BitcoinSecret mainSecret)
         {
             string key = string.Empty;
@@ -332,6 +387,12 @@ namespace VEDriversLite.Neblio
                             else
                             {
                                 await CheckPayments();
+                                if (string.IsNullOrEmpty(Profile.Utxo))
+                                {
+                                    var profile = NFTs.FirstOrDefault(n => n.Type == NFTTypes.Profile);
+                                    if (profile != null)
+                                        Profile = profile as ProfileNFT;
+                                }
                                 minorRefresh = 5;
                             }
                         }

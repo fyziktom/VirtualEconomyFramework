@@ -18,6 +18,7 @@ using VEDriversLite.AI.OpenAI.Dto;
 using System.IO;
 using Newtonsoft.Json;
 using Blazorise;
+using NBitcoin;
 
 namespace VEBlazor.Demo.AI.LearnLanguageWithAI.Controllers
 {

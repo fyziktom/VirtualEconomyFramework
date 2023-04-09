@@ -38,7 +38,13 @@ builder.Services
     .AddBootstrapProviders()
     .AddFontAwesomeIcons();
 
-builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://mintfreeforai.azurewebsites.net/") });
+#if DEBUG
+var baseadd = "https://localhost:7296/";
+#else
+    var baseadd = "https://mintfreeforai.azurewebsites.net";
+#endif
+
+builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(baseadd) });
 
 builder.Services.AddScoped<AppData>();
 builder.Services.AddSingleton<TransactionsService>();

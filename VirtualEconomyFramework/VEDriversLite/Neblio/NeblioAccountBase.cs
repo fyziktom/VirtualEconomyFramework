@@ -367,14 +367,26 @@ namespace VEDriversLite.Neblio
         /// <param name="password">Passwotd to decrypt the loaded private key</param>
         /// <param name="key">Private Key</param>
         /// <returns></returns>
-        public bool LoadAccountKey(string password, string key)
+        public async Task<bool> LoadAccountKey(string password, string key)
         {
             try
             {
                 if (!string.IsNullOrEmpty(password))
-                    AccountKey = new EncryptionKey(key, fromDb: true);
+                {
+                    var withIV = SymetricProvider.ContainsIV(key);
+                                        
+                    if (withIV)
+                    {
+                        var parsed = SymetricProvider.ParseIVFromString(key);
+                        AccountKey = new EncryptionKey(parsed.Item2, fromDb: true);
+                        AccountKey.IV = parsed.Item1;
+                    }
+                    else
+                        AccountKey = new EncryptionKey(key, fromDb: true);
+                }
                 else
                     AccountKey = new EncryptionKey(key, fromDb: false);
+
                 if (!string.IsNullOrEmpty(password))
                     AccountKey.LoadPassword(password);
 

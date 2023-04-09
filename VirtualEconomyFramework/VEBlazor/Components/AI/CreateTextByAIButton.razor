@@ -10,13 +10,13 @@
         </ModalHeader>
         <ModalBody>
 
-            <Row Flex="Flex.AlignItems.Center">
-                <Column>
+            <Row Margin="Margin.Is2.FromTop">
+                <Column Flex="Flex.JustifyContent.Center">
                     <Span>What should be the length of the post?</Span>
                 </Column>
             </Row>
 
-            <Row Flex="Flex.AlignItems.Center">
+            <Row Margin="Margin.Is2.FromTop">
                 <Column>
                     <Field Horizontal>
                         <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
@@ -37,8 +37,8 @@
                 </Column>
             </Row>
             
-            <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
-                <Column>
+            <Row Margin="Margin.Is2.FromTop">
+                <Column Flex="Flex.JustifyContent.Center">
                     <Span>Please input some base for the full create article by AI. You can use the recorder to fill the text.</Span>
                 </Column>
             </Row>
@@ -53,13 +53,13 @@
                 </Column>
             </Row>
 
-            <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is2.FromTop">
-                <Column>
+            <Row Margin="Margin.Is2.FromTop">
+                <Column Flex="Flex.JustifyContent.Center">
                     <AudioRecorder @ref=@audioRecorderRef OnTranscriptCreated="@OnTranscriptCreatedHandler" OnAudioSaved="@OnAudioSavedHandler" OnAudioRecordingStopped="@onAudioRecordingStoppedHandler" />
                 </Column>
             </Row>
 
-            <Row Flex="Flex.AlignItems.Center" Margin="Margin.Is3.FromTop">
+            <Row Margin="Margin.Is3.FromTop">
                 <Column>
                     <Span>Please create text about ...</Span>
                 </Column>
@@ -69,9 +69,14 @@
                     <MemoEdit Rows="6" Placeholder="Contiune with what about text should be..." @bind-Text="BaseText" />
                 </Column>
             </Row>
-            <Row Flex="Flex.AlignItems.Center">
+            <Row Margin="Margin.Is2.FromTop">
                 <Column>
-                    <Button Color="Color.Danger" Clicked="@CreateTextAction" Loading="@Creating" Block>Create Text</Button>
+                    <Button Color="Color.Danger" Clicked="@UseTextAsItIs" Block>Use this text as it is</Button>
+                </Column>
+            </Row>
+            <Row Margin="Margin.Is2.FromTop.Is1.FromBottom">
+                <Column>
+                    <Button Color="Color.Danger" Clicked="@CreateTextAction" Loading="@Creating" Block>Use AI To Create Text Based On Memo</Button>
                 </Column>
             </Row>
         </ModalBody>
@@ -147,6 +152,48 @@
                     await audioRecorderRef.UploadRecordingToIPFS(null);
             }
         }
+    }
+
+    async Task UseTextAsItIs()
+    {
+        if (string.IsNullOrEmpty(BaseText))
+        {
+            if (NotificationService != null)
+                await NotificationService.Error("Please fill some Base text...", "Fill the Text");
+
+            return;
+        }
+
+        Creating = true;
+        await InvokeAsync(StateHasChanged);
+
+        if (NotificationService != null)
+            await NotificationService.Info("Saving record and text...", "App's working");
+
+        await InvokeAsync(StateHasChanged);
+
+        if (!string.IsNullOrEmpty(BaseText))
+            await TextCreated.InvokeAsync(BaseText);
+
+        if (StoreRecordingAsNFTDataItem && !lastRecordingSavedToNFT)
+        {
+            if (audioRecorderRef != null)
+            {
+                await audioRecorderRef.UploadRecordingToIPFS(null);
+
+                var attempts = 20;
+                while (!lastRecordingSavedToNFT && attempts > 0)
+                {
+                    await Task.Delay(500);
+                    attempts--;
+                }
+            }
+        }
+
+        Creating = false;
+        //close automatically after 2 seconds
+        await Task.Delay(2000);
+        HideModal();
     }
 
     async Task CreateTextAction()

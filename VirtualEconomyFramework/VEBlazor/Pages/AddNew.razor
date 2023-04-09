@@ -4,6 +4,7 @@
 @using VEDriversLite.NFT.Imaging.Xray
 @inherits NFTComponentBase
 @inject AppData AppData
+@inject NavigationManager Navigator
 
 @if (NFT != null)
 {
@@ -30,7 +31,7 @@
                     <MintingToolbar ShowNextButton="true" ShowLoadFromTemplateButton="true" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
                     <Row>
                         <Column>
-                            <UploadData @ref="@uploadDataRef" NFT="@NFT" NFTChanged="@onPropsChangedHandler" Multiple="true"/>
+                            <UploadData @ref="@uploadDataRef" @bind-NFT="@NFT" Multiple="true"/>
                         </Column>
                     </Row>
                     <MintingToolbar ShowNextButton="true" ShowLoadFromTemplateButton="true" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
@@ -39,7 +40,7 @@
                     <MintingToolbar ShowNextButton="true" ShowPrevButton="true" ShowLoadFromTemplateButton="true" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
                     <Row>
                         <Column>
-                            <DataInfoForm @ref="@dataInfoFormRef" NFT="@NFT" NFTChanged="@onPropsChangedHandler" />
+                            <DataInfoForm @ref="@dataInfoFormRef" @bind-NFT="@NFT"/>
                         </Column>
                     </Row>
                     <MintingToolbar ShowNextButton="true" ShowPrevButton="true" ShowLoadFromTemplateButton="true" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
@@ -60,6 +61,16 @@
                     <Row>
                         <Column Flex="Flex.JustifyContent.Center">
                             <Span>Now you can confirm the storage of the data.</Span>
+                        </Column>
+                    </Row>
+                    <Row>
+                        <Column Flex="Flex.JustifyContent.Center">
+                            <Span>Please select the account which should be used for creating this record.</Span>
+                        </Column>
+                    </Row>
+                    <Row>
+                        <Column Flex="Flex.JustifyContent.Center">
+                            <AccountSelector AddressChanged="@onAddressChangedHandler" />
                         </Column>
                     </Row>
                     <Row>
@@ -120,6 +131,7 @@
 
 @code {
     [Inject] INotificationService? NotificationService { get; set; }
+    [Inject] public IMessageService? MessageService { get; set; }
 
     [Parameter]
     public RenderFragment SpecificParamsStepHeader { get; set; }
@@ -136,7 +148,7 @@
     [Parameter] public EventCallback<Dictionary<string, ReceiversListItem>> AddressesChanged { get; set; }
     [Parameter] public string ConsoleOutFromMinting { get; set; } = string.Empty;
     [Parameter] public EventCallback<string> ConsoleOutFromMintingChanged { get; set; }
-    
+
     LoadNFTFromTemplate? loadNFTFromTemplate;
     OpenNFTDetailsFactory? openNFTDetailsFactory;
     MultimintForm? multimintFormRef;
@@ -166,9 +178,20 @@
             await openNFTDetailsFactory.OpenNFTDetails(nft);
     }
 
-    async Task onPropsChangedHandler()
+    async Task onAddressChangedHandler(string address)
     {
-        await NFTChanged.InvokeAsync(NFT);
+        if (!string.IsNullOrEmpty(address))
+            Address = address;
+        else
+            Address = AppData.Account.Address;
+
+        if (AppData.Account.SubAccounts.ContainsKey(Address))
+            IsSubAccount = true;
+        else
+            IsSubAccount = false;
+
+        await AddressChanged.InvokeAsync(Address);
+        await InvokeAsync(StateHasChanged);
     }
 
     private async Task mintNFT( string[] args )
@@ -193,12 +216,15 @@
                 NFT.Author = $"{profile.Name} {profile.Surname}";           
         }
 
+        /*
         if ( string.IsNullOrEmpty( NFT.ImageLink ) )
         {
             mintingResult.Item1 = false;
             mintingResult.Item2 = "Cannot save the data without the Image.";
             return;
         }
+        */
+
         if ( selectedStep == "stepFinish" )
         {
             if ( AppData.Account.TokensSupplies.TryGetValue( AppData.AppTokenId, out var supply ) )
@@ -213,16 +239,38 @@
                 NFT.TokenId = NFTHelpers.TokenId;
             }
 
-             if (NotificationService != null)
-                    await NotificationService.Info( "Saving image...", "Saving" );
-                    
-            var res = await AppData.Account.MintNFT( NFT );
+            if (NotificationService != null)
+                await NotificationService.Info( "Saving image...", "Saving" );
+
+            (bool, string) res = (false, string.Empty);
+            if (Address == AppData.Account.Address)
+                res = await AppData.Account.MintNFT(NFT);
+            else if (AppData.Account.SubAccounts.TryGetValue(Address, out var sa))
+                res = await sa.MintNFT( NFT );
+
             mintingResult = res;
             if ( res.Item1 )
             {            
                 IsMinted = true;
                 if (NotificationService != null)
                     await NotificationService.Success( "Image saved :)", "Saved" );
+                if (MessageService != null)
+                    if (await MessageService.Confirm("Do you want to switch to the Gallery to see the result?", "Finish") == true)
+                    {
+                        if (Address != AppData.Account.Address)
+                            Navigator.NavigateTo($"/gallery?addr={Address}");
+                        else
+                            Navigator.NavigateTo($"/gallery");
+                    }
+                    else
+                    {
+                        if (await MessageService.Confirm("Do you want to clean form and create new record?", "Finish") == true)
+                        {
+                            NFT = await NFTFactory.GetEmptyNFT(NFTType);
+                            selectedStep = "stepUpload";
+                            await InvokeAsync(StateHasChanged);
+                        }
+                    }
             }                
             else
             {

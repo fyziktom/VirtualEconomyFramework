@@ -1,0 +1,100 @@
+﻿@inject AppData AppData
+
+<Row>
+    <Column>
+        <Field>
+            <FieldBody>
+                <Addons>
+                    <Addon AddonType="AddonType.Start">
+                        <Dropdown Display="Display.Block">
+                            <DropdownToggle Color="Color.Light">
+                                <Icon Name="IconName.Star" IconStyle="IconStyle.Solid" IconSize="IconSize.Small" Margin="Margin.Is1.FromEnd" />
+                            </DropdownToggle>
+                            <DropdownMenu MaxMenuHeight="250px">
+                                <DropdownItem Value="@AppData.Account.Address" Clicked="@((e) => onSelectAddressHandler(AppData.Account.Address))">
+                                    <Field>
+                                        <FieldLabel>Main Account</FieldLabel>
+                                        <FieldHelp>@AppData.Account.Address</FieldHelp>
+                                    </Field>
+                                </DropdownItem>
+                                @foreach (var sa in AppData.Account.SubAccounts.Values)
+                                {
+                                    <DropdownItem Value="@sa.Address" Clicked="@((e) => onSelectAddressHandler(sa.Address))">
+                                        <Field>
+                                            <FieldLabel>@sa.Name</FieldLabel>
+                                            <FieldHelp>@sa.Address</FieldHelp>
+                                        </Field>
+                                    </DropdownItem>
+                                }
+                            </DropdownMenu>
+                        </Dropdown>
+                    </Addon>
+                    <Addon AddonType="AddonType.Body">
+                        <Tooltip Text="Click to copy to clipboard" Placement="TooltipPlacement.Bottom">
+                            <Heading Margin="Margin.Is3.FromStart.Is2.FromTop" 
+                                     Size="HeadingSize.Is6" 
+                                     CopyToClipboard="true" 
+                                     TextOverflow="TextOverflow.Wrap">
+                                @(DisplayName ? AccountName : string.Empty) @(DisplayAddress ? " - " + Address : string.Empty)
+                                </Heading>
+                        </Tooltip>
+                    </Addon>
+                </Addons>
+            </FieldBody>
+        </Field>
+    </Column>
+</Row>
+
+@code {
+    [Parameter] public string Address { get; set; } = string.Empty;
+    [Parameter] public EventCallback<string> AddressChanged { get; set; }
+    [Parameter] public bool DisplayName { get; set; } = true;
+    [Parameter] public bool DisplayAddress { get; set; } = false;
+
+    public string AccountName
+    {
+        get
+        {
+            if (!string.IsNullOrEmpty(Address) && Address != AppData.Account.Address)
+                if (AppData.Account.SubAccounts.TryGetValue(Address, out var acc))
+                    return acc.Name;
+            return "Main Account";
+        }
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        AppData.Account.Refreshed -= RefreshedHandler;
+        AppData.Account.Refreshed += RefreshedHandler;
+        base.OnAfterRender(firstRender);
+    }
+
+    private async void RefreshedHandler(object? sender, EventArgs e)
+    {
+        if (string.IsNullOrEmpty(Address))
+        {
+            Address = AppData.Account.Address;
+            await AddressChanged.InvokeAsync(Address);
+        }
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public async Task LoadAddress(string address)
+    {
+        if (!string.IsNullOrEmpty(address))
+        {
+            Address = address;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private async Task onSelectAddressHandler(string address)
+    {
+        if (!string.IsNullOrEmpty(address))
+            Address = address;
+        else
+            Address = AppData.Account.Address;
+        await AddressChanged.InvokeAsync(Address);
+        await InvokeAsync(StateHasChanged);
+    }
+}

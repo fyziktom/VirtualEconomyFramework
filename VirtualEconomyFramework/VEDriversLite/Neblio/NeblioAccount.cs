@@ -308,7 +308,9 @@ namespace VEDriversLite
                 Address = address.ToString();
 
                 // todo load already encrypted key
-                AccountKey = new Security.EncryptionKey(privateKeyFromNetwork.ToString(), password);
+
+                var iv = SymetricProvider.GetIV();
+                AccountKey = new Security.EncryptionKey(privateKeyFromNetwork.ToString(), iv, password);
                 AccountKey.PublicKey = Address;
                 Secret = privateKeyFromNetwork;
 
@@ -360,7 +362,7 @@ namespace VEDriversLite
                     if (string.IsNullOrEmpty(Address))
                         Address = Secret.GetAddress(ScriptPubKeyType.Legacy).ToString();
                     
-                    LoadAccountKey(password, kdto.Key);
+                    await LoadAccountKey(password, kdto.Key);
 
                     SignMessage("init");
 
@@ -450,7 +452,7 @@ namespace VEDriversLite
                         bdto = JsonConvert.DeserializeObject<BackupDataDto>(fromString);
                     }
 
-                    LoadAccountKey(password, bdto.Key);
+                    await LoadAccountKey(password, bdto.Key);
 
                     if (Address != bdto.Address)
                         Address = bdto.Address;
@@ -509,7 +511,7 @@ namespace VEDriversLite
         {
             try
             {
-                var res = LoadAccountKey(password, encryptedKey);
+                var res = await LoadAccountKey(password, encryptedKey);
                 if (res)
                 {
                     //SignMessage("init");
@@ -1111,18 +1113,25 @@ namespace VEDriversLite
         /// <param name="sendTokenToAccount">Initial amount of tokens to send to the new SubAccount</param>
         /// <param name="tokenAmountToSend">Initial amount of Neblio to send to the new SubAccount</param>
         /// <param name="tokenId">Token Id which should be send to the new SubAccount</param>
+        /// <param name="privateKey">If you want to import existing private key you can fill this field. It can be in encrypted form. Encryption must be done with private key of main account. Ideal is import of non encrypted key.</param>
         /// <returns>true and string with serialized tabs list as json string</returns>
         public async Task<(bool, string)> AddSubAccount(string name,
                                                         bool sendNeblioToAccount = false,
                                                         double neblioAmountToSend = 0.05,
                                                         bool sendTokenToAccount = false,
                                                         double tokenAmountToSend = 10,
-                                                        string tokenId = "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8")
+                                                        string tokenId = "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8",
+                                                        string privateKey = "")
         {
             if (!SubAccounts.Values.Any(a => a.Name == name))
             {
                 var nsa = new NeblioSubAccount();
-                var r = await nsa.CreateAddress(Secret, name);
+                (bool, string) r = (false, string.Empty);
+                if (string.IsNullOrEmpty(privateKey))
+                    r = await nsa.CreateAddress(Secret, name);
+                else
+                    r = await nsa.ImportAddress(Secret, name, privateKey);
+
                 if (!r.Item1)
                 {
                     await InvokeErrorEvent("Cannot create SubAccount Address." + r.Item2, "SubAccount Address Error");
