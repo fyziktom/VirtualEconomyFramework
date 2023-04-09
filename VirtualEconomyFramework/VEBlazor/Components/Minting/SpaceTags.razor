@@ -33,12 +33,11 @@
                               TextField="@(( item ) => item)"
                               ValueField="@(( item ) => item)"
                               Placeholder="@Placeholder"
-                              Multiple
+                              SelectionMode="AutocompleteSelectionMode.Multiple"
                               FreeTyping
                               SelectedValues="@TagNames"
                               SelectedTexts="@TagNames"
-                              SelectedTextsChanged="@OnTagNamesChanged"
-                              Validator="@Validator">
+                              SelectedTextsChanged="@OnTagNamesChanged">
                 </Autocomplete>
             </Column>
         </Row>
@@ -58,54 +57,78 @@
 </Row>
 
 @code {
+
     [Parameter] public string? Tags { get; set; }
     [Parameter] public EventCallback<string> TagsChanged { get; set; }
+    [Parameter] public EventCallback<List<string>> TagsListChanged { get; set; }
     [Parameter] public string Placeholder { get; set; } = "Tags...";
-    [Parameter] public Action<ValidatorEventArgs> Validator { get; set; } = ValidationRule.IsSelected;
+    [Parameter] public Action<ValidatorEventArgs> Validator { get; set; } = ValidationRule.None;
 
-    IEnumerable<string> DummyTags = VEDriversLite.NFT.NFTDataContext.Tags.Values.OrderByDescending( t => t.Count )
-                                                                         .Select( t => t.Name );
-    List<string> TagNames => Tags?.Split( " " )?.Where( x => !string.IsNullOrEmpty( x ) )?.ToList() ?? new List<string>();
-
-    private System.Threading.Timer timer;
-    bool debounce = false;
-
-    public async Task OnTagNamesChanged( List<string> values )
+    public IEnumerable<string> DummyTags
     {
-        if (!debounce)
+        get
         {
-            Tags = string.Join(" ", values ?? Enumerable.Empty<string>()).Trim();
-
-            debounce = true;
-            timer = new System.Threading.Timer(async (object stateInfo) =>
+            var tgs = VEDriversLite.NFT.NFTDataContext.Tags.Values.OrderByDescending(t => t.Count)
+                                                                         .Select(t => t.Name).ToList();
+            foreach (var t in tagNames)
             {
-                timer.Dispose();
-                debounce = false;
-            }, new System.Threading.AutoResetEvent(false), 500, 500);
-
-            await InvokeAsync(StateHasChanged);
-            await TagsChanged.InvokeAsync(Tags);
+                if (!tgs.Contains(t))
+                    tgs.Add(t);
+            }
+            return tgs;
         }
     }
 
+    private List<string> tagNames = new List<string>();                                                                     
+    public List<string> TagNames
+    {
+        get
+        {
+            tagNames = Tags?.Split(" ")?.Where(x => !string.IsNullOrEmpty(x))?.ToList() ?? new List<string>();
+            return tagNames;
+        }
+    }
+
+    public async Task OnTagNamesChanged(List<string> values)
+    {
+        {
+            foreach (var v in values)
+            {
+                if (!VEDriversLite.NFT.NFTDataContext.Tags.ContainsKey(v))
+                    VEDriversLite.NFT.NFTDataContext.Tags.TryAdd(v, new VEDriversLite.NFT.Tags.Tag() { Name = v, Count = 1 });
+            }
+            await InvokeAsync(StateHasChanged);
+
+            Tags = string.Join(" ", values ?? Enumerable.Empty<string>()).Trim();
+
+            await InvokeAsync(StateHasChanged);
+
+            await TagsChanged.InvokeAsync(Tags);
+        }
+    }
+    
     async Task AddTag( string tag )
     {
+            
         if ( TagNames.Contains( tag ) )
             return;
 
-        if ( Tags == "" )
-            Tags += $"{tag}";
-        else
+        if (!VEDriversLite.NFT.NFTDataContext.Tags.ContainsKey(tag))
+            VEDriversLite.NFT.NFTDataContext.Tags.TryAdd(tag, new VEDriversLite.NFT.Tags.Tag() { Name = tag });
+
+            if ( Tags == "" )
+        Tags += $"{tag}";
+            else
             Tags += $" {tag}";
 
-        debounce = false;
+        await InvokeAsync(StateHasChanged);
         await OnTagNamesChanged(TagNames);
     }
 
     async Task Clear()
     {
         Tags = string.Empty;
-        await TagsChanged.InvokeAsync( Tags );
         await InvokeAsync(StateHasChanged);
+        await TagsChanged.InvokeAsync( Tags );
     }
 }

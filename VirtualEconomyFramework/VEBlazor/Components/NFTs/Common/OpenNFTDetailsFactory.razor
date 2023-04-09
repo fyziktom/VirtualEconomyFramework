@@ -14,18 +14,20 @@
                        IsSubAccount="@IsSubAccount"
                        HideOpenInWorkTabButton="@HideOpenInWorkTabButton"
                        NFTSent="@NFTSentHandler"
+                       NFTChanged="@NFTChangedHandler"
                        OpenNFTsInWorkTab="async (e) => await OpenNFTsInWorkTab.InvokeAsync(e)" />
 }
 else if(NFT.Type == NFTTypes.Event)
 {
     <EventDetails @ref=EventDetailsModalComponent
-                       NFT="@NFT"
-                       Address="@Address"
-                       IsOwnNFT="@IsOwnNFT"
-                       IsSubAccount="@IsSubAccount"
-                       HideOpenInWorkTabButton="@HideOpenInWorkTabButton"
-                       NFTSent="@NFTSentHandler"
-                       OpenNFTsInWorkTab="async (e) => await OpenNFTsInWorkTab.InvokeAsync(e)" />                             
+                  NFT="@NFT"
+                  Address="@Address"
+                  IsOwnNFT="@IsOwnNFT"
+                  IsSubAccount="@IsSubAccount"
+                  HideOpenInWorkTabButton="@HideOpenInWorkTabButton"
+                  NFTSent="@NFTSentHandler"
+                  NFTChanged="@NFTChangedHandler"
+                  OpenNFTsInWorkTab="async (e) => await OpenNFTsInWorkTab.InvokeAsync(e)" />                             
 }
 else if(NFT.Type == NFTTypes.Ticket)
 {
@@ -36,29 +38,32 @@ else if(NFT.Type == NFTTypes.Ticket)
                    IsSubAccount="@IsSubAccount"
                    HideOpenInWorkTabButton="@HideOpenInWorkTabButton"
                    NFTSent="@NFTSentHandler"
+                   NFTChanged="@NFTChangedHandler"
                    OpenNFTsInWorkTab="async (e) => await OpenNFTsInWorkTab.InvokeAsync(e)" />                              
 }
 else if(NFT.Type == NFTTypes.Payment)
 {
     <NFTPaymentDetails @ref=NFTPaymentDetailsModalComponent
-                   NFT="@NFT"
-                   Address="@Address"
-                   IsOwnNFT="@IsOwnNFT"
-                   IsSubAccount="@IsSubAccount"
-                   HideOpenInWorkTabButton="@HideOpenInWorkTabButton"
-                   NFTSent="@NFTSentHandler"
-                   OpenNFTsInWorkTab="async (e) => await OpenNFTsInWorkTab.InvokeAsync(e)" />                              
+                       NFT="@NFT"
+                       Address="@Address"
+                       IsOwnNFT="@IsOwnNFT"
+                       IsSubAccount="@IsSubAccount"
+                       HideOpenInWorkTabButton="@HideOpenInWorkTabButton"
+                       NFTSent="@NFTSentHandler"
+                       NFTChanged="@NFTChangedHandler"
+                       OpenNFTsInWorkTab="async (e) => await OpenNFTsInWorkTab.InvokeAsync(e)" />                              
 }
 else if(NFT.Type == NFTTypes.Receipt)
 {
     <NFTReceiptDetails @ref=NFTReceiptDetailsModalComponent
-                   NFT="@NFT"
-                   Address="@Address"
-                   IsOwnNFT="@IsOwnNFT"
-                   IsSubAccount="@IsSubAccount"
-                   HideOpenInWorkTabButton="@HideOpenInWorkTabButton"
-                   NFTSent="@NFTSentHandler"
-                   OpenNFTsInWorkTab="async (e) => await OpenNFTsInWorkTab.InvokeAsync(e)" />                              
+                       NFT="@NFT"
+                       Address="@Address"
+                       IsOwnNFT="@IsOwnNFT"
+                       IsSubAccount="@IsSubAccount"
+                       HideOpenInWorkTabButton="@HideOpenInWorkTabButton"
+                       NFTSent="@NFTSentHandler"
+                       NFTChanged="@NFTChangedHandler"
+                       OpenNFTsInWorkTab="async (e) => await OpenNFTsInWorkTab.InvokeAsync(e)" />                              
 }
 else if(NFT.Type == NFTTypes.CoruzantArticle)
 {
@@ -69,6 +74,7 @@ else if(NFT.Type == NFTTypes.CoruzantArticle)
                             IsSubAccount="@IsSubAccount"
                             HideOpenInWorkTabButton="@HideOpenInWorkTabButton"
                             NFTSent="@NFTSentHandler"
+                            NFTChanged="@NFTChangedHandler"
                             OpenNFTsInWorkTab="async (e) => await OpenNFTsInWorkTab.InvokeAsync(e)" />                              
 }
 else if(NFT.Type == NFTTypes.CoruzantProfile)
@@ -80,6 +86,7 @@ else if(NFT.Type == NFTTypes.CoruzantProfile)
                             IsSubAccount="@IsSubAccount"
                             HideOpenInWorkTabButton="@HideOpenInWorkTabButton"
                             NFTSent="@NFTSentHandler"
+                            NFTChanged="@NFTChangedHandler"
                             OpenNFTsInWorkTab="async (e) => await OpenNFTsInWorkTab.InvokeAsync(e)" />                              
 }
 else if (NFT.Type == NFTTypes.Image || 
@@ -93,7 +100,8 @@ else if (NFT.Type == NFTTypes.Image ||
                 IsSubAccount="@IsSubAccount" 
                 IsOwnNFT="IsOwnNFT" 
                 NFT="@NFT" 
-                NFTSent="@NFTSentHandler" 
+                NFTSent="@NFTSentHandler"
+                NFTChanged="@NFTChangedHandler"
                 OpenNFTsInWorkTab="@OpenNFTInWorkTabHandler"
                 HideOpenInWorkTabButton="@HideOpenInWorkTabButton"
                 SpecificInfoHeading="NFT Details" />
@@ -110,6 +118,15 @@ else if (NFT.Type == NFTTypes.Image ||
     private CoruzantArticleDetails? CoruzantArticleDetailsModalComponent;
     private CoruzantProfileDetails? CoruzantProfileDetailsModalComponent;
 
+    public async Task NFTChangedHandler(INFT e)
+    {
+        if (e != null)
+        {
+            NFT = e;
+            await InvokeAsync(StateHasChanged);
+            await NFTChanged.InvokeAsync(e);
+        }
+    }
     public async Task OpenNFTDetails(INFT nft)
     {
         if (nft == null) return;

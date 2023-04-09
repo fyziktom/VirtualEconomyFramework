@@ -63,7 +63,7 @@
 
 <OpenNFTDetailsFactory @ref="openNFTDetailsFactory"
                        Address="@Address"
-                       NFT="@nftInDetails"                       
+                       @bind-NFT="@nftInDetails"                       
                        IsSubAccount="@IsSubAccount"
                        IsOwnNFT="@IsOwnNFT"
                        NFTSent="@NFTSentHandler"
@@ -97,7 +97,7 @@
             else if (IsOwnNFT && IsSubAccount)
             {
                 if (AppData.Account.SubAccounts.TryGetValue(Address, out var sa))
-                     return sa.NFTs.Where(n => AppData.AllowedNFTTypes.Contains(n.Type));
+                    return sa.NFTs.Where(n => AppData.AllowedNFTTypes.Contains(n.Type));
             }
             else
             {
@@ -134,7 +134,7 @@
     {
         if (nft == null) return;
         nftInImageDetails = nft;
-        
+
         await InvokeAsync( StateHasChanged );
         if (NFTImageDetailModal is not null)
             await NFTImageDetailModal.Show();
@@ -143,12 +143,12 @@
     async Task OpenNFTDetailsRequestHandler(INFT nft)
     {    
         if (nft != null && openNFTDetailsFactory != null)
-        {        
+        {
             nftInDetails = nft;
             await InvokeAsync(StateHasChanged);
 
-            if (openNFTDetailsFactory!=null)
-                await openNFTDetailsFactory?.OpenNFTDetails(nft);
+            if (openNFTDetailsFactory != null)
+                await openNFTDetailsFactory.OpenNFTDetails(nftInDetails);
         }
     }
 
@@ -186,12 +186,7 @@
         if ( !string.IsNullOrEmpty( searchNFTsString ) )
         {
             var ls = searchNFTsString.ToLower();
-            /*
-            if ( nft.Author.ToLower().Contains( ls ) || nft.Name.ToLower().Contains( ls ) )
-            {
-                return true;
-            }
-            */
+
             if ( !string.IsNullOrEmpty( nft.Tags ) )
             {
                 if ( nft.Tags.ToLower().Contains( ls ) )

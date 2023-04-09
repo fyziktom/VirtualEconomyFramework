@@ -33,8 +33,8 @@
                 <Column>
                     <Field>
                         <FieldLabel>Edit Tags before Send</FieldLabel>
-                        <SpaceTags @bind-Tags="@NFT.Tags" />                        
-                    </Field>
+                            <SpaceTags @ref=spaceTagsRef @bind-Tags="@NFT.Tags"/>
+                        </Field>
                 </Column>
             </Row>
             <Row Flex="Flex.JustifyContent.Center"> 
@@ -66,6 +66,7 @@
     [Inject] INotificationService? NotificationService { get; set; }
 
     private Modal? NFTSendModal;
+    SpaceTags? spaceTagsRef;
 
     [Parameter] public string Receiver { get; set; } = string.Empty;
 
@@ -73,7 +74,7 @@
     bool SendFinished = false;
     bool SendCopy = false;
     (bool,string) SendResult = (false,string.Empty);
-
+    
     public async Task ShowSendNFTModal(string receiver = "", bool sendCopy = false)
     {
         if (NFT == null) return;
@@ -104,7 +105,7 @@
         
         if (NotificationService != null)
             await NotificationService.Info( "Sending data...", "Sending" );
-             
+
         if (!SendCopy)
         {
             if (!IsSubAccount)

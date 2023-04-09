@@ -31,7 +31,7 @@
                     <MintingToolbar ShowNextButton="true" ShowLoadFromTemplateButton="true" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
                     <Row>
                         <Column>
-                            <UploadData @ref="@uploadDataRef" NFT="@NFT" NFTChanged="@onPropsChangedHandler" Multiple="true"/>
+                            <UploadData @ref="@uploadDataRef" @bind-NFT="@NFT" Multiple="true"/>
                         </Column>
                     </Row>
                     <MintingToolbar ShowNextButton="true" ShowLoadFromTemplateButton="true" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
@@ -40,7 +40,7 @@
                     <MintingToolbar ShowNextButton="true" ShowPrevButton="true" ShowLoadFromTemplateButton="true" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
                     <Row>
                         <Column>
-                            <DataInfoForm @ref="@dataInfoFormRef" NFT="@NFT" NFTChanged="@onPropsChangedHandler" />
+                            <DataInfoForm @ref="@dataInfoFormRef" @bind-NFT="@NFT"/>
                         </Column>
                     </Row>
                     <MintingToolbar ShowNextButton="true" ShowPrevButton="true" ShowLoadFromTemplateButton="true" ToolActionHandler="@OnToolActionHandler" CanProceed="@OnCanProceed" />
@@ -176,11 +176,6 @@
     {    
         if (nft != null && openNFTDetailsFactory != null)
             await openNFTDetailsFactory.OpenNFTDetails(nft);
-    }
-
-    async Task onPropsChangedHandler()
-    {
-        await NFTChanged.InvokeAsync(NFT);
     }
 
     async Task onAddressChangedHandler(string address)

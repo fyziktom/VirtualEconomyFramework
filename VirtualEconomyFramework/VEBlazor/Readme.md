@@ -93,6 +93,7 @@ Here is the Example:
     <script src="_content/BlazorPanzoom/blazorpanzoom.js"></script>
     <script src="_content/Texnomic.Blazor.JsonViewer/scripts/JsonViewer.js"></script>
     <script src="_content/VEFramework.VEBlazor/AudioRecorder.js"></script>
+    <script src="_content/TG.Blazor.IndexedDB/indexedDb.Blazor.js"></script>
     <script src="_content/VEFramework.VEBlazor/veblazor.js"></script>
 
     <div id="blazor-error-ui">
@@ -167,6 +168,7 @@ builder.Services
 
 builder.Services.AddScoped<AppData>();
 builder.Services.AddScoped<TransactionsService>();
+builder.Services.AddSingleton<IIndexedDbFactory, IndexedDbFactory>();
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddBlazorPanzoomServices();
 

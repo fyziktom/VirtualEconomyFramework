@@ -1,4 +1,6 @@
-﻿@inherits NFTComponentBase;
+﻿@using VEDriversLite
+@using VEDriversLite.NFT
+@inherits NFTComponentBase;
 @inject AppData AppData
 
 <Card Margin="Margin.Is4.FromBottom">
@@ -19,8 +21,16 @@
         <OwnershipQRCode DisplayButton="true" Address="@Address" IsSubAccount="@IsSubAccount" NFT="@NFT" />
         
         @if ( IsOwnNFT && AppData.IsAccountLoaded) 
-        { 
-            <Row Margin="Margin.Is3.FromTop"> 
+        {
+            <Row Margin="Margin.Is3.FromTop">
+                <Column>
+                    <Button Color="Color.Primary" Clicked=@UploadNewItem Block>
+                        <Icon Name="IconName.FileUpload" />
+                        Upload New DataItem
+                    </Button>
+                </Column>
+            </Row>
+            <Row Margin="Margin.Is2.FromTop"> 
                 @if (AppData.AllowSend )
                 {                
                 <Column> 
@@ -39,7 +49,7 @@
                     </Button> 
                 </Column> 
                 }
-            </Row> 
+            </Row>
             @if (AppData.AllowSend )
             {
                 <Row Margin="Margin.Is2.FromTop">
@@ -65,6 +75,7 @@
          NFT="@NFT"
          Address="@Address"
          IsSubAccount="@IsSubAccount"
+         NFTChanged="@NFTChangedHandler"
          NFTSent="NFTSendHandler" />
          
 <SetNFTPrice @ref=SetPriceNFTModalComponent
@@ -72,13 +83,36 @@
          Address="@Address"
          IsSubAccount="@IsSubAccount"
          NFTSent="NFTSendHandler" />
+
+<Modal @ref="uploadNewItemModalRef">
+    <ModalContent Size="  ModalSize.ExtraLarge">
+        <ModalHeader>
+            <ModalTitle>Upload New Item</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <Row Margin="Margin.Is2.FromBottom">
+                <Column>
+                    <UploadData @ref="@uploadDataRef" NFT="@NFT" NFTChanged="@onPropsChangedHandler" Multiple="true" />
+                </Column>
+            </Row>
+            <Row Margin="Margin.Is2.FromBottom">
+                <Column>
+                    <Button Color="Color.Secondary" Clicked="@hideUploadNewItemModal" Block>OK</Button>
+                </Column>
+            </Row>
+        </ModalBody>
+    </ModalContent>
+</Modal>
          
 @code {
 
     DestroyNFT? DestroyNFTModalComponent;
     SendNFT? SendNFTModalComponent;
     SetNFTPrice? SetPriceNFTModalComponent;
-    
+    Modal? uploadNewItemModalRef;
+    UploadData? uploadDataRef;
+
     async Task SendNFT()
     {
         if ( NFT == null )
@@ -98,6 +132,23 @@
             return;
         DestroyNFTModalComponent?.ShowDestroyNFTModal();
     }
+
+    async Task hideUploadNewItemModal()
+    {
+        if (uploadNewItemModalRef != null)
+            await uploadNewItemModalRef.Hide();
+    }
+
+    async Task UploadNewItem()
+    {
+        if (uploadNewItemModalRef != null)
+            await uploadNewItemModalRef.Show();
+    }
+    async Task onPropsChangedHandler()
+    {
+        await NFTChanged.InvokeAsync(NFT);
+    }
+
     public async Task NFTSendHandler( NFTSentResultDto e )
     {
         await SendNFTModalComponent?.HideSendNFTModal();
@@ -107,5 +158,14 @@
     {
         DestroyNFTModalComponent?.HideDestroyNFTModal();
         await NFTSent.InvokeAsync( e );
+    }
+    public async Task NFTChangedHandler(INFT e)
+    {
+        if (e != null)
+        {
+            NFT = e;
+            await InvokeAsync(StateHasChanged);
+            await NFTChanged.InvokeAsync(e);
+        }
     }
 }
