@@ -25,6 +25,26 @@
                     </Field>
                 </Column>
             </Row>
+            <Row>
+                <Column Margin="Margin.Is2.FromTop">
+                    <Field>
+                        <FieldLabel>Import of Existing Account</FieldLabel>
+                        <FieldBody><Check @bind-Checked="@importAccount" >Check if you want to import existing account</Check></FieldBody>
+                    </Field>
+                    @if (importAccount)
+                    {
+                        <Row>
+                            <Column>
+                                <Field>
+                                    <FieldLabel>Input SubAccount Private Key</FieldLabel>
+                                    <MemoEdit Rows="3" @bind-Text="@privateKey" Placeholder="Input private key" MaxLength="100" />
+                                </Field>
+                            </Column>
+                        </Row>
+                    }
+                </Column>
+            </Row>
+
             @if (AppData.Account.TotalSpendableBalance > AppData.DefaultAirdropMain && AppTokenAmount > AppData.DefaultAirdropTokens)
             {
                 <Row Margin="Margin.Is2.FromTop">
@@ -41,13 +61,13 @@
             }
             @if (!string.IsNullOrEmpty(newSubAccountName))
             {
-                <Button Color="Color.Primary" Clicked="@addSubAccount" Loading="@loading" Block>Create new SubAccount</Button>
+                <Button Color="Color.Primary" Clicked="@addSubAccount" Loading="@loading" Block>@(importAccount ? "Import SubAccount" : "Create new SubAccount")</Button>
             }
             else
             {
                 <Field>
                     <FieldBody>
-                        <Button Color="Color.Secondary" Clicked="@addSubAccount" Disabled Block>Create new SubAccount</Button>
+                        <Button Color="Color.Secondary" Clicked="@addSubAccount" Disabled Block>@(importAccount ? "Import SubAccount" : "Create new SubAccount")</Button>
                     </FieldBody>
                     <FieldHelp>Fill the name first please.</FieldHelp>
                 </Field>
@@ -65,8 +85,10 @@
     public bool DisplayButton { get; set; } = true; 
 
     private string newSubAccountName = string.Empty;
+    private string privateKey = string.Empty;
     private bool sendInitPayment = true;
     private bool loading = false;
+    private bool importAccount = false;
 
     Modal? newSubAccountModalRef;
 
@@ -93,7 +115,7 @@
                 return "VENFT";
         }
     }
-
+    
     public async Task showNewSubAccountModal(MouseEventArgs e)
     {
         if (newSubAccountModalRef != null)
@@ -113,7 +135,16 @@
             if (NotificationService != null)
                 await NotificationService.Info("Creating SubAccount...", "Working");
 
-            var res = await AppData.Account.AddSubAccount(newSubAccountName, sendInitPayment, AppData.DefaultAirdropMain, true, AppData.DefaultAirdropTokens, AppData.AppTokenId);
+            if (!importAccount)
+                privateKey = string.Empty;
+            
+            var res = await AppData.Account.AddSubAccount(newSubAccountName, 
+                                                          sendInitPayment, 
+                                                          AppData.DefaultAirdropMain, 
+                                                          true, 
+                                                          AppData.DefaultAirdropTokens, 
+                                                          AppData.AppTokenId,
+                                                          privateKey:privateKey);
             await Task.Delay(50);
             if (res.Item1)
             {
