@@ -354,13 +354,30 @@
     {
         get
         {
-            if (lastAddress != Address)
+            if (Type == TxType.Neblio)
             {
-                if (!string.IsNullOrEmpty(Address) && Address != AppData.Account.Address)
+                return NeblioBalance;
+            }
+            else
+            {
+                if (lastAddress != Address)
                 {
-                    if (AppData.Account.SubAccounts.TryGetValue(Address, out var acc))
+                    if (!string.IsNullOrEmpty(Address) && Address != AppData.Account.Address)
                     {
-                        var tk = acc.TokensSupplies.Values.FirstOrDefault(t => t.TokenSymbol == selectedAssetTokenSymbol);
+                        if (AppData.Account.SubAccounts.TryGetValue(Address, out var acc))
+                        {
+                            var tk = acc.TokensSupplies.Values.FirstOrDefault(t => t.TokenSymbol == selectedAssetTokenSymbol);
+                            if (tk != null)
+                            {
+                                lastSelectedAssetTotalAmount = tk.Amount;
+                                lastAddress = Address;
+                                return tk.Amount;
+                            }
+                        }
+                    }
+                    else if (AppData.Account.Address == Address)
+                    {
+                        var tk = AppData.Account.TokensSupplies.Values.FirstOrDefault(t => t.TokenSymbol == selectedAssetTokenSymbol);
                         if (tk != null)
                         {
                             lastSelectedAssetTotalAmount = tk.Amount;
@@ -369,20 +386,9 @@
                         }
                     }
                 }
-                else if (AppData.Account.Address == Address)
-                {
-                    var tk = AppData.Account.TokensSupplies.Values.FirstOrDefault(t => t.TokenSymbol == selectedAssetTokenSymbol);
-                    if (tk != null)
-                    {
-                        lastSelectedAssetTotalAmount = tk.Amount;
-                        lastAddress = Address;
-                        return tk.Amount;
-                    }
-                }
+                else
+                    return lastSelectedAssetTotalAmount;
             }
-            else
-                return lastSelectedAssetTotalAmount;
-
             return 0;
         }
     }
