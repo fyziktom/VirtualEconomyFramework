@@ -10,6 +10,7 @@ using VEBlazor.Demo.AI.MintFreeForAI;
 using AspNetCoreRateLimit;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore;
+using IndexedDB.Blazor;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -48,6 +49,7 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(baseadd)
 
 builder.Services.AddScoped<AppData>();
 builder.Services.AddSingleton<TransactionsService>();
+builder.Services.AddSingleton<IIndexedDbFactory, IndexedDbFactory>();
 builder.Services.AddHostedService<VEDriversLiteCore>();
 
 builder.Services.AddBlazorPanzoomServices();
