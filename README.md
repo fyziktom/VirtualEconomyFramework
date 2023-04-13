@@ -14,12 +14,12 @@ VEFramework je L2 vrstva nad jakámkoli blockchainem. Aktuálně podporuje Nebli
 - [`VEDriversLite`](https://docs.veframework.com/VEDriversLite/api/index.html) - Aktuální a doporučená verze (Neblio a NFT drivers)
 
 ```shell
-dotnet add package VEFramework.VEDriversLite --version 0.3.21
+dotnet add package VEFramework.VEDriversLite --version 0.3.41
 ```
 - [`VEBlazor`](https://github.com/fyziktom/VirtualEconomyFramework/tree/main/VirtualEconomyFramework/VEBlazor) - Blazor knihovna komponent a dApp template
 
 ```shell
-dotnet add package VEFramework.VEBlazor --version 0.3.21
+dotnet add package VEFramework.VEBlazor --version 0.3.41
 ```
 
 Zkuste si náš [hello world příklad](#hello-world).
