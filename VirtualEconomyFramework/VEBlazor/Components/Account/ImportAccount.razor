@@ -222,6 +222,7 @@
     private string importAccountAddress = string.Empty;
     private string importAccountKey { get; set; } = string.Empty;
     private string importAccountPass = string.Empty;
+    private string openaikey = string.Empty;
     private string password = string.Empty;
     private string passwordConfirm = string.Empty;
 
@@ -266,6 +267,7 @@
             if (bdto != null && !string.IsNullOrEmpty(bdto.Key))
             {
                 importAccountKey = bdto.Key;
+                openaikey = bdto.OpenAIApiKey;
                 importDogeAccountKey = bdto.DogeKey;
                 backupData = bdto;
                 await InvokeAsync(StateHasChanged);
@@ -362,15 +364,20 @@
                         var ivkey = SymetricProvider.ParseIVFromString(importAccountKey);
                         if (!string.IsNullOrEmpty(ivkey.etext))
                         {
-                            var ek = new EncryptionKey();
-                            ek.LoadPassword(password);
+                            var AccountKey = new EncryptionKey(ivkey.Item2, fromDb: true);
+                            AccountKey.IV = ivkey.Item1;
+                            if (!string.IsNullOrEmpty(password))
+                                AccountKey.LoadPassword(password);
 
-                            var keyDec = SymetricProvider.DecryptString(ek.PasswordHashString, ivkey.etext, ivkey.iv);
-                            res = NeblioTransactionHelpers.IsPrivateKeyValid(keyDec);
-                            if (res == null)
-                                throw new Exception();
+                            var impkey = AccountKey.GetEncryptedKey();
+                            if (!string.IsNullOrEmpty(key))
+                            {
+                                res = NeblioTransactionHelpers.IsPrivateKeyValid(impkey);
+                                if (res == null)
+                                    throw new Exception();
+                            }
 
-                            key = ivkey.etext;
+                            key = impkey;
                             iv = ivkey.iv;
                         }
                     }
