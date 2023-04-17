@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net6.0;net7.0;net8.0</TargetFrameworks>
+    <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 	  <PackageId>VEFramework.VEDriversLite.StorageDriver</PackageId>
-	  <Version>0.3.3</Version>
+	  <Version>0.3.42</Version>
 	  <Authors>fyziktom</Authors>
 	  <Company>VEFramework</Company>
 	  <Description>.NET drivers for IPFS, FileSystem, API files and other file storages.</Description>
@@ -15,8 +15,7 @@
 	  <PackageTags>VEFramework, IPFS, InterPlanetaryFileSystem, FileSystem, API, Storage, NFT, NFTs, Blockchain, eCommerce, dApps</PackageTags>
 	  <Copyright>fyziktom</Copyright>
 	  <PackageReleaseNotes>
-		  - Driver for IPFS
-		  - Basic driver for FileSystem
+		  - Added .NET 7.0
 	  </PackageReleaseNotes>
 	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>

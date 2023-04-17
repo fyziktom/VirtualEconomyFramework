@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-	<TargetFrameworks>net6.0;net7.0;net8.0</TargetFrameworks>
+	<TargetFrameworks>net6.0;net7.0</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 	  <PackageId>VEFramework.VEDriversLite.Common</PackageId>
-	  <Version>0.3.3</Version>
+	  <Version>0.3.42</Version>
 	  <Authors>fyziktom</Authors>
 	  <Company>VEFramework</Company>
 	  <Description>Common dtos and tools for VEDriversLite packages</Description>
@@ -15,7 +15,7 @@
 	  <PackageTags>VEFramework, Cryptocurrencies, Crypto, NFT, NFTs, Bitcoin, ReddCoin, Neblio, Nebl, Doge, Dogecoin, Flux, Blockchain, eCommerce, dApps, WooCommerce, WordPress</PackageTags>
 	  <Copyright>fyziktom</Copyright>
 	  <PackageReleaseNotes>
-		  - Separation from VEDriversLite package
+		  - Added .NET 7.0
 	  </PackageReleaseNotes>
 	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
 	  <Title>VEDriversLite Common Dto and Tools</Title>

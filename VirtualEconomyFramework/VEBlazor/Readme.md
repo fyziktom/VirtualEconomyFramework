@@ -1,4 +1,4 @@
-# VEBlazor
+﻿# VEBlazor
 
 VEBlazor is the UI component library for .NET Blazor framework.
 
@@ -35,6 +35,7 @@ If you would like to participate on development and testing please [contact us h
 # Compatibility
 
 - .NET 6.0
+- .NET 7.0
 
 # First steps
 
