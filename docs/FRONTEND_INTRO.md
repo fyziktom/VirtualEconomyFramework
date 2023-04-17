@@ -2,6 +2,12 @@
 
 Dozvíte se, jak si vytvořit vlastní customizovanou aplikaci nad funkčním backendem.
 
+Je zde několik variant. Hlavní jádro většiny aplikací je knihovna [VEBlazor](https://github.com/fyziktom/VirtualEconomyFramework/tree/main/VirtualEconomyFramework/VEBlazor).
+
+K ní existují varianty aplikací jak ve formě WebAssembly, kde není potřeba serverová část s API. A nebo formou serverové Blazor aplikace, kde je ještě podpůrné API.
+
+Příkladem je třeba [VENFT](../VirtualEconomyFramework/VEBlazor.Demo.VENFTApp.Client) Online demo je [zde](https://ve-nft.com/).
+
 Komponenta [`VEBlazor.Demo.Publishing.Server`](../VirtualEconomyFramework/VEBlazor.Demo.Publishing.Server) vystavuje jednoduché [API](../VEconomy-swagger.json)
 
 ## Tutoriál
