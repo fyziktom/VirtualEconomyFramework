@@ -1,4 +1,4 @@
-# VEBlazor
+﻿# VEBlazor
 
 VEBlazor is the UI component library for .NET Blazor framework.
 
@@ -35,6 +35,7 @@ If you would like to participate on development and testing please [contact us h
 # Compatibility
 
 - .NET 6.0
+- .NET 7.0
 
 # First steps
 
@@ -431,12 +432,11 @@ Main Layout automatically switches the menus from the Side (on Tablet and bigger
     - Allow to import the standard VENFT backup file. Or you can import the raw or encrypted key.
 - [Unlock Account](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/Account/UnlockAccount.razor)
 - [Neblio Address Input](https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEBlazor/Components/Account/NeblioAddressInput.razor)
+    - Neblio Address Input loads bookmarks and allow to use already saved address. It load part of the Unstoppable Domains. We will need to do some updates in API, but part of the addresses works fine. You will type UD name and it will change it to the Neblio Address.
 - [Show Address As QR](https://github.com/fyziktom/VirtualEconomyFramework/blob/Development/VirtualEconomyFramework/VEBlazor/Components/Account/ShowAddressAsQR.razor)
 - [Add/Import Sub Account](https://github.com/fyziktom/VirtualEconomyFramework/blob/Development/VirtualEconomyFramework/VEBlazor/Components/Account/ImportAccount.razor)
 - [Account Stats](https://github.com/fyziktom/VirtualEconomyFramework/blob/Development/VirtualEconomyFramework/VEBlazor/Components/Account/AccountsStats.razor)
 - [Account Selector](https://github.com/fyziktom/VirtualEconomyFramework/blob/Development/VirtualEconomyFramework/VEBlazor/Components/Account/AccountSelector.razor)
-
-Neblio Address Input loads bookmarks and allow to use already saved address. It load part of the Unstoppable Domains. We will need to do some updates in API, but part of the addresses works fine. You will type UD name and it will change it to the Neblio Address.
 
 ## Transaction 
 

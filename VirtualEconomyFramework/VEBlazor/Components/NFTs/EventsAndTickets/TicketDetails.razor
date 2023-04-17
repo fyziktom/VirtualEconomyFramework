@@ -21,30 +21,44 @@
             <FieldLabel>Location</FieldLabel>
             <Text>@nft.Location</Text>
         </Field>
-        <Field>
-            <FieldLabel>Location Coordinates</FieldLabel>
-            <Text>@nft.LocationCoordinates</Text>
-        </Field>
+
+        @if (!string.IsNullOrEmpty(nft.LocationCoordinates))
+        {
+            var link = "http://www.google.com/maps/place/" + nft.LocationCoordinates;
+            <Field>
+                <FieldLabel>Location Coordinates</FieldLabel>
+                <Text>@nft.LocationCoordinates</Text>
+                <FieldHelp>
+                    <a href="@("http://www.google.com/maps/place/" + nft.LocationCoordinates)" target="_blank">Open the location link</a>
+                </FieldHelp>
+            </Field>
+        }
         <Field>
             <FieldLabel>Date Time</FieldLabel>
             <Text>@nft.EventDate</Text>
         </Field>
-        <Field>
-            <FieldLabel>Link</FieldLabel> 
-            <a href="@nft.AuthorLink" target="_blank">@nft.AuthorLink</a>
-        </Field>
+        @if (!string.IsNullOrEmpty(nft.AuthorLink))
+        {
+            <Field>
+                <FieldLabel>Link</FieldLabel> 
+                <a href="@nft.AuthorLink" target="_blank">@nft.AuthorLink</a>
+            </Field>
+        }
         <Field>
             <FieldLabel>Class</FieldLabel>
-            <Text>@nft.TicketClass</Text>
+            <Text>@(Enum.GetName(typeof(ClassOfNFTTicket), nft.TicketClass))</Text>
         </Field>
         <Field>
             <FieldLabel>Duration</FieldLabel>
-            <Text>@nft.TicketDuration</Text>
+            <Text>@(Enum.GetName(typeof(DurationOfNFTTicket), nft.TicketDuration))</Text>
         </Field>
-        <Field>
-            <FieldLabel>Mint Author Address</FieldLabel>
-            <Text>@nft.MintAuthorAddress</Text>
-        </Field>
+        @if (!string.IsNullOrEmpty(nft.AuthorLink))
+        {
+            <Field>
+                <FieldLabel>Mint Author Address</FieldLabel>
+                <Text>@nft.MintAuthorAddress</Text>
+            </Field>
+        }
         <Field>
             <FieldLabel>Is Used Status?</FieldLabel>
             <Text>@(nft.Used ? "Ticket Is used" : "Ticket is not used.")</Text>

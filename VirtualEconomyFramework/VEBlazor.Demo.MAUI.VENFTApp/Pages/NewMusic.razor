@@ -1,0 +1,40 @@
+﻿@using VEDriversLite.NFT
+@using VEFramework.VEBlazor.Components.NFTs.EventsAndTickets
+@using VEFramework.VEBlazor.Components.Minting
+@inject AppData AppData
+
+@page "/addnewmusic"
+
+<PageTitle>@AppData.AppName - @headerLabel</PageTitle>
+
+<VEFramework.VEBlazor.Components.PageHeader Title="@headerLabel" BreadcrumbItems="@(new string[] { AppData.AppNick, headerLabel })" />
+
+<VEFramework.VEBlazor.Pages.AddNew NFT="@AppData.GetMintingNFTTab(formName).NFT" 
+                                   NFTChanged="@onNFTChangedHandler"
+                                   @bind-Addresses="@AppData.GetMintingNFTTab(formName).Addresses"
+                                   NFTType="@NFTTypes.Music" 
+                                   MintingPageName="@formName"         
+                                   @bind-ConsoleOutFromMinting="@AppData.GetMintingNFTTab(formName).ConsoleOutFromMinting" 
+                                   Address="@AppData.Account.Address" />
+                       
+@code {
+    string formName = "musicminting";
+    string headerLabel = "Add New";
+
+    protected override void OnInitialized()
+    {
+        headerLabel = AppData.GetMintingNFTTab(formName).HeaderLabel;
+        base.OnInitialized();
+    }
+
+    private async Task onNFTChangedHandler(INFT nft)
+    {
+        if (nft != null)
+        {
+            var tab = AppData.GetMintingNFTTab(formName);
+            if (tab != null)
+                tab.NFT = nft;
+        }
+        await InvokeAsync(StateHasChanged);
+    }
+}

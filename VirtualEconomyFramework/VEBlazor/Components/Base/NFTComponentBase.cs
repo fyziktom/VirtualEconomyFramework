@@ -383,6 +383,15 @@ namespace VEFramework.VEBlazor.Components.Base
                 await InvokeAsync(StateHasChanged);
             }
         }
+        
+        internal virtual async Task onTextAppliedHandler(string text)
+        {
+            if (!string.IsNullOrEmpty(text) && string.IsNullOrEmpty(NFT.Text))
+            {
+                NFT.Text = text;
+                await InvokeAsync(StateHasChanged);
+            }
+        }
 
     }
 

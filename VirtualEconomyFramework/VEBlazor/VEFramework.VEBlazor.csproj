@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+	<TargetFrameworks>net6.0;net7.0;net8.0</TargetFrameworks>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
 	  <PackageId>VEFramework.VEBlazor</PackageId>
-	  <Version>0.3.4</Version>
+	  <Version>0.3.41</Version>
 	  <Authors>fyziktom</Authors>
 	  <Company>VEFramework</Company>
 	  <Description>.NET6 Blazor component and dApp template library. It contains lots of components related to blockchain, IPFS, NFTs and other web3 and Industry4.0 technologies.</Description>
@@ -35,6 +35,14 @@
     <SupportedPlatform Include="browser" />
   </ItemGroup>
 
+  <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
+	<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.15" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net7.0'">
+	<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.5" />
+  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="Blazored.LocalStorage" Version="4.2.0" />
     <PackageReference Include="Blazorise" Version="1.2.2" />
@@ -49,7 +57,6 @@
     <PackageReference Include="BlazorPanzoom" Version="0.2.1" />
     <PackageReference Include="IndexedDB.Blazor" Version="1.1.1" />
     <PackageReference Include="Markdig" Version="0.30.4" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.15" />
     <PackageReference Include="Texnomic.Blazor.JsonViewer" Version="0.1.0" />
   </ItemGroup>
 

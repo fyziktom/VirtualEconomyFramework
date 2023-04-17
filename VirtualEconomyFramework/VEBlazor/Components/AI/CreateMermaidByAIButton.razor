@@ -92,6 +92,7 @@
     [Parameter] public EventCallback<VEDriversLite.NFT.Dto.NFTDataItem> OnMermaidCreated { get; set; }
 
     [Parameter] public EventCallback<VEDriversLite.NFT.Dto.NFTDataItem> OnAudioSaved { get; set; }
+    [Parameter] public EventCallback<string> OnTextApplied { get; set; }
 
     Modal? CreateTextModal;
     MermaidEditor? mermaidEditorRef;
@@ -247,6 +248,7 @@
 
                 if (!string.IsNullOrEmpty(item.Hash))
                 {
+                    await OnTextApplied.InvokeAsync(baseText);
                     await OnMermaidCreated.InvokeAsync(item);
 
                     if (NotificationService != null)

@@ -4,6 +4,7 @@ using Blazorise;
 using Blazorise.Bootstrap;
 using Blazorise.Icons.FontAwesome;
 using BlazorPanzoom;
+using IndexedDB.Blazor;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using VEBlazor.Demo.AI.LanguageImproverForAI;
@@ -46,6 +47,7 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(baseadd)
 builder.Services.AddScoped<AppData>();
 builder.Services.AddScoped<AppDataService>();
 builder.Services.AddSingleton<TransactionsService>();
+builder.Services.AddSingleton<IIndexedDbFactory, IndexedDbFactory>();
 builder.Services.AddHostedService<VEDriversLiteCore>();
 
 builder.Services.AddBlazoredLocalStorage();

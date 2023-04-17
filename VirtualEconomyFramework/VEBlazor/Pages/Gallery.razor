@@ -59,6 +59,23 @@
             }
             <TabPanel Name="newWorkTab">
                 <Container Fluid>          
+                    
+                    @if (AppData.Account.SubAccounts.Count > 0)
+                    {
+                        <Row Margin="Margin.Is5.FromTop">
+                            <Column Flex="Flex.JustifyContent.Center">
+                                <Heading Size="HeadingSize.Is4">SubAccounts</Heading>
+                            </Column>
+                        </Row>
+                        <Row Margin="Margin.Is2.FromTop">
+                            <Column Flex="Flex.JustifyContent.Center">
+                                @foreach (var sa in AppData.Account.SubAccounts.Values)
+                                {
+                                    <Button Margin="Margin.Is2.FromEnd" Color="Color.Secondary" Clicked="@(async () => await OpenSearchTab(sa.Address))">@sa.Name - @(VEDriversLite.NeblioAPI.NeblioAPIHelpers.ShortenAddress(sa.Address))</Button>
+                                }
+                            </Column>
+                        </Row>
+                    }
                     <Row Margin="Margin.Is5.FromTop">
                         <Column Flex="Flex.JustifyContent.Center">
                             <Span>You can Open Tab with some another Address.</Span>

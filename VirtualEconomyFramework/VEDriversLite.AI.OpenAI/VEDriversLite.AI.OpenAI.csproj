@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+	  <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 	  <PackageId>VEDriversLite.AI.OpenAI</PackageId>
-	  <Version>0.3.4</Version>
+	  <Version>0.3.42</Version>
 	  <Authors>fyziktom</Authors>
 	  <Company>VEFramework</Company>
 	  <Description>Simple VirtualAssistant for OpenAI API wrapper package. It can simplify some few commands from business logic layer.</Description>
@@ -15,9 +15,9 @@
 	  <PackageTags>VEFramework, Blazor, AI, OpenAI, ChatGPT, DALL-E, Whisper, Mermaid, Assistant, MAUI, NFT, NFTs, NFTTech, NFTXray</PackageTags>
 	  <Copyright>fyziktom</Copyright>
 	  <PackageReleaseNotes>
-		  - Bug fixes
+		  - Added .NET 7.0
 	  </PackageReleaseNotes>
-	  <PackageReadmeFile>Readme.md</PackageReadmeFile>
+	  <PackageReadmeFile>README.md</PackageReadmeFile>
 	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
@@ -30,9 +30,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Readme.md">
-      <PackagePath>\</PackagePath>
+    <None Include="README.md">
       <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
     </None>
   </ItemGroup>
 
