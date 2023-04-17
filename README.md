@@ -4,23 +4,23 @@
 
 # VEFramework
 
-Virtual Economy framework pomáhá s tvorbou Web3, blockchain, IoT a NFT aplikací včetně automatizace.
+Virtual Economy framework zjednodušuje tvorbu Web3, blockchain, IoT a NFT aplikací.
 
-VEFramework je L2 vrstva nad jakámkoli blockchainem. Aktuálně podporuje Neblio a Dogecoin.
+VEFramework je L2 vrstva nad prakticky kterýmkoliv blockchainem. Aktuálně na ukázku podporuje Neblio a Dogecoin.
 
 ![Development with VEFramework](./assets/veframework.jpeg)
 
 ## Použití
 
-- [`VEDriversLite`](https://docs.veframework.com/VEDriversLite/api/index.html) - Aktuální a doporučená verze (Neblio a NFT drivers)
+- [`VEDriversLite`](https://fyziktom.github.io/VirtualEconomyFramework/api/VEDriversLite.html) - Aktuální a doporučená verze (Neblio a NFT drivers)
 
 ```shell
-dotnet add package VEFramework.VEDriversLite --version 0.3.41
+dotnet add package VEFramework.VEDriversLite --version 0.3.42
 ```
-- [`VEBlazor`](https://github.com/fyziktom/VirtualEconomyFramework/tree/main/VirtualEconomyFramework/VEBlazor) - Blazor knihovna komponent a dApp template
+- [`VEBlazor`](https://github.com/fyziktom/VirtualEconomyFramework/tree/main/VirtualEconomyFramework/VEBlazor) - Blazor knihovna komponent a dApp vzor
 
 ```shell
-dotnet add package VEFramework.VEBlazor --version 0.3.41
+dotnet add package VEFramework.VEBlazor --version 0.3.42
 ```
 
 - Dodatečná knihovna [`VEBlazor.Editable`](./VirtualEconomyFramework/VEFramework.VEBlazor.Editable) pro zobrazení a editaci parametrů tříd v UI
@@ -53,7 +53,7 @@ Více informací najdete na
 
 Webová peněženka s integrovaným NFT marketplacem a mint mechanismem
 
-Vyzkoušejte testovací verzi VENFT postavenou na VEBlazor, vytvořte si nový účet a [prozkoumejte funkcionalitu](https://apptest.ve-nft.com/).
+Vyzkoušejte testovací verzi VENFT postavenou na VEBlazor, vytvořte si nový účet a [prozkoumejte funkce](https://apptest.ve-nft.com/).
 
 ## Hello World
 
@@ -137,7 +137,15 @@ dotnet run
 - UI s integrovaným web3 prostředím
 - Drivery a pomocné funkce pro mintování, prodej a obchodování s NFT
 - NFT jako obrázky, příspěvky, hudba, profily, platby, atd.
-- [IPFS](https://ipfs.io/) API, které používá [Infura.io](https://infura.io/) node
+- ChatGPT, Whisper a DALL-E jako asistenti pro tvorbu obsahu NFT jako je: 
+  - převod textu z audia, 
+  - text ze základní story, 
+  - název, 
+  - tagy, 
+  - zkrácený popis, 
+  - obrázky
+  - Více informací najdete ve článcích na wiki
+- [IPFS](https://ipfs.io/) driver,
 - Ověření vlastnictví NFT (tvorba QR kódů)
 - NFT systém pro události a vstupenky
 - P2P NFT systém s šifrovanými metadaty a filecontainers uložených na IPFS
@@ -146,7 +154,6 @@ dotnet run
 - RPC klient pro připojení k blockchainu
 - [Neblio Blockchain](https://nebl.io/) API wrapper a pomocné třídy
 - Drivery pro speciální transakce - split transakce, vícenásobný vstup/výstup tokenu, mintování více NFT, atd.
-- Dogecoin API wrapper a pomocné třídy
 
 Další funkce můžete prozkoumat v readme příslušných [projektů v příkladech](#projekty-v-příkladech)
 
