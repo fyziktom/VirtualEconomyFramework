@@ -9,8 +9,8 @@
 
   <ItemGroup>
     <PackageReference Include="Blazor.Extensions.Canvas" Version="1.1.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.9" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="6.0.9" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.15" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="6.0.15" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>
