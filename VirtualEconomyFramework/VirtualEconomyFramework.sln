@@ -93,7 +93,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VEBlazor.Demo.AI.LearnLangu
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VEBlazor.Demo.AI.LanguageImproverForAI", "VEBlazor.Demo.AI.LanguageImproverForAI\VEBlazor.Demo.AI.LanguageImproverForAI.csproj", "{B6AD6CD2-56EA-4AD8-9E25-17AFF491C327}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VEBlazor.Demo.MAUI.VENFTApp", "VEBlazor.Demo.MAUI.VENFTApp\VEBlazor.Demo.MAUI.VENFTApp.csproj", "{AF826263-E503-49C8-BA56-A19F7023E7E8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VEBlazor.Demo.MAUI.VENFTApp", "VEBlazor.Demo.MAUI.VENFTApp\VEBlazor.Demo.MAUI.VENFTApp.csproj", "{AF826263-E503-49C8-BA56-A19F7023E7E8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
