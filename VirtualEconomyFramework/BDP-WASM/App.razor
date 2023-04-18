@@ -1,4 +1,6 @@
-﻿@inject AppData AppData
+﻿@using VEDriversLite.NFT;
+@using VEDriversLite.NFT.Dto;
+@inject AppData AppData
 
 <ThemeProvider Theme="@theme">
     <Router AppAssembly="@typeof(App).Assembly">
@@ -57,8 +59,26 @@
         { 
             VEDriversLite.NFT.NFTTypes.Profile, 
             VEDriversLite.NFT.NFTTypes.Xray, 
-            VEDriversLite.NFT.NFTTypes.XrayImage 
+            VEDriversLite.NFT.NFTTypes.XrayImage,
+            VEDriversLite.NFT.NFTTypes.Image,
+            VEDriversLite.NFT.NFTTypes.Post 
         };
+        AppData.MintingTabsData.TryAdd("postminting", new MintingTabData()
+            {
+                MintingNFTType = NFTTypes.Post,
+                HeaderLabel = "Add New Post",
+                MenuButonLabel = "New Post",
+                TabPageLocationName = "addnewpost",
+                NFT = new PostNFT(""),
+            });
+        AppData.MintingTabsData.TryAdd("imageminting", new MintingTabData()
+            {
+                MintingNFTType = NFTTypes.Music,
+                HeaderLabel = "Add New Image",
+                MenuButonLabel = "New Image",
+                TabPageLocationName = "addnewimage",
+                NFT = new ImageNFT(""),
+            });
 
         AppData.DefaultTags.Add("ASAP", new VEDriversLite.NFT.Tags.Tag()
         {
