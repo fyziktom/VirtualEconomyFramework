@@ -1,4 +1,4 @@
-# VEDriversLite.AI.OpenAI
+﻿# VEDriversLite.AI.OpenAI
 
 This is library for .NET framework.
 
