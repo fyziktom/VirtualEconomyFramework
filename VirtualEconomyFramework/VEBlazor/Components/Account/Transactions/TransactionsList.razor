@@ -1,4 +1,4 @@
-﻿@inject AppData AppData
+@inject AppData AppData
 @inject TransactionsService TransactionsService
 @inherits NFTComponentBase
 
@@ -60,17 +60,20 @@ else
                                 <span aria-hidden="true">«</span>
                             </PaginationLink>
                         </PaginationItem>
-                        @{
-                            for ( var i = Offset + 1; i <= pageItems + Offset + 1; i++ )
-                            {
-                                var pageNumberAsString = i.ToString();
-                                <PaginationItem @key="pageNumberAsString" Active="@IsActive(pageNumberAsString)">
-                                    <PaginationLink Page="@pageNumberAsString" Clicked="SetActive">
-                                        @pageNumberAsString
-                                    </PaginationLink>
-                                </PaginationItem>
+                            @{
+                                for (var i = Offset + 1; i <= pageItems + Offset + 1; i++)
+                                {
+                                    if (i <= MaxPages)
+                                    {
+                                        var pageNumberAsString = i.ToString();
+                                        <PaginationItem @key="pageNumberAsString" Active="@IsActive(pageNumberAsString)">
+                                            <PaginationLink Page="@pageNumberAsString" Clicked="SetActive">
+                                                @pageNumberAsString
+                                            </PaginationLink>
+                                        </PaginationItem>
+                                    }
+                                }
                             }
-                        }
                         <PaginationItem Disabled="@IsPageNavigationDisabled(NEXT)" @onclick="Next">
                             <PaginationLink>
                                 <span aria-hidden="true">»</span>
@@ -93,6 +96,8 @@ else
     private TransactionDetails? TxDetailsComponent;
 
     private int PerPage { get; set; } = 10;
+    private int LastPage { get; set; } = 10;
+    private int MaxPages { get; set; } = 10;
     private int Offset { get; set; } = 0;
 
     private string txDetailsTxId = string.Empty;
@@ -104,6 +109,7 @@ else
     private const string NEXT = "next";
     private string currentPage = "1";
     private int pageItems = 5;
+    private int lastPage = 5;
 
     private bool IsActive( string page )
         => currentPage == page;
@@ -127,7 +133,10 @@ else
 
         Transactions = await LoadTransactions( IsSubAccount );
         var pit = (double)Transactions.Count / PerPage + ( Transactions.Count % PerPage > 0 ? 1 : 0 );
+        MaxPages = (int)pit;
+
         if (pit > 5) pit = 5;
+
         pageItems = Convert.ToInt32( pit > 1 ? pit : 1 );
         TransactionsDetails = await LoadTxDetails();
         lastAddress = Address;
@@ -180,7 +189,7 @@ else
         }
         return false;
     }
-
+    
     private async Task Previous()
     {
         var currentPageAsInt = int.Parse( currentPage );
@@ -194,12 +203,14 @@ else
     private async Task Next()
     {
         var currentPageAsInt = int.Parse( currentPage );
-        if ( currentPageAsInt < pageItems )
+        if ( currentPageAsInt < MaxPages )
         {
             currentPage = ( currentPageAsInt + 1 ).ToString();
+            
             await HandlePaginationChanged( Offset + 1 );
         }
     }
+
 
     private async void SetActive( string page )
     {
