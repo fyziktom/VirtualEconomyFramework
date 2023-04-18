@@ -7,15 +7,15 @@
 @if (Item != null)
 {
     <Modal @ref="dataItemModal">
-        <ModalContent Centered>
+        <ModalContent Centered Size="ModalSize.Large">
         <ModalHeader>
             <ModalTitle>Data Item</ModalTitle>
                 <CloseButton />
             </ModalHeader>
             <ModalBody>
                 <Row Margin="Margin.Is2.FromTop">
-                    <Column Flex="Flex.JustifyContent.Center">
-                        <Field Horizontal>
+                    <Column>
+                        <Field>
                         <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">Item Type:</FieldLabel>
                         <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
                             <Select Display="Display.None.OnDesktop.InlineBlock.OnTablet" SelectedValue="@Item.Type" SelectedValueChanged="@onTypeChanged" TValue="DataItemType">
@@ -35,8 +35,8 @@
                     </Column>
                 </Row>
                 <Row Margin="Margin.Is2.FromTop">
-                    <Column Flex="Flex.JustifyContent.Center">
-                        <Field Horizontal>
+                    <Column>
+                        <Field>
                         <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">Storage Type:</FieldLabel>
                         <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
                             <Select Display="Display.None.OnDesktop.InlineBlock.OnTablet" SelectedValue="@Item.Storage" SelectedValueChanged="@onStorageTypeChanged" TValue="DataItemStorageType">
@@ -72,6 +72,11 @@
                             {
                                 <FieldLabel>Please enter the Item path</FieldLabel>
                                 <TextEdit Placeholder="Item path" Text="@Item.Hash" TextChanged="@onHashChanged" />
+                            }
+                            else if (Item.Storage == DataItemStorageType.NeblioNTP1)
+                            {
+                                <FieldLabel>Please enter the Item Neblio NTP1 transaction hash</FieldLabel>
+                                <TextEdit Placeholder="Item txId" Text="@Item.Hash" TextChanged="@onHashChanged" />
                             }
                         </Field>
                     </Column>

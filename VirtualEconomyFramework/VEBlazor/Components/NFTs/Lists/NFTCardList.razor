@@ -189,13 +189,15 @@
 
             if ( !string.IsNullOrEmpty( nft.Tags ) )
             {
-                if ( nft.Tags.ToLower().Contains( ls ) )
+                var typeName = Enum.GetName( typeof( NFTTypes ), nft.Type );
+                if ( (nft.Tags + " " + typeName).ToLower().Contains( ls ) )
                     return true;
-                    
+
                 var split = ls.Split( ' ' );
                 if ( split.Length >= 1 )
                 {
                     var score = 0;
+                    nft.TagsList.Add(typeName);
                     nft.TagsList.ForEach( t =>
                     {
                         Array.ForEach( split, s =>
@@ -206,6 +208,8 @@
                                 score++;
                         } );
                     } );
+                    nft.TagsList.Remove(typeName);
+
                     if ( score > 0 )
                         return true;
                 }
