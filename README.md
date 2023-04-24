@@ -1,5 +1,6 @@
 [![VEDriversLite](https://img.shields.io/nuget/v/VEFramework.VEDriversLite?label=VEDriversLite)](https://www.nuget.org/packages/VEFramework.VEDriversLite/)
 [![VEBlazor](https://img.shields.io/nuget/v/VEFramework.VEBlazor?label=VEBlazor)](https://www.nuget.org/packages/VEFramework.VEBlazor/)
+[![VEDriversLite.AI.OpenAI](https://img.shields.io/nuget/v/VEDriversLite.AI.OpenAI?label=VEDriversLite.AI.OpenAI)](https://www.nuget.org/packages/VEDriversLite.AI.OpenAI)
 [![VEBlazor.Editable](https://img.shields.io/nuget/v/VEFramework.VEBlazor.Editable?label=VEBlazor.Editable)](https://www.nuget.org/packages/VEFramework.VEBlazor.Editable/)
 
 # VEFramework
@@ -11,6 +12,8 @@ VEFramework je L2 vrstva nad prakticky kterýmkoliv blockchainem. Aktuálně na 
 ![Development with VEFramework](./assets/veframework.jpeg)
 
 ## Použití
+
+**Všechny balíčky jsou dostupné pro .NET verze 7 a nižší** a jsou k dispozici v [NuGet Gallery](https://www.nuget.org/profiles/fyziktom).
 
 - [`VEDriversLite`](https://fyziktom.github.io/VirtualEconomyFramework/api/VEDriversLite.html) - Aktuální a doporučená verze (Neblio a NFT drivers)
 
@@ -137,14 +140,14 @@ dotnet run
 - UI s integrovaným web3 prostředím
 - Drivery a pomocné funkce pro mintování, prodej a obchodování s NFT
 - NFT jako obrázky, příspěvky, hudba, profily, platby, atd.
-- ChatGPT, Whisper a DALL-E jako asistenti pro tvorbu obsahu NFT jako je: 
+- OpenAI - ChatGPT, Whisper a DALL-E jako asistenti pro tvorbu obsahu NFT jako je: 
   - převod textu z audia, 
   - text ze základní story, 
   - název, 
   - tagy, 
   - zkrácený popis, 
   - obrázky
-  - Více informací najdete ve článcích na wiki
+  - Více informací najdete ve [článcích na wiki](https://github.com/fyziktom/VirtualEconomyFramework/wiki/#OpenAI)
 - [IPFS](https://ipfs.io/) driver,
 - Ověření vlastnictví NFT (tvorba QR kódů)
 - NFT systém pro události a vstupenky
