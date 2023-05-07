@@ -177,6 +177,43 @@ namespace TestVEDriversLite
         }
 
         [TestEntry]
+        public static void Indexer_GetAddressInfo(string param)
+        {
+            Indexer_GetAddressInfoAsync(param);
+        }
+        public static async Task Indexer_GetAddressInfoAsync(string param)
+        {
+            // param must be valid Neblio address
+            var info = Node.GetAddressInfo(param);
+            await Console.Out.WriteLineAsync($"Address {param} info:");
+            await Console.Out.WriteLineAsync("");
+            await Console.Out.WriteLineAsync("");
+            await Console.Out.WriteLineAsync(JsonConvert.SerializeObject(info, Formatting.Indented));
+            await Console.Out.WriteLineAsync("");
+            await Console.Out.WriteLineAsync("");
+        }
+
+        [TestEntry]
+        public static void Indexer_GetAddressTokenSupplies(string param)
+        {
+            Indexer_GetAddressTokenSuppliesAsync(param);
+        }
+        public static async Task Indexer_GetAddressTokenSuppliesAsync(string param)
+        {
+            // param must be valid Neblio address
+            var tokens = Node.GetAddressTokenSupplies(param);
+            await Console.Out.WriteLineAsync($"Address {param} Token supplies:");
+            await Console.Out.WriteLineAsync("");
+            await Console.Out.WriteLineAsync("");
+            await Console.Out.WriteLineAsync(JsonConvert.SerializeObject(tokens, Formatting.Indented));
+            await Console.Out.WriteLineAsync("");
+            await Console.Out.WriteLineAsync("");
+        }
+
+        #region RPCTests
+
+
+        [TestEntry]
         public static void Indexer_BroadcastTx(string param)
         {
             Indexer_BroadcastTxAsync(param);
@@ -231,5 +268,8 @@ namespace TestVEDriversLite
             var block = Node.GetLatestBlockNumber();
             await Console.Out.WriteLineAsync($"Latest block has number: {block}");
         }
+
+        #endregion
+
     }
 }

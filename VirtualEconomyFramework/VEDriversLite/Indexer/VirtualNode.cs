@@ -77,6 +77,89 @@ namespace VEDriversLite.Indexer
         }
 
         /// <summary>
+        /// Update address info. 
+        /// </summary>
+        /// <param name="address"></param>
+        public void UpdateAddressInfo(string address)
+        {
+            if (!Addresses.ContainsKey(address))
+                Addresses.TryAdd(address, new IndexedAddress());
+
+            if (Addresses.TryGetValue(address, out var add))
+            {
+                if ((DateTime.UtcNow - add.LastUpdated) >= new TimeSpan(0, 0, 30))
+                {
+                    var utxos = Utxos.Values.Where(u => u.OwnerAddress == address);
+
+                    if (utxos != null)
+                    {
+                        foreach (var utxo in utxos)
+                        {
+                            if (!add.Transactions.Contains(utxo.TransactionHashAndN))
+                                add.Transactions.Add(utxo.TransactionHashAndN);
+                            if (!utxo.Used)
+                                add.AddUtxo(utxo);
+
+                            if (utxo.TokenUtxo)
+                            {
+                                if (TokenInfoCache.TryGetValue(utxo.TokenId, out var token))
+                                {
+                                    if (add.TokenSupplies.TryGetValue(utxo.TokenId, out var addtoken))
+                                    {
+                                        if (!utxo.Used)
+                                            addtoken.Amount += utxo.TokenAmount;
+                                        else
+                                            addtoken.Amount -= utxo.TokenAmount;
+                                    }
+                                    else
+                                    {
+                                        add.TokenSupplies.TryAdd(utxo.TokenId, new TokenSupplyDto()
+                                        {
+                                            Amount = utxo.TokenAmount,
+                                            ImageUrl = token.ImageUrl,
+                                            TokenId = token.TokenId,
+                                            TokenSymbol = token.TokenSymbol,
+                                        });
+                                    }
+                                }
+                            }
+
+                            add.LastUpdated = DateTime.UtcNow;
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Get cached object of address info
+        /// </summary>
+        /// <param name="address"></param>
+        /// <returns></returns>
+        public IndexedAddress GetAddressInfo(string address)
+        {
+            UpdateAddressInfo(address);
+            if (Addresses.TryGetValue(address, out var add))
+                return add;
+            
+            return new IndexedAddress();
+        }
+
+        /// <summary>
+        /// Get token supplies of some specific address
+        /// </summary>
+        /// <param name="address"></param>
+        /// <returns></returns>
+        public IDictionary<string, TokenSupplyDto> GetAddressTokenSupplies(string address)
+        {
+            UpdateAddressInfo(address);
+            if (Addresses.TryGetValue(address, out var add))
+                return add.TokenSupplies;
+            
+            return new Dictionary<string, TokenSupplyDto>();
+        }
+
+        /// <summary>
         /// Get just not used outputs for this address.
         /// This function returs just the "TXID:N" of Utxos as result
         /// These outputs can be used in the new transactions.
@@ -85,18 +168,11 @@ namespace VEDriversLite.Indexer
         /// <returns></returns>
         public List<string> GetAddressUtxos(string address)
         {
-            var res = new List<string>();
-            var us = Utxos.Values.Where(u => !u.Used)
-                                 .Where(u => u.OwnerAddress == address);
-            if (us != null)
-            {
-                foreach (var tx in us)
-                {
-                    if (!res.Contains(tx.TransactionHashAndN))
-                        res.Add(tx.TransactionHashAndN);
-                }
-            }
-            return res;
+            UpdateAddressInfo(address);
+            if (Addresses.TryGetValue(address, out var add))
+                return add.Utxos.Where(u => u.Value > 0).Select(u => u.TransactionHashAndN).ToList();
+            
+            return new List<string>();
         }
 
         /// <summary>
@@ -108,11 +184,11 @@ namespace VEDriversLite.Indexer
         /// <returns></returns>
         public IEnumerable<IndexedUtxo> GetAddressUtxosObjects(string address)
         {
-            var us = Utxos.Values.Where(u => !u.Used)
-                                 .Where(u => u.OwnerAddress == address);
-            if (us != null)
-                foreach (var tx in us)
-                    yield return tx;
+            UpdateAddressInfo(address);
+            if (Addresses.TryGetValue(address, out var add))
+                return add.Utxos.ToList();
+            
+            return new List<IndexedUtxo>();
         }
 
         /// <summary>
@@ -124,16 +200,11 @@ namespace VEDriversLite.Indexer
         /// <returns></returns>
         public IEnumerable<IndexedUtxo> GetAddressTokenUtxosObjects(string address)
         {
-            var us = Utxos.Values.Where(u => !u.Used)
-                                 .Where(u => u.OwnerAddress == address);
-            if (us != null)
-            {
-                foreach (var tx in us)
-                {
-                    if (tx.TokenUtxo)
-                        yield return tx;
-                }
-            }
+            UpdateAddressInfo(address);
+            if (Addresses.TryGetValue(address, out var add))
+                return add.Utxos.Where(u => u.TokenUtxo).ToList();
+            
+            return new List<IndexedUtxo>();
         }
 
         /// <summary>
@@ -143,23 +214,11 @@ namespace VEDriversLite.Indexer
         /// <returns></returns>
         public List<string> GetAddressTransactions(string address)
         {
-            var res = new List<string>();
-            var us = Utxos.Values.Where(u => u.OwnerAddress == address);
-            if (us != null)
-            {
-                foreach (var tx in us)
-                {
-                    var split = tx.TransactionHashAndN.Split(':');
-                    if (split.Length > 1)
-                    {
-                        var txid = split[0];
-
-                        if (!res.Contains(txid))
-                            res.Add(txid);
-                    }
-                }
-            }
-            return res;
+            UpdateAddressInfo(address);
+            if (Addresses.TryGetValue(address, out var add))
+                return add.Transactions;
+            
+            return new List<string>();
         }
 
         //////////////////////////////////
@@ -333,6 +392,12 @@ namespace VEDriversLite.Indexer
 
         #endregion
 
+        //////////////////////////////////
+        // END: RPC Commands for get info from the node
+        //////////////////////////////////
+
+
+
         private class tokenUrlCarrier
         {
             public string name { get; set; } = string.Empty;
@@ -446,7 +511,7 @@ namespace VEDriversLite.Indexer
         /// <param name="output"></param>
         /// <param name="txid"></param>
         /// <returns></returns>
-        public async Task ProcessOutput(Vout output, string txid)
+        public async Task ProcessOutput(Vout output, string txid, DateTime blocktime)
         {
             try
             {
@@ -466,7 +531,9 @@ namespace VEDriversLite.Indexer
                         Indexed = true,
                         TransactionHashAndN = u,
                         Value = (double)output.Value,
-                        OwnerAddress = a
+                        OwnerAddress = a,
+                        Blockheight = output.Blockheight ?? 0.0,
+                        Blocktime = blocktime
                     };
 
                     var tokeninfo = new GetTokenMetadataResponse();
@@ -533,12 +600,14 @@ namespace VEDriversLite.Indexer
                         return null;
 
                 var utxos = new List<string>();
+                var blocktime = TimeHelpers.UnixTimestampToDateTime((t?.Time ?? 0.0) * 1000);
 
                 var it = new IndexedTransaction()
                 {
                     Hash = t.Txid,
                     BlockHash = t.Blockhash,
-                    BlockNumber = blocknumber
+                    BlockNumber = blocknumber,
+                    Blocktime = blocktime
                 };
 
                 var cancelToken = new CancellationToken();
@@ -551,7 +620,7 @@ namespace VEDriversLite.Indexer
 
                 await t.Vout.ParallelForEachAsync(async item =>
                 {
-                    await ProcessOutput(item, t.Txid);
+                    await ProcessOutput(item, t.Txid, blocktime);
                     var u = $"{t.Txid}:{item.N}";
                     utxos.Add(u);
 
