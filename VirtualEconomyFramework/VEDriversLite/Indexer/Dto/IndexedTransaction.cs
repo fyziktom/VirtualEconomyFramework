@@ -12,7 +12,9 @@ namespace VEDriversLite.Indexer.Dto
         public string Hash { get; set; } = string.Empty;
         public string BlockHash { get; set; } = string.Empty;
         public int BlockNumber { get; set; } = -1;
-        public DateTime Blocktime { get; set; } = DateTime.MinValue;
+        public double Blockheight { get; set; } = -1;
+        public double Blocktime { get; set; } = 0.0;
+        public DateTime Time { get; set; } = DateTime.MinValue;
         public List<string> InvolvedAddresses { get; set; } = new List<string>();
         public List<string> Utxos { get; set; } = new List<string>();
     }

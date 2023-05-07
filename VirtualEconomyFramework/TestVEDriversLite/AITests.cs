@@ -13,6 +13,7 @@ using VEDriversLite.NFT.Dto;
 using System.IO;
 using static System.Net.Mime.MediaTypeNames;
 using static System.Windows.Forms.LinkLabel;
+using VEDriversLite.Common;
 
 namespace TestVEDriversLite
 {

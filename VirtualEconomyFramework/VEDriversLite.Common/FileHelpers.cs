@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
@@ -45,6 +46,41 @@ namespace VEDriversLite.Common
                 }
 
                 return output.ToArray();
+            }
+        }
+
+        /// <summary>
+        /// Dedcompress bytes with Zlib deflation
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public static byte[] DecompressStringZlib(string dataString)
+        {
+            var data = Encoding.ASCII.GetBytes(dataString); 
+            var decompressed = DecompressZlib(data);
+            return decompressed;
+        }
+
+        public static byte[] Decompress(byte[] data)
+        {
+            var outputStream = new MemoryStream();
+            using (var compressedStream = new MemoryStream(data))
+            using (var inputStream = new InflaterInputStream(compressedStream))
+            {
+                inputStream.CopyTo(outputStream);
+                outputStream.Position = 0;
+                return outputStream.ToArray();
+            }
+        }
+
+        public static byte[] DecompressZlib(byte[] data)
+        {
+            using (var compressedStream = new MemoryStream(data))
+            using (var deflateStream = new DeflateStream(compressedStream, CompressionMode.Decompress))
+            using (var resultStream = new MemoryStream())
+            {
+                deflateStream.CopyTo(resultStream);
+                return resultStream.ToArray();
             }
         }
 

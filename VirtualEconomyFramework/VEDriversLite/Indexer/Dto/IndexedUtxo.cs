@@ -8,16 +8,21 @@ namespace VEDriversLite.Indexer.Dto
 {
     public class IndexedUtxo : IndexedItem
     {
-        public string TransactionHashAndN { get; set; } = string.Empty;
+        public static string HashIndexSeparator { get => ":"; }
+        public string TransactionHashAndN { get => $"{TransactionHash}{HashIndexSeparator}{N}"; }
+        public string TransactionHash { get; set; } = string.Empty;
+        public int N { get; set; } = 0;
         public string? OwnerAddress { get; set; } = string.Empty;        
         public bool Used { get; set; } = false;
         public bool TokenUtxo { get; set; } = false;
         public double Value { get; set; } = 0.0;
-        public double Blockheight { get; set; } = 0.0;
-        public DateTime Blocktime { get; set; } = DateTime.MinValue;
+        public double Blockheight { get; set; } = -1;
+        public double Blocktime { get; set; } = 0.0;
+        public DateTime Time { get; set; } = DateTime.MinValue;
         public string UsedInTxHash { get; set; } = string.Empty;
         public string TokenId { get; set; } = string.Empty;
         public double TokenAmount { get; set; } = 0.0;
         public string TokenSymbol { get; set; } = string.Empty;
+        public string Metadata { get; set; } = string.Empty;
     }
 }

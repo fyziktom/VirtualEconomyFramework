@@ -401,7 +401,8 @@ namespace VEDriversLite.Indexer
                         Indexed = true,
                         Used = true,
                         UsedInTxHash = txid,
-                        TransactionHashAndN = iname
+                        TransactionHash = input.Txid,
+                        N = (int)input.Vout
                     };
 
                     var tokens = input.Tokens.FirstOrDefault();
@@ -483,13 +484,53 @@ namespace VEDriversLite.Indexer
         }
 
         /// <summary>
+        /// Parse and decompress the custom metadata from the OP_RETURN output
+        /// </summary>
+        /// <param name="metadata"></param>
+        /// <returns></returns>
+        public Dictionary<string,string> ParseCustomMetadata(string metadata)
+        {
+            try
+            {
+                var meta = metadata.Replace("OP_RETURN ", string.Empty).Trim();
+
+                var customData = meta.Substring(22, meta.Length - 22).Trim(); // 22 is length of the header and protocol data
+
+                var customDecompressed = StringExt.Decompress(StringExt.HexStringToBytes(customData));
+                var metadataString = Encoding.UTF8.GetString(customDecompressed);
+
+                var resp = new Dictionary<string, string>();
+
+                var userData = JsonConvert.DeserializeObject<MetadataOfUtxo>(metadataString);
+
+                foreach (var o in userData.UserData.Meta)
+                {
+                    var od = JsonConvert.DeserializeObject<IDictionary<string, string>>(o.ToString());
+                    if (od != null && od.Count > 0)
+                    {
+                        var of = od.First();
+                        if (!resp.ContainsKey(of.Key))
+                            resp.Add(of.Key, of.Value);
+                    }
+                }
+
+                return resp;
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("Cannot parse custom metadata from the transaction. " + ex.Message + "; original input metadata: " + metadata);
+            }
+            return new Dictionary<string, string>();
+        }
+
+        /// <summary>
         /// Parse the outputs of the transaction. 
         /// Contains processing of tokens also.
         /// </summary>
         /// <param name="output"></param>
         /// <param name="txid"></param>
         /// <returns></returns>
-        public async Task ProcessOutput(Vout output, string txid, DateTime blocktime)
+        public async Task ProcessOutput(Vout output, string txid, double blocktime, DateTime time, string metadata)
         {
             try
             {
@@ -504,20 +545,29 @@ namespace VEDriversLite.Indexer
                             a = ao;
                     }
                     catch { }
+
+                    
                     var ux = new IndexedUtxo()
                     {
                         Indexed = true,
-                        TransactionHashAndN = u,
+                        TransactionHash = txid,
+                        N = (int)output.N,
                         Value = (double)output.Value,
                         OwnerAddress = a,
                         Blockheight = output.Blockheight ?? 0.0,
-                        Blocktime = blocktime
+                        Blocktime = blocktime,
+                        Time = time
                     };
 
                     var tokeninfo = new GetTokenMetadataResponse();
                     var tokens = output.Tokens.FirstOrDefault();
                     if (tokens != null)
                     {
+                        var metadataDict = ParseCustomMetadata(metadata);
+                        var metadataString = JsonConvert.SerializeObject(metadataDict);
+
+                        ux.Metadata = metadataString;
+
                         tokeninfo = await ProcessTokensMetadata(tokens);
 
                         ux.TokenId = tokens.TokenId;
@@ -578,14 +628,16 @@ namespace VEDriversLite.Indexer
                         return null;
 
                 var utxos = new List<string>();
-                var blocktime = TimeHelpers.UnixTimestampToDateTime((t?.Time ?? 0.0) * 1000);
+                var time = TimeHelpers.UnixTimestampToDateTime((t?.Time ?? 0.0) * 1000);
 
                 var it = new IndexedTransaction()
                 {
                     Hash = t.Txid,
                     BlockHash = t.Blockhash,
+                    Blockheight = t.Blockheight ?? -1,
                     BlockNumber = blocknumber,
-                    Blocktime = blocktime
+                    Time = time,
+                    Blocktime = t?.Time ?? 0.0
                 };
 
                 var cancelToken = new CancellationToken();
@@ -596,9 +648,16 @@ namespace VEDriversLite.Indexer
 
                 }, cancellationToken: cancelToken, maxDegreeOfParallelism: Environment.ProcessorCount);
 
+                var metadata = string.Empty;
+                if (t.Vout.Where(o => o.ScriptPubKey.Type == "nulldata").Any())
+                {
+                    // Token transaction with metadata
+                    metadata = t.Vout.Where(o => o.ScriptPubKey.Type == "nulldata").FirstOrDefault()?.ScriptPubKey.Asm ?? string.Empty;
+                }
+                
                 await t.Vout.ParallelForEachAsync(async item =>
                 {
-                    await ProcessOutput(item, t.Txid, blocktime);
+                    await ProcessOutput(item, t.Txid, t?.Time ?? 0.0, time, metadata);
                     var u = $"{t.Txid}:{item.N}";
                     utxos.Add(u);
 
