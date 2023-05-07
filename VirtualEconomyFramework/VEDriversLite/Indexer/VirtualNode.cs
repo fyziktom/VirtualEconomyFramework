@@ -494,8 +494,14 @@ namespace VEDriversLite.Indexer
             {
                 var meta = metadata.Replace("OP_RETURN ", string.Empty).Trim();
 
-                var customData = meta.Substring(22, meta.Length - 22).Trim(); // 22 is length of the header and protocol data
-
+                var customData = string.Empty;
+                if (meta.Contains("789c")) // start of the custom data
+                {
+                    var customDataStart = meta.Split("789c");
+                    var length = customDataStart[0].Length;
+                    customData = meta.Substring(length, meta.Length - length).Trim();
+                }
+                
                 var customDecompressed = StringExt.Decompress(StringExt.HexStringToBytes(customData));
                 var metadataString = Encoding.UTF8.GetString(customDecompressed);
 
@@ -707,6 +713,7 @@ namespace VEDriversLite.Indexer
             await blocks.ParallelForEachAsync(async block =>
             {
                 var txs = await GetBlockTransactions(block.Transactions, (int)block.Number, false);
+
             }, maxDegreeOfParallelism: Environment.ProcessorCount);
         }
 
@@ -722,7 +729,6 @@ namespace VEDriversLite.Indexer
         {
             await GetIndexedBlocksByNumbersStartToEnd(offset, offset + numberOfBlocks, reverse);
         }
-
         /// <summary>
         /// Get Indexed blocks based on their number. 
         /// You can setup start and end of the blocks.

@@ -80,7 +80,7 @@ namespace TestVEDriversLite
             Console.WriteLine("Getting Tx info...");
             sp.Reset();
             sp.Start();
-
+            
             await Node.LoadAllBlocksTransactions();
 
             sp.Stop();
@@ -247,11 +247,20 @@ namespace TestVEDriversLite
         }
         public static async Task AAAA_DeflateStringAsync(string param)
         {
-            var metadata = "OP_RETURN 4e54031001000100000209789c55535b4fdb3014fe2bc8cf501d3bbee669d30a1ad2c6c3c85eb64ec89793124193ca7150a1ea7f9fe3b61b4491e2ef724e9c93cf7b328d1897365952efc906e7e7ef3db9bb69484d529c901c2ef7a479dd62c699bdb81d9aef388e767d54eeec665632bbc497cee37bedf3941e879855eba4d2a6a220ac74c204a12df754864a29e7b9b5c6525dd1d0ba60a9102d38e6b8d5e05180a73ce81a4abf258e3e76dbd40d7d6eba5f912eac48bd22927127814aed85e541c9c0b940e9dc8a5cae888f681386079b8a97016357c0f3dd305a535983fc557ceb384cdb877347eab5114e32132a6c012855796fe88b33940f3d5b45ab1463ca4005c2896cd5c231cd55b10e716dfbeecdce5bfed8dbb88fbd032f05cfd6e173b1f5eed34b5b1ba04c6b0066b4519c154f9f475e2c5fbe5edf37d73f2e9a68fdd3c51237c3717ff967663dcf27cd42d7af4fa82b755472a0c02553e57da94b539879010b25ab2a7ff3cc0ffdfa2c50b10021401a73c8ca88fd38c453c7478c9b218706cf046eb6186d9ae25cc8d88257738df51e9f31be779ea8329913b3ebc6875d5ec3022e4ff035c32bfa1fbfcd38ebf45086db619fce1df8020ef92a41b9ddcc11ac4901dfbafee9bcbe1fa6e8f167da0d995152551533dc182fadc62a274d58dd6a665b04e9280d425ac5516806c87238356d8d90a003e6b0057bcc7f3e12375d1c53b3fb7760fe1c0e7f01e18f037e";
+            //var metadata = "OP_RETURN 4e54031001000100000209789c55535b4fdb3014fe2bc8cf501d3bbee669d30a1ad2c6c3c85eb64ec89793124193ca7150a1ea7f9fe3b61b4491e2ef724e9c93cf7b328d1897365952efc906e7e7ef3db9bb69484d529c901c2ef7a479dd62c699bdb81d9aef388e767d54eeec665632bbc497cee37bedf3941e879855eba4d2a6a220ac74c204a12df754864a29e7b9b5c6525dd1d0ba60a9102d38e6b8d5e05180a73ce81a4abf258e3e76dbd40d7d6eba5f912eac48bd22927127814aed85e541c9c0b940e9dc8a5cae888f681386079b8a97016357c0f3dd305a535983fc557ceb384cdb877347eab5114e32132a6c012855796fe88b33940f3d5b45ab1463ca4005c2896cd5c231cd55b10e716dfbeecdce5bfed8dbb88fbd032f05cfd6e173b1f5eed34b5b1ba04c6b0066b4519c154f9f475e2c5fbe5edf37d73f2e9a68fdd3c51237c3717ff967663dcf27cd42d7af4fa82b755472a0c02553e57da94b539879010b25ab2a7ff3cc0ffdfa2c50b10021401a73c8ca88fd38c453c7478c9b218706cf046eb6186d9ae25cc8d88257738df51e9f31be779ea8329913b3ebc6875d5ec3022e4ff035c32bfa1fbfcd38ebf45086db619fce1df8020ef92a41b9ddcc11ac4901dfbafee9bcbe1fa6e8f167da0d995152551533dc182fadc62a274d58dd6a665b04e9280d425ac5516806c87238356d8d90a003e6b0057bcc7f3e12375d1c53b3fb7760fe1c0e7f01e18f037e";
 
-            var meta = metadata.Replace("OP_RETURN ", string.Empty).Trim();
+            var meta = param.Replace("OP_RETURN ", string.Empty).Trim();
 
-            var customData = meta.Substring(22, meta.Length - 22).Trim();
+            var customData = string.Empty;
+
+            if (meta.Contains("789c"))
+            {
+                var customDataStart = meta.Split("789c");
+                var length = customDataStart[0].Length;
+                customData = meta.Substring(length, meta.Length - length).Trim();
+            }
+
+
             try
             {
                 var customDecompressed = StringExt.Decompress(StringExt.HexStringToBytes(customData));
