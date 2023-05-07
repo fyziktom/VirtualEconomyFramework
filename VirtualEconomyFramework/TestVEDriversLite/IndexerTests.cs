@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -111,6 +112,124 @@ namespace TestVEDriversLite
 
             Console.WriteLine("");
             Console.WriteLine("END");
+        }
+
+        [TestEntry]
+        public static void Indexer_GetAddressUtxos(string param)
+        {
+            Indexer_GetAddressUtxosAsync(param);
+        }
+        public static async Task Indexer_GetAddressUtxosAsync(string param)
+        {
+            // param must be valid Neblio address
+            var utxosObjects = Node.GetAddressUtxosObjects(param);
+
+            if (utxosObjects.Any())
+            {
+                Console.WriteLine("\tAddress: " + param + " Utxos:");
+                foreach (var utxo in utxosObjects)
+                {
+                    Console.WriteLine($"\t\tUtxo: {utxo.TransactionHashAndN}");
+                    if (!utxo.TokenUtxo)
+                        Console.WriteLine($"\t\t\t Amount: {utxo.Value} of NEBL.");
+                    else
+                        Console.WriteLine($"\t\t\t This is token Utxo with {utxo.TokenAmount} of {utxo.TokenSymbol}");
+                }
+            }
+        }
+
+        [TestEntry]
+        public static void Indexer_GetAddressTokenUtxos(string param)
+        {
+            Indexer_GetAddressTokenUtxosAsync(param);
+        }
+        public static async Task Indexer_GetAddressTokenUtxosAsync(string param)
+        {
+            var tokenUtxosObjets = Node.GetAddressTokenUtxosObjects(param);
+
+            if (tokenUtxosObjets.Any())
+            {
+                Console.WriteLine("\tAddress: " + param + " Tokens Utxos:");
+                foreach (var tokens in tokenUtxosObjets)
+                {
+                    Console.WriteLine($"\t\tUtxo: {tokens.TransactionHashAndN}");
+                    Console.WriteLine($"\t\t\tAmount: {tokens.TokenAmount} of {tokens.TokenSymbol}");
+                }
+            }
+        }
+
+        [TestEntry]
+        public static void Indexer_GetAddressTransactions(string param)
+        {
+            Indexer_GetAddressTransactionsAsync(param);
+        }
+        public static async Task Indexer_GetAddressTransactionsAsync(string param)
+        {
+            // param must be valid Neblio address
+            var transactions = Node.GetAddressTransactions(param);
+
+            if (transactions.Any())
+            {
+                Console.WriteLine("\tAddress: " + param + " transactions:");
+                foreach (var tx in transactions)
+                    Console.WriteLine($"\t\t{tx}");
+            }
+        }
+
+        [TestEntry]
+        public static void Indexer_BroadcastTx(string param)
+        {
+            Indexer_BroadcastTxAsync(param);
+        }
+        public static async Task Indexer_BroadcastTxAsync(string param)
+        {
+            var txid = Node.BroadcastRawTx(param);
+            await Console.Out.WriteLineAsync($"Tx id is: {txid}");
+        }
+
+        [TestEntry]
+        public static void Indexer_GetBlockByHash(string param)
+        {
+            Indexer_GetBlockByHashAsync(param);
+        }
+        public static async Task Indexer_GetBlockByHashAsync(string param)
+        {
+            var block = Node.GetBlock(param);
+            await Console.Out.WriteLineAsync(JsonConvert.SerializeObject(block, Formatting.Indented));
+        }
+
+        [TestEntry]
+        public static void Indexer_GetBlockByNumber(string param)
+        {
+            Indexer_GetBlockByNumberAsync(param);
+        }
+        public static async Task Indexer_GetBlockByNumberAsync(string param)
+        {
+            var num = Convert.ToInt32(param);
+            var block = Node.GetBlockByNumber(num);
+            await Console.Out.WriteLineAsync(JsonConvert.SerializeObject(block, Formatting.Indented));
+        }
+
+        [TestEntry]
+        public static void Indexer_GetTx(string param)
+        {
+            Indexer_GetTxAsync(param);
+        }
+        public static async Task Indexer_GetTxAsync(string param)
+        {
+            var tx = Node.GetTx(param);
+            await Console.Out.WriteLineAsync(JsonConvert.SerializeObject(tx, Formatting.Indented));
+        }
+
+        [TestEntry]
+        public static void Indexer_GetLatestBlock(string param)
+        {
+            Indexer_GetLatestBlockAsync(param);
+        }
+        public static async Task Indexer_GetLatestBlockAsync(string param)
+        {
+            var block = Node.GetLatestBlockNumber();
+            await Console.Out.WriteLineAsync($"Latest block has number: {block}");
         }
     }
 }
