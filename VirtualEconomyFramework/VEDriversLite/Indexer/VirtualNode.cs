@@ -95,34 +95,12 @@ namespace VEDriversLite.Indexer
                     {
                         foreach (var utxo in utxos)
                         {
-                            if (!add.Transactions.Contains(utxo.TransactionHashAndN))
-                                add.Transactions.Add(utxo.TransactionHashAndN);
+                            add.AddTransaction(utxo.TransactionHashAndN.Split(':')[0]);
                             if (!utxo.Used)
                                 add.AddUtxo(utxo);
 
-                            if (utxo.TokenUtxo)
-                            {
-                                if (TokenInfoCache.TryGetValue(utxo.TokenId, out var token))
-                                {
-                                    if (add.TokenSupplies.TryGetValue(utxo.TokenId, out var addtoken))
-                                    {
-                                        if (!utxo.Used)
-                                            addtoken.Amount += utxo.TokenAmount;
-                                        else
-                                            addtoken.Amount -= utxo.TokenAmount;
-                                    }
-                                    else
-                                    {
-                                        add.TokenSupplies.TryAdd(utxo.TokenId, new TokenSupplyDto()
-                                        {
-                                            Amount = utxo.TokenAmount,
-                                            ImageUrl = token.ImageUrl,
-                                            TokenId = token.TokenId,
-                                            TokenSymbol = token.TokenSymbol,
-                                        });
-                                    }
-                                }
-                            }
+                            if (utxo.TokenUtxo && TokenInfoCache.TryGetValue(utxo.TokenId, out var token))
+                                add.UpdateTokenSupply(utxo, token);
 
                             add.LastUpdated = DateTime.UtcNow;
                         }
@@ -212,11 +190,11 @@ namespace VEDriversLite.Indexer
         /// </summary>
         /// <param name="address"></param>
         /// <returns></returns>
-        public List<string> GetAddressTransactions(string address)
+        public List<string> GetAddressTransactions(string address, int skip = 0, int take = 0)
         {
             UpdateAddressInfo(address);
             if (Addresses.TryGetValue(address, out var add))
-                return add.Transactions;
+                return add.GetTransactions(skip, take).ToList();
             
             return new List<string>();
         }

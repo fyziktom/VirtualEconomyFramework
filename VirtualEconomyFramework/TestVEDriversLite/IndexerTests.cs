@@ -210,8 +210,32 @@ namespace TestVEDriversLite
             await Console.Out.WriteLineAsync("");
         }
 
-        #region RPCTests
+        [TestEntry]
+        public static void Indexer_GetAddressTransactionsList(string param)
+        {
+            Indexer_GetAddressTransactionsListAsync(param);
+        }
+        public static async Task Indexer_GetAddressTransactionsListAsync(string param)
+        {
+            var split = param.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            if (split.Length < 3)
+                await Console.Out.WriteLineAsync("Please provide: Address,skip,take");
 
+            var address = split[0];
+            var skip = Convert.ToInt32(split[1]);
+            var take = Convert.ToInt32(split[2]);
+
+            // param must be valid Neblio address
+            var info = Node.GetAddressTransactions(address, skip, take);
+            await Console.Out.WriteLineAsync($"Address {address} info:");
+            await Console.Out.WriteLineAsync("");
+            await Console.Out.WriteLineAsync("");
+            await Console.Out.WriteLineAsync(JsonConvert.SerializeObject(info, Formatting.Indented));
+            await Console.Out.WriteLineAsync("");
+            await Console.Out.WriteLineAsync("");
+        }
+
+        #region RPCTests
 
         [TestEntry]
         public static void Indexer_BroadcastTx(string param)
