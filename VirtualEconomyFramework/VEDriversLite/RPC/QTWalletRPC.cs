@@ -22,6 +22,8 @@ namespace VEDriversLite.Common
         {
             { "gettransaction", CommonOneParameterRequest },
             { "getblock", CommonOneParameterRequest },
+            { "getblockcount", CommonNoParameterRequest },
+            { "getblockbynumber", CommonOneIntParameterRequest },
             { "getaccount", CommonOneParameterRequest },
             { "getnewaddress", CommonOneParameterRequest },
             { "dumpprivatekey", CommonOneParameterRequest },
@@ -137,6 +139,49 @@ namespace VEDriversLite.Common
                     try
                     {
                         var rpcRes = await jsonClient.RpcAsync(rpcReq);
+                        //Console.WriteLine("result:" + rpcRes.Result);
+
+                        res = JsonConvert.SerializeObject(rpcRes);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Exception occured during request with one parameter, command {command}: {ex}");
+                    }
+                }
+                else
+                {
+                    res = "Address cannot be empty or null";
+                }
+            }
+
+            return res;
+        }
+
+        /// <summary>
+        /// Common Api Function - Common call for command with one Integer (Number) parameter
+        /// </summary>
+        /// <param name="uid"></param>
+        /// <param name="command"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        private static async Task<string> CommonOneIntParameterRequest(string uid, string command, string[] args, JsonClient jsonClient)
+        {
+            var res = "WRONG_INPUT_DATA";
+
+            if (args.Length > 0)
+            {
+                var account = args[0];
+
+                if (!string.IsNullOrEmpty(account))
+                {
+                    var rpcReq = new RpcAdvancedRequest();
+                    jsonClient.ReadResponseAsString = true;
+                    rpcReq.Id = uid;
+                    rpcReq.Method = command;
+                    rpcReq.Params = new List<object>() { Convert.ToInt32(account) };
+                    try
+                    {
+                        var rpcRes = await jsonClient.RpcIntAsync(rpcReq);
                         //Console.WriteLine("result:" + rpcRes.Result);
 
                         res = JsonConvert.SerializeObject(rpcRes);
