@@ -638,6 +638,7 @@ namespace VEDriversLite.Indexer
 
                 var it = new IndexedTransaction()
                 {
+                    Indexed = true,
                     Hash = t.Txid,
                     BlockHash = t.Blockhash,
                     Blockheight = t.Blockheight ?? -1,
@@ -708,11 +709,13 @@ namespace VEDriversLite.Indexer
         /// <returns></returns>
         public async Task LoadAllBlocksTransactions()
         {
-            var blocks = Blocks.Values.OrderByDescending(b => b.Number).ToList();
+            var blocks = Blocks.Values.Where(b => !b.Indexed).OrderByDescending(b => b.Number).ToList();
 
             await blocks.ParallelForEachAsync(async block =>
             {
                 var txs = await GetBlockTransactions(block.Transactions, (int)block.Number, false);
+                if (Blocks.TryGetValue(block.Hash, out var blk))
+                    blk.Indexed = true;
 
             }, maxDegreeOfParallelism: Environment.ProcessorCount);
         }
