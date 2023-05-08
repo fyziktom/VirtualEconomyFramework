@@ -2080,5 +2080,51 @@ namespace VEDriversLite
             return (false, string.Empty);
         }
 
+        /// <summary>
+        /// Parse and decompress the custom metadata from the OP_RETURN output
+        /// </summary>
+        /// <param name="metadata"></param>
+        /// <returns></returns>
+        public static Dictionary<string, string> ParseCustomMetadata(string metadata)
+        {
+            try
+            {
+                var meta = metadata.Replace("OP_RETURN ", string.Empty).Trim();
+
+                var customData = string.Empty;
+                if (meta.Contains("789c")) // start of the custom data
+                {
+                    var customDataStart = meta.Split("789c");
+                    var length = customDataStart[0].Length;
+                    customData = meta.Substring(length, meta.Length - length).Trim();
+                }
+
+                var customDecompressed = StringExt.Decompress(StringExt.HexStringToBytes(customData));
+                var metadataString = Encoding.UTF8.GetString(customDecompressed);
+
+                var resp = new Dictionary<string, string>();
+
+                var userData = JsonConvert.DeserializeObject<MetadataOfUtxo>(metadataString);
+
+                foreach (var o in userData.UserData.Meta)
+                {
+                    var od = JsonConvert.DeserializeObject<IDictionary<string, string>>(o.ToString());
+                    if (od != null && od.Count > 0)
+                    {
+                        var of = od.First();
+                        if (!resp.ContainsKey(of.Key))
+                            resp.Add(of.Key, of.Value);
+                    }
+                }
+
+                return resp;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Cannot parse custom metadata from the transaction. " + ex.Message + "; original input metadata: " + metadata);
+            }
+            return new Dictionary<string, string>();
+        }
+
     }
 }

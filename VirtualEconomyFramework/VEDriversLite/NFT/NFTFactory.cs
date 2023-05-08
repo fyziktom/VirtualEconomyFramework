@@ -177,7 +177,7 @@ namespace VEDriversLite.NFT
             {
                 return null;
             }
-
+            
             if (VEDLDataContext.AllowCache && tokid == NFTHelpers.TokenId)
             {
                 // try to load it from cache
@@ -205,8 +205,15 @@ namespace VEDriversLite.NFT
                     return null;
                 }
             }
+            
+            var metadata = string.Empty;
+            if (txinfo.Vout.Where(o => o.ScriptPubKey.Type == "nulldata").Any())
+            {
+                // Token transaction with metadata
+                metadata = txinfo.Vout.Where(o => o.ScriptPubKey.Type == "nulldata").FirstOrDefault()?.ScriptPubKey.Asm ?? string.Empty;
+            }
 
-            var meta = await NeblioAPIHelpers.GetTransactionMetadata(tokid, utxo);
+            var meta = NeblioTransactionHelpers.ParseCustomMetadata(metadata);
 
             if (meta == null)
                 return null;
