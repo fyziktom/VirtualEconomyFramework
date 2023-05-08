@@ -402,7 +402,7 @@ namespace VEDriversLite.Indexer
                         Used = true,
                         UsedInTxHash = txid,
                         TransactionHash = input.Txid,
-                        N = (int)input.Vout
+                        Index = (int)input.Vout
                     };
 
                     var tokens = input.Tokens.FirstOrDefault();
@@ -511,7 +511,7 @@ namespace VEDriversLite.Indexer
                     {
                         Indexed = true,
                         TransactionHash = txid,
-                        N = (int)output.N,
+                        Index = (int)output.N,
                         Value = (double)output.Value,
                         OwnerAddress = a,
                         Blockheight = output.Blockheight ?? 0.0,

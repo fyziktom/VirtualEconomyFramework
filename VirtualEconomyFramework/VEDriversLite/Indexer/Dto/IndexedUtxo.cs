@@ -9,9 +9,9 @@ namespace VEDriversLite.Indexer.Dto
     public class IndexedUtxo : IndexedItem
     {
         public static string HashIndexSeparator { get => ":"; }
-        public string TransactionHashAndN { get => $"{TransactionHash}{HashIndexSeparator}{N}"; }
+        public string TransactionHashAndN { get => $"{TransactionHash}{HashIndexSeparator}{Index}"; }
         public string TransactionHash { get; set; } = string.Empty;
-        public int N { get; set; } = 0;
+        public int Index { get; set; } = 0;
         public string? OwnerAddress { get; set; } = string.Empty;        
         public bool Used { get; set; } = false;
         public bool TokenUtxo { get; set; } = false;

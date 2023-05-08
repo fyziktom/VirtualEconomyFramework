@@ -1,6 +1,7 @@
 ﻿using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -10,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using VEDriversLite.Common;
 using VEDriversLite.Indexer;
+using VEDriversLite.Neblio;
 using VEDriversLite.NeblioAPI;
 
 namespace TestVEDriversLite
@@ -345,6 +347,90 @@ namespace TestVEDriversLite
         {
             var block = Node.GetLatestBlockNumber();
             await Console.Out.WriteLineAsync($"Latest block has number: {block}");
+        }
+
+        #endregion
+
+        #region ntp1Tests
+
+        [TestEntry]
+        public static void Indexer_ParseNTP1Script(string param)
+        {
+            Indexer_ParseNTP1ScriptAsync(param);
+        }
+        public static async Task Indexer_ParseNTP1ScriptAsync(string param)
+        {
+            if (string.IsNullOrEmpty(param))
+                param = "4e540310010020120000005f789cab562a2d4e2d72492c4954b2aa56ca4d05d1d1d54abea9c5c589e9a94a564a21198979d90a95f9a50a69f9450aa5c59979e90a61ae7e6e217a0a19252505c556fafa8949f9a5257a65a9ba7969257ac9f9b9fa4ab5b1b5b5007c711f15";
+            
+            var tx = new NTP1Transactions()
+            {
+                ntp1_opreturn = param,
+                tx_type = 1
+            };
+
+            NTP1ScriptHelpers._NTP1ParseScript(tx); //No metadata
+
+            var customDecompressed = StringExt.Decompress(tx.metadata);
+            var metadataString = Encoding.UTF8.GetString(customDecompressed);
+
+            await Console.Out.WriteLineAsync($"Token amount in tx is: {tx.ntp1_instruct_list.FirstOrDefault().amount} on {tx.ntp1_instruct_list.FirstOrDefault().vout_num} output");
+            await Console.Out.WriteLineAsync($"Metadata In the transaction are: {metadataString}");
+
+
+        }
+
+        [TestEntry]
+        public static void Indexer_CreateNTP1Script(string param)
+        {
+            Indexer_CreateNTP1ScriptAsync(param);
+        }
+        public static async Task Indexer_CreateNTP1ScriptAsync(string param)
+        {
+
+            Metadata2 meta = new Metadata2()
+            {
+                UserData = new UserData3()
+                {
+                    Meta = new List<JObject>()
+                    {
+                        new JObject { ["test"] = "skriptu" },
+                        new JObject { ["totoje"] = "cool" },
+                    }
+                }
+            };
+
+            var metastring = JsonConvert.SerializeObject(meta);
+            await Console.Out.WriteLineAsync($"Metadata In the transaction before creating script: {metastring}");
+            var metacomprimed = StringExt.Compress(Encoding.UTF8.GetBytes(metastring));
+
+            var index = 0;
+            List<NTP1Instructions> TiList = new List<NTP1Instructions>();
+            //Now make the transfer instruction
+            NTP1Instructions ti = new NTP1Instructions();
+            ti.amount = Convert.ToUInt64("13");
+            ti.vout_num = index;
+            TiList.Add(ti);
+            index++;
+
+            //Create the hex op_return
+            string ti_script = NTP1ScriptHelpers._NTP1CreateTransferScript(TiList, metacomprimed); //No metadata
+
+            var tx = new NTP1Transactions()
+            {
+                ntp1_opreturn = ti_script,
+                tx_type = 1
+            };
+
+            NTP1ScriptHelpers._NTP1ParseScript(tx); //No metadata
+
+            var customDecompressed1 = StringExt.Decompress(tx.metadata);
+            var metadataString = Encoding.UTF8.GetString(customDecompressed1);
+
+            await Console.Out.WriteLineAsync($"Token amount in tx is: {tx.ntp1_instruct_list.FirstOrDefault().amount} on {tx.ntp1_instruct_list.FirstOrDefault().vout_num} output");
+            await Console.Out.WriteLineAsync($"Metadata In the transaction are: {metadataString}");
+            await Console.Out.WriteLineAsync($"OP_RETURN Script: {tx.ntp1_opreturn}");
+
         }
 
         #endregion

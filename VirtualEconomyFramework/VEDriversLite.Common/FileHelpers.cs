@@ -61,6 +61,28 @@ namespace VEDriversLite.Common
             return decompressed;
         }
 
+
+        /// <summary>
+        /// Compress user metadata working for NTP1 metadata
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public static byte[] Compress(byte[] data)
+        {
+            using (var inputStream = new MemoryStream(data))
+            using (var outputStream = new MemoryStream())
+            using (var deflaterStream = new DeflaterOutputStream(outputStream))
+            {
+                inputStream.CopyTo(deflaterStream);
+                deflaterStream.Finish();
+                return outputStream.ToArray();
+            }
+        }
+        /// <summary>
+        /// Decompress user metadata working for NTP1 metadata
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
         public static byte[] Decompress(byte[] data)
         {
             var outputStream = new MemoryStream();
