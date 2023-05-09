@@ -323,23 +323,6 @@ namespace VEDriversLite
             var index = 0;
             List<NTP1Instructions> TiList = new List<NTP1Instructions>();
             //Now make the transfer instruction
-                        
-            /*
-            var totalToksToSend = 0.0;
-            foreach (var utxo in tutxos)
-            {
-                var toks = utxo.Tokens.FirstOrDefault();
-                if (toks != null)
-                {
-                    NTP1Instructions ti = new NTP1Instructions();
-                    ti.amount = Convert.ToUInt64(toks.Amount);
-                    ti.vout_num = (int)(utxo.Index ?? 0.0);
-                    TiList.Add(ti);
-                    totalToksToSend += toks.Amount ?? 0.0;
-                }
-            }
-            */
-
             NTP1Instructions ti = new NTP1Instructions();
             ti.amount = Convert.ToUInt64(data.Amount);
             ti.vout_num = 0;
@@ -412,6 +395,161 @@ namespace VEDriversLite
             return script;
         }
 
+        public static async Task<Transaction> MintMultiNFTTokenNewAsyncInternal(MintNFTData data, int coppies, EncryptionKey ekey, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos, bool multiTokens, double fee = 20000)
+        {
+            if (data.Metadata == null || data.Metadata.Count == 0)
+                throw new Exception("Cannot send without metadata!");
+
+            List<BitcoinAddress> receiverAddreses = new List<BitcoinAddress>();
+
+            // load key and address
+            BitcoinSecret key;
+            BitcoinAddress addressForTx;
+
+            var k = GetAddressAndKey(ekey);
+            addressForTx = k.Item1;
+            if (!string.IsNullOrEmpty(data.ReceiverAddress) || data.MultipleReceivers.Count > 0)
+            {
+                if (data.MultipleReceivers.Count == 0)
+                    receiverAddreses.Add(BitcoinAddress.Create(data.ReceiverAddress, Network));
+                else
+                {
+                    foreach (var a in data.MultipleReceivers)
+                        receiverAddreses.Add(BitcoinAddress.Create(a, Network));
+                }
+            }
+
+            var tutxo = tutxos.FirstOrDefault();
+            if (tutxo == null)
+                throw new Exception("Cannot send transaction, cannot load sender nebl utxo!");
+
+            var nutxo = nutxos.FirstOrDefault();
+            if (nutxo == null)
+                throw new Exception("Cannot send transaction, cannot load sender nebl utxo!");
+
+            var txres = GetTransactionWithNeblioAndTokensInputs(nutxos, tutxos, addressForTx);
+            var transaction = txres.Item1;
+            var allNeblInputCoins = txres.Item2.Item1;
+
+            data.Metadata.Add(new KeyValuePair<string, string>("SourceUtxo", tutxo.Txid));
+            data.Metadata.Add(new KeyValuePair<string, string>("NFT FirstTx", "true"));
+
+            fee = CalcFee(2, 1 + coppies, JsonConvert.SerializeObject(data.Metadata), true);
+
+            SendTokenRequest dto;
+            if (!string.IsNullOrEmpty(data.ReceiverAddress))
+            {
+                dto = NeblioAPIHelpers.GetSendTokenObject(1, fee, data.ReceiverAddress, data.Id);
+            }
+            else
+            {
+                dto = NeblioAPIHelpers.GetSendTokenObject(1, fee, data.SenderAddress, data.Id);
+            }
+            if (data.Metadata != null)
+            {
+                foreach (var d in data.Metadata)
+                {
+                    var obj = new JObject { [d.Key] = d.Value };
+                    dto.Metadata.UserData.Meta.Add(obj);
+                }
+            }
+
+            var metastring = JsonConvert.SerializeObject(dto.Metadata);
+            var metacomprimed = StringExt.Compress(Encoding.UTF8.GetBytes(metastring));
+
+            List<NTP1Instructions> TiList = new List<NTP1Instructions>();
+            //Now make the transfer instruction
+
+            var totalToksToSend = 0.0;
+            if (data.MultipleReceivers.Count > 0 || coppies == 0)
+            {
+                var index = 0;
+                foreach (var utxo in data.MultipleReceivers)
+                {
+                    NTP1Instructions ti = new NTP1Instructions();
+                    ti.amount = 1;
+                    ti.vout_num = index;
+                    TiList.Add(ti);
+                    totalToksToSend++;
+                    index++;
+                }
+            }
+            else if (data.MultipleReceivers.Count == 0 || coppies > 0)
+            {
+                for (var i = 0; i < coppies + 1; i++)
+                {
+                    NTP1Instructions ti = new NTP1Instructions();
+                    ti.amount = 1;
+                    ti.vout_num = i;
+                    TiList.Add(ti);
+                    totalToksToSend++;
+                }
+            }
+            else
+            {
+                NTP1Instructions ti = new NTP1Instructions();
+                ti.amount = 1;
+                ti.vout_num = 0;
+                TiList.Add(ti);
+                totalToksToSend++;
+            }
+
+            //Create the hex op_return
+            string ti_script = NTP1ScriptHelpers._NTP1CreateTransferScript(TiList, metacomprimed); //No metadata
+
+            var restOfToks = txres.Item2.Item2; //txres.Item2.Item2 holds all tokens in inputs tutxos
+            restOfToks -= totalToksToSend;
+
+            try
+            {
+                fee = CalcFee(transaction.Inputs.Count, 2, JsonConvert.SerializeObject(data.Metadata), true);
+
+                var balanceinSat = Convert.ToUInt64(allNeblInputCoins * FromSatToMainRatio);
+
+                if ((4 * MinimumAmount + fee) > balanceinSat)
+                    throw new Exception("Not enought spendable Neblio on the address.");
+
+                var diffinSat = balanceinSat - Convert.ToUInt64(fee) - Convert.ToUInt64(MinimumAmount); // one MinimumAmount subtracted is because of OP_RETURN, others are subtracted below based on number of receivers
+                                
+                if (restOfToks > 0)
+                    diffinSat -= Convert.ToUInt64(MinimumAmount);
+
+                if (receiverAddreses.Count > 0)
+                {
+                    foreach (var receiver in receiverAddreses)
+                    {
+                        diffinSat -= Convert.ToUInt64(MinimumAmount);
+                        transaction.Outputs.Add(new Money(MinimumAmount), receiver.ScriptPubKey); // send to receiver NFT
+                    }
+                }
+                else
+                {
+                    diffinSat -= Convert.ToUInt64(MinimumAmount);
+                    transaction.Outputs.Add(new Money(MinimumAmount), addressForTx.ScriptPubKey); // send to own NFT
+                }
+
+                var ti_b = NTP1ScriptHelpers.UnhexToByteArray(ti_script);
+                transaction.Outputs.Add(new TxOut()
+                {
+                    Value = new Money(MinimumAmount),
+                    ScriptPubKey = CreateOPRETURNScript(ti_b)
+                });
+
+                if (diffinSat > 0)
+                    transaction.Outputs.Add(new Money(diffinSat), addressForTx.ScriptPubKey); // get diff back to sender address
+
+                if (restOfToks > 0) // just for minting new payment nft
+                    transaction.Outputs.Add(new Money(MinimumAmount), addressForTx.ScriptPubKey); // add 10000 sat as carier of tokens which goes back
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Exception during adding outputs with payment in neblio." + ex.Message);
+            }
+
+            return transaction;
+        }
+
         /// <summary>
         /// Function will Mint NFT from lot of the tokens
         /// </summary>
@@ -422,7 +560,7 @@ namespace VEDriversLite
         /// <returns>New Transaction Hash - TxId</returns>
         public static async Task<Transaction> MintNFTTokenAsync(MintNFTData data, EncryptionKey ekey, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
         {
-            return await MintMultiNFTTokenAsyncInternal(data, 0, ekey, nutxos, tutxos, false);
+            return await MintMultiNFTTokenNewAsyncInternal(data, 0, ekey, nutxos, tutxos, false);
         }
 
         /// <summary>
@@ -436,7 +574,7 @@ namespace VEDriversLite
         /// <returns>New Transaction Hash - TxId</returns>
         public static async Task<Transaction> MintMultiNFTTokenAsync(MintNFTData data, int coppies, EncryptionKey ekey, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
         {
-            return await MintMultiNFTTokenAsyncInternal(data, coppies, ekey, nutxos, tutxos, true);
+            return await MintMultiNFTTokenNewAsyncInternal(data, coppies, ekey, nutxos, tutxos, true);
         }
 
         /// <summary>
@@ -654,6 +792,169 @@ namespace VEDriversLite
             return await SignAndBroadcast(transaction, key);
         }
 
+        public static async Task<Transaction> SplitNTP1TokensNewAsync(List<string> receiver, int lots, int amount, string tokenId,
+                                                                      IDictionary<string, string> metadata,
+                                                                      EncryptionKey ekey,
+                                                                      ICollection<Utxos> nutxos,
+                                                                      ICollection<Utxos> tutxos)
+        {
+            
+            List<BitcoinAddress> receiverAddreses = new List<BitcoinAddress>();
+
+            // load key and address
+            BitcoinSecret key;
+            BitcoinAddress addressForTx;
+
+            var k = GetAddressAndKey(ekey);
+            addressForTx = k.Item1;
+            if (receiver.Count > 0)
+            {
+                if (receiver.Count == 0)
+                {
+                    receiverAddreses.Add(addressForTx);
+                }
+                else if (receiver.Count == 1)
+                {
+                    var a = receiver.FirstOrDefault();
+                    if (!string.IsNullOrEmpty(a))
+                        receiverAddreses.Add(a);
+                }
+                else
+                {
+                    foreach (var a in receiver)
+                        receiverAddreses.Add(BitcoinAddress.Create(a, Network));
+                }
+            }
+
+            if ((receiverAddreses.Count > 1 && lots > 1) && (receiverAddreses.Count != lots))
+            {
+                throw new Exception($"If you want to split coins to different receivers, the number of lots and receivers must match. Receivers {receiversAddresses.Count}, Lost {lots}. Some of input address may be wrong.");
+            }
+
+            var tutxo = tutxos.FirstOrDefault();
+            if (tutxo == null)
+                throw new Exception("Cannot send transaction, cannot load sender nebl utxo!");
+
+            var nutxo = nutxos.FirstOrDefault();
+            if (nutxo == null)
+                throw new Exception("Cannot send transaction, cannot load sender nebl utxo!");
+
+            var txres = GetTransactionWithNeblioAndTokensInputs(nutxos, tutxos, addressForTx);
+            var transaction = txres.Item1;
+            var allNeblInputCoins = txres.Item2.Item1;
+
+            if (metadata == null)
+                metadata = new Dictionary<string, string>();
+
+            metadata.Add("TransactionType", "Token Split");
+
+            SendTokenRequest dto;
+            dto = NeblioAPIHelpers.GetSendTokenObject(amount * lots, 20000, addressForTx.ToString(), tokenId);
+            
+            if (metadata != null)
+            {
+                foreach (var d in metadata)
+                {
+                    var obj = new JObject { [d.Key] = d.Value };
+                    dto.Metadata.UserData.Meta.Add(obj);
+                }
+            }
+
+            var metastring = JsonConvert.SerializeObject(dto.Metadata);
+            var metacomprimed = StringExt.Compress(Encoding.UTF8.GetBytes(metastring));
+
+            List<NTP1Instructions> TiList = new List<NTP1Instructions>();
+            //Now make the transfer instruction
+
+            var totalToksToSend = 0.0;
+            if (receiverAddreses.Count > 0)
+            {
+                var index = 0;
+                foreach (var add in receiverAddreses)
+                {
+                    NTP1Instructions ti = new NTP1Instructions();
+                    ti.amount = (ulong)amount;
+                    ti.vout_num = index;
+                    TiList.Add(ti);
+                    totalToksToSend++;
+                    index++;
+                }
+            }
+            else if (receiverAddreses.Count == 0 || lots > 1)
+            {
+                for (var i = 0; i < lots; i++)
+                {
+                    NTP1Instructions ti = new NTP1Instructions();
+                    ti.amount = (ulong)amount;
+                    ti.vout_num = i;
+                    TiList.Add(ti);
+                    totalToksToSend++;
+                }
+            }
+
+            //Create the hex op_return
+            string ti_script = NTP1ScriptHelpers._NTP1CreateTransferScript(TiList, metacomprimed); //No metadata
+
+            var restOfToks = txres.Item2.Item2; //txres.Item2.Item2 holds all tokens in inputs tutxos
+            restOfToks -= totalToksToSend;
+
+            try
+            {
+                var fee = CalcFee(transaction.Inputs.Count, 2, JsonConvert.SerializeObject(metadata), true);
+
+                var balanceinSat = Convert.ToUInt64(allNeblInputCoins * FromSatToMainRatio);
+
+                if ((4 * MinimumAmount + fee) > balanceinSat)
+                    throw new Exception("Not enought spendable Neblio on the address.");
+
+                var diffinSat = balanceinSat - Convert.ToUInt64(fee) - Convert.ToUInt64(MinimumAmount); // one MinimumAmount subtracted is because of OP_RETURN, others are subtracted below based on number of receivers
+
+                if (restOfToks > 0)
+                    diffinSat -= Convert.ToUInt64(MinimumAmount);
+
+                if (receiverAddreses.Count > 0)
+                {
+                    foreach (var recv in receiverAddreses)
+                    {
+                        diffinSat -= Convert.ToUInt64(MinimumAmount);
+                        transaction.Outputs.Add(new Money(MinimumAmount), recv.ScriptPubKey); // send to receiver
+                    }
+                }
+                if (receiverAddreses.Count == 1)
+                {
+                    diffinSat -= Convert.ToUInt64(MinimumAmount);
+                    transaction.Outputs.Add(new Money(MinimumAmount), receiverAddreses[0].ScriptPubKey); // send to receiver
+                }
+                else
+                {
+                    for (var i = 0; i < lots; i++)
+                    {
+                        diffinSat -= Convert.ToUInt64(MinimumAmount);
+                        transaction.Outputs.Add(new Money(MinimumAmount), addressForTx.ScriptPubKey); // send to own
+                    }
+                }
+
+                var ti_b = NTP1ScriptHelpers.UnhexToByteArray(ti_script);
+                transaction.Outputs.Add(new TxOut()
+                {
+                    Value = new Money(MinimumAmount),
+                    ScriptPubKey = CreateOPRETURNScript(ti_b)
+                });
+
+                if (diffinSat > 0)
+                    transaction.Outputs.Add(new Money(diffinSat), addressForTx.ScriptPubKey); // get diff back to sender address
+
+                if (restOfToks > 0) // just for minting new payment nft
+                    transaction.Outputs.Add(new Money(MinimumAmount), addressForTx.ScriptPubKey); // add 10000 sat as carier of tokens which goes back
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Exception during adding outputs with payment in neblio." + ex.Message);
+            }
+
+            return transaction;
+        }
 
         /// <summary>
         /// Function will Split NTP1 tokens to smaller lots
@@ -873,6 +1174,119 @@ namespace VEDriversLite
                 {
                     break;
                 }
+            }
+
+            return transaction;
+        }
+
+
+        public static async Task<Transaction> SendNFTTokenNewAsync(SendTokenTxData data, EncryptionKey ekey, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos, double fee = 20000)
+        {
+            if (data.Metadata == null || data.Metadata.Count == 0)
+                throw new Exception("Cannot send without metadata!");
+
+            // load key and address
+            BitcoinSecret key;
+            BitcoinAddress addressForTx;
+
+            var k = GetAddressAndKey(ekey);
+            key = k.Item2;
+            addressForTx = k.Item1;
+
+            // create receiver address
+            BitcoinAddress recaddr;
+            try
+            {
+                recaddr = BitcoinAddress.Create(data.ReceiverAddress, Network);
+            }
+            catch (Exception)
+            {
+                throw new Exception("Cannot send transaction. cannot create receiver address!");
+            }
+
+            var nftutxo = data.sendUtxo.FirstOrDefault();
+            var itt = nftutxo;
+            var indx = 0;
+            if (nftutxo.Contains(':'))
+            {
+                var splt = nftutxo.Split(':');
+                if (splt.Length > 1)
+                {
+                    itt = splt[0];
+                    indx = Convert.ToInt32(splt[1]);
+                }
+            }
+
+            var val = await NeblioAPIHelpers.ValidateOneTokenNFTUtxo(data.SenderAddress, data.Id, itt, indx);
+            string tutxo;
+            if (val == -1)
+                throw new Exception("Cannot send transaction, nft utxo is not spendable!");
+            else
+                tutxo = nftutxo + ":" + ((int)val).ToString();
+
+            if (nutxos == null || nutxos.Count == 0)
+                throw new Exception("Cannot send transaction, cannot load sender nebl utxos!");
+            
+            var nutxo = nutxos.FirstOrDefault();
+            if (nutxo == null)
+                throw new Exception("Cannot send transaction, cannot load sender nebl utxo!");
+            
+            var txres = GetTransactionWithNeblioAndTokensInputs(nutxos, tutxos, addressForTx);
+            var transaction = txres.Item1;
+            var allNeblInputCoins = txres.Item2.Item1;
+
+            // create and init send token request dto for Neblio API
+            var dto = NeblioAPIHelpers.GetSendTokenObject(1, fee, data.ReceiverAddress, data.Id);
+
+            if (data.Metadata != null)
+            {
+                foreach (var d in data.Metadata)
+                {
+                    var obj = new JObject { [d.Key] = d.Value };
+                    dto.Metadata.UserData.Meta.Add(obj);
+                }
+            }
+
+            var metastring = JsonConvert.SerializeObject(dto.Metadata);
+            var metacomprimed = StringExt.Compress(Encoding.UTF8.GetBytes(metastring));
+
+            List<NTP1Instructions> TiList = new List<NTP1Instructions>();
+            //Now make the transfer instruction
+            NTP1Instructions ti = new NTP1Instructions();
+            ti.amount = 1;
+            ti.vout_num = 0;
+            TiList.Add(ti);
+
+            //Create the hex op_return
+            string ti_script = NTP1ScriptHelpers._NTP1CreateTransferScript(TiList, metacomprimed); //No metadata
+
+            try
+            {
+                fee = CalcFee(transaction.Inputs.Count, 2, JsonConvert.SerializeObject(data.Metadata), true);
+
+                var balanceinSat = Convert.ToUInt64(allNeblInputCoins * FromSatToMainRatio);
+
+                if ((4 * MinimumAmount + fee) > balanceinSat)
+                    throw new Exception("Not enought spendable Neblio on the address.");
+
+                var diffinSat = balanceinSat - Convert.ToUInt64(fee) - Convert.ToUInt64(MinimumAmount); // just for the OP_RETURN, NFT has own MinimumAmount from Input
+                
+                transaction.Outputs.Add(new Money(MinimumAmount), recaddr.ScriptPubKey); // send to receiver required amount
+
+                var ti_b = NTP1ScriptHelpers.UnhexToByteArray(ti_script);
+                transaction.Outputs.Add(new TxOut()
+                {
+                    Value = new Money(MinimumAmount),
+                    ScriptPubKey = CreateOPRETURNScript(ti_b)
+                });
+
+                if (diffinSat > 0)
+                    transaction.Outputs.Add(new Money(diffinSat), addressForTx.ScriptPubKey); // get diff back to sender address
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Exception during adding outputs with payment in neblio." + ex.Message);
             }
 
             return transaction;
@@ -1287,6 +1701,132 @@ namespace VEDriversLite
 
         }
 
+
+
+
+        public static async Task<Transaction> SendNTP1TokenWithPaymentNewAPIAsync(SendTokenTxData data, EncryptionKey ekey, double neblAmount, ICollection<Utxos> nutxos, string paymentUtxoToReturn = null, int paymentUtxoIndexToReturn = 0)
+        {
+            if (data.Metadata == null || data.Metadata.Count == 0)
+                throw new Exception("Cannot send without metadata!");
+
+            // load key and address
+            BitcoinSecret key;
+            BitcoinAddress addressForTx;
+
+            var k = GetAddressAndKey(ekey);
+            key = k.Item2;
+            addressForTx = k.Item1;
+
+            // create receiver address
+            BitcoinAddress recaddr;
+            try
+            {
+                recaddr = BitcoinAddress.Create(data.ReceiverAddress, Network);
+            }
+            catch (Exception)
+            {
+                throw new Exception("Cannot send transaction. cannot create receiver address!");
+            }
+
+            Utxos tutxo;
+            if (paymentUtxoToReturn == null)
+            {
+                var tutxos = await NeblioAPIHelpers.FindUtxoForMintNFT(data.SenderAddress, data.Id, 5);
+                if (tutxos == null || tutxos.Count == 0)
+                {
+                    throw new Exception("Cannot send transaction, cannot load sender token utxos, for buying you need at least 5 VENFT lot!");
+                }
+
+                tutxo = tutxos.FirstOrDefault();
+                if (tutxo == null)
+                {
+                    throw new Exception("Cannot send transaction, cannot load sender nebl utxo!");
+                }
+            }
+            else
+            {
+                tutxo = new Utxos()
+                {
+                    Txid = paymentUtxoToReturn,
+                    Index = paymentUtxoIndexToReturn
+                };
+            }
+
+            var nutxo = nutxos.FirstOrDefault();
+            if (nutxo == null)
+                throw new Exception("Cannot send transaction, cannot load sender nebl utxo!");
+
+            var txres = GetTransactionWithNeblioAndTokensInputs(nutxos, new List<Utxos> { tutxo }, addressForTx);
+            var transaction = txres.Item1;
+            var allNeblInputCoins = txres.Item2.Item1;
+
+            // create and init send token request dto for Neblio API
+            var dto = NeblioAPIHelpers.GetSendTokenObject(data.Amount, 20000, data.ReceiverAddress, data.Id);
+
+            if (data.Metadata != null)
+            {
+                foreach (var d in data.Metadata)
+                {
+                    var obj = new JObject { [d.Key] = d.Value };
+                    dto.Metadata.UserData.Meta.Add(obj);
+                }
+            }
+
+            var metastring = JsonConvert.SerializeObject(dto.Metadata);
+            var metacomprimed = StringExt.Compress(Encoding.UTF8.GetBytes(metastring));
+
+            List<NTP1Instructions> TiList = new List<NTP1Instructions>();
+            //Now make the transfer instruction
+            NTP1Instructions ti = new NTP1Instructions();
+            ti.amount = 1;
+            ti.vout_num = 0;
+            TiList.Add(ti);
+
+            //Create the hex op_return
+            string ti_script = NTP1ScriptHelpers._NTP1CreateTransferScript(TiList, metacomprimed); //No metadata
+
+            var restOfToks = txres.Item2.Item2; //txres.Item2.Item2 holds all tokens in inputs tutxos
+            restOfToks -= data.Amount;
+
+            try
+            {
+                var fee = CalcFee(transaction.Inputs.Count, 4, JsonConvert.SerializeObject(data.Metadata), true);
+
+                var amountinSat = Convert.ToUInt64(neblAmount * FromSatToMainRatio);
+                var balanceinSat = Convert.ToUInt64(allNeblInputCoins * FromSatToMainRatio);
+
+                if (((amountinSat + (ulong)(4 * MinimumAmount)) + fee) > balanceinSat)
+                    throw new Exception("Not enought spendable Neblio on the address.");
+                
+                var diffinSat = balanceinSat - amountinSat - Convert.ToUInt64(fee) - Convert.ToUInt64(MinimumAmount) - Convert.ToUInt64(MinimumAmount); // fee is already included in previous output, last is token carriers
+                if (restOfToks > 0)
+                    diffinSat -= Convert.ToUInt64(MinimumAmount);
+
+                transaction.Outputs.Add(new Money(MinimumAmount), recaddr.ScriptPubKey); // send to receiver required amount
+                transaction.Outputs.Add(new Money(amountinSat), recaddr.ScriptPubKey); // send to receiver required amount of neblio
+
+                var ti_b = NTP1ScriptHelpers.UnhexToByteArray(ti_script);
+                transaction.Outputs.Add(new TxOut()
+                {
+                    Value = new Money(MinimumAmount),
+                    ScriptPubKey = CreateOPRETURNScript(ti_b)
+                });
+
+                if (diffinSat > 0)
+                    transaction.Outputs.Add(new Money(diffinSat), addressForTx.ScriptPubKey); // get diff back to sender address
+
+                if (restOfToks > 0) // just for minting new payment nft
+                    transaction.Outputs.Add(new Money(MinimumAmount), addressForTx.ScriptPubKey); // add 10000 sat as carier of tokens which goes back
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Exception during adding outputs with payment in neblio." + ex.Message);
+            }
+
+            return transaction;
+        }
+
         /// <summary>
         /// This function will send Neblio payment together with the token whichc carry some metadata
         /// </summary>
@@ -1473,7 +2013,116 @@ namespace VEDriversLite
             return transaction;
 
         }
-      
+
+
+
+        public static async Task<Transaction> SendNTP1TokenLotWithPaymentNewAPIAsync(SendTokenTxData data, EncryptionKey ekey, double neblAmount, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
+        {
+            if (data.Metadata == null || data.Metadata.Count == 0)
+                throw new Exception("Cannot send without metadata!");
+
+            // load key and address
+            BitcoinSecret key;
+            BitcoinAddress addressForTx;
+
+            var k = GetAddressAndKey(ekey);
+            key = k.Item2;
+            addressForTx = k.Item1;
+
+            // create receiver address
+            BitcoinAddress recaddr;
+            try
+            {
+                recaddr = BitcoinAddress.Create(data.ReceiverAddress, Network);
+            }
+            catch (Exception)
+            {
+                throw new Exception("Cannot send transaction. cannot create receiver address!");
+            }
+
+            if (tutxos == null || tutxos.Count == 0)
+                throw new Exception("Cannot send transaction, cannot load sender token utxos!");
+            
+            var tutxo = tutxos.FirstOrDefault();
+            if (tutxo == null)
+                throw new Exception("Cannot send transaction, cannot load sender nebl token utxo!");
+            
+            var nutxo = nutxos.FirstOrDefault();
+            if (nutxo == null)
+                throw new Exception("Cannot send transaction, cannot load sender nebl utxo!");
+
+            var txres = GetTransactionWithNeblioAndTokensInputs(nutxos, tutxos, addressForTx);
+            var transaction = txres.Item1;
+            var allNeblInputCoins = txres.Item2.Item1;
+
+            // create and init send token request dto for Neblio API
+            var dto = NeblioAPIHelpers.GetSendTokenObject(data.Amount, 20000, data.ReceiverAddress, data.Id);
+
+            if (data.Metadata != null)
+            {
+                foreach (var d in data.Metadata)
+                {
+                    var obj = new JObject { [d.Key] = d.Value };
+                    dto.Metadata.UserData.Meta.Add(obj);
+                }
+            }
+
+            var metastring = JsonConvert.SerializeObject(dto.Metadata);
+            var metacomprimed = StringExt.Compress(Encoding.UTF8.GetBytes(metastring));
+
+            List<NTP1Instructions> TiList = new List<NTP1Instructions>();
+            //Now make the transfer instruction
+            NTP1Instructions ti = new NTP1Instructions();
+            ti.amount = (ulong)data.Amount;
+            ti.vout_num = 0;
+            TiList.Add(ti);
+
+            //Create the hex op_return
+            string ti_script = NTP1ScriptHelpers._NTP1CreateTransferScript(TiList, metacomprimed); //No metadata
+
+            var restOfToks = txres.Item2.Item2; //txres.Item2.Item2 holds all tokens in inputs tutxos
+            restOfToks -= data.Amount;
+
+            try
+            {
+                var fee = CalcFee(transaction.Inputs.Count, 4, JsonConvert.SerializeObject(data.Metadata), true);
+
+                var amountinSat = Convert.ToUInt64(neblAmount * FromSatToMainRatio);
+                var balanceinSat = Convert.ToUInt64(allNeblInputCoins * FromSatToMainRatio);
+
+                if (((amountinSat + (ulong)(4 * MinimumAmount)) + fee) > balanceinSat)
+                    throw new Exception("Not enought spendable Neblio on the address.");
+
+                var diffinSat = balanceinSat - amountinSat - Convert.ToUInt64(fee) - Convert.ToUInt64(MinimumAmount) - Convert.ToUInt64(MinimumAmount); // fee is already included in previous output, last is token carriers
+                if (restOfToks > 0)
+                    diffinSat -= Convert.ToUInt64(MinimumAmount);
+
+                transaction.Outputs.Add(new Money(MinimumAmount), recaddr.ScriptPubKey); // send to receiver required amount of tokens
+
+                transaction.Outputs.Add(new Money(amountinSat), recaddr.ScriptPubKey); // send to receiver required amount of neblio
+
+                var ti_b = NTP1ScriptHelpers.UnhexToByteArray(ti_script);
+                transaction.Outputs.Add(new TxOut()
+                {
+                    Value = new Money(MinimumAmount),
+                    ScriptPubKey = CreateOPRETURNScript(ti_b)
+                });
+
+                if (diffinSat > 0)
+                    transaction.Outputs.Add(new Money(diffinSat), addressForTx.ScriptPubKey); // get diff back to sender address
+
+                if (restOfToks > 0) // just for minting new payment nft
+                    transaction.Outputs.Add(new Money(MinimumAmount), addressForTx.ScriptPubKey); // add 10000 sat as carier of tokens which goes back
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Exception during adding outputs with payment in neblio." + ex.Message);
+            }
+
+            return transaction;
+        }
+
         /// <summary>
         /// This function will send Neblio payment together with the token whichc carry some metadata
         /// </summary>
