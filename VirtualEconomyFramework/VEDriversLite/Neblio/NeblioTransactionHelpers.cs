@@ -14,6 +14,7 @@ using VEDriversLite.Neblio;
 using VEDriversLite.NeblioAPI;
 using VEDriversLite.Security;
 using VEDriversLite.Common;
+using static Google.Protobuf.WellKnownTypes.Field;
 
 namespace VEDriversLite
 {
@@ -224,6 +225,191 @@ namespace VEDriversLite
             }
 
             return (null, 0);
+        }
+
+        public static (Transaction, (double,double)) GetTransactionWithNeblioAndTokensInputs(ICollection<Utxos> nutxos, ICollection<Utxos> tutxos, BitcoinAddress address)
+        {
+            var txres = GetTransactionWithNeblioInputs(nutxos, address);
+            var transaction = txres.Item1;
+
+            var allNeblInputCoins = txres.Item2; //this is because of the optimization. When we iterate through values we can sum them for later use
+            var allTokensInputs = 0.0; //this is because of the optimization. When we iterate through values we can sum them for later use
+            TxInList inputs = new TxInList();
+
+            try
+            {
+                // add inputs of tx
+                foreach (var utxo in tutxos)
+                {
+                    inputs.Add(new TxIn()
+                    {
+                        PrevOut = new OutPoint(uint256.Parse(utxo.Txid), (int)utxo.Index),
+                        ScriptSig = address.ScriptPubKey,
+                    });
+                    allNeblInputCoins += (double)utxo.Value / FromSatToMainRatio;
+                    var toks = utxo.Tokens.FirstOrDefault();
+                    if (toks != null && toks.Amount > 0)
+                        allTokensInputs += toks.Amount ?? 0;
+                }
+
+                foreach (var inp in transaction.Inputs)
+                    inputs.Add(inp);
+
+                transaction.Inputs.Clear();
+                transaction.Inputs.AddRange(inputs);                
+
+                return (transaction, (allNeblInputCoins, allTokensInputs));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Exception during loading inputs. " + ex.Message);
+            }
+
+            return (null, (0.0,0.0));
+        }
+
+        public static async Task<Transaction> SendTokenLotNewAsync(SendTokenTxData data, EncryptionKey ekey, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos, double fee = 20000)
+        {
+            if (data.Metadata == null || data.Metadata.Count == 0)
+                throw new Exception("Cannot send without metadata!");
+
+            // load key and address
+            BitcoinSecret key;
+            BitcoinAddress addressForTx;
+
+            var k = GetAddressAndKey(ekey);
+            key = k.Item2;
+            addressForTx = k.Item1;
+
+            // create receiver address
+            BitcoinAddress recaddr;
+            try
+            {
+                recaddr = BitcoinAddress.Create(data.ReceiverAddress, Network);
+            }
+            catch (Exception)
+            {
+                throw new Exception("Cannot send transaction. cannot create receiver address!");
+            }
+
+            var tutxo = tutxos.FirstOrDefault();
+            if (tutxo == null)
+                throw new Exception("Cannot send transaction, cannot load sender nebl utxo!");
+            
+            var nutxo = nutxos.FirstOrDefault();
+            if (nutxo == null)
+                throw new Exception("Cannot send transaction, cannot load sender nebl utxo!");
+
+            var txres = GetTransactionWithNeblioAndTokensInputs(nutxos, tutxos, addressForTx);
+            var transaction = txres.Item1;
+            var allNeblInputCoins = txres.Item2.Item1;
+
+            fee = CalcFee(2, 1, JsonConvert.SerializeObject(data.Metadata), true);
+            // create and init send token request dto for Neblio API
+            var dto = NeblioAPIHelpers.GetSendTokenObject(data.Amount, fee, data.ReceiverAddress, data.Id);
+
+            if (data.Metadata != null)
+            {
+                foreach (var d in data.Metadata)
+                {
+                    var obj = new JObject { [d.Key] = d.Value };
+                    dto.Metadata.UserData.Meta.Add(obj);
+                }
+            }
+
+            var metastring = JsonConvert.SerializeObject(dto.Metadata);
+            var metacomprimed = StringExt.Compress(Encoding.UTF8.GetBytes(metastring));
+
+            var index = 0;
+            List<NTP1Instructions> TiList = new List<NTP1Instructions>();
+            //Now make the transfer instruction
+                        
+            /*
+            var totalToksToSend = 0.0;
+            foreach (var utxo in tutxos)
+            {
+                var toks = utxo.Tokens.FirstOrDefault();
+                if (toks != null)
+                {
+                    NTP1Instructions ti = new NTP1Instructions();
+                    ti.amount = Convert.ToUInt64(toks.Amount);
+                    ti.vout_num = (int)(utxo.Index ?? 0.0);
+                    TiList.Add(ti);
+                    totalToksToSend += toks.Amount ?? 0.0;
+                }
+            }
+            */
+
+            NTP1Instructions ti = new NTP1Instructions();
+            ti.amount = Convert.ToUInt64(data.Amount);
+            ti.vout_num = 0;
+            TiList.Add(ti);
+
+            //Create the hex op_return
+            string ti_script = NTP1ScriptHelpers._NTP1CreateTransferScript(TiList, metacomprimed); //No metadata
+
+            var restOfToks = txres.Item2.Item2; //txres.Item2.Item2 holds all tokens in inputs tutxos
+            restOfToks -= data.Amount;
+
+            try
+            {
+                fee = CalcFee(transaction.Inputs.Count, 2, JsonConvert.SerializeObject(data.Metadata), true);
+
+                var balanceinSat = Convert.ToUInt64(allNeblInputCoins * FromSatToMainRatio);
+
+                if ((4 * MinimumAmount + fee) > balanceinSat)
+                    throw new Exception("Not enought spendable Neblio on the address.");
+                
+                var diffinSat = balanceinSat - Convert.ToUInt64(fee) - Convert.ToUInt64(MinimumAmount) - Convert.ToUInt64(MinimumAmount); // fee is already included in previous output, last is token carriers
+                if (restOfToks > 0)
+                    diffinSat -= Convert.ToUInt64(MinimumAmount);
+
+                transaction.Outputs.Add(new Money(MinimumAmount), recaddr.ScriptPubKey); // send to receiver required amount
+
+                var ti_b = NTP1ScriptHelpers.UnhexToByteArray(ti_script);
+                transaction.Outputs.Add(new TxOut()
+                {
+                    Value = new Money(MinimumAmount),
+                    ScriptPubKey = CreateOPRETURNScript(ti_b)
+                });
+                
+                if (diffinSat > 0)
+                    transaction.Outputs.Add(new Money(diffinSat), addressForTx.ScriptPubKey); // get diff back to sender address
+                
+                if (restOfToks > 0) // just for minting new payment nft
+                    transaction.Outputs.Add(new Money(MinimumAmount), addressForTx.ScriptPubKey); // add 10000 sat as carier of tokens which goes back
+                
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Exception during adding outputs with payment in neblio." + ex.Message);
+            }
+
+            return transaction;
+        }
+
+        /// <summary>
+        /// Create OP_RETURN output ScriptPubKey from the input data. 
+        /// Data should not contain OP_RETURN byte. This byte is added in the function. PLease provide just the data which should be attached
+        /// Data must be in not HEX form. The Op.GetPushOp function converts them during the loading.
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static Script CreateOPRETURNScript(params byte[][] data)
+        {
+            if (data == null)
+                throw new ArgumentNullException(nameof(data));
+            
+            Op[] ops = new Op[data.Length + 1];
+            ops[0] = OpcodeType.OP_RETURN;
+
+            for (int i = 0; i < data.Length; i++)
+                ops[1 + i] = Op.GetPushOp(data[i]);
+            
+            var script = new Script(ops);
+            
+            return script;
         }
 
         /// <summary>

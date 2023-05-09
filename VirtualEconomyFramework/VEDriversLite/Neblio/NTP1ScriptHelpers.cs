@@ -74,6 +74,67 @@ namespace VEDriversLite.Neblio
             return bytes;
         }
 
+        public static byte[] UnhexToByteArray(string input)
+        {
+            if (input.Length % 2 != 0)
+            {
+                throw new ArgumentException("Input string must have an even number of characters.");
+            }
+
+            byte[] result = new byte[input.Length / 2];
+
+            for (int i = 0; i < input.Length; i += 2)
+            {
+                result[i / 2] = (byte)((GetHexValue(input[i]) << 4) + GetHexValue(input[i + 1]));
+            }
+
+            return result;
+        }
+
+
+        private static int GetHexValue(char hexChar)
+        {
+            int value = hexChar - '0';
+
+            if (value >= 0 && value <= 9)
+            {
+                return value;
+            }
+
+            value = hexChar - 'A';
+
+            if (value >= 0 && value <= 5)
+            {
+                return value + 10;
+            }
+
+            value = hexChar - 'a';
+
+            if (value >= 0 && value <= 5)
+            {
+                return value + 10;
+            }
+
+            throw new ArgumentException("Invalid hex character.");
+        }
+        public static string UnhexToString(string input)
+        {
+            if (input.Length % 2 != 0)
+            {
+                throw new ArgumentException("Unhex input must have even length.");
+            }
+
+            char[] output = new char[input.Length / 2];
+            for (int i = 0; i < input.Length; i += 2)
+            {
+                string byteValue = input.Substring(i, 2);
+                output[i / 2] = (char)Convert.ToInt32(byteValue, 16);
+            }
+
+            return new string(output);
+        }
+
+
         //Transfer instructions will deplete a specific token (based on order of token in Input) to zero before next instructions
         //being applied to next token (based on order)
         //Metadata follows transfer instructions

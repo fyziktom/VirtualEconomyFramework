@@ -1197,7 +1197,7 @@ namespace VEDriversLite.Neblio
             try
             {                
                 // send tx
-                var transaction = await NeblioTransactionHelpers.SendTokenLotAsync(dto, AccountKey, res.Item2, tres.Item2);
+                var transaction = await NeblioTransactionHelpers.SendTokenLotNewAsync(dto, AccountKey, res.Item2, tres.Item2);
 
                 var result = await SignBroadcastAndInvokeSucessEvent(transaction, "Neblio Token Payment Sent");
                 if (result.Item1)
