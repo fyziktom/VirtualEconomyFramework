@@ -32,6 +32,7 @@ namespace VEFramework.BlockchainIndexerServer
             settings.GetSection("QTRPC").Bind(MainDataContext.Node.QTRPConfig);
 
             MainDataContext.NumberOfBlocksInHistory = settings.GetValue<int>("NumberOfBlocksInHistory", 10000);
+            MainDataContext.OldestBlockToLoad = settings.GetValue<int>("OldestBlockToLoad", 3000000);
 
             // start loading from the latest block
             MainDataContext.StartFromTheLatestBlock = Convert.ToBoolean(settings.GetValue<bool>("StartFromTheLatestBlock"));
@@ -94,11 +95,9 @@ namespace VEFramework.BlockchainIndexerServer
                         {
                             if (MainDataContext.Node != null)
                             {
-                                //await Task.Delay(2000);
-                                
-                                await Console.Out.WriteLineAsync("\tInstead of waiting load some few blocks from history...");
-                                if (oldestBlock > 0)
+                                if (oldestBlock > 0 && oldestBlock > MainDataContext.OldestBlockToLoad)
                                 {
+                                    await Console.Out.WriteLineAsync("\tInstead of waiting load some few blocks from history...");
                                     var numOfblcks = 2000;
                                     if ((oldestBlock - 2000) >= 0)
                                         offset = oldestBlock - numOfblcks;
@@ -111,6 +110,10 @@ namespace VEFramework.BlockchainIndexerServer
                                     await MainDataContext.Node.GetIndexedBlocksByNumbersOffsetAndAmount(offset, numOfblcks);
                                     await MainDataContext.Node.LoadAllBlocksTransactions();
                                     oldestBlock = offset;
+                                }
+                                else
+                                {
+                                    await Task.Delay(1000);
                                 }
 
                                 // check for new blocks

@@ -172,6 +172,26 @@ namespace VEFramework.BlockchainIndexerServer.Controllers
             }
         }
 
+        /// <summary>
+        /// Get latest blockheight
+        /// </summary>
+        /// <returns>Block info response</returns>
+        [AllowCrossSiteJsonAttribute]
+        [HttpGet]
+        [Route("GetLatestBlockheight")]
+        public async Task<int> GetLatestBlockheight()
+        {
+            try
+            {
+                var info = await MainDataContext.Node.GetLatestBlockNumber();
+                return info;
+            }
+            catch (Exception ex)
+            {
+                throw new HttpResponseException((HttpStatusCode)501, $"Cannot get latest block number.");
+            }
+        }
+
         public class BroadcastTransactionRequestDto
         {
             public string network { get; set; } = "neblio";
@@ -255,6 +275,31 @@ namespace VEFramework.BlockchainIndexerServer.Controllers
         [HttpGet]
         [Route("GetAddressUtxos/{address}")]
         public async Task<List<IndexedUtxo>> GetAddressUtxos(string address)
+        {
+            try
+            {
+                if (!string.IsNullOrEmpty(address))
+                {
+                    var info = MainDataContext.Node.GetAddressUtxosObjects(address);
+                    return info.ToList();
+                }
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+                throw new HttpResponseException((HttpStatusCode)501, $"Cannot get address info for address: {address}!");
+            }
+        }
+
+        /// <summary>
+        /// Get address Utxos list
+        /// </summary>
+        /// <returns>Utxos list</returns>
+        [AllowCrossSiteJsonAttribute]
+        [HttpGet]
+        [Route("GetAddressTokenUtxos/{address}")]
+        public async Task<List<IndexedUtxo>> GetAddressTokenUtxos(string address)
         {
             try
             {

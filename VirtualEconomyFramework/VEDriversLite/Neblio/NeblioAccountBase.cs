@@ -5,11 +5,13 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using VEDriversLite.Bookmarks;
 using VEDriversLite.Dto;
 using VEDriversLite.Events;
+using VEDriversLite.Indexer.Dto;
 using VEDriversLite.Messaging;
 using VEDriversLite.Neblio;
 using VEDriversLite.NeblioAPI;
@@ -17,6 +19,7 @@ using VEDriversLite.NFT;
 using VEDriversLite.NFT.Coruzant;
 using VEDriversLite.NFT.DevicesNFTs;
 using VEDriversLite.Security;
+using static System.Net.WebRequestMethods;
 
 namespace VEDriversLite.Neblio
 {
@@ -481,8 +484,9 @@ namespace VEDriversLite.Neblio
         /// <returns></returns>
         public async Task ReloadUtxos()
         {
-            var aux = await NeblioAPIHelpers.AddressInfoUtxosAsync(Address);
-            var ouxox = aux.Utxos.OrderBy(u => u.Blocktime).Reverse().ToList();
+            //var aux = await NeblioAPIHelpers.AddressInfoUtxosAsync(Address);
+            //var ouxox = aux.Utxos.OrderBy(u => u.Blocktime).Reverse().ToList();
+            var ouxox = await NeblioAPIHelpers.GetAddressUtxosListFromNewAPIAsync(Address);
 
             if (ouxox.Count > 0)
             {
@@ -1740,7 +1744,7 @@ namespace VEDriversLite.Neblio
             {
                 var sendTokenTxData = await NFTHelpers.GetNFTTxData(Address, receiver, nft, priceWrite, price, withDogePrice, dogeprice);
                               
-                var transaction = await NeblioTransactionHelpers.SendNFTTokenAsync(sendTokenTxData, res.Item2);
+                var transaction = await NeblioTransactionHelpers.SendNFTTokenAsync(sendTokenTxData, AccountKey, res.Item2);
 
                 var rtxid = await NeblioTransactionHelpers.SignAndBroadcastTransaction(transaction, Secret);                              
 
@@ -1795,7 +1799,7 @@ namespace VEDriversLite.Neblio
             {
                 var sendTokenTxData = await NFTHelpers.GetChangeNFTTxData(Address, nft);
                                 
-                var transaction = await NeblioTransactionHelpers.SendNFTTokenAsync(sendTokenTxData, res.Item2);
+                var transaction = await NeblioTransactionHelpers.SendNFTTokenAsync(sendTokenTxData, AccountKey, res.Item2);
 
                 var result = await SignBroadcastAndInvokeSucessEvent(transaction, "NFT Changed");
                 if (result.Item1)
@@ -1966,7 +1970,7 @@ namespace VEDriversLite.Neblio
             {
                 var sendTokenTxData = await NFTHelpers.GetTxDataForNFTTicket(Address, nft);
                                 
-                var transaction = await NeblioTransactionHelpers.SendNFTTokenAsync(sendTokenTxData, res.Item2);
+                var transaction = await NeblioTransactionHelpers.SendNFTTokenAsync(sendTokenTxData, AccountKey, res.Item2);
 
                 var result = await SignBroadcastAndInvokeSucessEvent(transaction, "NFT Ticket used.");
                 if (result.Item1)

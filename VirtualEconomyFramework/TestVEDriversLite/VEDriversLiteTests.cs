@@ -716,10 +716,10 @@ namespace TestVEDriversLite
         }
         public static async Task MintNFTAsync(string param)
         {
-            var split = param.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            var split = param.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
             if (split.Length < 5)
                 throw new Exception("Please input name,author,description,link,imagelink");
-
+            
             Console.WriteLine("Minting NFT");
             // create NFT object
             var nft = new ImageNFT("");
@@ -761,6 +761,32 @@ namespace TestVEDriversLite
 
             // MintNFT
             var res = await account.MintNFT(nft);
+
+            // or multimint with 5 coppies (mint 1 + 5);
+            // var res = await account.MintMultiNFT(NFTHelpers.TokenId, nft, 5); 
+            Console.WriteLine("New TxId hash is: ");
+            Console.WriteLine(res);
+        }
+
+        /// <summary>
+        /// Mint new Neblio NFT.
+        /// In this example the ImageNFT is created
+        /// </summary>
+        /// <param name="param"></param>
+        [TestEntry]
+        public static void MintNFTFromTemplate(string param)
+        {
+            MintNFTFromTemplateAsync(param);
+        }
+        public static async Task MintNFTFromTemplateAsync(string param)
+        {
+            var nfttemp = await NFTFactory.GetNFT("", param, wait: true);
+
+            Console.WriteLine("Minting NFT");
+            // create NFT object
+            nfttemp.Utxo = "";
+            // MintNFT
+            var res = await account.MintNFT(nfttemp);
 
             // or multimint with 5 coppies (mint 1 + 5);
             // var res = await account.MintMultiNFT(NFTHelpers.TokenId, nft, 5); 
@@ -1327,6 +1353,25 @@ namespace TestVEDriversLite
             Console.WriteLine(res);
         }
 
+
+        [TestEntry]
+        public static void SplitNeblioTokensCreateDto(string param)
+        {
+            SplitNeblioTokensCreateDtoAsync(param);
+        }
+        public static async Task SplitNeblioTokensCreateDtoAsync(string param)
+        {
+            var dto = new SplitNeblioTokensDto()
+            {
+                amount = 200,
+                lots = 4,
+                tokenId = NFTHelpers.TokenId,
+                receivers = new List<string>() { account.Address }
+            };
+            var r = JsonConvert.SerializeObject(dto);
+            FileHelpers.WriteTextToFile("splitTokenDto.json", r);
+            
+        }
         /// <summary>
         /// Split Neblio tokens transaction. This transaction can split the token lot to smaller lots
         /// </summary>

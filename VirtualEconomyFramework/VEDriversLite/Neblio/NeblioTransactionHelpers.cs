@@ -15,6 +15,7 @@ using VEDriversLite.NeblioAPI;
 using VEDriversLite.Security;
 using VEDriversLite.Common;
 using static Google.Protobuf.WellKnownTypes.Field;
+using static System.Net.WebRequestMethods;
 
 namespace VEDriversLite
 {
@@ -395,7 +396,44 @@ namespace VEDriversLite
             return script;
         }
 
-        public static async Task<Transaction> MintMultiNFTTokenNewAsyncInternal(MintNFTData data, int coppies, EncryptionKey ekey, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos, bool multiTokens, double fee = 20000)
+
+        /// <summary>
+        /// Function will Mint NFT from lot of the tokens
+        /// </summary>
+        /// <param name="data">Mint data, please see MintNFTData class for the details</param>
+        /// <param name="ekey">Input EncryptionKey of the account</param>
+        /// <param name="nutxos">Optional input neblio utxo</param>
+        /// <param name="tutxos">Optional input token utxo</param>
+        /// <returns>New Transaction Hash - TxId</returns>
+        public static async Task<Transaction> MintNFTTokenAsync(MintNFTData data, EncryptionKey ekey, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
+        {
+            return await MintMultiNFTTokenAsyncInternal(data, 0, ekey, nutxos, tutxos, false);
+        }
+
+        /// <summary>
+        /// Function will Mint NFT with the coppies
+        /// </summary>
+        /// <param name="data">Mint data, please see MintNFTData class for the details</param>
+        /// <param name="coppies">0 or more coppies - with 0 input it is same as MintNFTTokenAsync</param>
+        /// <param name="ekey">Input EncryptionKey of the account</param>
+        /// <param name="nutxos">Optional input neblio utxo</param>
+        /// <param name="tutxos">Optional input token utxo</param>
+        /// <returns>New Transaction Hash - TxId</returns>
+        public static async Task<Transaction> MintMultiNFTTokenAsync(MintNFTData data, int coppies, EncryptionKey ekey, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
+        {
+            return await MintMultiNFTTokenAsyncInternal(data, coppies, ekey, nutxos, tutxos, true);
+        }
+        /// <summary>
+        /// Function will Mint NFT with the coppies
+        /// </summary>
+        /// <param name="data">Mint data, please see MintNFTData class for the details</param>
+        /// <param name="coppies">0 or more coppies - with 0 input it is same as MintNFTTokenAsync</param>
+        /// <param name="ekey">Input EncryptionKey of the account</param>
+        /// <param name="nutxos">Optional input neblio utxo</param>
+        /// <param name="tutxos">Optional input token utxo</param>
+        /// <param name="multiTokens">If there is the multi token it needs to check if there is no conflict</param>
+        /// <returns>New Transaction Hash - TxId</returns>
+        public static async Task<Transaction> MintMultiNFTTokenAsyncInternal(MintNFTData data, int coppies, EncryptionKey ekey, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos, bool multiTokens, double fee = 20000)
         {
             if (data.Metadata == null || data.Metadata.Count == 0)
                 throw new Exception("Cannot send without metadata!");
@@ -461,7 +499,7 @@ namespace VEDriversLite
             //Now make the transfer instruction
 
             var totalToksToSend = 0.0;
-            if (data.MultipleReceivers.Count > 0 || coppies == 0)
+            if (data.MultipleReceivers.Count > 0 && coppies == 0)
             {
                 var index = 0;
                 foreach (var utxo in data.MultipleReceivers)
@@ -474,7 +512,7 @@ namespace VEDriversLite
                     index++;
                 }
             }
-            else if (data.MultipleReceivers.Count == 0 || coppies > 0)
+            else if (data.MultipleReceivers.Count == 0 && coppies > 0)
             {
                 for (var i = 0; i < coppies + 1; i++)
                 {
@@ -485,7 +523,7 @@ namespace VEDriversLite
                     totalToksToSend++;
                 }
             }
-            else
+            else if (data.MultipleReceivers.Count == 0 && coppies == 0)
             {
                 NTP1Instructions ti = new NTP1Instructions();
                 ti.amount = 1;
@@ -550,44 +588,8 @@ namespace VEDriversLite
             return transaction;
         }
 
-        /// <summary>
-        /// Function will Mint NFT from lot of the tokens
-        /// </summary>
-        /// <param name="data">Mint data, please see MintNFTData class for the details</param>
-        /// <param name="ekey">Input EncryptionKey of the account</param>
-        /// <param name="nutxos">Optional input neblio utxo</param>
-        /// <param name="tutxos">Optional input token utxo</param>
-        /// <returns>New Transaction Hash - TxId</returns>
-        public static async Task<Transaction> MintNFTTokenAsync(MintNFTData data, EncryptionKey ekey, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
-        {
-            return await MintMultiNFTTokenNewAsyncInternal(data, 0, ekey, nutxos, tutxos, false);
-        }
-
-        /// <summary>
-        /// Function will Mint NFT with the coppies
-        /// </summary>
-        /// <param name="data">Mint data, please see MintNFTData class for the details</param>
-        /// <param name="coppies">0 or more coppies - with 0 input it is same as MintNFTTokenAsync</param>
-        /// <param name="ekey">Input EncryptionKey of the account</param>
-        /// <param name="nutxos">Optional input neblio utxo</param>
-        /// <param name="tutxos">Optional input token utxo</param>
-        /// <returns>New Transaction Hash - TxId</returns>
-        public static async Task<Transaction> MintMultiNFTTokenAsync(MintNFTData data, int coppies, EncryptionKey ekey, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
-        {
-            return await MintMultiNFTTokenNewAsyncInternal(data, coppies, ekey, nutxos, tutxos, true);
-        }
-
-        /// <summary>
-        /// Function will Mint NFT with the coppies
-        /// </summary>
-        /// <param name="data">Mint data, please see MintNFTData class for the details</param>
-        /// <param name="coppies">0 or more coppies - with 0 input it is same as MintNFTTokenAsync</param>
-        /// <param name="ekey">Input EncryptionKey of the account</param>
-        /// <param name="nutxos">Optional input neblio utxo</param>
-        /// <param name="tutxos">Optional input token utxo</param>
-        /// <param name="multiTokens">If there is the multi token it needs to check if there is no conflict</param>
-        /// <returns>New Transaction Hash - TxId</returns>
-        public static async Task<Transaction> MintMultiNFTTokenAsyncInternal(MintNFTData data, int coppies, EncryptionKey ekey, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos,bool multiTokens)
+        
+        public static async Task<Transaction> MintMultiNFTTokenOldAsyncInternal(MintNFTData data, int coppies, EncryptionKey ekey, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos,bool multiTokens)
         {
             if (data.Metadata == null || data.Metadata.Count == 0)
             {
@@ -791,8 +793,21 @@ namespace VEDriversLite
         {
             return await SignAndBroadcast(transaction, key);
         }
-
-        public static async Task<Transaction> SplitNTP1TokensNewAsync(List<string> receiver, int lots, int amount, string tokenId,
+        /// <summary>
+        /// Function will Split NTP1 tokens to smaller lots
+        /// receiver list - If you input 0, split will be done to sender address, if you input 1 receiver split will be done to receiver (all inputs)
+        /// if you will provide multiple receivers, the number of lots and receivers must match.
+        /// </summary>
+        /// <param name="receiver">List of receivers. </param>
+        /// <param name="lots"></param>
+        /// <param name="amount"></param>
+        /// <param name="tokenId"></param>
+        /// <param name="metadata"></param>
+        /// <param name="ekey">Input EncryptionKey of the account</param>
+        /// <param name="nutxos">Optional input neblio utxo</param>
+        /// <param name="tutxos">Optional input token utxo</param>
+        /// <returns>New Transaction Hash - TxId</returns>
+        public static async Task<Transaction> SplitNTP1TokensAsync(List<string> receiver, int lots, int amount, string tokenId,
                                                                       IDictionary<string, string> metadata,
                                                                       EncryptionKey ekey,
                                                                       ICollection<Utxos> nutxos,
@@ -817,7 +832,7 @@ namespace VEDriversLite
                 {
                     var a = receiver.FirstOrDefault();
                     if (!string.IsNullOrEmpty(a))
-                        receiverAddreses.Add(a);
+                        receiverAddreses.Add(BitcoinAddress.Create(a, Network));
                 }
                 else
                 {
@@ -828,7 +843,7 @@ namespace VEDriversLite
 
             if ((receiverAddreses.Count > 1 && lots > 1) && (receiverAddreses.Count != lots))
             {
-                throw new Exception($"If you want to split coins to different receivers, the number of lots and receivers must match. Receivers {receiversAddresses.Count}, Lost {lots}. Some of input address may be wrong.");
+                throw new Exception($"If you want to split coins to different receivers, the number of lots and receivers must match. Receivers {receiverAddreses.Count}, Lost {lots}. Some of input address may be wrong.");
             }
 
             var tutxo = tutxos.FirstOrDefault();
@@ -876,7 +891,7 @@ namespace VEDriversLite
                     ti.amount = (ulong)amount;
                     ti.vout_num = index;
                     TiList.Add(ti);
-                    totalToksToSend++;
+                    totalToksToSend += amount;
                     index++;
                 }
             }
@@ -888,7 +903,7 @@ namespace VEDriversLite
                     ti.amount = (ulong)amount;
                     ti.vout_num = i;
                     TiList.Add(ti);
-                    totalToksToSend++;
+                    totalToksToSend += amount;
                 }
             }
 
@@ -920,7 +935,7 @@ namespace VEDriversLite
                         transaction.Outputs.Add(new Money(MinimumAmount), recv.ScriptPubKey); // send to receiver
                     }
                 }
-                if (receiverAddreses.Count == 1)
+                else if (receiverAddreses.Count == 1)
                 {
                     diffinSat -= Convert.ToUInt64(MinimumAmount);
                     transaction.Outputs.Add(new Money(MinimumAmount), receiverAddreses[0].ScriptPubKey); // send to receiver
@@ -956,21 +971,8 @@ namespace VEDriversLite
             return transaction;
         }
 
-        /// <summary>
-        /// Function will Split NTP1 tokens to smaller lots
-        /// receiver list - If you input 0, split will be done to sender address, if you input 1 receiver split will be done to receiver (all inputs)
-        /// if you will provide multiple receivers, the number of lots and receivers must match.
-        /// </summary>
-        /// <param name="receiver">List of receivers. </param>
-        /// <param name="lots"></param>
-        /// <param name="amount"></param>
-        /// <param name="tokenId"></param>
-        /// <param name="metadata"></param>
-        /// <param name="ekey">Input EncryptionKey of the account</param>
-        /// <param name="nutxos">Optional input neblio utxo</param>
-        /// <param name="tutxos">Optional input token utxo</param>
-        /// <returns>New Transaction Hash - TxId</returns>
-        public static async Task<Transaction> SplitNTP1TokensAsync(List<string> receiver, int lots, int amount, string tokenId,
+        
+        public static async Task<Transaction> SplitNTP1TokensOldAsync(List<string> receiver, int lots, int amount, string tokenId,
                                                               IDictionary<string, string> metadata,
                                                               EncryptionKey ekey,
                                                               ICollection<Utxos> nutxos,
@@ -1180,7 +1182,14 @@ namespace VEDriversLite
         }
 
 
-        public static async Task<Transaction> SendNFTTokenNewAsync(SendTokenTxData data, EncryptionKey ekey, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos, double fee = 20000)
+        /// <summary>
+        /// Function will sent exact NFT. 
+        /// You must fill the input token utxo in data object!
+        /// </summary>
+        /// <param name="data">Send data, please see SendTokenTxData class for the details</param>
+        /// <param name="nutxos">Optional input neblio utxo</param>
+        /// <returns>New Transaction Hash - TxId</returns>
+        public static async Task<Transaction> SendNFTTokenAsync(SendTokenTxData data, EncryptionKey ekey, ICollection<Utxos> nutxos, double fee = 20000)
         {
             if (data.Metadata == null || data.Metadata.Count == 0)
                 throw new Exception("Cannot send without metadata!");
@@ -1218,12 +1227,19 @@ namespace VEDriversLite
             }
 
             var val = await NeblioAPIHelpers.ValidateOneTokenNFTUtxo(data.SenderAddress, data.Id, itt, indx);
-            string tutxo;
+            Utxos tutxo;
             if (val == -1)
                 throw new Exception("Cannot send transaction, nft utxo is not spendable!");
             else
-                tutxo = nftutxo + ":" + ((int)val).ToString();
-
+            {
+                tutxo = new Utxos() 
+                { 
+                    Index = val, 
+                    Txid = nftutxo, 
+                    Value = 10000,
+                    Tokens = new List<Tokens>() { new Tokens() {  Amount = 1, TokenId = data.Id } }
+                };
+            }
             if (nutxos == null || nutxos.Count == 0)
                 throw new Exception("Cannot send transaction, cannot load sender nebl utxos!");
             
@@ -1231,7 +1247,7 @@ namespace VEDriversLite
             if (nutxo == null)
                 throw new Exception("Cannot send transaction, cannot load sender nebl utxo!");
             
-            var txres = GetTransactionWithNeblioAndTokensInputs(nutxos, tutxos, addressForTx);
+            var txres = GetTransactionWithNeblioAndTokensInputs(nutxos, new List<Utxos>() { tutxo }, addressForTx);
             var transaction = txres.Item1;
             var allNeblInputCoins = txres.Item2.Item1;
 
@@ -1292,14 +1308,7 @@ namespace VEDriversLite
             return transaction;
         }
 
-        /// <summary>
-        /// Function will sent exact NFT. 
-        /// You must fill the input token utxo in data object!
-        /// </summary>
-        /// <param name="data">Send data, please see SendTokenTxData class for the details</param>
-        /// <param name="nutxos">Optional input neblio utxo</param>
-        /// <returns>New Transaction Hash - TxId</returns>
-        public static async Task<Transaction> SendNFTTokenAsync(SendTokenTxData data, ICollection<Utxos> nutxos)
+        public static async Task<Transaction> SendNFTTokenOldAsync(SendTokenTxData data, ICollection<Utxos> nutxos)
         {
             if (data.Metadata == null || data.Metadata.Count == 0)
             {
@@ -1703,8 +1712,17 @@ namespace VEDriversLite
 
 
 
-
-        public static async Task<Transaction> SendNTP1TokenWithPaymentNewAPIAsync(SendTokenTxData data, EncryptionKey ekey, double neblAmount, ICollection<Utxos> nutxos, string paymentUtxoToReturn = null, int paymentUtxoIndexToReturn = 0)
+        /// <summary>
+        /// This function will send Neblio payment together with the token whichc carry some metadata
+        /// </summary>
+        /// <param name="data">Mint data, please see MintNFTData class for the details</param>
+        /// <param name="ekey">Input EncryptionKey of the account</param>
+        /// <param name="neblAmount">Amount of Neblio to send</param>
+        /// <param name="nutxos">Optional input neblio utxo</param>
+        /// <param name="paymentUtxoToReturn">If you returning some payment fill this</param>
+        /// <param name="paymentUtxoIndexToReturn">If you returning some payment fill this</param>
+        /// <returns>New Transaction Hash - TxId</returns>
+        public static async Task<Transaction> SendNTP1TokenWithPaymentAPIAsync(SendTokenTxData data, EncryptionKey ekey, double neblAmount, ICollection<Utxos> nutxos, string paymentUtxoToReturn = null, int paymentUtxoIndexToReturn = 0)
         {
             if (data.Metadata == null || data.Metadata.Count == 0)
                 throw new Exception("Cannot send without metadata!");
@@ -1827,17 +1845,8 @@ namespace VEDriversLite
             return transaction;
         }
 
-        /// <summary>
-        /// This function will send Neblio payment together with the token whichc carry some metadata
-        /// </summary>
-        /// <param name="data">Mint data, please see MintNFTData class for the details</param>
-        /// <param name="ekey">Input EncryptionKey of the account</param>
-        /// <param name="neblAmount">Amount of Neblio to send</param>
-        /// <param name="nutxos">Optional input neblio utxo</param>
-        /// <param name="paymentUtxoToReturn">If you returning some payment fill this</param>
-        /// <param name="paymentUtxoIndexToReturn">If you returning some payment fill this</param>
-        /// <returns>New Transaction Hash - TxId</returns>
-        public static async Task<Transaction> SendNTP1TokenWithPaymentAPIAsync(SendTokenTxData data, EncryptionKey ekey, double neblAmount, ICollection<Utxos> nutxos, string paymentUtxoToReturn = null, int paymentUtxoIndexToReturn = 0)
+        
+        public static async Task<Transaction> SendNTP1TokenWithPaymentOldAPIAsync(SendTokenTxData data, EncryptionKey ekey, double neblAmount, ICollection<Utxos> nutxos, string paymentUtxoToReturn = null, int paymentUtxoIndexToReturn = 0)
         {
             if (data.Metadata == null || data.Metadata.Count == 0)
             {
@@ -2015,8 +2024,16 @@ namespace VEDriversLite
         }
 
 
-
-        public static async Task<Transaction> SendNTP1TokenLotWithPaymentNewAPIAsync(SendTokenTxData data, EncryptionKey ekey, double neblAmount, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
+        /// <summary>
+        /// This function will send Neblio payment together with the token whichc carry some metadata
+        /// </summary>
+        /// <param name="data">Mint data, please see MintNFTData class for the details</param>
+        /// <param name="ekey">Input EncryptionKey of the account</param>
+        /// <param name="neblAmount">Amount of Neblio to send</param>
+        /// <param name="nutxos">Optional input neblio utxo</param>
+        /// <param name="tutxos">Optional list of the token utxos </param>
+        /// <returns>New Transaction Hash - TxId</returns>
+        public static async Task<Transaction> SendNTP1TokenLotWithPaymentAPIAsync(SendTokenTxData data, EncryptionKey ekey, double neblAmount, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
         {
             if (data.Metadata == null || data.Metadata.Count == 0)
                 throw new Exception("Cannot send without metadata!");
@@ -2123,16 +2140,8 @@ namespace VEDriversLite
             return transaction;
         }
 
-        /// <summary>
-        /// This function will send Neblio payment together with the token whichc carry some metadata
-        /// </summary>
-        /// <param name="data">Mint data, please see MintNFTData class for the details</param>
-        /// <param name="ekey">Input EncryptionKey of the account</param>
-        /// <param name="neblAmount">Amount of Neblio to send</param>
-        /// <param name="nutxos">Optional input neblio utxo</param>
-        /// <param name="tutxos">Optional list of the token utxos </param>
-        /// <returns>New Transaction Hash - TxId</returns>
-        public static async Task<Transaction> SendNTP1TokenLotWithPaymentAPIAsync(SendTokenTxData data, EncryptionKey ekey, double neblAmount, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
+        
+        public static async Task<Transaction> SendNTP1TokenLotWithPaymentOldAPIAsync(SendTokenTxData data, EncryptionKey ekey, double neblAmount, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
         {
             if (data.Metadata == null || data.Metadata.Count == 0)
             {
@@ -2344,7 +2353,7 @@ namespace VEDriversLite
             List<ICoin> coins = new List<ICoin>();
             try
             {
-                var addrutxos = await NeblioAPIHelpers.GetAddressUtxosObjects(address.ToString());
+                var addrutxos = await NeblioAPIHelpers.GetAddressUtxosListFromNewAPIAsync(address.ToString());
 
                 // add all spendable coins of this address
                 foreach (var inp in addrutxos)
@@ -2392,16 +2401,29 @@ namespace VEDriversLite
                 throw new Exception("Exception during signing tx! " + ex.Message);
             }
 
+            bool endNow = false;
             // broadcast            
             var txhex = transaction.ToHex();
-            var res = await NeblioAPIHelpers.BroadcastSignedTransaction(txhex);
+            
+            //var res = await NeblioAPIHelpers.BroadcastSignedTransaction(txhex);
+            var res = await NeblioAPIHelpers.BroadcastTransactionVEAPI(txhex);
             return res;
         }
 
+
         //////////////////////////////////////
         #region Multi Token Input Tx
-
-        public static async Task<Transaction> SendMultiTokenAPINewAsync(SendTokenTxData data, EncryptionKey ekey, ICollection<Utxos> nutxos, double fee = 20000, bool isMintingOfCopy = false)
+        /// <summary>
+        /// Transaction which sends multiple tokens from input to different outputs. For example process of the send Ordered NFT and NFT Receipt in one tx.
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="ekey"></param>
+        /// <param name="nutxos"></param>
+        /// <param name="fee"></param>
+        /// <param name="isMintingOfCopy"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public static async Task<Transaction> SendMultiTokenAPIAsync(SendTokenTxData data, EncryptionKey ekey, ICollection<Utxos> nutxos, double fee = 20000, bool isMintingOfCopy = false)
         {
             // load key and address
             BitcoinSecret key;
@@ -2577,18 +2599,8 @@ namespace VEDriversLite
             return transaction;
         }
 
-
-        /// <summary>
-        /// Transaction which sends multiple tokens from input to different outputs. For example process of the send Ordered NFT and NFT Receipt in one tx.
-        /// </summary>
-        /// <param name="data"></param>
-        /// <param name="ekey"></param>
-        /// <param name="nutxos"></param>
-        /// <param name="fee"></param>
-        /// <param name="isMintingOfCopy"></param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        public static async Task<Transaction> SendMultiTokenAPIAsync(SendTokenTxData data, EncryptionKey ekey, ICollection<Utxos> nutxos, double fee = 20000, bool isMintingOfCopy = false)
+        
+        public static async Task<Transaction> SendMultiTokenOldAPIAsync(SendTokenTxData data, EncryptionKey ekey, ICollection<Utxos> nutxos, double fee = 20000, bool isMintingOfCopy = false)
         {
             // load key and address
             BitcoinSecret keyfromFile;
@@ -2734,7 +2746,19 @@ namespace VEDriversLite
 
         }
 
-        public static async Task<Transaction> DestroyNFTNewAsync(SendTokenTxData data, EncryptionKey ekey, ICollection<Utxos> nutxos, double fee = 20000, Utxos mintingUtxo = null)
+        //////////////////////////////////////
+        /// <summary>
+        /// Destroy of the NFT. It merge the NFT with the minting lot
+        /// 1VENFT + 10VENFT => 11 VENFT
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="ekey"></param>
+        /// <param name="nutxos"></param>
+        /// <param name="fee"></param>
+        /// <param name="mintingUtxo"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public static async Task<Transaction> DestroyNFTAsync(SendTokenTxData data, EncryptionKey ekey, ICollection<Utxos> nutxos, double fee = 20000, Utxos mintingUtxo = null)
         {
             // load key and address
             BitcoinSecret key;
@@ -2894,19 +2918,8 @@ namespace VEDriversLite
             return transaction;
         }
 
-        //////////////////////////////////////
-        /// <summary>
-        /// Destroy of the NFT. It merge the NFT with the minting lot
-        /// 1VENFT + 10VENFT => 11 VENFT
-        /// </summary>
-        /// <param name="data"></param>
-        /// <param name="ekey"></param>
-        /// <param name="nutxos"></param>
-        /// <param name="fee"></param>
-        /// <param name="mintingUtxo"></param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        public static async Task<Transaction> DestroyNFTAsync(SendTokenTxData data, EncryptionKey ekey, ICollection<Utxos> nutxos, double fee = 20000, Utxos mintingUtxo = null)
+        
+        public static async Task<Transaction> DestroyNFTOldAsync(SendTokenTxData data, EncryptionKey ekey, ICollection<Utxos> nutxos, double fee = 20000, Utxos mintingUtxo = null)
         {
 
             // load key and address

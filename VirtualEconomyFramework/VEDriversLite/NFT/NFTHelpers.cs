@@ -733,7 +733,7 @@ namespace VEDriversLite.NFT
                         SenderAddress = address,
                         ReceiverAddress = receiver
                     };
-                    transaction = await NeblioTransactionHelpers.SendNFTTokenAsync(dto, nutxos);
+                    transaction = await NeblioTransactionHelpers.SendNFTTokenAsync(dto, ekey, nutxos);
                 }
 
                 return transaction;
@@ -792,7 +792,7 @@ namespace VEDriversLite.NFT
                         SenderAddress = address,
                         ReceiverAddress = receiver
                     };
-                    transaction = await NeblioTransactionHelpers.SendNFTTokenAsync(dto, nutxos);
+                    transaction = await NeblioTransactionHelpers.SendNFTTokenAsync(dto, ekey, nutxos);
                 }
                 return transaction;
                 

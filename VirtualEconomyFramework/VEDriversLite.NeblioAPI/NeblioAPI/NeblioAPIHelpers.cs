@@ -4,6 +4,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,7 +15,6 @@ using System.Threading.Tasks;
 
 namespace VEDriversLite.NeblioAPI
 {
-
     /// <summary>
     /// Main Helper class for the Neblio Blockchain Transactions
     /// </summary>
@@ -67,8 +67,10 @@ namespace VEDriversLite.NeblioAPI
         /// Address info cache. It will save for at least one second address info. If it is older, it will reqeuest new info.
         /// </summary>
         public static ConcurrentDictionary<string, (DateTime, GetAddressInfoResponse)> AddressInfoCache = new ConcurrentDictionary<string, (DateTime, GetAddressInfoResponse)>();
-
-
+        /// <summary>
+        /// Address of VEFramework.BlockchainIndexerServer API
+        /// </summary>
+        public static string NewAPIAddress { get; set; } = "http://localhost:5000/";
         /// <summary>
         /// Check if the number of the confirmation is enough for doing transactions.
         /// It mainly usefull for UI stuff or console.
@@ -196,6 +198,61 @@ namespace VEDriversLite.NeblioAPI
             {
                 throw new Exception("Wrong input transaction for broadcast.");
             }
+        }
+
+
+
+        public class BroadcastTransactionResponseDto
+        {
+            public BroadcastDataResponseDto data { get; set; } = new BroadcastDataResponseDto();
+        }
+        public class BroadcastDataResponseDto
+        {
+            public string network { get; set; } = "neblio";
+            public string txid { get; set; } = string.Empty;
+        }
+
+        public static async Task<string> BroadcastTransactionVEAPI(string txhex)
+        {
+            var httpClient = new HttpClient();
+
+            var obj = new
+            {
+                tx_hex = txhex,
+                network = "neblio"
+            };
+
+            var cnt = JsonConvert.SerializeObject(obj);
+            var url = $"{NeblioAPIHelpers.NewAPIAddress.Trim('/')}/api/BroadcastTransaction";
+
+            using (var content = new StringContent(cnt, System.Text.Encoding.UTF8, "application/json"))
+            {
+                HttpResponseMessage result = await httpClient.PostAsync(url, content);
+                if (result.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    var returnStr = await result.Content.ReadAsStringAsync();
+
+                    if (returnStr != null)
+                    {
+                        try
+                        {
+                            var resp = JsonConvert.DeserializeObject<BroadcastTransactionResponseDto>(returnStr);
+                            if (resp != null)
+                            {
+                                returnStr = resp.data.txid;
+                                return returnStr;
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            await Console.Out.WriteLineAsync("Cannot deserialize response from broadcast of the transaction for txhex: " + txhex);
+                            return "Cannot deserialize response from broadcast of the transaction for txhex: " + txhex;
+                        }
+                    }
+                }
+            }
+
+            return "Cannot broadcast the transaction with TXhex: " + txhex;
         }
 
         /// <summary>
@@ -327,6 +384,89 @@ namespace VEDriversLite.NeblioAPI
             return address;
         }
 
+
+        public static async Task<GetAddressInfoResponse> AddressInfoUtxosFromNewAPIAsync(string addr)
+        {
+            if (string.IsNullOrEmpty(addr))
+            {
+                return new GetAddressInfoResponse();
+            }
+
+            if (TurnOnCache && AddressInfoCache.TryGetValue(addr, out var info))
+            {
+                if ((DateTime.UtcNow - info.Item1) < new TimeSpan(0, 0, 1))
+                {
+                    GetAddressInfoResponse ainfo = info.Item2;
+                    return ainfo;
+                }
+                else
+                {
+                    //var address = await GetClient().GetAddressInfoAsync(addr);
+                    var addressUtxos = await GetAddressUtxosListFromNewAPIAsync(addr);
+                    var address = new GetAddressInfoResponse()
+                    {
+                        Utxos = addressUtxos
+                    };
+
+                    if (address != null)
+                    {
+                        if (AddressInfoCache.TryRemove(addr, out info))
+                        {
+                            AddressInfoCache.TryAdd(addr, (DateTime.UtcNow, address));
+                        }
+
+                        return address;
+                    }
+                }
+            }
+            else
+            {
+                //var address = await GetClient().GetAddressInfoAsync(addr);
+                var addressUtxos = await GetAddressUtxosListFromNewAPIAsync(addr);
+                var address = new GetAddressInfoResponse()
+                {
+                    Utxos = addressUtxos
+                };
+
+                if (address != null && TurnOnCache)
+                    AddressInfoCache.TryAdd(addr, (DateTime.UtcNow, address));
+
+                return address;
+            }
+            return new GetAddressInfoResponse();
+        }
+
+        public static async Task<List<Utxos>> GetAddressUtxosListFromNewAPIAsync(string addr)
+        {
+            var ouxox = new List<Utxos>();
+            var httpClient = new HttpClient();
+            var url = $"{NewAPIAddress.Trim('/')}/api/GetAddressUtxos/{addr}";
+            var res = await httpClient.GetStringAsync(url);
+            if (res != null)
+            {
+                var utxosOrdered = JsonConvert.DeserializeObject<List<IndexedUtxoDto>>(res);
+                if (utxosOrdered != null)
+                {
+                    foreach (var ux in utxosOrdered)
+                    {
+                        var nux = new Utxos()
+                        {
+                            Blockheight = ux.Blockheight,
+                            Blocktime = ux.Blocktime,
+                            Index = ux.Index,
+                            Txid = ux.TransactionHash,
+                            Value = ux.Value * FromSatToMainRatio,
+                            Tokens = new List<Tokens>()
+                        };
+                        if (ux.TokenUtxo)
+                            nux.Tokens.Add(new Tokens() { Amount = ux.TokenAmount, TokenId = ux.TokenId });
+
+                        ouxox.Add(nux);
+                    }
+                }
+            }
+            return ouxox;
+        }
         /// <summary>
         /// Return address info object. this object contains list of Utxos.
         /// </summary>

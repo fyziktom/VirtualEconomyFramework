@@ -20,6 +20,7 @@ namespace VEFramework.BlockchainIndexerServer
         public static VirtualNode Node { get; set; } = new VirtualNode();
         public static int NumberOfBlocksInHistory { get; set; } = 10000;
         public static double LatestLoadedBlock { get; set; } = 0;
+        public static double OldestBlockToLoad { get; set; } = 0;
         public static bool StartFromTheLatestBlock { get; set; } = true;
     }
 }
