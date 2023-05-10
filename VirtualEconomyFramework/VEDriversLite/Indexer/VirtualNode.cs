@@ -344,7 +344,6 @@ namespace VEDriversLite.Indexer
                     {
                         var ux = new IndexedUtxo()
                         {
-                            Indexed = true,
                             TransactionHash = txid,
                             Index = i,
                             Value = (double)output.Value.Satoshi / NeblioTransactionHelpers.FromSatToMainRatio,

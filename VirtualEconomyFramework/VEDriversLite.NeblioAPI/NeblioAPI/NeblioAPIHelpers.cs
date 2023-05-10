@@ -70,7 +70,11 @@ namespace VEDriversLite.NeblioAPI
         /// <summary>
         /// Address of VEFramework.BlockchainIndexerServer API
         /// </summary>
+        #if DEBUG
+        public static string NewAPIAddress { get; set; } = "https://localhost:7267/";
+        #else
         public static string NewAPIAddress { get; set; } = "http://localhost:5000/";
+        #endif
         /// <summary>
         /// Check if the number of the confirmation is enough for doing transactions.
         /// It mainly usefull for UI stuff or console.
@@ -227,6 +231,7 @@ namespace VEDriversLite.NeblioAPI
 
             using (var content = new StringContent(cnt, System.Text.Encoding.UTF8, "application/json"))
             {
+                httpClient.DefaultRequestHeaders.Add("mode", "no-cors");
                 HttpResponseMessage result = await httpClient.PostAsync(url, content);
                 if (result.StatusCode == System.Net.HttpStatusCode.OK)
                 {
