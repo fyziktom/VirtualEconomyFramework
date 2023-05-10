@@ -88,7 +88,7 @@ namespace VEDriversLite.Indexer
 
             if (Addresses.TryGetValue(address, out var add))
             {
-                if ((DateTime.UtcNow - add.LastUpdated) >= new TimeSpan(0, 0, 30))
+                if ((DateTime.UtcNow - add.LastUpdated) >= new TimeSpan(0, 0, 10))
                 {
                     var utxos = Utxos.Values.Where(u => u.OwnerAddress == address);
 
