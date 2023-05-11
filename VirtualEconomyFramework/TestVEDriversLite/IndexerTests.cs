@@ -334,7 +334,19 @@ namespace TestVEDriversLite
         }
         public static async Task Indexer_GetTxAsync(string param)
         {
+            await Indexer_InitRPCAsync("");
             var tx = Node.GetTx(param);
+
+            var txs = JsonConvert.SerializeObject(tx);
+            try
+            {
+                var dtx = JsonConvert.DeserializeObject<GetTransactionInfoResponse>(txs);
+                Console.WriteLine($"{JsonConvert.SerializeObject(dtx, Formatting.Indented)}");
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("Error Message: " + ex.Message);
+            }
             await Console.Out.WriteLineAsync(JsonConvert.SerializeObject(tx, Formatting.Indented));
         }
 

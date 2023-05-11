@@ -70,11 +70,11 @@ namespace VEDriversLite.NeblioAPI
         /// <summary>
         /// Address of VEFramework.BlockchainIndexerServer API
         /// </summary>
-        #if DEBUG
-        public static string NewAPIAddress { get; set; } = "https://localhost:7267/";
-        #else
+        //#if DEBUG
+        //public static string NewAPIAddress { get; set; } = "https://localhost:7267/";
+        //#else
         public static string NewAPIAddress { get; set; } = "http://localhost:5000/";
-        #endif
+        //#endif
         /// <summary>
         /// Check if the number of the confirmation is enough for doing transactions.
         /// It mainly usefull for UI stuff or console.
@@ -877,13 +877,53 @@ namespace VEDriversLite.NeblioAPI
             }
         }
 
+        public static async Task<GetTransactionInfoResponse> GetTransactionInfo(string txid)
+        {
+            if (string.IsNullOrEmpty(txid))
+            {
+                return new GetTransactionInfoResponse();
+            }
+            try
+            {
+                GetTransactionInfoResponse tx = null;
+                if (TurnOnCache && TransactionInfoCache.TryGetValue(txid, out var txinfo))
+                {
+                    tx = txinfo;
+                }
+                else
+                {
+                    var httpClient = new HttpClient();
+                    var url = $"{NewAPIAddress.Trim('/')}/api/GetTransactionInfo/{txid}";
+                    var res = await httpClient.GetStringAsync(url);
+                    if (res != null)
+                    {
+                        tx = JsonConvert.DeserializeObject<GetTransactionInfoResponse>(res);
+                        if (tx != null)
+                        {
+                            if (TurnOnCache)
+                                AddToTransactionInfoCache(tx);
+                            return tx;
+                        }
+                    }
+                }
+                if (tx != null)
+                {
+                    return tx;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Cannot load tx {txid} info. " + ex.Message);
+            }
+            return new GetTransactionInfoResponse();
+}
 
         /// <summary>
         /// Get transaction info.
         /// </summary>
         /// <param name="txid">tx id hash</param>
         /// <returns>Neblio API GetTransactionInfo object</returns>
-        public static async Task<GetTransactionInfoResponse> GetTransactionInfo(string txid)
+        public static async Task<GetTransactionInfoResponse> GetTransactionInfoOld(string txid)
         {
             if (string.IsNullOrEmpty(txid))
             {

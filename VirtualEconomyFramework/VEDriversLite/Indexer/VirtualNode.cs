@@ -18,6 +18,8 @@ using System.Threading;
 using VEDriversLite.Indexer.Dto;
 using VEDriversLite.Common;
 using VEDriversLite.Neblio;
+using System.Security.Cryptography.X509Certificates;
+using Ipfs.Http;
 
 namespace VEDriversLite.Indexer
 {
@@ -342,6 +344,7 @@ namespace VEDriversLite.Indexer
                 {
                     if (!Utxos.TryGetValue(utxoId, out var utxo))
                     {
+                        var time = DateTime.UtcNow;
                         var ux = new IndexedUtxo()
                         {
                             TransactionHash = txid,
@@ -349,8 +352,8 @@ namespace VEDriversLite.Indexer
                             Value = (double)output.Value.Satoshi / NeblioTransactionHelpers.FromSatToMainRatio,
                             OwnerAddress = output.ScriptPubKey.GetDestinationAddress(NeblioTransactionHelpers.Network).ToString(),
                             Blockheight = -1,
-                            Blocktime = -1,
-                            Time = DateTime.UtcNow
+                            Blocktime = TimeHelpers.DateTimeToUnixTimestamp(time) / 1000,
+                            Time = time
                         };
 
                         if (isTokenTx)
@@ -402,6 +405,113 @@ namespace VEDriversLite.Indexer
                     try
                     {
                         var txr = JsonConvert.DeserializeObject<GetTransactionInfoResponse>(ores);
+                        if (!IsTxPOS(txr))
+                        {
+                            if (txr.Hex == null)
+                                txr.Hex = string.Empty;
+
+                            var block = new IndexedBlock();
+                            if (Blocks.TryGetValue(txr.Blockhash, out var blk))
+                            {
+                                block = blk;
+                            }
+                            else
+                            {
+                                var blck = await GetBlock(txr.Blockhash);
+                                if (blck != null)
+                                {
+                                    block.Height = blck.Height ?? 0.0;
+                                    block.Time = TimeHelpers.UnixTimestampToDateTime((blck.Time ?? 0.0) * 1000);
+                                    block.Hash = blck.Hash;
+                                }
+                            }
+
+                            foreach (var vout in txr.Vout)
+                            {
+                                if (Utxos.TryGetValue($"{tx}:{vout.N}", out var ux))
+                                {
+                                    if (ux.Used)
+                                        vout.Used = true;
+                                    vout.UsedTxid = ux.UsedInTxHash;
+                                }
+
+                                if (vout.Used == null)
+                                    vout.Used = false;
+                                if (vout.UsedTxid == null)
+                                    vout.UsedTxid = string.Empty;
+                                if (vout.UsedBlockheight == null)
+                                    vout.UsedBlockheight = 0.0;
+                            }
+
+                            foreach (var vin in txr.Vin)
+                            {
+                                if (Utxos.TryGetValue($"{vin.Txid}:{vin.Vout}", out var ux))
+                                {
+                                    vin.Addr = ux.OwnerAddress;
+                                    vin.PreviousOutput = new PreviousOutput()
+                                    {
+                                        Addresses = new List<string>() { ux.OwnerAddress },
+                                        Asm = string.Empty,
+                                        Hex = string.Empty,
+                                        ReqSigs = 0.0,
+                                        Type = string.Empty
+                                    };
+                                    vin.Value = ux.Value;
+                                    vin.ValueSat = ux.Value * NeblioTransactionHelpers.FromSatToMainRatio;
+                                }
+                                else
+                                {
+                                    if (!string.IsNullOrEmpty(vin.ScriptSig.Asm))
+                                    {
+                                        var split = vin.ScriptSig.Asm.Split(' ');
+                                        if (split.Length >= 2)
+                                        {
+                                            var pubkey = split[split.Length - 1];                                            
+                                            BitcoinAddress add = null;
+                                            try
+                                            {
+                                                PubKey pk = new PubKey(pubkey);
+                                                add = pk.GetAddress(ScriptPubKeyType.Legacy, NeblioTransactionHelpers.Network);
+                                            }
+                                            catch(Exception ex)
+                                            {
+                                                Console.WriteLine("Wrong public key input during parsing the Tx data. PubKey input:" + pubkey);
+                                            }
+                                            if (add != null)
+                                            {
+                                                vin.Addr = add.ToString();
+                                                vin.PreviousOutput = new PreviousOutput()
+                                                {
+                                                    Addresses = new List<string>() { add.ToString() },
+                                                    Asm = string.Empty,
+                                                    Hex = string.Empty,
+                                                    ReqSigs = 0.0,
+                                                    Type = string.Empty
+                                                };
+                                            }
+                                            else
+                                            {
+                                                vin.Addr = string.Empty;
+                                                vin.PreviousOutput = new PreviousOutput()
+                                                {
+                                                    Addresses = new List<string>() { string.Empty },
+                                                    Asm = string.Empty,
+                                                    Hex = string.Empty,
+                                                    ReqSigs = 0.0,
+                                                    Type = string.Empty
+                                                };
+                                            }
+                                        }
+                                    }
+                                    if (vin.Value == null)
+                                        vin.Value = 0.0;
+                                    if (vin.ValueSat == null)
+                                        vin.ValueSat = 0.0;
+                                }
+                                txr.Blocktime = TimeHelpers.DateTimeToUnixTimestamp((block.Time)) / 1000;
+                                txr.Blockheight = block.Height;
+                            }
+                        }
                         if (txr != null)
                             return txr;
                     }
