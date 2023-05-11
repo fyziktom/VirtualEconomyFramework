@@ -83,14 +83,14 @@ namespace VEDriversLite.Indexer
         /// Update address info. 
         /// </summary>
         /// <param name="address"></param>
-        public void UpdateAddressInfo(string address)
+        public void UpdateAddressInfo(string address, bool force = false)
         {
             if (!Addresses.ContainsKey(address))
                 Addresses.TryAdd(address, new IndexedAddress());
 
             if (Addresses.TryGetValue(address, out var add))
             {
-                if ((DateTime.UtcNow - add.LastUpdated) >= new TimeSpan(0, 0, 10))
+                if ((DateTime.UtcNow - add.LastUpdated) >= new TimeSpan(0, 0, 10) || force)
                 {
                     var utxos = Utxos.Values.Where(u => u.OwnerAddress == address);
 
@@ -256,6 +256,8 @@ namespace VEDriversLite.Indexer
             var tokenSymbol = string.Empty;
             var tokenId = string.Empty;
 
+            var addressesToUpdate = new List<string>();
+
             foreach (var input in transaction.Inputs)
             {
                 var utxoId = $"{input.PrevOut.Hash}:{input.PrevOut.N}";
@@ -307,6 +309,27 @@ namespace VEDriversLite.Indexer
                     }
                 }
 
+                var split = input.ScriptSig.ToString().Split(' ');
+                if (split.Length >= 2)
+                {
+                    var pubkey = split[split.Length - 1];
+                    BitcoinAddress add = null;
+                    try
+                    {
+                        PubKey pk = new PubKey(pubkey);
+                        add = pk.GetAddress(ScriptPubKeyType.Legacy, NeblioTransactionHelpers.Network);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Wrong public key input during parsing the Tx data. PubKey input:" + pubkey);
+                    }
+                    if (add != null)
+                    {
+                        var ads = add.ToString();
+                        if (!addressesToUpdate.Contains(ads))
+                            addressesToUpdate.Add(ads);
+                    }
+                }
             }
 
             var tx = new NTP1Transactions() { ntp1_instruct_list = new List<NTP1Instructions>() };
@@ -385,7 +408,20 @@ namespace VEDriversLite.Indexer
                             Utxos.TryAdd(utxoId, ux);
                     }
                 }
+
+                var add = output.ScriptPubKey.GetDestinationAddress(NeblioTransactionHelpers.Network);
+                if (add != null)
+                {
+                    var ads = add.ToString();
+                    if (!addressesToUpdate.Contains(ads))
+                        addressesToUpdate.Add(ads);
+                }
             }
+
+            Parallel.ForEach(addressesToUpdate, new ParallelOptions() { MaxDegreeOfParallelism = Environment.ProcessorCount }, address =>
+            {
+                UpdateAddressInfo(address, true);
+            });
         }
 
         /// <summary>
