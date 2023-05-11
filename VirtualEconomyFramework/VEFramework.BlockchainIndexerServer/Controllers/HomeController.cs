@@ -17,6 +17,7 @@ using Newtonsoft.Json;
 using VEFramework.BlockchainIndexerServer.Common;
 using Microsoft.AspNetCore.Mvc.Filters;
 using VEDriversLite.Indexer.Dto;
+using VEDriversLite.Indexer;
 
 namespace VEFramework.BlockchainIndexerServer.Controllers
 {
@@ -364,6 +365,31 @@ namespace VEFramework.BlockchainIndexerServer.Controllers
             catch (Exception ex)
             {
                 throw new HttpResponseException((HttpStatusCode)501, $"Cannot get address info for address: {address}!");
+            }
+        }
+
+        /// <summary>
+        /// Get address tokens supplies
+        /// </summary>
+        /// <returns>List of tx ids</returns>
+        [AllowCrossSiteJsonAttribute]
+        [HttpGet]
+        [Route("GetTokenMetadata/{tokenId}")]
+        public async Task<GetTokenMetadataResponse> GetTokenMetadata(string tokenId)
+        {
+            try
+            {
+                if (!string.IsNullOrEmpty(tokenId))
+                {
+                    if (VirtualNode.TokenMetadataCache.TryGetValue(tokenId, out var tok))
+                        return tok;
+                }
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+                throw new HttpResponseException((HttpStatusCode)501, $"Cannot get token metadata info for token Id: {tokenId}!");
             }
         }
 

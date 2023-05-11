@@ -441,6 +441,8 @@ namespace VEDriversLite.Indexer
                                     vout.UsedTxid = string.Empty;
                                 if (vout.UsedBlockheight == null)
                                     vout.UsedBlockheight = 0.0;
+                                if (vout.UsedBlockheight == null)
+                                    vout.Blockheight = 0.0;
                             }
 
                             foreach (var vin in txr.Vin)
@@ -512,6 +514,11 @@ namespace VEDriversLite.Indexer
                                 txr.Blockheight = block.Height;
                             }
                         }
+                        if (txr.Blockheight == null)
+                            txr.Blockheight = 0.0;
+                        if (txr.Blocktime == null)
+                            txr.Blocktime = 0.0;
+
                         if (txr != null)
                             return txr;
                     }
