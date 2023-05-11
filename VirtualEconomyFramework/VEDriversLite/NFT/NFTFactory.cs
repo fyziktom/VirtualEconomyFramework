@@ -261,7 +261,7 @@ namespace VEDriversLite.NFT
                     nft.TxDetails = txinfo;
                     nft.UtxoIndex = utxoindex;
                     //if (wait)
-                        await nft.ParseOriginData(meta);
+                        await nft.ParseOriginData(meta, txinfo);
                     //else
                         //nft.ParseOriginData(meta);
                     nft.ParsePrice(meta);
@@ -350,9 +350,9 @@ namespace VEDriversLite.NFT
                     nft.TxDetails = txinfo;
                     nft.UtxoIndex = utxoindex;
                     if (wait)
-                        await nft.ParseOriginData(meta);
+                        await nft.ParseOriginData(meta, txinfo);
                     else
-                        nft.ParseOriginData(meta);
+                        nft.ParseOriginData(meta, txinfo);
                     nft.ParsePrice(meta);
                     break;
                 case NFTTypes.Event:
@@ -362,9 +362,9 @@ namespace VEDriversLite.NFT
                     nft.TxDetails = txinfo;
                     nft.UtxoIndex = utxoindex;
                     if (wait)
-                        await nft.ParseOriginData(meta);
+                        await nft.ParseOriginData(meta, txinfo);
                     else
-                        nft.ParseOriginData(meta);
+                        nft.ParseOriginData(meta, txinfo);
                     nft.ParsePrice(meta);
                     break;
                 case NFTTypes.CoruzantArticle:

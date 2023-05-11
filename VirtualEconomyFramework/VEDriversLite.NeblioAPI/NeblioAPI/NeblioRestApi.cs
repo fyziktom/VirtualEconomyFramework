@@ -5910,7 +5910,7 @@ namespace VEDriversLite.NeblioAPI
         public bool? Used { get; set; } = false;
     
         /// <summary>Blockheight of this transaction</summary>
-        [Newtonsoft.Json.JsonProperty("blockheight", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonProperty("blockheight")]
         public double? Blockheight { get; set; }
     
         /// <summary>Blockheight this output was used in</summary>
@@ -6448,18 +6448,18 @@ namespace VEDriversLite.NeblioAPI
     {
         [Newtonsoft.Json.JsonProperty("asm", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Asm { get; set; }
-    
-        [Newtonsoft.Json.JsonProperty("hex", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Hex { get; set; }
-    
-        [Newtonsoft.Json.JsonProperty("reqSigs", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public double? ReqSigs { get; set; }
-    
-        [Newtonsoft.Json.JsonProperty("type", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Type { get; set; }
-    
-        [Newtonsoft.Json.JsonProperty("addresses", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.ICollection<string> Addresses { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("hex")]
+        public string Hex { get; set; } = string.Empty;
+
+        [Newtonsoft.Json.JsonProperty("reqSigs")]
+        public double? ReqSigs { get; set; } = 0.0;
+
+        [Newtonsoft.Json.JsonProperty("type")]
+        public string Type { get; set; } = string.Empty;
+
+        [Newtonsoft.Json.JsonProperty("addresses")]
+        public System.Collections.Generic.ICollection<string> Addresses { get; set; } = new List<string>();
     
         private System.Collections.Generic.IDictionary<string, object> _additionalProperties = new System.Collections.Generic.Dictionary<string, object>();
     

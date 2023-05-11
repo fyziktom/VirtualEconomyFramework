@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 using System.Threading.Tasks;
+using VEDriversLite.NeblioAPI;
 
 namespace VEDriversLite.NFT.Coruzant
 {
@@ -167,9 +168,9 @@ namespace VEDriversLite.NFT.Coruzant
         /// </summary>
         /// <param name="lastmetadata"></param>
         /// <returns></returns>
-        public override async Task ParseOriginData(IDictionary<string, string> lastmetadata)
+        public override async Task ParseOriginData(IDictionary<string, string> lastmetadata, GetTransactionInfoResponse txinfo = null)
         {
-            var nftData = await NFTHelpers.LoadNFTOriginData(Utxo);
+            var nftData = await NFTHelpers.LoadNFTOriginData(Utxo, false, txinfo);
             if (nftData != null)
             {
 

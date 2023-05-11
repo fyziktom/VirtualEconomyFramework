@@ -2,6 +2,7 @@
 using Ipfs.Http;
 using NBitcoin;
 using Newtonsoft.Json;
+using Org.BouncyCastle.Asn1.Tsp;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -198,18 +199,25 @@ namespace VEDriversLite.NFT
         /// <param name="utxo"></param>
         /// <param name="checkIfUsed">if you are checking the NFT ticket you should set this flag</param>
         /// <returns></returns>
-        public static async Task<LoadNFTOriginDataDto> LoadNFTOriginData(string utxo, bool checkIfUsed = false)
+        public static async Task<LoadNFTOriginDataDto> LoadNFTOriginData(string utxo, bool checkIfUsed = false, GetTransactionInfoResponse txinfo = null)
         {
             var result = new LoadNFTOriginDataDto();
             var txid = utxo;
+            var firstRun = true;
+
             while (true)
             {
                 try
                 {
-                    var check = await CheckIfMintTx(txid);
+                    if (firstRun && txinfo != null)
+                        firstRun = false;
+                    else
+                        txinfo = await NeblioAPIHelpers.GetTransactionInfo(txid);
+                    
+                    var check = await CheckIfMintTx(txid, txinfo);
                     if (check.Item1)
                     {
-                        var meta = await CheckIfContainsNFTData(txid);
+                        var meta = await CheckIfContainsNFTData(txid, txinfo);
                         if (meta != null)
                         {
                             result.NFTMetadata = meta;
@@ -230,7 +238,7 @@ namespace VEDriversLite.NFT
                     {
                         if (checkIfUsed && !result.Used)
                         {
-                            var meta = await CheckIfContainsNFTData(txid);
+                            var meta = await CheckIfContainsNFTData(txid, txinfo);
                             if (meta != null && meta.TryGetValue("Used", out var u))
                                 if (u == "true")
                                     result.Used = true;
@@ -284,14 +292,28 @@ namespace VEDriversLite.NFT
         /// </summary>
         /// <param name="utxo"></param>
         /// <returns></returns>
-        public static async Task<Dictionary<string, string>> CheckIfContainsNFTData(string utxo)
+        public static async Task<Dictionary<string, string>> CheckIfContainsNFTData(string utxo, GetTransactionInfoResponse info = null)
         {
-            var meta = await NeblioAPIHelpers.GetTransactionMetadata(TokenId, utxo);
+            if (info == null)
+                info = await NeblioAPIHelpers.GetTransactionInfo(utxo);
 
-            if (meta.TryGetValue("NFT", out var value))
-                if (!string.IsNullOrEmpty(value) && value == "true")
-                    return meta;
+            //var meta = await NeblioAPIHelpers.GetTransactionMetadata(TokenId, utxo);
+            try
+            {
+                var metadata = string.Empty;
+                if (info.Vout.Where(o => o.ScriptPubKey.Type == "nulldata").Any())
+                    metadata = info.Vout.Where(o => o.ScriptPubKey.Type == "nulldata").FirstOrDefault()?.ScriptPubKey.Asm ?? string.Empty;
 
+                var meta = NeblioTransactionHelpers.ParseCustomMetadata(metadata);
+
+                if (meta.TryGetValue("NFT", out var value))
+                    if (!string.IsNullOrEmpty(value) && value == "true")
+                        return meta;
+            }
+            catch(Exception ex)
+            {
+                await Console.Out.WriteLineAsync("Cannot discover if tx contains NFT data. " + ex.Message);
+            }
             return null;
         }
 
@@ -301,9 +323,10 @@ namespace VEDriversLite.NFT
         /// </summary>
         /// <param name="utxo"></param>
         /// <returns></returns>
-        public static async Task<(bool, string)> CheckIfMintTx(string utxo)
+        public static async Task<(bool, string)> CheckIfMintTx(string utxo, GetTransactionInfoResponse info = null)
         {
-            var info = await NeblioAPIHelpers.GetTransactionInfo(utxo);
+            if (info == null)
+                info = await NeblioAPIHelpers.GetTransactionInfo(utxo);
 
             if (info != null && info.Vin != null && info.Vin.Count > 0)
             {

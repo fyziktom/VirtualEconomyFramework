@@ -8,6 +8,7 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using VEDriversLite.Common;
 //using VEDriversLite.Events;
 //using VEDriversLite.Dto;
 //using VEDriversLite.Neblio;
@@ -143,35 +144,70 @@ namespace VEDriversLite.NeblioAPI
         /// <param name="tokenid">token id hash</param>
         /// <param name="txid">tx id hash</param>
         /// <returns></returns>
-        public static async Task<Dictionary<string, string>> GetTransactionMetadata(string tokenid, string txid)
+        public static async Task<Dictionary<string, string>> GetTransactionMetadata(string tokenid, string txid, GetTransactionInfoResponse txinfo = null)
         {
-            if (string.IsNullOrEmpty(txid))
-            {
+            if (string.IsNullOrEmpty(txid) && txinfo == null)
                 return new Dictionary<string, string>();
-            }
 
-            var resp = new Dictionary<string, string>();
-            var info = await GetTokenMetadataOfUtxoCache(tokenid, txid, 0);
+            GetTokenMetadataResponse info = new GetTokenMetadataResponse();
+            if (txinfo == null)
+                txinfo = await GetTransactionInfo(txid);
+            
+            var metadata = string.Empty;
+            if (txinfo.Vout.Where(o => o.ScriptPubKey.Type == "nulldata").Any())
+                metadata = txinfo.Vout.Where(o => o.ScriptPubKey.Type == "nulldata").FirstOrDefault()?.ScriptPubKey.Asm ?? string.Empty;
+            
+            var meta = ParseCustomMetadata(metadata);
+            
+            return meta;
+        }
 
-            if (info.MetadataOfUtxo != null && info.MetadataOfUtxo.UserData.Meta.Count > 0)
+        /// <summary>
+        /// Parse and decompress the custom metadata from the OP_RETURN output
+        /// </summary>
+        /// <param name="metadata"></param>
+        /// <returns></returns>
+        public static Dictionary<string, string> ParseCustomMetadata(string metadata)
+        {
+            try
             {
-                foreach (var o in info.MetadataOfUtxo.UserData.Meta)
+                var meta = metadata.Replace("OP_RETURN ", string.Empty).Trim();
+
+                var customData = string.Empty;
+                if (meta.Contains("789c")) // start of the custom data
+                {
+                    var customDataStart = meta.Split("789c");
+                    var length = customDataStart[0].Length;
+                    customData = meta.Substring(length, meta.Length - length).Trim();
+                }
+
+                var customDecompressed = StringExt.Decompress(StringExt.HexStringToBytes(customData));
+                var metadataString = Encoding.UTF8.GetString(customDecompressed);
+
+                var resp = new Dictionary<string, string>();
+
+                var userData = JsonConvert.DeserializeObject<MetadataOfUtxo>(metadataString);
+
+                foreach (var o in userData.UserData.Meta)
                 {
                     var od = JsonConvert.DeserializeObject<IDictionary<string, string>>(o.ToString());
                     if (od != null && od.Count > 0)
                     {
                         var of = od.First();
                         if (!resp.ContainsKey(of.Key))
-                        {
                             resp.Add(of.Key, of.Value);
-                        }
                     }
                 }
-            }
 
-            return resp;
+                return resp;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Cannot parse custom metadata from the transaction. " + ex.Message + "; original input metadata: " + metadata);
+            }
+            return new Dictionary<string, string>();
         }
- 
+
 
         /// <summary>
         /// Function will take hex of signed transaction and broadcast it via Neblio API
@@ -493,13 +529,12 @@ namespace VEDriversLite.NeblioAPI
                 }
                 else
                 {
-                    var address = await GetClient().GetAddressInfoAsync(addr);
-                    if (address != null)
+                    var utxos = await GetAddressUtxosListFromNewAPIAsync(addr);
+                    if (utxos != null)
                     {
+                        var address = new GetAddressInfoResponse() { Utxos = utxos, Address = addr };
                         if (AddressInfoCache.TryRemove(addr, out info))
-                        {
                             AddressInfoCache.TryAdd(addr, (DateTime.UtcNow, address));
-                        }
 
                         return address;
                     }
@@ -507,11 +542,15 @@ namespace VEDriversLite.NeblioAPI
             }
             else
             {
-                var address = await GetClient().GetAddressInfoAsync(addr);
-                if (address != null && TurnOnCache)
-                    AddressInfoCache.TryAdd(addr, (DateTime.UtcNow, address));
+                var utxos = await GetAddressUtxosListFromNewAPIAsync(addr);
+                if (utxos != null)
+                {
+                    var address = new GetAddressInfoResponse() { Utxos = utxos, Address = addr };
+                    if (address != null && TurnOnCache)
+                        AddressInfoCache.TryAdd(addr, (DateTime.UtcNow, address));
 
-                return address;
+                    return address;
+                }
             }
             return new GetAddressInfoResponse();
         }
@@ -524,20 +563,19 @@ namespace VEDriversLite.NeblioAPI
         public static async Task<ICollection<Utxos>> GetAddressUtxosObjects(string addr)
         {
             if (string.IsNullOrEmpty(addr))
-            {
                 return new List<Utxos>();
-            }
-
+            
             try
             {
-                var addinfo = await GetClient().GetAddressInfoAsync(addr);
-                return addinfo.Utxos;
+                var utxos = await GetAddressUtxosListFromNewAPIAsync(addr);
+                if (utxos != null)
+                    return utxos;
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Cannot load address utxos. " + ex.Message);
-                return new List<Utxos>();
             }
+            return new List<Utxos>();
         }
 
         /// <summary>
@@ -549,24 +587,18 @@ namespace VEDriversLite.NeblioAPI
         public static async Task<ICollection<Utxos>> GetAddressTokensUtxos(string addr, GetAddressInfoResponse addressinfo = null)
         {
             if (string.IsNullOrEmpty(addr))
-            {
                 return new List<Utxos>();
-            }
-
+            
             if (addressinfo == null)
-            {
                 addressinfo = await AddressInfoUtxosAsync(addr);
-            }
-
+            
             var utxos = new List<Utxos>();
             if (addressinfo?.Utxos != null)
             {
                 foreach (var u in addressinfo.Utxos)
                 {
                     if (u != null && u.Tokens.Count > 0)
-                    {
                         utxos.Add(u);
-                    }
                 }
             }
 
@@ -861,7 +893,7 @@ namespace VEDriversLite.NeblioAPI
         /// <param name="txid"></param>
         /// <param name="verbosity"></param>
         /// <returns></returns>
-        public static async Task<GetTokenMetadataResponse> GetTokenMetadataOfUtxoCache(string tokenid, string txid, double verbosity = 0)
+        public static async Task<GetTokenMetadataResponse> GetTokenMetadataOfUtxoCache(string tokenid, string txid, double verbosity = 0, GetTransactionInfoResponse txinfo = null)
         {
             if (TurnOnCache && TokenTxMetadataCache.TryGetValue(txid, out var tinfo))
             {
@@ -869,11 +901,62 @@ namespace VEDriversLite.NeblioAPI
             }
             else
             {
-                var info = await GetClient().GetTokenMetadataOfUtxoAsync(tokenid, txid, 0);
-                if (info != null && TurnOnCache)
-                    TokenTxMetadataCache.TryAdd(txid, info);
+                if (txinfo == null)
+                    txinfo = await GetTransactionInfo(txid);
 
-                return info;
+                var metadata = string.Empty;
+                if (txinfo.Vout.Where(o => o.ScriptPubKey.Type == "nulldata").Any())
+                    metadata = txinfo.Vout.Where(o => o.ScriptPubKey.Type == "nulldata").FirstOrDefault()?.ScriptPubKey.Asm ?? string.Empty;
+
+                var meta = ParseCustomMetadata(metadata);
+                var data = new GetTokenMetadataResponse()
+                {
+                    MetadataOfUtxo = new MetadataOfUtxo()
+                    {
+                        UserData = new UserData()
+                        {
+                            Meta = new List<object>()
+                        }
+                    }
+                };
+
+                if (data.MetadataOfUtxo.UserData.Meta != null)
+                {
+                    foreach (var d in meta)
+                    {
+                        var obj = new JObject
+                        {
+                            [d.Key] = d.Value
+                        };
+                        data.MetadataOfUtxo.UserData.Meta.Add(obj);
+                    }
+                }
+
+                var tokinfo = new GetTokenMetadataResponse();
+                if (TokenMetadataCache.TryGetValue(tokenid, out var ti))
+                {
+                    tokinfo = ti;
+                }
+                else
+                {
+                    var toi = await GetTokenMetadata(tokenid);
+                    tokinfo = toi;
+                }
+
+                data.Divisibility = tokinfo.Divisibility;
+                data.FirstBlock = tokinfo.FirstBlock;
+                data.InitialIssuanceAmount = tokinfo.InitialIssuanceAmount;
+                data.IssuanceTxid = tokinfo.IssuanceTxid;
+                data.IssueAddress = tokinfo.IssueAddress;
+                data.MetadataOfIssuance = tokinfo.MetadataOfIssuance;
+                data.TokenId = tokenid;
+                data.TokenName = tokinfo.TokenName;
+                data.TotalSupply = tokinfo.TotalSupply;
+
+                if (data != null && TurnOnCache)
+                    TokenTxMetadataCache.TryAdd(txid, data);
+
+                return data;
             }
         }
 
@@ -1034,7 +1117,7 @@ namespace VEDriversLite.NeblioAPI
         {
             if (string.IsNullOrEmpty(tokenId))
             {
-                return new GetTokenMetadataResponse();
+                return null;
             }
 
             try
@@ -1046,8 +1129,20 @@ namespace VEDriversLite.NeblioAPI
                 }
                 else
                 {
-                    tokeninfo = await GetClient().GetTokenMetadataAsync(tokenId, 0);
-                    TokenMetadataCache.TryAdd(tokenId, tokeninfo);
+                    //tokeninfo = await GetClient().GetTokenMetadataAsync(tokenId, 0);
+                    var httpClient = new HttpClient();
+                    var url = $"{NewAPIAddress.Trim('/')}/api/GetTokenMetadata/{tokenId}";
+                    var res = await httpClient.GetStringAsync(url);
+                    if (!string.IsNullOrEmpty(res))
+                    {
+                        tokeninfo = JsonConvert.DeserializeObject<GetTokenMetadataResponse>(res);
+                        if (tokeninfo != null)
+                        {
+                            if (TurnOnCache)
+                                TokenMetadataCache.TryAdd(tokenId, tokeninfo);
+                            return tokeninfo;
+                        }
+                    }
                 }
                 if (tokeninfo != null)
                 {
@@ -1055,7 +1150,7 @@ namespace VEDriversLite.NeblioAPI
                 }
                 else
                 {
-                    return new GetTokenMetadataResponse();
+                    return null;
                 }
             }
             catch (Exception ex)
@@ -1076,10 +1171,17 @@ namespace VEDriversLite.NeblioAPI
             {
                 if (!TokensInfo.TryGetValue(tok, out _))
                 {
-                    var info = await GetTokenMetadata(tok);
-                    if (info != null)
+                    try
                     {
-                        TokensInfo.Add(tok, info);
+                        var info = await GetTokenMetadata(tok);
+                        if (info != null)
+                        {
+                            TokensInfo.Add(tok, info);
+                        }
+                    }
+                    catch(Exception ex)
+                    {
+                        await Console.Out.WriteLineAsync("Cannot load token info." + ex.Message);
                     }
                 }
             }
@@ -1100,25 +1202,33 @@ namespace VEDriversLite.NeblioAPI
             TokenSupplyDto t = new TokenSupplyDto();
             try
             {
-                var info = await GetTokenMetadata(tokenId);
-                t.TokenSymbol = info.MetadataOfIssuance.Data.TokenName;
-                var tus = JsonConvert.DeserializeObject<List<tokenUrlCarrier>>(JsonConvert.SerializeObject(info.MetadataOfIssuance.Data.Urls));
-
-                var tu = tus.FirstOrDefault();
-                if (tu != null)
+                try
                 {
-                    t.ImageUrl = tu.url;
-                }
+                    var info = await GetTokenMetadata(tokenId);
+                    t.TokenSymbol = info.MetadataOfIssuance.Data.TokenName;
 
-                t.TokenSymbol = info.TokenName;
-                t.TokenId = tokenId;
-                return t;
+                    var tus = JsonConvert.DeserializeObject<List<tokenUrlCarrier>>(JsonConvert.SerializeObject(info.MetadataOfIssuance.Data.Urls));
+
+                    var tu = tus.FirstOrDefault();
+                    if (tu != null)
+                    {
+                        t.ImageUrl = tu.url;
+                    }
+
+                    t.TokenSymbol = info.TokenName;
+                    t.TokenId = tokenId;
+                    return t;
+                }
+                catch (Exception ex)
+                {
+                    await Console.Out.WriteLineAsync("Cannot get token metadata info for token Id : " + tokenId);
+                }
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Cannot load token metadata. " + ex.Message);
-                return new TokenSupplyDto();
             }
+            return new TokenSupplyDto();
         }
 
         /// <summary>

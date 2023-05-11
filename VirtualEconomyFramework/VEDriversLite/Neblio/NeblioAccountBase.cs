@@ -323,24 +323,8 @@ namespace VEDriversLite.Neblio
             {
                 var txinfotasks = new ConcurrentQueue<Task>();
                 foreach(var utxo in Utxos)
-                {
                     txinfotasks.Enqueue(NeblioAPIHelpers.GetTransactionInfo(utxo.Txid));
-                    var tok = utxo.Tokens?.FirstOrDefault();
-                    var tokid = tok?.TokenId;
-                    var tokamount = tok?.Amount;
-
-                    if (!string.IsNullOrEmpty(tokid) &&
-                        tokamount != null &&
-                        tokamount == 1 &&
-                        NFTHelpers.AllowedTokens.Contains(tokid))
-                    {
-                        if (!VEDLDataContext.NFTCache.ContainsKey(utxo.Txid))
-                        {
-                            txinfotasks.Enqueue(NeblioAPIHelpers.GetTokenMetadataOfUtxoCache(tokid, utxo.Txid));
-                        }
-                    }
-                }
-
+                
                 var tasks = new ConcurrentQueue<Task>();
                 var added = 0;
                 var paralelism = 5;
@@ -413,15 +397,22 @@ namespace VEDriversLite.Neblio
         /// <returns></returns>
         public async Task ReloadTokenSupply()
         {
-            var tos = await NeblioAPIHelpers.CheckTokensSupplies(Address, AddressInfoUtxos);
-            lock (_lock)
+            try
             {
-                TokensSupplies.Clear();
-                TokensSupplies = tos;
+                var tos = await NeblioAPIHelpers.CheckTokensSupplies(Address, AddressInfoUtxos);
+                lock (_lock)
+                {
+                    TokensSupplies.Clear();
+                    TokensSupplies = tos;
+                }
+
+                if (TokensSupplies.TryGetValue(CoruzantNFTHelpers.CoruzantTokenId, out var ts))
+                    CoruzantSourceTokensBalance = ts.Amount;
             }
-            
-            if (TokensSupplies.TryGetValue(CoruzantNFTHelpers.CoruzantTokenId, out var ts))
-                CoruzantSourceTokensBalance = ts.Amount;
+            catch(Exception ex)
+            {
+                await Console.Out.WriteLineAsync($"Cannot reload token supply");
+            }
         }
 
         /// <summary>
