@@ -381,11 +381,11 @@ namespace VEFramework.BlockchainIndexerServer.Controllers
             {
                 if (!string.IsNullOrEmpty(tokenId))
                 {
-                    if (VirtualNode.TokenMetadataCache.TryGetValue(tokenId, out var tok))
+                    if (MainDataContext.Node.TokenMetadataCache.TryGetValue(tokenId, out var tok))
                         return tok;
                 }
 
-                return null;
+                return new GetTokenMetadataResponse();
             }
             catch (Exception ex)
             {

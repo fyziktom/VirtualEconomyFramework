@@ -31,8 +31,8 @@ namespace VEDriversLite.Indexer
         public ConcurrentDictionary<string, IndexedUtxo> Utxos { get; set; } = new ConcurrentDictionary<string, IndexedUtxo>();
         public ConcurrentDictionary<string, IndexedUtxo> UsedUtxos { get; set; } = new ConcurrentDictionary<string, IndexedUtxo>();
 
-        public static ConcurrentDictionary<string, GetTokenMetadataResponse> TokenMetadataCache = new ConcurrentDictionary<string, GetTokenMetadataResponse>();
-        public static ConcurrentDictionary<string, TokenSupplyDto> TokenInfoCache = new ConcurrentDictionary<string, TokenSupplyDto>();
+        public ConcurrentDictionary<string, GetTokenMetadataResponse> TokenMetadataCache = new ConcurrentDictionary<string, GetTokenMetadataResponse>();
+        public ConcurrentDictionary<string, TokenSupplyDto> TokenInfoCache = new ConcurrentDictionary<string, TokenSupplyDto>();
 
         /// <summary>
         /// QT Wallet RPC parameters
@@ -721,37 +721,40 @@ namespace VEDriversLite.Indexer
             }
             else
             {
-                if (tokens.AdditionalProperties != null && tokens.AdditionalProperties.Count > 0)
+                if (tokens.MetadataOfIssuance != null)
                 {
-                    var info = tokens.AdditionalProperties.FirstOrDefault().Value.ToString().Replace("\r\n", string.Empty);
+                    var tkm = tokens.MetadataOfIssuance; //tokens.AdditionalProperties.FirstOrDefault().Value.ToString().Replace("\r\n", string.Empty);
 
-                    if (info != null)
+                    var tus = new List<tokenUrlCarrier>();
+                    try
                     {
-                        var tkm = JsonConvert.DeserializeObject<MetadataOfIssuance>(info);
-                        if (tkm != null)
-                        {
-                            var tus = JsonConvert.DeserializeObject<List<tokenUrlCarrier>>(JsonConvert.SerializeObject(tkm.Data.Urls));
-
-                            var tt = new TokenSupplyDto
-                            {
-                                TokenId = tokens.TokenId,
-                                TokenSymbol = tkm.Data.TokenName
-                            };
-                            var tu = tus.FirstOrDefault();
-                            if (tu != null)
-                                tt.ImageUrl = tu.url;
-
-                            tokeninfo.TokenId = tokens.TokenId;
-                            tokeninfo.TokenName = tkm.Data.TokenName;
-
-                            tokeninfo.MetadataOfIssuance = tkm;
-
-                            TokenMetadataCache.TryAdd(tokens.TokenId, tokeninfo);
-                            if (!TokenInfoCache.ContainsKey(tokens.TokenId))
-                                TokenInfoCache.TryAdd(tokens.TokenId, tt);
-
-                        }
+                        tus = JsonConvert.DeserializeObject<List<tokenUrlCarrier>>(JsonConvert.SerializeObject(tkm.Data.Urls));
                     }
+                    catch(Exception ex)
+                    {
+                        Console.WriteLine("Cannot parse token image for tokenId: " + tokens.TokenId);
+                    }
+                    var tt = new TokenSupplyDto
+                    {
+                        TokenId = tokens.TokenId,
+                        TokenSymbol = tkm.Data.TokenName
+                    };
+                    var tu = tus.FirstOrDefault();
+                    if (tu != null)
+                        tt.ImageUrl = tu.url;
+
+                    tokeninfo.TokenId = tokens.TokenId;
+                    tokeninfo.TokenName = tkm.Data.TokenName;
+                    tokeninfo.MetadataOfIssuance = tkm;
+                    tokeninfo.Divisibility = tokens.Divisibility;
+                    tokeninfo.IssuanceTxid = tokens.IssueTxid;
+                    tokeninfo.AggregationPolicy = tokens.AggregationPolicy;
+                    tokeninfo.LockStatus = tokens.LockStatus;
+
+                    if (!TokenMetadataCache.ContainsKey(tokens.TokenId))
+                        TokenMetadataCache.TryAdd(tokens.TokenId, tokeninfo);
+                    if (!TokenInfoCache.ContainsKey(tokens.TokenId))
+                        TokenInfoCache.TryAdd(tokens.TokenId, tt);
                 }
             }
 
@@ -820,7 +823,7 @@ namespace VEDriversLite.Indexer
                     }
 
                     if (Utxos.TryGetValue(u, out var eu))
-                        eu = ux;
+                        Utxos.TryUpdate(u, ux, eu);
                     else
                         Utxos.TryAdd(u, ux);
                 }
