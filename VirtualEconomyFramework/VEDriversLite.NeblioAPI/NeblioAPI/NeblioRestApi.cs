@@ -4958,64 +4958,64 @@ namespace VEDriversLite.NeblioAPI
         public string TokenName { get; set; }
 
         /// <summary>Example UTXO containing this token.</summary>
-        [Newtonsoft.Json.JsonProperty("someUtxo", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string SomeUtxo { get; set; }
+        [Newtonsoft.Json.JsonProperty("someUtxo")]
+        public string? SomeUtxo { get; set; }
     
         /// <summary>Decimal places the token is divisible to</summary>
-        [Newtonsoft.Json.JsonProperty("divisibility", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonProperty("divisibility")]
         public double? Divisibility { get; set; }
     
         /// <summary>Whether issuance of more tokens is locked</summary>
-        [Newtonsoft.Json.JsonProperty("lockStatus", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonProperty("lockStatus")]
         public bool? LockStatus { get; set; }
     
         /// <summary>Whether the tokens are aggregatable</summary>
-        [Newtonsoft.Json.JsonProperty("aggregationPolicy", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string AggregationPolicy { get; set; }
+        [Newtonsoft.Json.JsonProperty("aggregationPolicy")]
+        public string? AggregationPolicy { get; set; }
     
         /// <summary>Total tokens issued in initial issuance</summary>
-        [Newtonsoft.Json.JsonProperty("initialIssuanceAmount", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonProperty("initialIssuanceAmount")]
         public double? InitialIssuanceAmount { get; set; }
     
         /// <summary>Total number of tokens in supply</summary>
-        [Newtonsoft.Json.JsonProperty("totalSupply", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonProperty("totalSupply")]
         public double? TotalSupply { get; set; }
     
         /// <summary>Total number of addresses this token is held at</summary>
-        [Newtonsoft.Json.JsonProperty("numOfHolders", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonProperty("numOfHolders")]
         public double? NumOfHolders { get; set; }
     
         /// <summary>Total number of transactions of this token</summary>
-        [Newtonsoft.Json.JsonProperty("numOfTransfers", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonProperty("numOfTransfers")]
         public double? NumOfTransfers { get; set; }
     
         /// <summary>Total number of times this token has been issued</summary>
-        [Newtonsoft.Json.JsonProperty("numOfIssuance", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonProperty("numOfIssuance")]
         public double? NumOfIssuance { get; set; }
     
         /// <summary>Number of times tokens have been burned</summary>
-        [Newtonsoft.Json.JsonProperty("numOfBurns", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonProperty("numOfBurns")]
         public double? NumOfBurns { get; set; }
     
         /// <summary>Block number token was issued in</summary>
-        [Newtonsoft.Json.JsonProperty("firstBlock", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonProperty("firstBlock")]
         public double? FirstBlock { get; set; }
     
         /// <summary>TXID the token was issued with</summary>
-        [Newtonsoft.Json.JsonProperty("issuanceTxid", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string IssuanceTxid { get; set; }
+        [Newtonsoft.Json.JsonProperty("issuanceTxid")]
+        public string? IssuanceTxid { get; set; }
     
         /// <summary>Address that issued the tokens</summary>
-        [Newtonsoft.Json.JsonProperty("issueAddress", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string IssueAddress { get; set; }
+        [Newtonsoft.Json.JsonProperty("issueAddress")]
+        public string? IssueAddress { get; set; }
     
         /// <summary>Metadata set at issuance</summary>
-        [Newtonsoft.Json.JsonProperty("metadataOfIssuance", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public MetadataOfIssuance MetadataOfIssuance { get; set; }
+        [Newtonsoft.Json.JsonProperty("metadataOfIssuance")]
+        public MetadataOfIssuance? MetadataOfIssuance { get; set; }
     
         /// <summary>Metadata set for UTXO</summary>
-        [Newtonsoft.Json.JsonProperty("metadataOfUtxo", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public MetadataOfUtxo MetadataOfUtxo { get; set; }
+        [Newtonsoft.Json.JsonProperty("metadataOfUtxo")]
+        public MetadataOfUtxo? MetadataOfUtxo { get; set; }
     
         private System.Collections.Generic.IDictionary<string, object> _additionalProperties = new System.Collections.Generic.Dictionary<string, object>();
     
@@ -6526,7 +6526,7 @@ namespace VEDriversLite.NeblioAPI
         public string Issuer { get; set; }
 
         /// <summary>Urls</summary>
-        [Newtonsoft.Json.JsonProperty("urls", Required = Newtonsoft.Json.Required.AllowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonProperty("urls")]
         public object Urls { get; set; }
 
         /// <summary>Token description</summary>

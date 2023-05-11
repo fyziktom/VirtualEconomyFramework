@@ -25,6 +25,12 @@ namespace VEDriversLite.NeblioAPI
         private static IClient _client;
         private static readonly string BaseURL = "https://ntp1node.nebl.io/";
 
+        public const string VENFTTokenId = "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8";
+        public const string NeblioImageLink = "https://ve-framework.com/ipfs/QmPUvBN4qKvGyKKhADBJKSmNC7JGnr3Rwf5ndENGMfpX54";
+        public const string DogecoinImageLink = "https://ve-framework.com/ipfs/QmRp3eyUeqctcgBFcRuBa7uRWiABTXmLBeYuhLp8xLX1sy";
+        public const string VENFTImageLink = "https://ve-framework.com/ipfs/QmZSdjuLTihuPzVwUKaHLtivw1HYhsyCdQFnVLLCjWoVBk";
+        public const string BDPImageLink = "https://ve-framework.com/ipfs/QmYMVuotTTpW24eJftpbUFgK7Ln8B4ox3ydbKCB6gaVwVB";
+        public const string WDOGEImageLink = "https://ve-framework.com/ipfs/Qmc9xS9a8TnWmU7AN4dtsbu4vU6hpEXpMNAeUdshFfg1wT";
         /// <summary>
         /// Turn on and off of the cache for address info, transaction info and metadata of the transaction
         /// If it is true the cache is on. It is default state.
@@ -968,7 +974,7 @@ namespace VEDriversLite.NeblioAPI
             }
             try
             {
-                GetTransactionInfoResponse tx = null;
+                GetTransactionInfoResponse? tx = null;
                 if (TurnOnCache && TransactionInfoCache.TryGetValue(txid, out var txinfo))
                 {
                     tx = txinfo;
@@ -1122,7 +1128,7 @@ namespace VEDriversLite.NeblioAPI
 
             try
             {
-                GetTokenMetadataResponse tokeninfo = null;
+                GetTokenMetadataResponse? tokeninfo = null;
                 if (TokenMetadataCache.TryGetValue(tokenId, out var ti))
                 {
                     tokeninfo = ti;
@@ -1205,15 +1211,25 @@ namespace VEDriversLite.NeblioAPI
                 try
                 {
                     var info = await GetTokenMetadata(tokenId);
-                    t.TokenSymbol = info.MetadataOfIssuance.Data.TokenName;
+                    t.TokenSymbol = info.MetadataOfIssuance?.Data.TokenName ?? string.Empty;
 
-                    var tus = JsonConvert.DeserializeObject<List<tokenUrlCarrier>>(JsonConvert.SerializeObject(info.MetadataOfIssuance.Data.Urls));
-
-                    var tu = tus.FirstOrDefault();
-                    if (tu != null)
+                    var tus = new List<tokenUrlCarrier>();
+                    try
                     {
-                        t.ImageUrl = tu.url;
+                        if (TokenMetadataCache.TryGetValue(t.TokenId, out var tokcache))
+                            tus = JsonConvert.DeserializeObject<List<tokenUrlCarrier>>(JsonConvert.SerializeObject(tokcache.MetadataOfIssuance?.Data.Urls ?? string.Empty));
+                        else
+                            tus = JsonConvert.DeserializeObject<List<tokenUrlCarrier>>(JsonConvert.SerializeObject(info.MetadataOfIssuance?.Data.Urls ?? string.Empty));
                     }
+                    catch(Exception ex)
+                    {
+                        await Console.Out.WriteLineAsync("Cannot get image urls for token Id: " + t.TokenId);
+                    }
+                    var tu = tus?.FirstOrDefault();
+                    if (tu != null)
+                        t.ImageUrl = tu.url;
+                    else if (tu == null && t.TokenId == VENFTTokenId)
+                        t.ImageUrl = VENFTImageLink;
 
                     t.TokenSymbol = info.TokenName;
                     t.TokenId = tokenId;
@@ -1302,16 +1318,29 @@ namespace VEDriversLite.NeblioAPI
                         {
                             var t = new TokenSupplyDto
                             {
-                                TokenSymbol = info.MetadataOfIssuance.Data.TokenName
+                                TokenSymbol = info.MetadataOfIssuance?.Data.TokenName ?? string.Empty,
+                                TokenId = toks.TokenId
                             };
-                            var tus = JsonConvert.DeserializeObject<List<tokenUrlCarrier>>(JsonConvert.SerializeObject(info.MetadataOfIssuance.Data.Urls));
-
-                            var tu = tus.FirstOrDefault();
-                            if (tu != null)
+                            
+                            var tus = new List<tokenUrlCarrier>();
+                            try
                             {
-                                t.ImageUrl = tu.url;
+                                if (TokenMetadataCache.TryGetValue(toks.TokenId, out var tokcache))
+                                    tus = JsonConvert.DeserializeObject<List<tokenUrlCarrier>>(JsonConvert.SerializeObject(tokcache.MetadataOfIssuance?.Data.Urls ?? string.Empty));
+                                else
+                                    tus = JsonConvert.DeserializeObject<List<tokenUrlCarrier>>(JsonConvert.SerializeObject(info.MetadataOfIssuance?.Data.Urls ?? string.Empty));
+                            }
+                            catch(Exception ex)
+                            {
+                                await Console.Out.WriteLineAsync("cannot parse images url for token Id: " + t.TokenId);
                             }
 
+                            var tu = tus?.FirstOrDefault();
+                            if (tu != null)
+                                t.ImageUrl = tu.url;
+                            else if (tu == null && t.TokenId == VENFTTokenId)
+                                t.ImageUrl = VENFTImageLink;
+                                
                             t.TokenId = toks.TokenId;
                             t.Amount += (double)toks.Amount;
 
