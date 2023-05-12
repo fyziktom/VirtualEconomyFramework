@@ -1216,13 +1216,13 @@ namespace VEDriversLite
             var nftutxo = data.sendUtxo.FirstOrDefault();
             var itt = nftutxo;
             var indx = 0;
-            if (nftutxo.Contains(':'))
+            if (!string.IsNullOrEmpty(nftutxo) && nftutxo.Contains(':'))
             {
-                var splt = nftutxo.Split(':');
-                if (splt.Length > 1)
+                var split = nftutxo.Split(':');
+                if (split.Length > 1)
                 {
-                    itt = splt[0];
-                    indx = Convert.ToInt32(splt[1]);
+                    itt = split[0];
+                    indx = Convert.ToInt32(split[1]);
                 }
             }
 

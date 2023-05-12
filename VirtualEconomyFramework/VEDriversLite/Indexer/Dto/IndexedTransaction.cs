@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VEDriversLite.NeblioAPI;
 
 namespace VEDriversLite.Indexer.Dto
 {
@@ -17,5 +18,6 @@ namespace VEDriversLite.Indexer.Dto
         public DateTime Time { get; set; } = DateTime.MinValue;
         public List<string> InvolvedAddresses { get; set; } = new List<string>();
         public List<string> Utxos { get; set; } = new List<string>();
+        public GetTransactionInfoResponse? TxInfo { get; set; } = null;
     }
 }

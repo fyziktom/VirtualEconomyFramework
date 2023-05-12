@@ -149,8 +149,8 @@ namespace VEDriversLite.NeblioAPI
                 txinfo = await GetTransactionInfo(txid);
             
             var metadata = string.Empty;
-            if (txinfo.Vout.Where(o => o.ScriptPubKey.Type == "nulldata").Any())
-                metadata = txinfo.Vout.Where(o => o.ScriptPubKey.Type == "nulldata").FirstOrDefault()?.ScriptPubKey.Asm ?? string.Empty;
+            if (txinfo.Vout.Any(o => o.ScriptPubKey.Type == "nulldata"))
+                metadata = txinfo.Vout.FirstOrDefault(o => o.ScriptPubKey.Type == "nulldata")?.ScriptPubKey.Asm ?? string.Empty;
             
             var meta = ParseCustomMetadata(metadata);
             
@@ -245,7 +245,7 @@ namespace VEDriversLite.NeblioAPI
 
         public static async Task<string> BroadcastTransactionVEAPI(string txhex)
         {
-            var httpClient = new HttpClient();
+            var client = new HttpClient();
 
             var obj = new
             {
@@ -259,7 +259,7 @@ namespace VEDriversLite.NeblioAPI
             using (var content = new StringContent(cnt, System.Text.Encoding.UTF8, "application/json"))
             {
                 httpClient.DefaultRequestHeaders.Add("mode", "no-cors");
-                HttpResponseMessage result = await httpClient.PostAsync(url, content);
+                HttpResponseMessage result = await client.PostAsync(url, content);
                 if (result.StatusCode == System.Net.HttpStatusCode.OK)
                 {
                     var returnStr = await result.Content.ReadAsStringAsync();
@@ -274,8 +274,8 @@ namespace VEDriversLite.NeblioAPI
                         }
                         catch (Exception ex)
                         {
-                            await Console.Out.WriteLineAsync("Cannot deserialize response from broadcast of the transaction for txhex: " + txhex);
-                            return "Cannot deserialize response from broadcast of the transaction for txhex: " + txhex;
+                            await Console.Out.WriteLineAsync("Cannot deserialize response from broadcast of the transaction for txhex: " + txhex + "Exception: " + ex.Message);
+                            return "Cannot deserialize response from broadcast of the transaction for txhex: " + txhex + "Exception: " + ex.Message;
                         }
                     }
                 }
@@ -405,57 +405,6 @@ namespace VEDriversLite.NeblioAPI
 
 
         /// <summary>
-        /// Return address info object. this object contains list of Utxos.
-        /// </summary>
-        /// <param name="addr"></param>
-        /// <returns></returns>
-        public static async Task<GetAddressInfoResponse> AddressInfoUtxosAsync(string addr)
-        {
-            if (string.IsNullOrEmpty(addr))
-                return new GetAddressInfoResponse();
-            
-            if (TurnOnCache && AddressInfoCache.TryGetValue(addr, out var info))
-            {
-                if ((DateTime.UtcNow - info.Item1) < new TimeSpan(0, 0, 1))
-                {
-                    return info.Item2;
-                }
-                else
-                {
-                    //var address = await GetClient().GetAddressInfoAsync(addr);
-                    var addressUtxos = await GetAddressUtxosListFromNewAPIAsync(addr);
-                    var address = new GetAddressInfoResponse()
-                    {
-                        Utxos = addressUtxos
-                    };
-
-                    if (address != null)
-                    {
-                        if (AddressInfoCache.TryRemove(addr, out info))
-                            AddressInfoCache.TryAdd(addr, (DateTime.UtcNow, address));
-                        
-                        return address;
-                    }
-                }
-            }
-            else
-            {
-                //var address = await GetClient().GetAddressInfoAsync(addr);
-                var addressUtxos = await GetAddressUtxosListFromNewAPIAsync(addr);
-                var address = new GetAddressInfoResponse()
-                {
-                    Utxos = addressUtxos
-                };
-
-                if (address != null && TurnOnCache)
-                    AddressInfoCache.TryAdd(addr, (DateTime.UtcNow, address));
-
-                return address;
-            }
-            return new GetAddressInfoResponse();
-        }
-
-        /// <summary>
         /// Get Utxos List from VE Indexer API
         /// </summary>
         /// <param name="addr"></param>
@@ -463,9 +412,9 @@ namespace VEDriversLite.NeblioAPI
         public static async Task<List<Utxos>> GetAddressUtxosListFromNewAPIAsync(string addr)
         {
             var ouxox = new List<Utxos>();
-            var httpClient = new HttpClient();
+            var client = new HttpClient();
             var url = $"{NewAPIAddress.Trim('/')}/api/GetAddressUtxos/{addr}";
-            var res = await httpClient.GetStringAsync(url);
+            var res = await client.GetStringAsync(url);
             if (res != null)
             {
                 var utxosOrdered = JsonConvert.DeserializeObject<List<IndexedUtxoDto>>(res);
@@ -491,8 +440,14 @@ namespace VEDriversLite.NeblioAPI
             }
             return ouxox;
         }
-        
-        public static async Task<GetAddressInfoResponse> AddressInfoUtxosAsyncOld(string addr)
+
+
+        /// <summary>
+        /// Return address info object. this object contains list of Utxos.
+        /// </summary>
+        /// <param name="addr"></param>
+        /// <returns></returns>
+        public static async Task<GetAddressInfoResponse> AddressInfoUtxosAsync(string addr)
         {
             if (string.IsNullOrEmpty(addr))
                 return new GetAddressInfoResponse();
@@ -523,7 +478,7 @@ namespace VEDriversLite.NeblioAPI
                 if (utxos != null)
                 {
                     var address = new GetAddressInfoResponse() { Utxos = utxos, Address = addr };
-                    if (address != null && TurnOnCache)
+                    if (TurnOnCache)
                         AddressInfoCache.TryAdd(addr, (DateTime.UtcNow, address));
 
                     return address;
@@ -850,8 +805,8 @@ namespace VEDriversLite.NeblioAPI
                     txinfo = await GetTransactionInfo(txid);
 
                 var metadata = string.Empty;
-                if (txinfo.Vout.Where(o => o.ScriptPubKey.Type == "nulldata").Any())
-                    metadata = txinfo.Vout.Where(o => o.ScriptPubKey.Type == "nulldata").FirstOrDefault()?.ScriptPubKey.Asm ?? string.Empty;
+                if (txinfo.Vout.Any(o => o.ScriptPubKey.Type == "nulldata"))
+                    metadata = txinfo.Vout.FirstOrDefault(o => o.ScriptPubKey.Type == "nulldata")?.ScriptPubKey.Asm ?? string.Empty;
 
                 var meta = ParseCustomMetadata(metadata);
                 var data = new GetTokenMetadataResponse()
@@ -898,7 +853,7 @@ namespace VEDriversLite.NeblioAPI
                 data.TokenName = tokinfo.TokenName;
                 data.TotalSupply = tokinfo.TotalSupply;
 
-                if (data != null && TurnOnCache)
+                if (TurnOnCache)
                     TokenTxMetadataCache.TryAdd(txid, data);
 
                 return data;
@@ -919,9 +874,9 @@ namespace VEDriversLite.NeblioAPI
                 }
                 else
                 {
-                    var httpClient = new HttpClient();
+                    var client = new HttpClient();
                     var url = $"{NewAPIAddress.Trim('/')}/api/GetTransactionInfo/{txid}";
-                    var res = await httpClient.GetStringAsync(url);
+                    var res = await client.GetStringAsync(url);
                     if (res != null)
                     {
                         tx = JsonConvert.DeserializeObject<GetTransactionInfoResponse>(res);
@@ -1071,9 +1026,9 @@ namespace VEDriversLite.NeblioAPI
                 else
                 {
                     //tokeninfo = await GetClient().GetTokenMetadataAsync(tokenId, 0);
-                    var httpClient = new HttpClient();
+                    var client = new HttpClient();
                     var url = $"{NewAPIAddress.Trim('/')}/api/GetTokenMetadata/{tokenId}";
-                    var res = await httpClient.GetStringAsync(url);
+                    var res = await client.GetStringAsync(url);
                     if (!string.IsNullOrEmpty(res))
                     {
                         tokeninfo = JsonConvert.DeserializeObject<GetTokenMetadataResponse>(res);

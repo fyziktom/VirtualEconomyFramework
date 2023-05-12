@@ -294,7 +294,7 @@ namespace VEDriversLite.Indexer
                                 var prevTokenVout = prevVout.Tokens.FirstOrDefault();
                                 if (prevTokenVout != null)
                                 {
-                                    var ti = await ProcessTokensMetadata(prevTokenVout);
+                                    var ti = ProcessTokensMetadata(prevTokenVout);
                                     if (ti != null)
                                     {
                                         totalTokens += prevTokenVout.Amount ?? 0.0;
@@ -433,6 +433,12 @@ namespace VEDriversLite.Indexer
         {
             try
             {
+                if (Transactions.TryGetValue(tx, out var it))
+                {
+                    if (it.TxInfo != null)
+                        return it.TxInfo;
+                }
+
                 if (QTRPCClient.IsConnected)
                 {
                     var kr = await QTRPCClient.RPCLocalCommandSplitedAsync("gettransaction", new string[] { tx });
@@ -583,14 +589,13 @@ namespace VEDriversLite.Indexer
             {
                 if (QTRPCClient.IsConnected)
                 {
-                    var kr = await QTRPCClient.RPCLocalCommandSplitedAsync("getblockcount", new string[] { });
+                    var kr = await QTRPCClient.RPCLocalCommandSplitedAsync("getblockcount", Array.Empty<string>());
                     var rr = JsonConvert.DeserializeObject<JObject>(kr);
                     var ores = rr["result"].ToString();
                     try
                     {
                         var block = JsonConvert.DeserializeObject<int>(ores);
-                        if (block != null)
-                            return block;
+                        return block;
                     }
                     catch (Exception ex)
                     {
@@ -696,7 +701,7 @@ namespace VEDriversLite.Indexer
         /// <param name="input"></param>
         /// <param name="txid"></param>
         /// <returns></returns>
-        public async Task ProcessInput(Vin input, string txid)
+        public void ProcessInput(Vin input, string txid)
         {
             try
             {
@@ -747,7 +752,7 @@ namespace VEDriversLite.Indexer
         /// </summary>
         /// <param name="tokens"></param>
         /// <returns></returns>
-        public async Task<GetTokenMetadataResponse> ProcessTokensMetadata(Tokens3 tokens)
+        public GetTokenMetadataResponse ProcessTokensMetadata(Tokens3 tokens)
         {
             var tokeninfo = new GetTokenMetadataResponse();
 
@@ -804,7 +809,7 @@ namespace VEDriversLite.Indexer
         /// <param name="output"></param>
         /// <param name="txid"></param>
         /// <returns></returns>
-        public async Task ProcessOutput(Vout output, string txid, double blocktime, DateTime time, string metadata)
+        public void ProcessOutput(Vout output, string txid, double blocktime, DateTime time, string metadata)
         {
             try
             {
@@ -842,7 +847,7 @@ namespace VEDriversLite.Indexer
 
                         ux.Metadata = metadataString;
 
-                        tokeninfo = await ProcessTokensMetadata(tokens);
+                        tokeninfo = ProcessTokensMetadata(tokens);
 
                         ux.TokenId = tokens.TokenId;
                         ux.TokenUtxo = true;
@@ -874,19 +879,22 @@ namespace VEDriversLite.Indexer
         /// </summary>
         /// <param name="tx"></param>
         /// <returns></returns>
-        public bool IsTxPOS(GetTransactionInfoResponse tx)
+        public static bool IsTxPOS(GetTransactionInfoResponse tx)
         {
             try
             {
                 var vin = tx.Vin.FirstOrDefault();
                 if (vin != null)
                 {
-                    var adp = vin.AdditionalProperties.FirstOrDefault().ToString()?.Contains("coinbase") ?? false;
+                    var adp = vin.AdditionalProperties?.FirstOrDefault().ToString()?.Contains("coinbase") ?? false;
                     if (adp)
                         return true;
                 }
             }
-            catch { }
+            catch(Exception ex) 
+            {
+                Console.WriteLine("Cannot check if tx is PoS tx. " + ex.Message);
+            }
 
             return false;
         }
@@ -917,32 +925,32 @@ namespace VEDriversLite.Indexer
                     Blockheight = blockheight,
                     BlockNumber = blocknumber,
                     Time = time,
-                    Blocktime = t?.Time ?? 0.0
+                    Blocktime = t?.Time ?? 0.0,
+                    TxInfo = t
                 };
 
                 var cancelToken = new CancellationToken();
-
-                await t.Vin.ParallelForEachAsync(async item =>
+                var options = new ParallelOptions() { MaxDegreeOfParallelism = Environment.ProcessorCount, CancellationToken = cancelToken };
+                Parallel.ForEach(t.Vin, options, item =>
                 {
-                    await ProcessInput(item, t.Txid);
-
-                }, cancellationToken: cancelToken, maxDegreeOfParallelism: Environment.ProcessorCount);
+                    ProcessInput(item, t.Txid);
+                });
 
                 var metadata = string.Empty;
-                if (t.Vout.Where(o => o.ScriptPubKey.Type == "nulldata").Any())
+                if (t.Vout.Any(o => o.ScriptPubKey.Type == "nulldata"))
                 {
                     // Token transaction with metadata
-                    metadata = t.Vout.Where(o => o.ScriptPubKey.Type == "nulldata").FirstOrDefault()?.ScriptPubKey.Asm ?? string.Empty;
+                    metadata = t.Vout.FirstOrDefault(o => o.ScriptPubKey.Type == "nulldata")?.ScriptPubKey.Asm ?? string.Empty;
                 }
                 
-                await t.Vout.ParallelForEachAsync(async item =>
+                Parallel.ForEach(t.Vout, options, item =>
                 {
                     item.Blockheight = blockheight;
-                    await ProcessOutput(item, t.Txid, t?.Time ?? 0.0, time, metadata);
+                    ProcessOutput(item, t.Txid, t?.Time ?? 0.0, time, metadata);
                     var u = $"{t.Txid}:{item.N}";
                     utxos.Add(u);
 
-                }, cancellationToken: cancelToken, maxDegreeOfParallelism: Environment.ProcessorCount);
+                });
 
                 it.Utxos = utxos;
 
@@ -987,7 +995,7 @@ namespace VEDriversLite.Indexer
 
             await blocks.ParallelForEachAsync(async block =>
             {
-                var txs = await GetBlockTransactions(block.Transactions, (int)block.Number, block.Height, false);
+                _ = await GetBlockTransactions(block.Transactions, (int)block.Number, block.Height, false);
                 if (Blocks.TryGetValue(block.Hash, out var blk))
                     blk.Indexed = true;
 
@@ -1065,50 +1073,46 @@ namespace VEDriversLite.Indexer
             var requestedLatestDate = actualDate.AddHours(-numberOfHoursInHistory);
             var firstRun = true;
 
-            if (lastLoadedBlock != null)
+            while (actualDate > requestedLatestDate)
             {
-                while (actualDate > requestedLatestDate)
+                if (!string.IsNullOrEmpty(nextBlock))
                 {
-                    if (!string.IsNullOrEmpty(nextBlock))
+                    var resb = await GetBlock(nextBlock);
+                    if (resb != null)
                     {
-                        var resb = await GetBlock(nextBlock);
-                        if (resb != null)
+                        lastLoadedBlock = nextBlock;
+                        nextBlock = resb.Previousblockhash;
+                        actualDate = TimeHelpers.UnixTimestampToDateTime((resb.Time ?? 0.0) * 1000);
+                        if (firstRun)
                         {
-                            lastLoadedBlock = nextBlock;
-                            nextBlock = resb.Previousblockhash;
-                            actualDate = TimeHelpers.UnixTimestampToDateTime((resb.Time ?? 0.0) * 1000);
-                            if (firstRun)
-                            {
-                                requestedLatestDate = actualDate.AddHours(-numberOfHoursInHistory);
+                            requestedLatestDate = actualDate.AddHours(-numberOfHoursInHistory);
 
-                                Console.WriteLine("I will load all transactions between dates:!");
-                                Console.WriteLine($"StartDate:{requestedLatestDate}");
-                                Console.WriteLine($"EndDate:{actualDate}");
-                                Console.WriteLine("Loading, it can take a while...");
-                                Console.WriteLine($"Processing date {actualDate}...");
+                            Console.WriteLine("I will load all transactions between dates:!");
+                            Console.WriteLine($"StartDate:{requestedLatestDate}");
+                            Console.WriteLine($"EndDate:{actualDate}");
+                            Console.WriteLine("Loading, it can take a while...");
+                            Console.WriteLine($"Processing date {actualDate}...");
 
-                                firstRun = false;
-                            }
-
-                            if (actualDate.Year == printedDate.Year && actualDate.Month == printedDate.Month && actualDate.Day == printedDate.Day && actualDate.Hour == printedDate.Hour)
-                                Console.Write(".");
-                            else
-                                Console.WriteLine($"Processing date {actualDate.Month}.{actualDate.Day}.{actualDate.Year}:{actualDate.Hour} hour...");
-
-                            printedDate = actualDate;
-
-                            records.Add(new IndexedBlock()
-                            {
-                                Hash = lastLoadedBlock,
-                                Time = actualDate,
-                                Transactions = resb.Tx.ToList()
-                            });
+                            firstRun = false;
                         }
 
-                        //await Task.Delay(10); // to do not overload the API with requests
-                    }
-                }
+                        if (actualDate.Year == printedDate.Year && actualDate.Month == printedDate.Month && actualDate.Day == printedDate.Day && actualDate.Hour == printedDate.Hour)
+                            Console.Write(".");
+                        else
+                            Console.WriteLine($"Processing date {actualDate.Month}.{actualDate.Day}.{actualDate.Year}:{actualDate.Hour} hour...");
 
+                        printedDate = actualDate;
+
+                        records.Add(new IndexedBlock()
+                        {
+                            Hash = lastLoadedBlock,
+                            Time = actualDate,
+                            Transactions = resb.Tx.ToList()
+                        });
+                    }
+
+                    //await Task.Delay(10); // to do not overload the API with requests
+                }
             }
 
             return records;
@@ -1221,7 +1225,8 @@ namespace VEDriversLite.Indexer
                 var actualDate1 = TimeHelpers.UnixTimestampToDateTime((b?.Time ?? 0.0) * 1000);
                 var actualDate2 = TimeHelpers.UnixTimestampToDateTime((bl?.Time ?? 0.0) * 1000);
 
-                tasks[i] = GetIndexedBlocksOptimized(b.Hash, (actualDate2 - actualDate1).TotalHours);
+                if (b != null && b.Hash != null)
+                    tasks[i] = GetIndexedBlocksOptimized(b.Hash, (actualDate2 - actualDate1).TotalHours);
             }
 
             await Task.WhenAll(tasks);
