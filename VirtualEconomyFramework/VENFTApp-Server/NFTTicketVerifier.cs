@@ -7,6 +7,7 @@ using VEDriversLite;
 using VEDriversLite.NFT;
 using VEDriversLite.Security;
 using VEDriversLite.NeblioAPI;
+using VEDriversLite.Common;
 
 namespace VENFTApp_Server
 {

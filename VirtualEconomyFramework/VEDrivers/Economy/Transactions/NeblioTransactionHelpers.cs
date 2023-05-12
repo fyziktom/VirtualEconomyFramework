@@ -69,7 +69,7 @@ namespace VEDrivers.Economy.Transactions
                 transaction.TimeStamp = time;
             }
 
-            var tokenin = new Tokens2();
+            var tokenin = new Tokens3();
             var addrfrom = string.Empty;
             try
             {
