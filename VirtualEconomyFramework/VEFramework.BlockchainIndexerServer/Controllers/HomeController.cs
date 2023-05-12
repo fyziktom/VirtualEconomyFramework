@@ -395,5 +395,41 @@ namespace VEFramework.BlockchainIndexerServer.Controllers
 
 
         #endregion
+
+        #region ServerStats
+
+        /// <summary>
+        /// Get server sync status
+        /// </summary>
+        /// <returns>ServerStatusDto</returns>
+        [AllowCrossSiteJsonAttribute]
+        [HttpGet]
+        [Route("GetServerSyncStatus/")]
+        public async Task<ServerStatusDto> GetServerSyncStatus()
+        {
+            try
+            {
+                var resp = new ServerStatusDto()
+                {
+                    LatestLoadedBlock = MainDataContext.LatestLoadedBlock,
+                    ActualOldestLoadedBlock = MainDataContext.ActualOldestLoadedBlock,
+                    AverageTimeToIndexBlockInMilliseconds = MainDataContext.AverageTimeToIndexBlock / 1000,
+                    OldestBlockToLoad = MainDataContext.OldestBlockToLoad,
+                    CountOfAddresses = MainDataContext.Node.Addresses.Count,
+                    CountOfBlocks = MainDataContext.Node.Blocks.Count,
+                    CountOfIndexedBlocks = MainDataContext.Node.Blocks.Where(b => b.Value.Indexed).Count(),
+                    CountOfUtxos = MainDataContext.Node.Utxos.Count,
+                    CountOfUsedUtxos = MainDataContext.Node.UsedUtxos.Count,
+                    CountOfTransactions = MainDataContext.Node.Transactions.Count
+                };
+
+                return resp;
+            }
+            catch (Exception ex)
+            {
+                throw new HttpResponseException((HttpStatusCode)501, $"Cannot get server status!");
+            }
+        }
+        #endregion
     }
 }

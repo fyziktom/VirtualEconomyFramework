@@ -8,6 +8,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Text;
@@ -75,12 +76,21 @@ namespace VEFramework.BlockchainIndexerServer
             await Console.Out.WriteLineAsync("Initial loading of data done :)");
 
             var addresses = MainDataContext.Node.GetAllAddresses();
-            await Console.Out.WriteLineAsync("All addresses with some utxos:");
+            await Console.Out.WriteLineAsync("All addresses with some token utxos:");
+            var tokenAddress = new List<string>();
             foreach (var add in addresses)
             {
                 if (MainDataContext.Node.Utxos.Values.Any(u => u.OwnerAddress == add && u.TokenUtxo))
+                {
                     await Console.Out.WriteLineAsync($"\t{add}");
+                    tokenAddress.Add(add);
+                }
             }
+
+            Parallel.ForEach(tokenAddress, new ParallelOptions() { MaxDegreeOfParallelism = Environment.ProcessorCount }, add =>
+            {
+                MainDataContext.Node.UpdateAddressInfo(add, true);
+            });
 
             await Console.Out.WriteLineAsync("");
             await Console.Out.WriteLineAsync("");
@@ -97,6 +107,7 @@ namespace VEFramework.BlockchainIndexerServer
                             {
                                 if (oldestBlock > 0 && oldestBlock > MainDataContext.OldestBlockToLoad)
                                 {
+                                    
                                     await Console.Out.WriteLineAsync("\tInstead of waiting load some few blocks from history...");
                                     var numOfblcks = 2000;
                                     if ((oldestBlock - 2000) >= 0)
@@ -107,9 +118,19 @@ namespace VEFramework.BlockchainIndexerServer
                                         offset = 0;
                                     }
                                     await Console.Out.WriteLineAsync($"\tLoading blocks between {offset} and {offset + numOfblcks}...");
+
+                                    var stopwatch = new Stopwatch();
+                                    stopwatch.Start();
                                     await MainDataContext.Node.GetIndexedBlocksByNumbersOffsetAndAmount(offset, numOfblcks);
                                     await MainDataContext.Node.LoadAllBlocksTransactions();
+                                    stopwatch.Stop();
+                                    var time = (long)(stopwatch.ElapsedMilliseconds * 1000) / (long)numOfblcks;
+                                    MainDataContext.AverageTimeToIndexBlockHistory.Add(Convert.ToDouble(time));
+                                    if (MainDataContext.AverageTimeToIndexBlockHistory.Count > 100)
+                                        MainDataContext.AverageTimeToIndexBlockHistory.RemoveAt(0);
+
                                     oldestBlock = offset;
+                                    MainDataContext.ActualOldestLoadedBlock = oldestBlock;
                                 }
                                 else
                                 {
