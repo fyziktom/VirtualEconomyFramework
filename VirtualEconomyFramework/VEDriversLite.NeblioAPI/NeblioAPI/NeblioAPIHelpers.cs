@@ -394,7 +394,7 @@ namespace VEDriversLite.NeblioAPI
         /// </summary>
         /// <param name="addr"></param>
         /// <returns></returns>
-        public static async Task<GetAddressResponse> AddressInfoAsync(string addr)
+        public static async Task<GetAddressResponse> AddressInfoAsyncOld(string addr)
         {
             if (string.IsNullOrEmpty(addr))
                 return new GetAddressResponse();
@@ -403,6 +403,25 @@ namespace VEDriversLite.NeblioAPI
             return address;
         }
 
+        public static async Task<GetAddressResponse?> AddressInfoAsync(string addr)
+        {
+            var client = new HttpClient();
+            var url = $"{NewAPIAddress.Trim('/')}/api/GetAddressTransactions/{addr}/0/1000";
+            var res = await client.GetStringAsync(url);
+            if (res != null)
+            {
+                var txs = JsonConvert.DeserializeObject<List<string>>(res);
+                if (txs != null)
+                {
+                    var reso = new GetAddressResponse()
+                    {
+                        Transactions = txs
+                    };
+                    return reso;
+                }
+            }
+            return null;
+        }
 
         /// <summary>
         /// Get Utxos List from VE Indexer API
