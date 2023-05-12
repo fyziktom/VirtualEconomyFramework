@@ -91,10 +91,8 @@ namespace VEDriversLite.NeblioAPI
         public static string IsEnoughConfirmationsForSend(int confirmations)
         {
             if (confirmations > MinimumConfirmations)
-            {
                 return ">" + MinimumConfirmations.ToString();
-            }
-
+            
             return confirmations.ToString();
         }
         
@@ -106,10 +104,8 @@ namespace VEDriversLite.NeblioAPI
         public static string ShortenAddress(string address)
         {
             if (string.IsNullOrEmpty(address))
-            {
                 return string.Empty;
-            }
-
+            
             var shortaddress = address.Substring(0, 3) + "..." + address.Substring(address.Length - 3);
             return shortaddress;
         }
@@ -123,24 +119,17 @@ namespace VEDriversLite.NeblioAPI
         public static string ShortenTxId(string txid, bool withDots = true, int len = 10)
         {
             if (string.IsNullOrEmpty(txid))
-            {
                 return string.Empty;
-            }
-
+            
             if (txid.Length < 10)
-            {
                 return txid;
-            }
 
             string txids;
             if (withDots)
-            {
                 txids = txid.Remove(len / 2, txid.Length - len / 2) + "....." + txid.Remove(0, txid.Length - len / 2);
-            }
             else
-            {
                 txids = txid.Remove(len / 2, txid.Length - len / 2) + txid.Remove(0, txid.Length - len / 2);
-            }
+
             return txids;
         }
         
@@ -150,7 +139,7 @@ namespace VEDriversLite.NeblioAPI
         /// <param name="tokenid">token id hash</param>
         /// <param name="txid">tx id hash</param>
         /// <returns></returns>
-        public static async Task<Dictionary<string, string>> GetTransactionMetadata(string tokenid, string txid, GetTransactionInfoResponse txinfo = null)
+        public static async Task<Dictionary<string, string>> GetTransactionMetadata(string tokenid, string txid, GetTransactionInfoResponse? txinfo = null)
         {
             if (string.IsNullOrEmpty(txid) && txinfo == null)
                 return new Dictionary<string, string>();
@@ -232,13 +221,9 @@ namespace VEDriversLite.NeblioAPI
                 var txid = await BroadcastNTP1TxAsync(bdto);
 
                 if (!string.IsNullOrEmpty(txid))
-                {
                     return txid;
-                }
                 else
-                {
                     throw new Exception("Cannot broadcast transaction.");
-                }
             }
             else
             {
@@ -285,10 +270,7 @@ namespace VEDriversLite.NeblioAPI
                         {
                             var resp = JsonConvert.DeserializeObject<BroadcastTransactionResponseDto>(returnStr);
                             if (resp != null)
-                            {
-                                returnStr = resp.data.txid;
-                                return returnStr;
-                            }
+                                return resp.data.txid;
                         }
                         catch (Exception ex)
                         {
@@ -313,25 +295,17 @@ namespace VEDriversLite.NeblioAPI
         public static SendTokenRequest GetSendTokenObject(double amount, double fee = 20000, string receiver = "", string tokenId = "")
         {
             if (amount == 0)
-            {
                 throw new Exception("Amount to send cannot be 0.");
-            }
-
+            
             if (string.IsNullOrEmpty(receiver))
-            {
                 throw new Exception("Receiver Address not provided.");
-            }
-
+            
             if (string.IsNullOrEmpty(tokenId))
-            {
                 throw new Exception("Token Id not provided.");
-            }
-
+            
             if (fee < MinimumAmount)
-            {
                 throw new Exception("Fee cannot be smaller than 10000 Sat.");
-            }
-
+            
             var dto = new SendTokenRequest
             {
                 Metadata = new Metadata2()
@@ -423,28 +397,28 @@ namespace VEDriversLite.NeblioAPI
         public static async Task<GetAddressResponse> AddressInfoAsync(string addr)
         {
             if (string.IsNullOrEmpty(addr))
-            {
                 return new GetAddressResponse();
-            }
-
+            
             var address = await GetClient().GetAddressAsync(addr);
             return address;
         }
 
 
-        public static async Task<GetAddressInfoResponse> AddressInfoUtxosFromNewAPIAsync(string addr)
+        /// <summary>
+        /// Return address info object. this object contains list of Utxos.
+        /// </summary>
+        /// <param name="addr"></param>
+        /// <returns></returns>
+        public static async Task<GetAddressInfoResponse> AddressInfoUtxosAsync(string addr)
         {
             if (string.IsNullOrEmpty(addr))
-            {
                 return new GetAddressInfoResponse();
-            }
-
+            
             if (TurnOnCache && AddressInfoCache.TryGetValue(addr, out var info))
             {
                 if ((DateTime.UtcNow - info.Item1) < new TimeSpan(0, 0, 1))
                 {
-                    GetAddressInfoResponse ainfo = info.Item2;
-                    return ainfo;
+                    return info.Item2;
                 }
                 else
                 {
@@ -458,10 +432,8 @@ namespace VEDriversLite.NeblioAPI
                     if (address != null)
                     {
                         if (AddressInfoCache.TryRemove(addr, out info))
-                        {
                             AddressInfoCache.TryAdd(addr, (DateTime.UtcNow, address));
-                        }
-
+                        
                         return address;
                     }
                 }
@@ -483,6 +455,11 @@ namespace VEDriversLite.NeblioAPI
             return new GetAddressInfoResponse();
         }
 
+        /// <summary>
+        /// Get Utxos List from VE Indexer API
+        /// </summary>
+        /// <param name="addr"></param>
+        /// <returns></returns>
         public static async Task<List<Utxos>> GetAddressUtxosListFromNewAPIAsync(string addr)
         {
             var ouxox = new List<Utxos>();
@@ -514,18 +491,12 @@ namespace VEDriversLite.NeblioAPI
             }
             return ouxox;
         }
-        /// <summary>
-        /// Return address info object. this object contains list of Utxos.
-        /// </summary>
-        /// <param name="addr"></param>
-        /// <returns></returns>
-        public static async Task<GetAddressInfoResponse> AddressInfoUtxosAsync(string addr)
+        
+        public static async Task<GetAddressInfoResponse> AddressInfoUtxosAsyncOld(string addr)
         {
             if (string.IsNullOrEmpty(addr))
-            {
                 return new GetAddressInfoResponse();
-            }
-
+            
             if (TurnOnCache && AddressInfoCache.TryGetValue(addr, out var info))
             {
                 if ((DateTime.UtcNow - info.Item1) < new TimeSpan(0, 0, 1))
@@ -590,7 +561,7 @@ namespace VEDriversLite.NeblioAPI
         /// <param name="addr"></param>
         /// <param name="addressinfo"></param>
         /// <returns></returns>
-        public static async Task<ICollection<Utxos>> GetAddressTokensUtxos(string addr, GetAddressInfoResponse addressinfo = null)
+        public static async Task<ICollection<Utxos>> GetAddressTokensUtxos(string addr, GetAddressInfoResponse? addressinfo = null)
         {
             if (string.IsNullOrEmpty(addr))
                 return new List<Utxos>();
@@ -619,29 +590,21 @@ namespace VEDriversLite.NeblioAPI
         public static async Task<string> GetTxHex(string txid)
         {
             if (string.IsNullOrEmpty(txid))
-            {
                 return string.Empty;
-            }
-
+            
             var tx = await GetTransactionInfo(txid);
             if (tx != null)
-            {
                 return tx.Hex;
-            }
             else
-            {
                 return string.Empty;
-            }
         }
 
-        private static void AddToTransactionInfoCache(GetTransactionInfoResponse txinfo)
+        private static void AddToTransactionInfoCache(GetTransactionInfoResponse? txinfo)
         {
             if (txinfo == null) return;
 
             if (txinfo.Confirmations > MinimumConfirmations + 2)
-            {
                 TransactionInfoCache.TryAdd(txinfo.Txid, txinfo);
-            }
         }
 
         /// <summary>
@@ -651,18 +614,14 @@ namespace VEDriversLite.NeblioAPI
         /// <param name="allowedTokens">Load just the allowed tokens</param>
         /// <param name="addressinfo"></param>
         /// <returns></returns>
-        public static async Task<ICollection<Utxos>> GetAddressNFTsUtxos(string addr, List<string> allowedTokens, GetAddressInfoResponse addressinfo = null)
+        public static async Task<ICollection<Utxos>> GetAddressNFTsUtxos(string addr, List<string> allowedTokens, GetAddressInfoResponse? addressinfo = null)
         {
             if (string.IsNullOrEmpty(addr))
-            {
                 return new List<Utxos>();
-            }
-
+            
             if (addressinfo == null)
-            {
                 addressinfo = await AddressInfoUtxosAsync(addr);
-            }
-
+            
             var utxos = new List<Utxos>();
 
             if (addressinfo?.Utxos != null)
@@ -674,19 +633,15 @@ namespace VEDriversLite.NeblioAPI
                         foreach (var tok in u.Tokens)
                         {
                             if (allowedTokens.Contains(tok.TokenId) && tok.Amount == 1)
-                            {
                                 utxos.Add(u);
-                            }
                         }
                     }
                 }
             }
 
             if (utxos == null || utxos.Count == 0)
-            {
                 return new List<Utxos>();
-            }
-
+            
             var ouxox = utxos.OrderByDescending(u => u.Blocktime).ToList();
             return ouxox;
         }
@@ -712,7 +667,7 @@ namespace VEDriversLite.NeblioAPI
         /// <param name="minAmount">minimum amount of one utxo</param>
         /// <param name="requiredAmount">amount what must be collected even by multiple utxos</param>
         /// <returns></returns>
-        public static async Task<ICollection<Utxos>> GetAddressNeblUtxo(string address, double minAmount = 0.0001, double requiredAmount = 0.0001, GetAddressInfoResponse addinfo = null, double latestBlockHeight = 0)
+        public static async Task<ICollection<Utxos>> GetAddressNeblUtxo(string address, double minAmount = 0.0001, double requiredAmount = 0.0001, GetAddressInfoResponse? addinfo = null, double latestBlockHeight = 0)
         {
             var founded = 0.0;
             var resp = new List<Utxos>();
@@ -731,9 +686,7 @@ namespace VEDriversLite.NeblioAPI
 
             var utxos = addinfo?.Utxos;
             if (utxos == null)
-            {
                 return resp;
-            }
 
             if (latestBlockHeight == 0)
                 latestBlockHeight = await NeblioTransactionsCache.LatestBlockHeight(utxos.Where(u => u.Blockheight.Value > 0)?.FirstOrDefault()?.Txid, address);
@@ -748,9 +701,7 @@ namespace VEDriversLite.NeblioAPI
                     resp.Add(ut);
                     founded += ((double)ut.Value / FromSatToMainRatio);
                     if (founded > requiredAmount)
-                    {
                         return resp;
-                    }
                 }
             }
 
@@ -768,7 +719,7 @@ namespace VEDriversLite.NeblioAPI
         /// <param name="txid">input txid hash</param>
         /// <param name="indx"></param>
         /// <returns>true and index of utxo</returns>
-        public static async Task<double> ValidateOneTokenNFTUtxo(string address, string tokenId, string txid, int indx, GetAddressInfoResponse addinfo = null, double latestBlockHeight = 0)
+        public static async Task<double> ValidateOneTokenNFTUtxo(string address, string tokenId, string txid, int indx, GetAddressInfoResponse? addinfo = null, double latestBlockHeight = 0)
         {
             if (addinfo == null)
             {
@@ -784,16 +735,12 @@ namespace VEDriversLite.NeblioAPI
 
             var utxos = addinfo?.Utxos;
             if (utxos == null)
-            {
                 return -1;
-            }
-
+            
             var uts = utxos.Where(u => (u.Txid == txid && u.Index == indx)); // you can have multiple utxos with same txid but different amount of tokens
             if (uts == null)
-            {
                 return -1;
-            }
-
+            
             if (latestBlockHeight == 0)
                 latestBlockHeight = await NeblioTransactionsCache.LatestBlockHeight(utxos.Where(u => u.Blockheight.Value > 0)?.FirstOrDefault()?.Txid, address);
             
@@ -804,9 +751,7 @@ namespace VEDriversLite.NeblioAPI
                 {
                     double UtxoBlockHeight = ut.Blockheight != null ? ut.Blockheight.Value : 0;
                     if (IsValidUtxo(UtxoBlockHeight, latestBlockHeight))
-                    {
                         return ((double)ut.Index);
-                    }
                 }
             }
 
@@ -823,7 +768,7 @@ namespace VEDriversLite.NeblioAPI
         /// <param name="addinfo"></param>
         /// <param name="latestBlockHeight"></param>
         /// <returns></returns>
-        public static async Task<List<Utxos>> FindUtxoForMintNFT(string addr, string tokenId, int numberToMint = 1, double oneTokenSat = 10000, GetAddressInfoResponse addinfo = null, double latestBlockHeight = 0)
+        public static async Task<List<Utxos>> FindUtxoForMintNFT(string addr, string tokenId, int numberToMint = 1, double oneTokenSat = 10000, GetAddressInfoResponse? addinfo = null, double latestBlockHeight = 0)
         {
             if (addinfo == null)
             {
@@ -864,9 +809,7 @@ namespace VEDriversLite.NeblioAPI
                         founded += (double)tok.Amount;
                         resp.Add(ut);
                         if (founded > numberToMint)
-                        {
                             break;
-                        }
                     }
                 }
             }
@@ -879,16 +822,12 @@ namespace VEDriversLite.NeblioAPI
                 founded += (double)r.Tokens.ToList()[0].Amount;
                 res.Add(r);
                 if (founded > numberToMint)
-                {
                     break;
-                }
             }
 
             if (res.Count > 10)// neblio API cannot handle more than 10 inputs
-            {
                 return new List<Utxos>();
-            }
-
+            
             return res;
         }
 
@@ -899,7 +838,7 @@ namespace VEDriversLite.NeblioAPI
         /// <param name="txid"></param>
         /// <param name="verbosity"></param>
         /// <returns></returns>
-        public static async Task<GetTokenMetadataResponse> GetTokenMetadataOfUtxoCache(string tokenid, string txid, double verbosity = 0, GetTransactionInfoResponse txinfo = null)
+        public static async Task<GetTokenMetadataResponse> GetTokenMetadataOfUtxoCache(string tokenid, string txid, double verbosity = 0, GetTransactionInfoResponse? txinfo = null)
         {
             if (TurnOnCache && TokenTxMetadataCache.TryGetValue(txid, out var tinfo))
             {
@@ -969,9 +908,8 @@ namespace VEDriversLite.NeblioAPI
         public static async Task<GetTransactionInfoResponse> GetTransactionInfo(string txid)
         {
             if (string.IsNullOrEmpty(txid))
-            {
                 return new GetTransactionInfoResponse();
-            }
+            
             try
             {
                 GetTransactionInfoResponse? tx = null;
@@ -995,10 +933,9 @@ namespace VEDriversLite.NeblioAPI
                         }
                     }
                 }
+
                 if (tx != null)
-                {
                     return tx;
-                }
             }
             catch (Exception ex)
             {
@@ -1051,7 +988,7 @@ namespace VEDriversLite.NeblioAPI
         /// <param name="mode"></param>
         /// <param name="txinfo"></param>
         /// <returns></returns>
-        public static async Task<string> GetTransactionInternal(string txid, string mode, GetTransactionInfoResponse txinfo = null)
+        public static async Task<string> GetTransactionInternal(string txid, string mode, GetTransactionInfoResponse? txinfo = null)
         {
             if (string.IsNullOrEmpty(txid))
             {
@@ -1094,7 +1031,7 @@ namespace VEDriversLite.NeblioAPI
         /// <param name="txid">tx id hash</param>
         /// <param name="txinfo">if you already have txinfo object</param>
         /// <returns>Sender address</returns>
-        public static async Task<string> GetTransactionSender(string txid, GetTransactionInfoResponse txinfo = null)
+        public static async Task<string> GetTransactionSender(string txid, GetTransactionInfoResponse? txinfo = null)
         {
             return await GetTransactionInternal(txid, "sender", txinfo);
         }
@@ -1105,7 +1042,7 @@ namespace VEDriversLite.NeblioAPI
         /// <param name="txid">tx id hash</param>
         /// <param name="txinfo">if you already have txinfo object</param>
         /// <returns>Sender address</returns>
-        public static async Task<string> GetTransactionReceiver(string txid, GetTransactionInfoResponse txinfo = null)
+        public static async Task<string> GetTransactionReceiver(string txid, GetTransactionInfoResponse? txinfo = null)
         {
             return await GetTransactionInternal(txid, "receiver", txinfo);
         }
@@ -1122,9 +1059,7 @@ namespace VEDriversLite.NeblioAPI
         public static async Task<GetTokenMetadataResponse> GetTokenMetadata(string tokenId)
         {
             if (string.IsNullOrEmpty(tokenId))
-            {
                 return null;
-            }
 
             try
             {
@@ -1150,14 +1085,11 @@ namespace VEDriversLite.NeblioAPI
                         }
                     }
                 }
+
                 if (tokeninfo != null)
-                {
                     return tokeninfo;
-                }
                 else
-                {
                     return null;
-                }
             }
             catch (Exception ex)
             {
@@ -1181,9 +1113,7 @@ namespace VEDriversLite.NeblioAPI
                     {
                         var info = await GetTokenMetadata(tok);
                         if (info != null)
-                        {
                             TokensInfo.Add(tok, info);
-                        }
                     }
                     catch(Exception ex)
                     {
@@ -1201,10 +1131,8 @@ namespace VEDriversLite.NeblioAPI
         public static async Task<TokenSupplyDto> GetTokenInfo(string tokenId)
         {
             if (string.IsNullOrEmpty(tokenId))
-            {
                 return new TokenSupplyDto();
-            }
-
+            
             TokenSupplyDto t = new TokenSupplyDto();
             try
             {
@@ -1255,36 +1183,26 @@ namespace VEDriversLite.NeblioAPI
         /// <param name="tokenId">Specify the tokenId</param>
         /// <param name="addressinfo">if you have already loaded address info with utxo list provide it to prevent unnecessary API requests</param>
         /// <returns></returns>
-        public static async Task<(double, GetTokenMetadataResponse)> GetActualMintingSupply(string address, string tokenId, GetAddressInfoResponse addressinfo)
+        public static async Task<(double, GetTokenMetadataResponse)> GetActualMintingSupply(string address, string tokenId, GetAddressInfoResponse? addressinfo)
         {
             var res = await GetAddressTokensUtxos(address, addressinfo);
             var utxos = new List<Utxos>();
             foreach (var r in res)
             {
                 var toks = r.Tokens.ToArray()?[0];
-                if (toks != null && toks.Amount > 1)
-                {
-                    if (toks.TokenId == tokenId)
-                    {
-                        utxos.Add(r);
-                    }
-                }
+                if (toks != null && toks.Amount > 1 && toks.TokenId == tokenId)
+                    utxos.Add(r);
             }
 
             var totalAmount = 0.0;
             foreach (var u in utxos)
-            {
                 totalAmount += (double)u.Tokens.ToArray()?[0]?.Amount;
-            }
+            
 
             if (TokensInfo.TryGetValue(tokenId, out var info))
-            {
                 return (totalAmount, info);
-            }
             else
-            {
                 return (totalAmount, null);
-            }
         }
 
         private class tokenUrlCarrier

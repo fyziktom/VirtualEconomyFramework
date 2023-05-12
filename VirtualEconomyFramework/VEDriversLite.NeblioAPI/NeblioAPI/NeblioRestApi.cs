@@ -6509,7 +6509,7 @@ namespace VEDriversLite.NeblioAPI
             set { _additionalProperties = value; }
         }
         /// <summary>Number of transaction confirmations</summary>
-        [Newtonsoft.Json.JsonProperty("metadataOfIssuance", Required = Newtonsoft.Json.Required.AllowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonProperty("metadataOfIssuance")]
         public MetadataOfIssuance? MetadataOfIssuance { get; set; }
 
     }

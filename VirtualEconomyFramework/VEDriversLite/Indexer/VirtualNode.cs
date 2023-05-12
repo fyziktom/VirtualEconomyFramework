@@ -858,10 +858,9 @@ namespace VEDriversLite.Indexer
                         uux.OwnerAddress = ux.OwnerAddress;
                     }
 
-                    if (Utxos.TryGetValue(u, out var eu))
-                        Utxos.TryUpdate(u, ux, eu);
-                    else
-                        Utxos.TryAdd(u, ux);
+                    Utxos.TryRemove(u, out var eu);
+                    
+                    Utxos.TryAdd(u, ux);
                 }
             }
             catch (Exception ex)

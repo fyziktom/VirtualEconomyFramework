@@ -58,19 +58,11 @@ namespace VEDriversLite.Indexer.Dto
 
         public bool AddUtxo(IndexedUtxo utxo)
         {
-            if (utxos.TryGetValue(utxo.TransactionHashAndN, out var u))
+            RemoveUtxo(utxo.TransactionHashAndN);   
+            if (utxos.TryAdd(utxo.TransactionHashAndN, utxo))
             {
-                u = utxo;
                 LastUpdated = DateTime.UtcNow;
                 return true;
-            }
-            else
-            {
-                if (utxos.TryAdd(utxo.TransactionHashAndN, utxo))
-                {
-                    LastUpdated = DateTime.UtcNow;
-                    return true;
-                }
             }
             return false;
         }
