@@ -526,9 +526,7 @@ namespace VEDriversLite.Neblio
                 {
                     lock (_lock)
                     {
-                        //TotalBalance = (double)AddressInfo.Balance;
-                        //TotalUnconfirmedBalance = (double)AddressInfo.UnconfirmedBalance;
-                        AddressInfo.Transactions = AddressInfo.Transactions.Reverse().ToList();
+                        AddressInfo.Transactions = AddressInfo.Transactions.ToList();
                     }
                 }
                 else

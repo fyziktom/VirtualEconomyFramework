@@ -5353,7 +5353,10 @@ namespace VEDriversLite.NeblioAPI
         /// <summary>Hash of the next block on the chain</summary>
         [Newtonsoft.Json.JsonProperty("nextblockhash", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Nextblockhash { get; set; }
-    
+        /// <summary>Hash of the next block on the chain</summary>
+        [Newtonsoft.Json.JsonProperty("flags")]
+        public string Flags { get; set; }
+
         /// <summary>Number of NEBL awarded in this block</summary>
         [Newtonsoft.Json.JsonProperty("reward", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public double? Reward { get; set; }

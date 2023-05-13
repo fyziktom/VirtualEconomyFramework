@@ -3285,5 +3285,35 @@ namespace VEDriversLite
             return new Dictionary<string, string>();
         }
 
+        public static string? GetAddressStringFromSignedScriptPubKey(ScriptSig script)
+        {
+            return GetAddressFromSignedScriptPubKey(script)?.ToString();
+        }
+        public static BitcoinAddress? GetAddressFromSignedScriptPubKey(ScriptSig script)
+        {
+            if (script == null)
+                return null;
+            if (string.IsNullOrEmpty(script.Asm))
+                return null;
+
+            var split = script.Asm.Split(' ');
+            if (split.Length >= 2)
+            {
+                var pubkey = split[split.Length - 1];
+                BitcoinAddress add = null;
+                try
+                {
+                    PubKey pk = new PubKey(pubkey);
+                    add = pk.GetAddress(ScriptPubKeyType.Legacy, NeblioTransactionHelpers.Network);
+                    return add;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Wrong public key input during parsing the Tx data. PubKey input:" + pubkey);
+                }
+            }
+            return null;
+        }
+
     }
 }

@@ -85,6 +85,9 @@ namespace VEDriversLite.Common
         /// <returns></returns>
         public static byte[] Decompress(byte[] data)
         {
+            if (data.Length == 0)
+                return Array.Empty<byte>();
+
             var outputStream = new MemoryStream();
             using (var compressedStream = new MemoryStream(data))
             using (var inputStream = new InflaterInputStream(compressedStream))

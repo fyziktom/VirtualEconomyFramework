@@ -176,6 +176,9 @@ namespace VEDriversLite.NeblioAPI
                     customData = meta.Substring(length, meta.Length - length).Trim();
                 }
 
+                if (string.IsNullOrEmpty(customData))
+                    return new Dictionary<string, string>();
+
                 var customDecompressed = StringExt.Decompress(StringExt.HexStringToBytes(customData));
                 var metadataString = Encoding.UTF8.GetString(customDecompressed);
 
@@ -183,14 +186,17 @@ namespace VEDriversLite.NeblioAPI
 
                 var userData = JsonConvert.DeserializeObject<MetadataOfUtxo>(metadataString);
 
-                foreach (var o in userData.UserData.Meta)
+                if (userData != null)
                 {
-                    var od = JsonConvert.DeserializeObject<IDictionary<string, string>>(o.ToString());
-                    if (od != null && od.Count > 0)
+                    foreach (var o in userData.UserData.Meta)
                     {
-                        var of = od.First();
-                        if (!resp.ContainsKey(of.Key))
-                            resp.Add(of.Key, of.Value);
+                        var od = JsonConvert.DeserializeObject<IDictionary<string, string>>(o.ToString());
+                        if (od != null && od.Count > 0)
+                        {
+                            var of = od.First();
+                            if (!resp.ContainsKey(of.Key))
+                                resp.Add(of.Key, of.Value);
+                        }
                     }
                 }
 
