@@ -332,7 +332,7 @@ namespace VEFramework.BlockchainIndexerServer.Controllers
                 if (!string.IsNullOrEmpty(address))
                 {
                     var info = MainDataContext.Node.GetAddressTransactions(address, skip, take);
-                    return info;
+                    return info.ToList();
                 }
 
                 return null;

@@ -14,7 +14,7 @@ namespace VEDriversLite.Indexer.Dto
         public string Address { get; set; } = string.Empty;
         public bool Indexed { get; set; } = false;
         public DateTime LastUpdated { get; set; } = DateTime.MinValue;
-        private List<string> transactions { get; set; } = new List<string>();
+        private ConcurrentDictionary<string, DateTime> transactions { get; set; } = new ConcurrentDictionary<string, DateTime>();
         /// <summary>
         /// Get Last 100 transactions
         /// </summary>
@@ -23,8 +23,8 @@ namespace VEDriversLite.Indexer.Dto
             get
             {
                 if (transactions.Count > 100)
-                    return transactions.Take(100).ToList();
-                return transactions;
+                    return transactions.OrderByDescending(t => t.Value).Select(t => t.Key).Take(100).ToList();
+                return transactions.Keys.ToList();
             }
         }
 
@@ -85,19 +85,19 @@ namespace VEDriversLite.Indexer.Dto
             LastUpdated = DateTime.UtcNow;
         }
 
-        public void AddTransaction(string tx)
+        public void AddTransaction(string tx, DateTime time)
         {
-            if (!transactions.Contains(tx))
+            if (!transactions.ContainsKey(tx))
             {
-                transactions.Add(tx);
+                transactions.TryAdd(tx, time);
                 LastUpdated = DateTime.UtcNow;
             }
         }
         public bool RemoveTransaction(string tx)
         {
-            if (transactions.Contains(tx))
+            if (transactions.ContainsKey(tx))
             {
-                if(transactions.Remove(tx))
+                if(transactions.TryRemove(tx, out var time))
                 {
                     LastUpdated = DateTime.UtcNow;
                     return true;
@@ -115,9 +115,9 @@ namespace VEDriversLite.Indexer.Dto
         public IEnumerable<string> GetTransactions(int skip = 0, int take = 0) 
         {
             if (take <= 0)
-                return transactions.Skip(skip);
+                return transactions.OrderByDescending(t => t.Value).Select(t => t.Key).Skip(skip);
             else
-                return transactions.Skip(skip).Take(take);
+                return transactions.OrderByDescending(t => t.Value).Select(t => t.Key).Skip(skip).Take(take);
         } 
     }
 }

@@ -20,6 +20,7 @@ using VEDriversLite.Common;
 using VEDriversLite.Neblio;
 using System.Security.Cryptography.X509Certificates;
 using Ipfs.Http;
+using Org.BouncyCastle.Bcpg;
 
 namespace VEDriversLite.Indexer
 {
@@ -101,7 +102,7 @@ namespace VEDriversLite.Indexer
                     {
                         foreach (var utxo in utxos)
                         {
-                            add.AddTransaction(utxo.TransactionHashAndN.Split(':')[0]);
+                            add.AddTransaction(utxo.TransactionHashAndN.Split(':')[0], utxo.Time);
                             if (!utxo.Used)
                                 add.AddUtxo(utxo);
 
@@ -196,11 +197,11 @@ namespace VEDriversLite.Indexer
         /// </summary>
         /// <param name="address"></param>
         /// <returns></returns>
-        public List<string> GetAddressTransactions(string address, int skip = 0, int take = 0)
+        public IEnumerable<string> GetAddressTransactions(string address, int skip = 0, int take = 0)
         {
             UpdateAddressInfo(address);
             if (Addresses.TryGetValue(address, out var add))
-                return add.GetTransactions(skip, take).ToList();
+                return add.GetTransactions(skip, take);
             
             return new List<string>();
         }
@@ -477,6 +478,8 @@ namespace VEDriversLite.Indexer
                                 block.Height = blck.Height ?? 0.0;
                                 block.Time = TimeHelpers.UnixTimestampToDateTime((blck.Time ?? 0.0) * 1000);
                                 block.Hash = blck.Hash;
+                                if (blck.Hash != null)
+                                    Blocks.TryAdd(blck.Hash, GetIndexedBlockFromResponse(blck));
                             }
                         }
 
@@ -885,7 +888,7 @@ namespace VEDriversLite.Indexer
         /// <param name="tx"></param>
         /// <param name="blocknumber"></param>
         /// <returns></returns>
-        public async Task<GetTransactionInfoResponse?> ParseTransaction(string tx, int blocknumber, double blockheight, bool includePOS = false )
+        public async Task<GetTransactionInfoResponse?> ParseTransaction(string tx, double blockheight, bool includePOS = false )
         {
             var t = await GetTx(tx);
                 
@@ -903,7 +906,6 @@ namespace VEDriversLite.Indexer
                     Hash = t.Txid,
                     BlockHash = t.Blockhash,
                     Blockheight = blockheight,
-                    BlockNumber = blocknumber,
                     Time = time,
                     Blocktime = t?.Time ?? 0.0,
                     TxInfo = t
@@ -917,10 +919,30 @@ namespace VEDriversLite.Indexer
                 });
 
                 var metadata = string.Empty;
+                var voutsWithMeta = new List<int>();
+
                 if (t.Vout.Any(o => o.ScriptPubKey.Type == "nulldata"))
                 {
                     // Token transaction with metadata
                     metadata = t.Vout.FirstOrDefault(o => o.ScriptPubKey.Type == "nulldata")?.ScriptPubKey.Asm ?? string.Empty;
+                    var ntp1 = new NTP1Transactions() { tx_type = 1, ntp1_opreturn = string.Empty };
+                    if (!string.IsNullOrEmpty(metadata))
+                    {
+                        var meta = metadata.Replace("OP_RETURN ", string.Empty);
+                        ntp1.ntp1_opreturn = meta;
+                        try
+                        {
+                            NTP1ScriptHelpers._NTP1ParseScript(ntp1);
+                        }
+                        catch (Exception ex)
+                        {
+                        }
+                        if (ntp1.ntp1_instruct_list != null && ntp1.ntp1_instruct_list.Count >= 1)
+                        {
+                            foreach (var inst in ntp1.ntp1_instruct_list)
+                                voutsWithMeta.Add(inst.vout_num);
+                        }
+                    }
                 }
                 
                 Parallel.ForEach(t.Vout, options, item =>
@@ -928,7 +950,15 @@ namespace VEDriversLite.Indexer
                     if (item.ScriptPubKey.Type != "nulldata")
                     {
                         item.Blockheight = blockheight;
-                        ProcessOutput(item, t.Txid, t?.Time ?? 0.0, time, metadata);
+                        if (voutsWithMeta.Count > 0 && voutsWithMeta.Contains((int)item.N))
+                            ProcessOutput(item, t.Txid, t?.Time ?? 0.0, time, metadata);
+                        else if (voutsWithMeta.Count > 0 && !voutsWithMeta.Contains((int)item.N))
+                            ProcessOutput(item, t.Txid, t?.Time ?? 0.0, time, string.Empty);
+                        else if (voutsWithMeta.Count == 0 && item.Value == 0.0001)
+                            ProcessOutput(item, t.Txid, t?.Time ?? 0.0, time, metadata);
+                        else
+                            ProcessOutput(item, t.Txid, t?.Time ?? 0.0, time, string.Empty);
+
                         var u = $"{t.Txid}:{item.N}";
                         utxos.Add(u);
                     }
@@ -950,7 +980,7 @@ namespace VEDriversLite.Indexer
         /// <param name="txs"></param>
         /// <param name="blocknumber"></param>
         /// <returns></returns>
-        public async Task<List<GetTransactionInfoResponse>?> GetBlockTransactions(List<string> txs, int blocknumber, double blockheight, bool includePOS = false)
+        public async Task<List<GetTransactionInfoResponse>?> GetBlockTransactions(List<string> txs, double blockheight, bool includePOS = false)
         {
             if (txs == null)
                 return null;
@@ -959,7 +989,7 @@ namespace VEDriversLite.Indexer
 
             foreach (var tx in txs)
             {
-                var t = await ParseTransaction(tx, blocknumber, blockheight, includePOS);
+                var t = await ParseTransaction(tx, blockheight, includePOS);
                 if (t != null)
                     result.Add(t);
             }
@@ -973,11 +1003,11 @@ namespace VEDriversLite.Indexer
         /// <returns></returns>
         public async Task LoadAllBlocksTransactions()
         {
-            var blocks = Blocks.Values.Where(b => !b.Indexed).OrderByDescending(b => b.Number).ToList();
+            var blocks = Blocks.Values.Where(b => !b.Indexed).OrderByDescending(b => b.Height).ToList();
 
             await blocks.ParallelForEachAsync(async block =>
             {
-                _ = await GetBlockTransactions(block.Transactions, (int)block.Number, block.Height, false);
+                _ = await GetBlockTransactions(block.Transactions, block.Height, false);
                 if (Blocks.TryGetValue(block.Hash, out var blk))
                     blk.Indexed = true;
 
@@ -1030,21 +1060,22 @@ namespace VEDriversLite.Indexer
                         add = false;
 
                     if (add)
-                    {
-                        Blocks.TryAdd(blkn.Hash, new IndexedBlock()
-                        {
-                            Hash = blkn.Hash,
-                            Number = item,
-                            Height = blkn.Height ?? -1,
-                            Time = TimeHelpers.UnixTimestampToDateTime((blkn.Time ?? 0.0) * 1000),
-                            Transactions = blkn.Tx.ToList()
-                        });
-                    }
+                        Blocks.TryAdd(blkn.Hash, GetIndexedBlockFromResponse(blkn));
                 }
             }, maxDegreeOfParallelism: maxDegreeOfParallelism);
         }
 
-
+        public IndexedBlock GetIndexedBlockFromResponse(GetBlockResponse blkn)
+        {
+            var b = new IndexedBlock()
+            {
+                Hash = blkn.Hash,
+                Height = blkn.Height ?? -1,
+                Time = TimeHelpers.UnixTimestampToDateTime((blkn.Time ?? 0.0) * 1000),
+                Transactions = blkn.Tx.ToList()
+            };
+            return b;
+        }
 
 
         ////////////////////////////////////
