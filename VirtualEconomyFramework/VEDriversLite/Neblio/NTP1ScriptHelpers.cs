@@ -1,11 +1,14 @@
 ﻿using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using VEDriversLite.Security;
 
 namespace VEDriversLite.Neblio
 {
@@ -19,15 +22,29 @@ namespace VEDriversLite.Neblio
      * 
      * To change this template use Tools | Options | Coding | Edit Standard Headers.
      */
-
+    public class IssuanceFlags
+    {
+        public int Divisibility { get; set; }
+        public bool Locked { get; set; }
+        public AggregationPolicy AggregationPolicy { get; set; }
+    }
+    public enum AggregationPolicy
+    {
+        Aggregatable,
+        NonAggregatable
+    }
     public class NTP1Transactions
     {
         public string raw_tx_string = "";
         public string ntp1_opreturn = "";
+        public string tokenSymbol = "";
+        public ulong tokenIssueAmount = 0;
+        public IssuanceFlags issuanceFlags;
         public List<NTP1Instructions> ntp1_instruct_list;
         public NTP1Transactions()
         {
             ntp1_instruct_list = new List<NTP1Instructions>();
+            issuanceFlags = new IssuanceFlags();
         }
         public int tx_type = 0;//0 = Issue, 1 = Transfer, 2 = Burn
         public byte[] metadata = null;
@@ -210,19 +227,21 @@ namespace VEDriversLite.Neblio
             if (op_code == 1)
             {
                 script_type = 0; //Issue transaction
+                ParseIssueTransaction(tx, scriptbin, op_code);
             }
             else if (op_code == 16)
             {
                 script_type = 1; //Transfer transaction
+                ParseTransferTransaction(tx, scriptbin);
             }
             else if (op_code == 32)
             {
                 script_type = 2; //Burn transaction
             }
-            if (script_type != 1)
-            {
-                throw new Exception("Can only parse NTP1 transfer scripts at this time");
-            }
+        }
+
+        public static void ParseTransferTransaction(NTP1Transactions tx, byte[] scriptbin)
+        {
             tx.tx_type = 1;
             scriptbin = ByteArrayErase(scriptbin, 4); //Erase the first 4 bytes
 
@@ -256,9 +275,7 @@ namespace VEDriversLite.Neblio
 
             //Now extract metadata from the op_return. Max op_return size: 4096 bytes
             if (scriptbin.Length < 4)
-            {
                 return; //No metadata or not enough data remaining to extract
-            }
 
             //Get the metadata size int32
             byte[] metadata_size_bytes = new byte[4];
@@ -279,6 +296,172 @@ namespace VEDriversLite.Neblio
             tx.metadata = scriptbin; //Our metadata is what remains in the script. Just raw data to be used for any purpose
         }
 
+
+        public static void ParseIssueTransaction(NTP1Transactions tx, byte[] scriptbin, int op_code)
+        {
+            tx.tx_type = 0;
+
+            scriptbin = ByteArrayErase(scriptbin, 4); //Erase the first 4 bytes ( 2 header, 1 protocol version and 1 op code)
+
+            // Parse Token Symbol
+            var tokenSymbol = ParseTokenSymbolFromLongEnoughString(Encoding.UTF8.GetString(scriptbin));
+            if (!string.IsNullOrEmpty(tokenSymbol))
+                tx.tokenSymbol = tokenSymbol;
+            scriptbin = ByteArrayErase(scriptbin, 5); //Erase the first 5 bytes (token symbol has always 5 bytes)
+
+            // Parse Amount
+            var sizeOfAmount = 0;
+            var amount = ParseAmountFromLongEnoughString(ConvertByteArrayToHexString(scriptbin), out sizeOfAmount);
+            tx.tokenIssueAmount = amount;
+            scriptbin = ByteArrayErase(scriptbin, sizeOfAmount); //Erase amount data now
+
+            //Now parse the size of the transfer instructions
+            int numTI = Convert.ToInt32(scriptbin[0]); //Byte number between 0 and 255 inclusively
+            int raw_size = 1;
+            scriptbin = ByteArrayErase(scriptbin, 1);
+            for (int i = 0; i < numTI; i++)
+            {
+                NTP1Instructions ti = new NTP1Instructions();
+                ti.firstbyte = scriptbin[0]; //This represents the flags
+                int size = _CalculateAmountSize(scriptbin[1]); //This will indicate the size of the next byte sequence
+                byte[] amount_byte = new byte[size];
+                Array.Copy(scriptbin, 1, amount_byte, 0, size); //Put these bytes into the amount_byte array
+                size++; //Now include the flag byte
+                raw_size += size; //Our total instruction size added to the raw size
+                scriptbin = ByteArrayErase(scriptbin, size); //Erase transfer instructions
+
+                //Break down the first byte which represents the location and skipinput byte
+                string firstbyte_bin = Convert.ToString(ti.firstbyte, 2).PadLeft(8, '0'); //Byte to binary string
+                string outputindex_bin = firstbyte_bin.Substring(3);
+                if (firstbyte_bin[7] == '1')
+                {
+                    ti.skipinput = true; //This means the byte value is 255
+                }
+                ti.vout_num = Convert.ToInt32(Convert.ToUInt64(outputindex_bin, 2));
+                int len = amount_byte.Length;
+                ti.amount = _NTP1ByteArrayToNum(amount_byte);
+                tx.ntp1_instruct_list.Add(ti);
+            }
+
+            // check that no skip transfer instructions exist; as it's forbidden in issuance
+            if (tx.ntp1_instruct_list.Any(i => i.skipinput))
+                throw new Exception("An issuance script contained a skip transfer instruction");
+
+            //scriptbin = ByteArrayErase(scriptbin, 5); //Erase metadata now
+
+            var flags = ParseIssuanceFlag(scriptbin[0]);
+            tx.issuanceFlags = flags;
+            scriptbin = ByteArrayErase(scriptbin, 1); //Erase metadata now
+
+            //Now extract metadata from the op_return. Max op_return size: 4096 bytes
+            if (scriptbin.Length < 4)
+                return; //No metadata or not enough data remaining to extract
+
+            //Get the metadata size int32
+            byte[] metadata_size_bytes = new byte[4];
+            Array.Copy(scriptbin, metadata_size_bytes, 4); //The size of the metadata is stored as Bigendian in the script
+                                                           //Determine if the system is little endian or not
+            if (BitConverter.IsLittleEndian == true)
+            {
+                Array.Reverse(metadata_size_bytes);
+            }
+            //Now put the bytes into an int
+            uint metadata_size = BitConverter.ToUInt32(metadata_size_bytes, 0);
+            scriptbin = ByteArrayErase(scriptbin, 4); //Remove the size int on the remaining data
+            if (scriptbin.Length != metadata_size)
+            {
+                throw new Exception("Metadata information is invalid");
+            }
+
+            tx.metadata = scriptbin; //Our metadata is what remains in the script. Just raw data to be used for any purpose
+        }
+
+        public static bool IsTokenSymbolCharValid(char c)
+        {
+            return char.IsLetterOrDigit(c);
+        }
+
+        public static byte ReverseBits(byte b)
+        {
+            int rev = (b >> 4) | (b << 4);
+            rev = ((rev & 0xCC) >> 2) | ((rev & 0x33) << 2);
+            rev = ((rev & 0xAA) >> 1) | ((rev & 0x55) << 1);
+            return (byte)rev;
+        }
+        public static IssuanceFlags ParseIssuanceFlag(byte flags)
+        {
+            IssuanceFlags result = new IssuanceFlags();
+            BitArray bits = new BitArray(new byte[] { ReverseBits(flags) });
+            
+            // first 3 bits
+            result.Divisibility = Convert.ToInt32(bits[0]) + (Convert.ToInt32(bits[1]) << 1) + (Convert.ToInt32(bits[2]) << 2);
+
+            // 4th bit
+            result.Locked = bits[3];
+
+            // 5th + 6th bits
+            int aggrPolicy = Convert.ToInt32(bits[4]) + (Convert.ToInt32(bits[5]) << 1);
+            switch (aggrPolicy)
+            {
+                case 0: // 00
+                    result.AggregationPolicy = AggregationPolicy.Aggregatable;
+                    break;
+                case 2: // 10
+                    result.AggregationPolicy = AggregationPolicy.NonAggregatable;
+                    break;
+                default: // everything else is not known (01 and 11)
+                    throw new Exception("Unknown aggregation policy: " + aggrPolicy);
+            }
+
+            return result;
+        }
+    
+        public static string ParseTokenSymbolFromLongEnoughString(string binTokenSymbolStartsAtByte0)
+        {
+            if (binTokenSymbolStartsAtByte0.Length < 5)
+            {
+                throw new InvalidOperationException(
+                    "Error parsing script (starting at this point a symbol is expected). " +
+                    (binTokenSymbolStartsAtByte0.Length > 0 ? ": " + binTokenSymbolStartsAtByte0 : "") +
+                    "; the token symbol size is longer than what is available in the script");
+            }
+            string result = binTokenSymbolStartsAtByte0.Substring(0, 5);
+            // drop 0x20 chars from the beginning
+            result = result.TrimStart((char)0x20).TrimEnd((char)0x20);
+
+            int invalidCharIndex = result.ToList().FindIndex(c => !IsTokenSymbolCharValid(c));
+            if (invalidCharIndex != -1)
+            {
+                throw new InvalidOperationException(
+                    "Invalid token symbol. Token symbols can only contain English letters and numbers. The current name \"" +
+                    result + "\", has an invalid character: \"" + result[invalidCharIndex] + "\"");
+            }
+
+            if (result.Length == 0)
+            {
+                throw new InvalidOperationException("Invalid token symbol; it cannot be empty.");
+            }
+            return result;
+        }
+
+        public static ulong ParseAmountFromLongEnoughString(string BinAmountStartsAtByte0, out int rawSize)
+        {
+            if (BinAmountStartsAtByte0.Length < 1)
+                throw new Exception("Too short a string to be parsed " + BinAmountStartsAtByte0);
+            
+            int amountSize = (int)_CalculateAmountSize(ConvertHexStringToByteArray(BinAmountStartsAtByte0)[0]);
+            
+            if ((int)BinAmountStartsAtByte0.Length < amountSize)
+                throw new Exception("Error parsing script: " + BinAmountStartsAtByte0 +
+                                         "; the amount size is longer than what is available in the script");
+            rawSize = amountSize;
+
+            var hexString = BinAmountStartsAtByte0.Substring(0, amountSize * 2);
+
+            return _NTP1ByteArrayToNum(ConvertHexStringToByteArray(hexString));
+        }
+
+                
         public static byte[] ConvertHexStringToByteArray(string hexString)
         {
             if (hexString.Length % 2 != 0)
@@ -310,13 +493,9 @@ namespace VEDriversLite.Neblio
             binval = binval.Substring(0, 3);
             ulong newval = Convert.ToUInt64(binval, 2);
             if (newval < 6)
-            {
                 return Convert.ToInt32(newval) + 1;
-            }
             else
-            {
                 return 7;
-            }
         }
 
         public static string ReverseString(string s)
