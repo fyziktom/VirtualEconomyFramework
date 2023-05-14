@@ -115,9 +115,9 @@ namespace VEDriversLite.Indexer.Dto
         public IEnumerable<string> GetTransactions(int skip = 0, int take = 0) 
         {
             if (take <= 0)
-                return transactions.OrderByDescending(t => t.Value).Select(t => t.Key).Skip(skip);
+                return transactions.OrderBy(t => t.Value).Select(t => t.Key).Skip(skip);
             else
-                return transactions.OrderByDescending(t => t.Value).Select(t => t.Key).Skip(skip).Take(take);
+                return transactions.OrderBy(t => t.Value).Select(t => t.Key).Skip(skip).Take(take);
         } 
     }
 }

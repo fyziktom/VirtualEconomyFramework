@@ -8,8 +8,7 @@ namespace VEDriversLite.Indexer.Dto
 {
     public class IndexedUtxo : IndexedItem
     {
-        public static string HashIndexSeparator { get => ":"; }
-        public string TransactionHashAndN { get => $"{TransactionHash}{HashIndexSeparator}{Index}"; }
+        public string TransactionHashAndN { get => $"{TransactionHash}:{Index}"; }
         public string TransactionHash { get; set; } = string.Empty;
         public int Index { get; set; } = 0;
         public string? OwnerAddress { get; set; } = string.Empty;        

@@ -38,6 +38,8 @@ namespace VEDriversLite.Indexer
         public ConcurrentDictionary<string, GetTokenMetadataResponse> TokenMetadataCache = new ConcurrentDictionary<string, GetTokenMetadataResponse>();
         public ConcurrentDictionary<string, TokenSupplyDto> TokenInfoCache = new ConcurrentDictionary<string, TokenSupplyDto>();
 
+        public double LatestLoadedBlock { get; set; } = 0;
+        public double LatestGetBlockResponse { get; set; } = 0;
         /// <summary>
         /// QT Wallet RPC parameters
         /// </summary>
@@ -296,7 +298,7 @@ namespace VEDriversLite.Indexer
                     {
                         if (prevTx.Vout.Count > prevUtxoIndex)
                         {
-                            var prevVout = prevTx.Vout.Where(v => v.N == prevUtxoIndex)?.FirstOrDefault();
+                            var prevVout = prevTx.Vout.FirstOrDefault(v => v.N == prevUtxoIndex);
                             if (prevVout != null)
                             {
                                 totalNeblioInput += (prevVout.Value ?? 0.0);
@@ -344,7 +346,7 @@ namespace VEDriversLite.Indexer
 
             var tx = new NTP1Transactions() { ntp1_instruct_list = new List<NTP1Instructions>() };
             var isTokenTx = false;
-            var opReturnOutput = transaction.Outputs.Where(o => o.ScriptPubKey.IsUnspendable)?.FirstOrDefault();
+            var opReturnOutput = transaction.Outputs.FirstOrDefault(o => o.ScriptPubKey.IsUnspendable);
             if (opReturnOutput != null)
             {
                 isTokenTx = true;
@@ -379,13 +381,19 @@ namespace VEDriversLite.Indexer
                 {
                     if (!Utxos.TryGetValue(utxoId, out var utxo))
                     {
+                        var address = output.ScriptPubKey.GetDestinationAddress(NeblioTransactionHelpers.Network).ToString();
+                        
                         var time = DateTime.UtcNow;
+                        var tmpheight = LatestGetBlockResponse;
+                        if (LatestGetBlockResponse < LatestLoadedBlock)
+                            tmpheight = LatestLoadedBlock;
+
                         var ux = new IndexedUtxo()
                         {
                             TransactionHash = txid,
                             Index = i,
                             Value = (double)output.Value.Satoshi / NeblioTransactionHelpers.FromSatToMainRatio,
-                            OwnerAddress = output.ScriptPubKey.GetDestinationAddress(NeblioTransactionHelpers.Network).ToString(),
+                            OwnerAddress = address,
                             Blockheight = -1,
                             Blocktime = TimeHelpers.DateTimeToUnixTimestamp(time),
                             Time = time
@@ -393,7 +401,7 @@ namespace VEDriversLite.Indexer
 
                         if (isTokenTx)
                         {
-                            var tokenVout = tx.ntp1_instruct_list.Where(o => o.vout_num == i).FirstOrDefault();
+                            var tokenVout = tx.ntp1_instruct_list.FirstOrDefault(o => o.vout_num == i);
                             if (tokenVout != null)
                             {
                                 ux.TokenUtxo = true;
@@ -414,6 +422,9 @@ namespace VEDriversLite.Indexer
                             ux.TokenSymbol = tokenSymbol;
                         }
 
+                        if (!string.IsNullOrEmpty(address) && !addressesToUpdate.Contains(address))
+                            addressesToUpdate.Add(address);
+                        
                         if (Utxos.TryGetValue(utxoId, out var eu))
                             eu = ux;
                         else
@@ -453,6 +464,7 @@ namespace VEDriversLite.Indexer
 
                 if (QTRPCClient.IsConnected)
                 {
+                    //await Console.Out.WriteLineAsync($"RPC: Request tx details for tx {tx}.");
                     var kr = await QTRPCClient.RPCLocalCommandSplitedAsync("gettransaction", new string[] { tx });
                     var rr = JsonConvert.DeserializeObject<JObject>(kr);
                     var ores = rr["result"].ToString();
@@ -472,6 +484,7 @@ namespace VEDriversLite.Indexer
                         }
                         else
                         {
+                            await Console.Out.WriteLineAsync($"Loading block {txr.Blockhash} because of tx {tx}.");
                             var blck = await GetBlock(txr.Blockhash);
                             if (blck != null)
                             {
@@ -577,6 +590,7 @@ namespace VEDriversLite.Indexer
                     try
                     {
                         var block = JsonConvert.DeserializeObject<int>(ores);
+                        LatestGetBlockResponse = block;
                         return block;
                     }
                     catch (Exception ex)
@@ -690,32 +704,35 @@ namespace VEDriversLite.Indexer
                 if (!string.IsNullOrEmpty(input.Txid))
                 {
                     var iname = $"{input.Txid}:{input.Vout}";
-                    var ix = new IndexedUtxo()
-                    {
-                        Indexed = true,
-                        Used = true,
-                        UsedInTxHash = txid,
-                        TransactionHash = input.Txid,
-                        Index = (int)input.Vout
-                    };
-
-                    var tokens = input.Tokens.FirstOrDefault();
-                    if (tokens != null)
-                    {
-                        ix.TokenId = tokens.TokenId;
-                        ix.TokenUtxo = true;
-                        ix.TokenAmount = tokens.Amount ?? 0.0;
-                    }
 
                     if (Utxos.TryGetValue(iname, out var ixo))
                     {
-                        ix.Value = ixo.Value;
-                        ix.OwnerAddress = ixo.OwnerAddress;
                         ixo.Used = true;
                         ixo.UsedInTxHash = txid;
                     }
                     else
                     {
+                        var ix = new IndexedUtxo()
+                        {
+                            Indexed = true,
+                            Used = true,
+                            UsedInTxHash = txid,
+                            TransactionHash = input.Txid,
+                            Index = (int)input.Vout
+                        };
+
+                        var add = NeblioTransactionHelpers.GetAddressStringFromSignedScriptPubKey(input.ScriptSig);
+                        if (add != null)
+                            ix.OwnerAddress = add.ToString(); ;
+                        
+                        var tokens = input.Tokens.FirstOrDefault();
+                        if (tokens != null)
+                        {
+                            ix.TokenId = tokens.TokenId;
+                            ix.TokenUtxo = true;
+                            ix.TokenAmount = tokens.Amount ?? 0.0;
+                        }
+
                         Utxos.TryAdd(iname, ix);
                     }
 
@@ -810,7 +827,6 @@ namespace VEDriversLite.Indexer
                         Console.WriteLine($"Cannot parse output {output.N} address in the tx {txid}.");
                     }
 
-                    
                     var ux = new IndexedUtxo()
                     {
                         Indexed = true,
@@ -866,13 +882,9 @@ namespace VEDriversLite.Indexer
         {
             try
             {
-                var vin = tx.Vin.FirstOrDefault();
-                if (vin != null)
-                {
-                    var adp = vin.AdditionalProperties?.FirstOrDefault().ToString()?.Contains("coinbase") ?? false;
-                    if (adp)
-                        return true;
-                }
+                if (tx.Vout.Any(o => o.ScriptPubKey.Type == "nonstandard"))
+                    return true;
+
             }
             catch(Exception ex) 
             {
@@ -933,14 +945,14 @@ namespace VEDriversLite.Indexer
                         try
                         {
                             NTP1ScriptHelpers._NTP1ParseScript(ntp1);
+                            if (ntp1.ntp1_instruct_list != null && ntp1.ntp1_instruct_list.Count >= 1)
+                            {
+                                foreach (var inst in ntp1.ntp1_instruct_list)
+                                    voutsWithMeta.Add(inst.vout_num);
+                            }
                         }
                         catch (Exception ex)
                         {
-                        }
-                        if (ntp1.ntp1_instruct_list != null && ntp1.ntp1_instruct_list.Count >= 1)
-                        {
-                            foreach (var inst in ntp1.ntp1_instruct_list)
-                                voutsWithMeta.Add(inst.vout_num);
                         }
                     }
                 }
@@ -1005,13 +1017,26 @@ namespace VEDriversLite.Indexer
         {
             var blocks = Blocks.Values.Where(b => !b.Indexed).OrderByDescending(b => b.Height).ToList();
 
-            await blocks.ParallelForEachAsync(async block =>
+            if (blocks.Count > 0)
             {
-                _ = await GetBlockTransactions(block.Transactions, block.Height, false);
-                if (Blocks.TryGetValue(block.Hash, out var blk))
-                    blk.Indexed = true;
+                //Console.WriteLine($"Loading transactions for {blocks.Count} blocks.");
+                await blocks.ParallelForEachAsync(async block =>
+                {
+                    //Console.WriteLine($"Loading transactions for {block.Hash} block.");
+                    var txs = await GetBlockTransactions(block.Transactions, block.Height, false);
+                    if (Blocks.ContainsKey(block.Hash))
+                    {
+                        if (txs.Count == 0)
+                            Blocks.TryRemove(block.Hash, out var rblk); // block with just PoS txs, no need to keep in memory
 
-            }, maxDegreeOfParallelism: Environment.ProcessorCount);
+                        else
+                        {
+                            if (Blocks.TryGetValue(block.Hash, out var blk))
+                                blk.Indexed = true;
+                        }
+                    }
+                }, maxDegreeOfParallelism: Environment.ProcessorCount);
+            }
         }
 
         /// <summary>
@@ -1074,6 +1099,9 @@ namespace VEDriversLite.Indexer
                 Time = TimeHelpers.UnixTimestampToDateTime((blkn.Time ?? 0.0) * 1000),
                 Transactions = blkn.Tx.ToList()
             };
+            if (blkn.Height > LatestLoadedBlock)
+                LatestLoadedBlock = blkn.Height ?? 0.0;
+
             return b;
         }
 
