@@ -100,12 +100,12 @@
                                                                 </Column>
                                                                 <Column Flex="Flex.JustifyContent.End">
                                                                     <Div>
-                                                                        @if ( inp?.ValueSat != 10000 )
+                                                                    @if (inp?.ValueSat != NeblioTransactionHelpers.MinimumAmount)
                                                                         {
                                                                             <FieldLabel>Neblio Input</FieldLabel>
                                                                             <Row>
                                                                                 <Column>
-                                                                                    <small>@((double)inp.ValueSat / NeblioTransactionHelpers.FromSatToMainRatio) NEBL</small>
+                                                                                    <small>@((double)inp.Value / NeblioTransactionHelpers.FromSatToMainRatio) NEBL</small>
                                                                                     <Figure Size="FigureSize.Is16x16"><FigureImage Source="@AppData.NeblioImageLink" /></Figure>
                                                                                 </Column>
                                                                             </Row>
@@ -145,7 +145,7 @@
                                         @if ( TxDetails != null && TxDetails.Info != null && TxDetails.Info.Vout != null )
                                         {
                                             <DataGrid TItem="VEDriversLite.NeblioAPI.Vout"
-                                                  Data="TxDetails.Info.Vout.Where(x=>x.Value != 10000 || ( x.Value == 10000 && x.Tokens.Count > 0))"
+                                                      Data="TxDetails.Info.Vout.Where(x => x.Value != NeblioTransactionHelpers.MinimumAmount || ( x.Value == NeblioTransactionHelpers.MinimumAmount && x.Tokens.Count > 0))"
                                                   Virtualize
                                                   ShowCaptions="false">
                                                     <DataGridColumn>
@@ -158,12 +158,12 @@
                                                                 </Column>
                                                                 <Column Flex="Flex.JustifyContent.End">
                                                                     <Div>
-                                                                        @if (output?.Value != 10000 )
+                                                                        @if (output?.Value != NeblioTransactionHelpers.MinimumAmount )
                                                                         {
                                                                             <FieldLabel>Neblio Input</FieldLabel>
                                                                             <Row>
                                                                                 <Column>
-                                                                                    <small>@((double)output.Value) NEBL</small>
+                                                                                    <small>@((double)output.Value / NeblioTransactionHelpers.FromSatToMainRatio) NEBL</small>
                                                                                     <Figure Size="FigureSize.Is16x16"><FigureImage Source="@AppData.NeblioImageLink" /></Figure>
                                                                                 </Column>
                                                                             </Row>

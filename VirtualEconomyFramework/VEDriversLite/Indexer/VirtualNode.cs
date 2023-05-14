@@ -107,6 +107,8 @@ namespace VEDriversLite.Indexer
                             add.AddTransaction(utxo.TransactionHashAndN.Split(':')[0], utxo.Time);
                             if (!utxo.Used)
                                 add.AddUtxo(utxo);
+                            else
+                                add.RemoveUtxo(utxo.TransactionHashAndN);
 
                             if (utxo.TokenUtxo && TokenInfoCache.TryGetValue(utxo.TokenId, out var token))
                                 add.UpdateTokenSupply(utxo, token);
@@ -337,9 +339,13 @@ namespace VEDriversLite.Indexer
                     }
                     if (add != null)
                     {
+                        /*
                         var ads = add.ToString();
                         if (!addressesToUpdate.Contains(ads))
                             addressesToUpdate.Add(ads);
+                        */
+                        if (Addresses.TryGetValue(add.ToString(), out var addr))
+                            addr.RemoveUtxo($"{input.PrevOut.Hash}:{input.PrevOut.N}");
                     }
                 }
             }
@@ -429,22 +435,24 @@ namespace VEDriversLite.Indexer
                             eu = ux;
                         else
                             Utxos.TryAdd(utxoId, ux);
-                    }
-                }
 
-                var add = output.ScriptPubKey.GetDestinationAddress(NeblioTransactionHelpers.Network);
-                if (add != null)
-                {
-                    var ads = add.ToString();
-                    if (!addressesToUpdate.Contains(ads))
-                        addressesToUpdate.Add(ads);
+                        if (Addresses.TryGetValue(ux.OwnerAddress, out var add))
+                        {
+                            if (ux.Used)
+                                add.RemoveUtxo(ux.TransactionHashAndN);
+                            else
+                                add.AddUtxo(ux);
+                        }
+                    }
                 }
             }
 
+            /*
             Parallel.ForEach(addressesToUpdate, new ParallelOptions() { MaxDegreeOfParallelism = Environment.ProcessorCount }, address =>
             {
                 UpdateAddressInfo(address, true);
             });
+            */
         }
 
         /// <summary>
@@ -505,6 +513,8 @@ namespace VEDriversLite.Indexer
                                 vout.UsedTxid = ux.UsedInTxHash;
                             }
 
+                            vout.Value = (double)vout.Value * NeblioTransactionHelpers.FromSatToMainRatio;
+
                             if (vout.Used == null)
                                 vout.Used = false;
                             if (vout.UsedTxid == null)
@@ -542,6 +552,7 @@ namespace VEDriversLite.Indexer
                                     vin.Addr = add.ToString();
                                     vin.PreviousOutput.Addresses.Add(vin.Addr);
                                 }
+
                                 if (vin.Value == null)
                                     vin.Value = 0.0;
                                 if (vin.ValueSat == null)
@@ -718,7 +729,8 @@ namespace VEDriversLite.Indexer
                             Used = true,
                             UsedInTxHash = txid,
                             TransactionHash = input.Txid,
-                            Index = (int)input.Vout
+                            Index = (int)input.Vout,
+                            Value = input.ValueSat ?? 0.0,
                         };
 
                         var add = NeblioTransactionHelpers.GetAddressStringFromSignedScriptPubKey(input.ScriptSig);

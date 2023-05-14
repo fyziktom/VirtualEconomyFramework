@@ -453,7 +453,7 @@ namespace VEDriversLite.NeblioAPI
                             Blocktime = ux.Blocktime,
                             Index = ux.Index,
                             Txid = ux.TransactionHash,
-                            Value = ux.Value * FromSatToMainRatio,
+                            Value = ux.Value,
                             Tokens = new List<Tokens>()
                         };
                         if (ux.TokenUtxo)
