@@ -1,7 +1,120 @@
-﻿@page "/"
+﻿
+@inject HttpClient Http
 
-<PageTitle>Index</PageTitle>
+@page "/"
 
-<h1>Hello, world!</h1>
+<PageTitle>Blockhain Indexer</PageTitle>
 
-Welcome to your new app.
+<Row Margin="Margin.Is2.FromTop.Is2.FromStart.Is2.FromEnd.Is2.FromBottom">
+    <Column>
+        <Row>
+            <Column>
+                <Row Margin="Margin.Is2.FromTop">
+                    <Column>
+                        <Heading Size="HeadingSize.Is3">Sync Settings</Heading>
+                    </Column>
+                </Row>
+                <Row Margin="Margin.Is2.FromTop">
+                    <Column>
+                        <Span>Oldest Block to load: @status.OldestBlockToLoad</Span>
+                    </Column>
+                </Row>
+            </Column>
+            <Column>
+                <Row>
+                    <Column>
+                        <Heading Size="HeadingSize.Is3">Sync Status</Heading>
+                    </Column>
+                </Row>
+                <Row Margin="Margin.Is2.FromTop">
+                    <Column>
+                        <Span>Actual loading status: @(Math.Round(status.ActualLoadingStatus, 2)) %</Span>
+                    </Column>
+                </Row>
+                <Row Margin="Margin.Is2.FromTop">
+                    <Column>
+                        <Span>Estimated time to finish: @(status.EstimatedTimeToFinishInHours > 1 ? $"{Math.Round(status.EstimatedTimeToFinishInHours, 2)} hours" : $"{Math.Round(status.EstimatedTimeToFinishInMinutes, 2)} minutes")</Span>
+                    </Column>
+                </Row>
+                <Row Margin="Margin.Is2.FromTop">
+                    <Column>
+                        <Span>Average time to index one block: @(Math.Round(status.AverageTimeToIndexBlockInMilliseconds, 4)) ms</Span>
+                    </Column>
+                </Row>
+                <Row Margin="Margin.Is2.FromTop">
+                    <Column>
+                        <Span>Oldest Loaded block: @status.ActualOldestLoadedBlock</Span>
+                    </Column>
+                </Row>
+                <Row Margin="Margin.Is2.FromTop">
+                    <Column>
+                        <Span>Newest loaded block: @status.LatestLoadedBlock</Span>
+                    </Column>
+                </Row>
+                <Row Margin="Margin.Is2.FromTop">
+                    <Column>
+                        <Span>Count of blocks: @status.CountOfBlocks</Span>
+                    </Column>
+                </Row>
+                <Row Margin="Margin.Is2.FromTop">
+                    <Column>
+                        <Span>Count of indexed blocks: @status.CountOfIndexedBlocks</Span>
+                    </Column>
+                </Row>
+                <Row Margin="Margin.Is2.FromTop">
+                    <Column>
+                        <Span>Count of Utxos: @status.CountOfUtxos</Span>
+                    </Column>
+                </Row>
+                <Row Margin="Margin.Is2.FromTop">
+                    <Column>
+                        <Span>Count of used utxos: @status.CountOfUsedUtxos</Span>
+                    </Column>
+                </Row>
+                <Row Margin="Margin.Is2.FromTop">
+                    <Column>
+                        <Span>Count of transactions: @status.CountOfTransactions</Span>
+                    </Column>
+                </Row>
+                
+            </Column>
+        </Row>
+    </Column>
+</Row>
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            await GetData();
+    }
+
+    ServerStatusDto status = new ServerStatusDto();
+
+    private System.Threading.Timer timer;
+
+    public async Task GetData()
+    {
+        timer = new System.Threading.Timer(async (object stateInfo) =>
+        {
+            try
+            {
+                var resp = await Http.GetStringAsync("/api/GetServerSyncStatus");
+                if (!string.IsNullOrEmpty(resp))
+                {
+                    var dto = JsonConvert.DeserializeObject<ServerStatusDto?>(resp);
+                    if (dto != null)
+                    {
+                        status = dto;
+                        await InvokeAsync(StateHasChanged);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Cannot get the sync data.");
+            }
+
+        }, new System.Threading.AutoResetEvent(false), 2000, 2000);
+    }
+}

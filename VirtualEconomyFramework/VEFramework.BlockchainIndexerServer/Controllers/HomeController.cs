@@ -430,6 +430,20 @@ namespace VEFramework.BlockchainIndexerServer.Controllers
                 throw new HttpResponseException((HttpStatusCode)501, $"Cannot get server status!");
             }
         }
+
+        /// <summary>
+        /// Change latest loaded block server settings
+        /// </summary>
+        [AllowCrossSiteJsonAttribute]
+        [HttpGet]
+        [Route("ChangeLatestLoadedBlock/{height}")]
+        public async Task ChangeLatestLoadedBlock(double height)
+        {
+            if (height > 0 && height < MainDataContext.LatestLoadedBlock)
+                MainDataContext.LatestLoadedBlock = height;
+        }
+
+
         #endregion
     }
 }

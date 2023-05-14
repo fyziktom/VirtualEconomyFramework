@@ -1,3 +1,9 @@
+using Blazored.LocalStorage;
+using Blazorise;
+using Blazorise.Bootstrap;
+using Blazorise.Icons.FontAwesome;
+using BlazorPanzoom;
+using IndexedDB.Blazor;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using VEFramework.BlockchainIndexerServer;
@@ -8,8 +14,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddControllers();
-builder.Services.AddSwaggerGen();
-builder.Services.AddHostedService<VECoreService>();
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
@@ -19,6 +23,36 @@ builder.Services.AddCors(options =>
               .AllowAnyMethod();
     });
 });
+
+#region VEBlazorServices
+builder.Services.AddBlazoredLocalStorage();
+
+builder.Services
+    .AddBlazorise(options =>
+    {
+        options.Immediate = true;
+    })
+    .AddBootstrapProviders()
+    .AddFontAwesomeIcons();
+
+#if DEBUG
+var baseadd = "https://localhost:7267/";
+#else
+    var baseadd = "http://localhost:5000/";
+#endif
+
+builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(baseadd) });
+
+builder.Services.AddScoped<AppData>();
+builder.Services.AddScoped<TransactionsService>();
+builder.Services.AddScoped<IIndexedDbFactory, IndexedDbFactory>();
+builder.Services.AddHostedService<VECoreService>();
+
+builder.Services.AddBlazorPanzoomServices();
+
+#endregion
+
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
