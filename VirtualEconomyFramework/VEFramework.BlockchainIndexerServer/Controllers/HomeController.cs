@@ -18,6 +18,10 @@ using VEFramework.BlockchainIndexerServer.Common;
 using Microsoft.AspNetCore.Mvc.Filters;
 using VEDriversLite.Indexer.Dto;
 using VEDriversLite.Indexer;
+using NBitcoin;
+using System.Text;
+using VEDriversLite.Neblio;
+using VEDriversLite.Common;
 
 namespace VEFramework.BlockchainIndexerServer.Controllers
 {
@@ -393,6 +397,191 @@ namespace VEFramework.BlockchainIndexerServer.Controllers
             }
         }
 
+
+        /// <summary>
+        /// Get not signed transaction for token transfer
+        /// </summary>
+        /// <returns>List of tx ids</returns>
+        [AllowCrossSiteJsonAttribute]
+        [HttpPost]
+        [Route("CreateNotSignedTokenTransaction")]
+        public async Task<NBitcoin.Transaction> CreateNotSignedTokenTransaction([FromBody] SendTokenRequest data)
+        {
+            try
+            {
+                if (data != null)
+                {
+                    var addr = data.From.FirstOrDefault();
+                    if (string.IsNullOrEmpty(addr))
+                        throw new HttpResponseException((HttpStatusCode)501, $"Address is not valid, please fill at least valid address in \"From\" list!");
+                    var utxos = MainDataContext.Node.GetAddressUtxosObjects(addr).ToList();
+                    if (utxos == null || !utxos.Any())
+                        throw new HttpResponseException((HttpStatusCode)501, $"No suitable Utxos found!");
+
+                    var autxos = VirtualNode.ConvertIndexedUtxoToUtxo(utxos);
+
+                    var nutxos = await NeblioAPIHelpers.GetAddressNeblUtxo(addr, 0.0002, 0.001, addinfo: new GetAddressInfoResponse() { Utxos = autxos });
+                    if (nutxos == null || nutxos.Count == 0)
+                        throw new HttpResponseException((HttpStatusCode)501, $"You dont have Neblio on the address. Probably waiting for more than {NeblioAPIHelpers.MinimumConfirmations} confirmations.");
+
+                    var totalTokensToSend = 0.0;
+                    var tokenId = "";
+                    var receivers = new List<string>();
+                    foreach(var to in data.To)
+                    {
+                        var tmpAddr = NeblioTransactionHelpers.ValidateNeblioAddress(to.Address);
+                        if (string.IsNullOrEmpty(tmpAddr))
+                            throw new HttpResponseException((HttpStatusCode)501, $"Address of receiver {to.Address} is not valid Neblio Blockchain Address.");
+                        receivers.Add(tmpAddr);
+
+                        totalTokensToSend += to.Amount ?? 0.0;
+                        if (!string.IsNullOrEmpty(to.TokenId) && string.IsNullOrEmpty(tokenId))
+                            tokenId = to.TokenId;
+                        else if (!string.IsNullOrEmpty(to.TokenId) && !string.IsNullOrEmpty(tokenId) && to.TokenId != tokenId)
+                            throw new HttpResponseException((HttpStatusCode)501, $"All tokens in field \"To\" must be same of token Id.");
+                    }
+
+                    var tutxos = await NeblioAPIHelpers.FindUtxoForMintNFT(addr, tokenId, Convert.ToInt32(totalTokensToSend), addinfo: new GetAddressInfoResponse() { Utxos = autxos });
+                    if (tutxos == null || tutxos.Count == 0)
+                        throw new HttpResponseException((HttpStatusCode)501, $"You dont have Neblio on the address. Probably waiting for more than {NeblioAPIHelpers.MinimumConfirmations} confirmations.");
+
+                    var dto = new SendTokenTxData()
+                    {
+                        MultipleReceivers = data.To.ToList(),
+                        Amount = totalTokensToSend,
+                        Id = tokenId,
+                        SenderAddress = addr
+                    };
+
+                    var transaction = await NeblioTransactionHelpers.SendTokensToMultipleReceiversAsync(dto, data, nutxos, tutxos);
+                    if (transaction != null)
+                        return transaction;
+                    else
+                        throw new HttpResponseException((HttpStatusCode)501, $"Cannot create transaction from input data!");
+                }
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+                throw new HttpResponseException((HttpStatusCode)501, $"Cannot create transaction from input data. Exception message: {ex.Message}!");
+            }
+        }
+
+        /// <summary>
+        /// Get not signed transaction for issuing new token
+        /// </summary>
+        /// <returns>List of tx ids</returns>
+        [AllowCrossSiteJsonAttribute]
+        [HttpPost]
+        [Route("CreateNotSignedIssueTransaction")]
+        public async Task<NBitcoin.Transaction> CreateNotSignedIssueTransaction([FromBody] IssueTokenRequest data)
+        {
+            try
+            {
+                if (data != null)
+                {
+                    var addr = data.IssueAddress;
+                    if (string.IsNullOrEmpty(addr))
+                        throw new HttpResponseException((HttpStatusCode)501, $"Address is not valid, please fill at least valid address in \"From\" list!");
+                    var utxos = MainDataContext.Node.GetAddressUtxosObjects(addr).ToList();
+                    if (utxos == null || !utxos.Any())
+                        throw new HttpResponseException((HttpStatusCode)501, $"No suitable Utxos found for address {addr}!");
+
+                    var autxos = VirtualNode.ConvertIndexedUtxoToUtxo(utxos);
+
+                    var nutxos = await NeblioAPIHelpers.GetAddressNeblUtxo(addr, 0.0002, 10.01, addinfo: new GetAddressInfoResponse() { Utxos = autxos }, latestBlockHeight: MainDataContext.LatestLoadedBlock);
+                    if (nutxos == null || nutxos.Count == 0)
+                        throw new HttpResponseException((HttpStatusCode)501, $"You dont have Neblio on the address. Probably waiting for more than {NeblioAPIHelpers.MinimumConfirmations} confirmations.");
+
+                    MetadataOfIssuance meta = new MetadataOfIssuance()
+                    {
+                        Data = new Data2()
+                        {
+                            Description = data.Metadata.Description,
+                            Issuer = data.Metadata.Issuer,
+                            TokenName = data.Metadata.TokenName,
+                            Urls = data.Metadata.Urls.Select(u => new tokenUrlCarrier() { name = u.Name, url = u.Url, mimeType = u.MimeType }).ToList(),
+                            UserData = new UserData4()
+                            {
+                                Meta = data.Metadata.UserData.Meta.Select(data => new Meta3()
+                                {
+                                    Key = data.Key,
+                                    Value = data.Value,
+                                    AdditionalProperties = new Dictionary<string, object>() { { "type", "String" } }
+                                }).ToList()
+                            }
+                        }
+                    };
+                    var dto = new IssueTokenTxData()
+                    {
+                        Amount = (ulong)data.Amount,
+                        IssuanceMetadata = meta,
+                        SenderAddress = addr,
+                        ReceiverAddress = data.Transfer?.FirstOrDefault()?.Address ?? addr
+                    };
+
+                    var transaction = await NeblioTransactionHelpers.IssueTokensAsync(dto, nutxos);
+                    if (transaction != null)
+                        return transaction;
+                    else
+                        throw new HttpResponseException((HttpStatusCode)501, $"Cannot create transaction from input data!");
+                }
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+                throw new HttpResponseException((HttpStatusCode)501, $"Cannot create transaction from input data. Exception message: {ex.Message}!");
+            }
+        }
+
+        public class ParseNTP1DataResponseDto
+        {
+            public string parsedMetadata { get; set; } = string.Empty;
+            public List<NTP1Instructions> transferInstructions { get; set; } = new List<NTP1Instructions>();
+            public TxType TxType { get; set; } = TxType.TxType_Transfer;
+            public string TokenIssueSymbol { get; set; } = string.Empty;
+            public ulong TokenIssueAmount { get; set; } = 0;
+        }
+
+        /// <summary>
+        /// Parse NTP1 data
+        /// </summary>
+        /// <returns>ServerStatusDto</returns>
+        [AllowCrossSiteJsonAttribute]
+        [HttpGet]
+        [Route("ParseNTP1Data/{opreturndata}")]
+        public async Task<ParseNTP1DataResponseDto> ParseNTP1Data(string opreturndata)
+        {
+            try
+            {
+                var tx = new NTP1Transactions()
+                {
+                    ntp1_opreturn = opreturndata
+                };
+
+                NTP1ScriptHelpers._NTP1ParseScript(tx); //No metadata
+                
+                var customDecompressed1 = StringExt.Decompress(tx.metadata);
+                var metadataString = Encoding.UTF8.GetString(customDecompressed1);
+
+                var resp = new ParseNTP1DataResponseDto()
+                {
+                    parsedMetadata = metadataString,
+                    TxType = tx.tx_type,
+                    TokenIssueAmount = tx.tokenIssueAmount,
+                    TokenIssueSymbol = tx.tokenSymbol,
+                    transferInstructions = tx.ntp1_instruct_list
+                };
+
+                return resp;
+            }
+            catch (Exception ex)
+            {
+                throw new HttpResponseException((HttpStatusCode)501, $"Cannot get server status!");
+            }
+        }
 
         #endregion
 

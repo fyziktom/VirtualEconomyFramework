@@ -444,23 +444,36 @@ namespace VEDriversLite.NeblioAPI
             {
                 var utxosOrdered = JsonConvert.DeserializeObject<List<IndexedUtxoDto>>(res);
                 if (utxosOrdered != null)
-                {
-                    foreach (var ux in utxosOrdered)
-                    {
-                        var nux = new Utxos()
-                        {
-                            Blockheight = ux.Blockheight,
-                            Blocktime = ux.Blocktime,
-                            Index = ux.Index,
-                            Txid = ux.TransactionHash,
-                            Value = ux.Value,
-                            Tokens = new List<Tokens>()
-                        };
-                        if (ux.TokenUtxo)
-                            nux.Tokens.Add(new Tokens() { Amount = ux.TokenAmount, TokenId = ux.TokenId });
+                    return ConvertIndexedUtxoToUtxo(utxosOrdered);
+            }
+            return ouxox;
+        }
 
-                        ouxox.Add(nux);
-                    }
+        /// <summary>
+        /// Get Utxos List from VE Indexer API
+        /// </summary>
+        /// <param name="addr"></param>
+        /// <returns></returns>
+        public static List<Utxos> ConvertIndexedUtxoToUtxo(List<IndexedUtxoDto> utxos)
+        {
+            var ouxox = new List<Utxos>();
+            if (utxos != null)
+            {
+                foreach (var ux in utxos)
+                {
+                    var nux = new Utxos()
+                    {
+                        Blockheight = ux.Blockheight,
+                        Blocktime = ux.Blocktime,
+                        Index = ux.Index,
+                        Txid = ux.TransactionHash,
+                        Value = ux.Value,
+                        Tokens = new List<Tokens>()
+                    };
+                    if (ux.TokenUtxo)
+                        nux.Tokens.Add(new Tokens() { Amount = ux.TokenAmount, TokenId = ux.TokenId });
+
+                    ouxox.Add(nux);
                 }
             }
             return ouxox;
