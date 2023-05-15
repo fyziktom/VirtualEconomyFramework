@@ -1,4 +1,4 @@
-using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
+﻿using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
@@ -396,7 +396,7 @@ namespace TestVEDriversLite
                 // VENFT token issuing should be 1000000000000000
                 //param = "4e54030156454e4654201f0100201ff000000114789c6550cb6ec23010fc95c86748406942c9b52dbd454845bd541c1c7b036ee287ec0d8846f9f76e42a9507bb23c333b33bb3d931c392b7a86b60153720dac60ef2fe566c7664c42105e3954d64ce8c6137fb6be89880f24502174e089ab2f5faa41ab09eb7c1b58f1d13373355382a627983e4744178a2431e896f3910931d7218da53a28e4ad15c04d705c408885d5c93acb17b2ca78ca1f530979be14ab2a834ca43940bd80e5c36a21d652a6f1b67ca50cad34ec2e6e4ad5fc0089330736ec293c807ffe5954c3f852bf062e24dc7afb090269fac4db0efeec398f6e8d4f50dfd0a91a0de035ea0dbd1a7366bf969d7736c09de593078e249aee1659139550b5ca466785c7e82eefbfe97e18866fdd138c71"; 
                 //BDP token issuing should be 1000000000000000
-                // param = "4e54030156454e4654201f0100201ff000000114789c6550cb6ec23010fc95c86748406942c9b52dbd454845bd541c1c7b036ee287ec0d8846f9f76e42a9507bb23c333b33bb3d931c392b7a86b60153720dac60ef2fe566c7664c42105e3954d64ce8c6137fb6be89880f24502174e089ab2f5faa41ab09eb7c1b58f1d13373355382a627983e4744178a2431e896f3910931d7218da53a28e4ad15c04d705c408885d5c93acb17b2ca78ca1f530979be14ab2a834ca43940bd80e5c36a21d652a6f1b67ca50cad34ec2e6e4ad5fc0089330736ec293c807ffe5954c3f852bf062e24dc7afb090269fac4db0efeec398f6e8d4f50dfd0a91a0de035ea0dbd1a7366bf969d7736c09de593078e249aee1659139550b5ca466785c7e82eefbfe97e18866fdd138c71"; 
+                // param = "4e5403014244502020201f0100201ff000000182789c7d52cb6edb3010fc1582bc26b263ab4ee25b03a3408036356a033d1439acc895c55a7c804bb5700dff7b9752520439f4447066776676c9b3349041aecf328723fa277028d7f261b39557d220e96463b6c1170c08375cbbed4123b39668c0c4447bfa638f3938c686d4935cff384b3fe958cdad23cc972ee748ebd9cce778735d18aac0d1b232f66033f44123788a2c4e950e6e7683f3c5a2d6cb95d1f5fdaabd6bdb39dcad16cbdbdbb6361fda7b6d1a63a06eaae80fece1acc3fd298eae0e0e382bf0e599cd09d3e6654687e5e47c473c71e136859fa83377ff827ec0f7438a6bf19ab961bc2c2a167c8cc74d79b2dbe5648bd7d53fd921c540f846769743e24c22b42277288a926843126ee8b38d3d8a38b550f51fd93d1ce88da62a395f85d503efefa83bb05ea8c7eda79d1869a1be26dd21e504e51599f266e0dba99e0bf51d9b25974ddbdfffb69e84e28d98414fb5df4213b2d554ba28e20bfab4d90bf50574673d7e46489e430af5f151a85d18d2f833de0df07cb95cfe02ae16ce19"; 
                 // SPOTT token issuing should be 2000000789
                 //param = "4e54030153504f545483b9acb8a8010083b9acb8a8f0000000c9789c958fbd6ac34010845fe5d8da4810210caaddc60ef8ba90e2a45bc96be97e72bb729c08bdbb4fa40aa471b9b333f3310b5823069a05248ce88fc62134707e3b690d3b20e6195316f4057588e718e4e427f2987f16b94b148582ff35a82da5f456a38ca87f22739a189af705fc5f4cd6f3751189dc94656bfa3121d97bdd55b1ba2275f73d57d75427b42f2e7cfafdadade330f5233bdbd2ed67fe62f175308e0a8a3d17be179690cc8045068f65263872a8bfe3068d7e80f56307af28461d9e1db1ae0ffbf06a88";
                 // MGA Medigrowth token issuing should be 333
@@ -460,8 +460,7 @@ namespace TestVEDriversLite
 
             var tx = new NTP1Transactions()
             {
-                ntp1_opreturn = ti_script,
-                tx_type = 1
+                ntp1_opreturn = ti_script
             };
 
             NTP1ScriptHelpers._NTP1ParseScript(tx); //No metadata
@@ -475,6 +474,95 @@ namespace TestVEDriversLite
 
         }
 
+
+        [TestEntry]
+        public static void Indexer_CreateIsuanceNTP1Script(string param)
+        {
+            Indexer_CreateIsuanceNTP1ScriptAsync(param);
+        }
+        public static async Task Indexer_CreateIsuanceNTP1ScriptAsync(string param)
+        {
+            if (string.IsNullOrEmpty(param))
+                // VENFT token issuing should be 1000000000000000
+                //param = "4e54030156454e4654201f0100201ff000000114789c6550cb6ec23010fc95c86748406942c9b52dbd454845bd541c1c7b036ee287ec0d8846f9f76e42a9507bb23c333b33bb3d931c392b7a86b60153720dac60ef2fe566c7664c42105e3954d64ce8c6137fb6be89880f24502174e089ab2f5faa41ab09eb7c1b58f1d13373355382a627983e4744178a2431e896f3910931d7218da53a28e4ad15c04d705c408885d5c93acb17b2ca78ca1f530979be14ab2a834ca43940bd80e5c36a21d652a6f1b67ca50cad34ec2e6e4ad5fc0089330736ec293c807ffe5954c3f852bf062e24dc7afb090269fac4db0efeec398f6e8d4f50dfd0a91a0de035ea0dbd1a7366bf969d7736c09de593078e249aee1659139550b5ca466785c7e82eefbfe97e18866fdd138c71"; 
+                //BDP token issuing should be 1000000000000000
+                 param = "4e5403014244502020201f0100201ff000000182789c7d52cb6edb3010fc1582bc26b263ab4ee25b03a3408036356a033d1439acc895c55a7c804bb5700dff7b9752520439f4447066776676c9b3349041aecf328723fa277028d7f261b39557d220e96463b6c1170c08375cbbed4123b39668c0c4447bfa638f3938c686d4935cff384b3fe958cdad23cc972ee748ebd9cce778735d18aac0d1b232f66033f44123788a2c4e950e6e7683f3c5a2d6cb95d1f5fdaabd6bdb39dcad16cbdbdbb6361fda7b6d1a63a06eaae80fece1acc3fd298eae0e0e382bf0e599cd09d3e6654687e5e47c473c71e136859fa83377ff827ec0f7438a6bf19ab961bc2c2a167c8cc74d79b2dbe5648bd7d53fd921c540f846769743e24c22b42277288a926843126ee8b38d3d8a38b550f51fd93d1ce88da62a395f85d503efefa83bb05ea8c7eda79d1869a1be26dd21e504e51599f266e0dba99e0bf51d9b25974ddbdfffb69e84e28d98414fb5df4213b2d554ba28e20bfab4d90bf50574673d7e46489e430af5f151a85d18d2f833de0df07cb95cfe02ae16ce19"; 
+                // SPOTT token issuing should be 2000000789
+                //param = "4e54030153504f545483b9acb8a8010083b9acb8a8f0000000c9789c958fbd6ac34010845fe5d8da4810210caaddc60ef8ba90e2a45bc96be97e72bb729c08bdbb4fa40aa471b9b333f3310b5823069a05248ce88fc62134707e3b690d3b20e6195316f4057588e718e4e427f2987f16b94b148582ff35a82da5f456a38ca87f22739a189af705fc5f4cd6f3751189dc94656bfa3121d97bdd55b1ba2275f73d57d75427b42f2e7cfafdadade330f5233bdbd2ed67fe62f175308e0a8a3d17be179690cc8045068f65263872a8bfe3068d7e80f56307af28461d9e1db1ae0ffbf06a88";
+                // MGA Medigrowth token issuing should be 333
+                //param = "4e5403014d4741202034d0010034d0f00000018d789c9592516fda301485ff4a94e7b60969bb31a4a9a28192b0a5a430584a5521436e1c2bb11d7c9d0041fcf705d43d744fcb93757d8e8e3f1ddfa319134dccded1d43203f14c38983d3318f5cd2b3306dc28566826c5f90e624695dce9d4e8cf678dcc104b50ff2825364a89a0061fb11ccee7dbd1cce0f0d9eb8b4436e68ae4e5f9cd54eb027b96152b56c10d9592e670b391dc4a580e566c756c9ab27c3b5d3a3062d4aed72e5fac33e0a4b3f396c144a656c560f75062f11d53a298a04db83e14e7ec99becca7abbf187e680444100a1c84361a9968a0873634abe8fae9972f8a24eacfa2b17f77bf7f0a6afaad1bf16d88fe80b5a10989d20214a6ac408388d870659e93b56ca89aeeb10d565745fe38b56ff7c528fb4adcc715f245ec0d6b7b7e377cf4bd9f6db03e6a611b23cc896843f12ac7ab3179ad61bf769dac63cf06bfbbf5971f2fce2878c66596b5a1f8b43115a0be7c59a8642191e497bae608864c8ca41471bbb2b64e325d4ce693e1340c689dc2e0c55d55ce665a7a023d3ef90fccf7d3e9f40794c52053";
+                // QSAT1 token issuing- should be 200000000
+                //param = "4e5403015153415431202801002028f0000000b9789c4d8fbb0ec2300c45ffc533b4b4117d6d48cc480836c4e0264e8968d2a84e0754f5df498181c9bae7da3af20c0a03423343189ee44e68091a385f0ed70c36a088e5687c3083fba38679a27105314c63cfd0dc6670df5323e3ee07c7f008c17393a62ef86cbb369ca0659128d39980fd20091d7b94c4891c6caaeb5690d88932935ae7ba42a9f6b9564a932a6a9115455594755bed12efbae8b0c6d2f5e53f568b1da52b5eee51ce341e7f6f595ae7edbe2ccb1b31b44cc3"; 
+
+            var tx = new NTP1Transactions() { ntp1_opreturn = param };
+
+            NTP1ScriptHelpers._NTP1ParseScript(tx); //No metadata
+
+            var customDecompressed = StringExt.Decompress(tx.metadata);
+            var metadataString = Encoding.UTF8.GetString(customDecompressed);
+
+            await Console.Out.WriteLineAsync($"Token amount in tx is: {tx.ntp1_instruct_list.FirstOrDefault().amount} on {tx.ntp1_instruct_list.FirstOrDefault().vout_num} output");
+            await Console.Out.WriteLineAsync($"Metadata In the transaction are: {metadataString}");
+            await Console.Out.WriteLineAsync($"OP_RETURN Script: {tx.ntp1_opreturn}");
+            await Console.Out.WriteLineAsync($"Issued Amount: {tx.tokenIssueAmount}");
+            await Console.Out.WriteLineAsync($"Token symbol: {tx.tokenSymbol}");
+
+            Console.WriteLine("");
+            Console.WriteLine("");
+            await Console.Out.WriteLineAsync($"Metadata In the transaction before creating script: {metadataString}");
+            var toCompress = Encoding.UTF8.GetBytes(metadataString);
+            var metacomprimed = StringExt.Compress(toCompress);
+            var metac = NTP1ScriptHelpers.ConvertByteArrayToHexString(metacomprimed);
+
+            var metacB = NTP1ScriptHelpers.ConvertHexStringToByteArray(metac);
+                
+            var customDecompressedC = StringExt.Decompress(metacB);
+            var metadataStringC = Encoding.UTF8.GetString(customDecompressed);
+
+            var txmeta = NTP1ScriptHelpers.ConvertByteArrayToHexString(tx.metadata);
+            if (metac == txmeta)
+                Console.WriteLine("Match!");
+
+            if (metadataString == metadataStringC)
+                 Console.WriteLine("Match!");
+
+            List<NTP1Instructions> TiList = new List<NTP1Instructions>();
+            //Now make the transfer instruction
+            NTP1Instructions ti = new NTP1Instructions();
+            ti.amount = Convert.ToUInt64(tx.tokenIssueAmount);
+            ti.vout_num = 0;
+            TiList.Add(ti);
+
+            var flags = new IssuanceFlags() 
+            { 
+                Divisibility = 7, 
+                AggregationPolicy = AggregationPolicy.Aggregatable, 
+                Locked = true 
+            };
+
+            //Create the hex op_return
+            string ti_script = NTP1ScriptHelpers._NTP1CreateIsseueScript(TiList, metacomprimed, tx.tokenSymbol, flags); //No metadata
+
+            var tx1 = new NTP1Transactions() { ntp1_opreturn = ti_script };
+
+            if (param == tx1.ntp1_opreturn)
+                Console.WriteLine("Match!");
+
+            NTP1ScriptHelpers._NTP1ParseScript(tx1); //No metadata
+
+            var customDecompressed1 = StringExt.Decompress(tx1.metadata);
+            var metadataString1 = Encoding.UTF8.GetString(customDecompressed1);
+
+            if (metadataString == metadataString1)
+                Console.WriteLine("Match!");
+
+            await Console.Out.WriteLineAsync($"Token amount in tx is: {tx1.ntp1_instruct_list.FirstOrDefault().amount} on {tx1.ntp1_instruct_list.FirstOrDefault().vout_num} output");
+            await Console.Out.WriteLineAsync($"Metadata In the transaction are: {metadataString}");
+            await Console.Out.WriteLineAsync($"OP_RETURN Script: {tx1.ntp1_opreturn}");
+            await Console.Out.WriteLineAsync($"Issued Amount: {tx1.tokenIssueAmount}");
+            await Console.Out.WriteLineAsync($"Token symbol: {tx1.tokenSymbol}");
+
+        }
         #endregion
 
     }

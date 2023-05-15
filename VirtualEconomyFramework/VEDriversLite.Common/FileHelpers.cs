@@ -1,4 +1,5 @@
-﻿using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
+﻿using ICSharpCode.SharpZipLib.Zip.Compression;
+using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -71,6 +72,7 @@ namespace VEDriversLite.Common
         {
             using (var inputStream = new MemoryStream(data))
             using (var outputStream = new MemoryStream())
+            //using (var deflaterStream = new DeflaterOutputStream(outputStream, new Deflater((int)Deflater.CompressionLevel.BEST_COMPRESSION, false)) { IsStreamOwner = false })
             using (var deflaterStream = new DeflaterOutputStream(outputStream))
             {
                 inputStream.CopyTo(deflaterStream);

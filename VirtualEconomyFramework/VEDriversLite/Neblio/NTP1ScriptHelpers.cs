@@ -73,15 +73,11 @@ namespace VEDriversLite.Neblio
         public static byte[] HexStringToBytes(string hexString)
         {
             if (hexString == null)
-            {
                 throw new ArgumentNullException("hexString");
-            }
-
+            
             if (hexString.Length % 2 != 0)
-            {
                 throw new ArgumentException("hexString must have an even length", "hexString");
-            }
-
+            
             var bytes = new byte[hexString.Length / 2];
             for (int i = 0; i < bytes.Length; i++)
             {
@@ -94,17 +90,13 @@ namespace VEDriversLite.Neblio
         public static byte[] UnhexToByteArray(string input)
         {
             if (input.Length % 2 != 0)
-            {
                 throw new ArgumentException("Input string must have an even number of characters.");
-            }
-
+            
             byte[] result = new byte[input.Length / 2];
 
             for (int i = 0; i < input.Length; i += 2)
-            {
                 result[i / 2] = (byte)((GetHexValue(input[i]) << 4) + GetHexValue(input[i + 1]));
-            }
-
+            
             return result;
         }
 
@@ -114,33 +106,25 @@ namespace VEDriversLite.Neblio
             int value = hexChar - '0';
 
             if (value >= 0 && value <= 9)
-            {
                 return value;
-            }
 
             value = hexChar - 'A';
 
             if (value >= 0 && value <= 5)
-            {
                 return value + 10;
-            }
 
             value = hexChar - 'a';
 
             if (value >= 0 && value <= 5)
-            {
                 return value + 10;
-            }
 
             throw new ArgumentException("Invalid hex character.");
         }
         public static string UnhexToString(string input)
         {
             if (input.Length % 2 != 0)
-            {
                 throw new ArgumentException("Unhex input must have even length.");
-            }
-
+            
             char[] output = new char[input.Length / 2];
             for (int i = 0; i < input.Length; i += 2)
             {
@@ -158,8 +142,8 @@ namespace VEDriversLite.Neblio
 
         public static string _NTP1CreateTransferScript(List<NTP1Instructions> TIs, byte[] metadata)
         {
-            if (TIs.Count == 0) { return ""; }
-            if (TIs.Count > 255) { return ""; } //Cannot create transaction greater than 255 instructions
+            if (TIs.Count == 0) { return string.Empty; }
+            if (TIs.Count > 255) { return string.Empty; } //Cannot create transaction greater than 255 instructions
 
             //Constants
             byte[] header = ConvertHexStringToByteArray("4e5403"); //Represents chars NT and byte protocal version (3)
@@ -213,6 +197,88 @@ namespace VEDriversLite.Neblio
             }
         }
 
+        public static string _NTP1CreateIsseueScript(List<NTP1Instructions> TIs, byte[] metadata, string tokenSymbol, IssuanceFlags flags)
+        {
+            if (TIs.Count == 0) { return string.Empty; }
+            if (TIs.Count > 255) { return string.Empty; } //Cannot create transaction greater than 255 instructions
+            if (string.IsNullOrEmpty(tokenSymbol)) { return string.Empty; }
+            if (tokenSymbol.Length > 5) { return string.Empty; } //Token symbol cannot be greater than 5 characters
+            
+            //Constants
+            byte[] header = ConvertHexStringToByteArray("4e5403"); //Represents chars NT and byte protocal version (3)
+            byte op_code = 1; //Issue transaction
+            int op_return_max_size = 4096; //Maximum size of the scriptbin
+
+            using (MemoryStream scriptbin = new MemoryStream())
+            {
+                //This stream will hold the byte array that will be converted to a hex string eventually
+                scriptbin.Write(header, 0, header.Length); //Write the header data to the stream
+                scriptbin.WriteByte(op_code);
+
+                // Write token symbol
+                if (tokenSymbol.Length < 5)
+                {
+                    for (int i = 0; i <= 5 - tokenSymbol.Length; i++)
+                        tokenSymbol += " ";
+                }
+                foreach(var ch in tokenSymbol)
+                    scriptbin.WriteByte((byte)ch);
+
+                // Write total amount
+                ulong totalAmount = 0;
+                foreach(var ti in TIs)
+                    totalAmount += ti.amount;
+
+                var ta = _NTP1NumToByteArray(totalAmount);
+                scriptbin.Write(ta, 0, ta.Length);
+
+                // write Transef instructions
+                scriptbin.WriteByte(Convert.ToByte(TIs.Count)); //The amount of TIs
+
+                for (int i = 0; i < TIs.Count; i++)
+                {
+                    //Add the transfer instructions
+                    NTP1Instructions ti = TIs[i];
+                    //Skip input will always be false in our case, so first position is always 0
+                    //The maximum vout position is 31 (0-31) per this method, although 255 TIs are supported
+                    if (ti.vout_num > 31) { return ""; }
+                    string output_binary = "000" + Convert.ToString(ti.vout_num, 2).PadLeft(5, '0'); //Convert number to binary
+                    byte first_byte = Convert.ToByte(output_binary, 2);
+                    scriptbin.WriteByte(first_byte);
+
+                    //Now convert the amount to byte array
+                    byte[] amount_bytes = _NTP1NumToByteArray(ti.amount);
+                    scriptbin.Write(amount_bytes, 0, amount_bytes.Length);
+                }
+
+                // write Issuance Flag
+                var flagbyte = IssuanceFlagsToByte(flags);
+                scriptbin.WriteByte(flagbyte);
+
+                //Add metadata if present
+                if (metadata != null)
+                {
+                    uint msize = (uint)metadata.Length;
+                    if (msize > 0)
+                    {
+                        byte[] msize_bytes = BitConverter.GetBytes(msize);
+                        if (BitConverter.IsLittleEndian == true)
+                        {
+                            //We must convert this to big endian as protocol requires big endian
+                            Array.Reverse(msize_bytes);
+                        }
+                        scriptbin.Write(msize_bytes, 0, msize_bytes.Length); //Write the size of the metadata
+                        scriptbin.Write(metadata, 0, metadata.Length); //Write the length of the metadata
+                    }
+                }
+                if (scriptbin.Length > op_return_max_size)
+                {
+                    return ""; //Cannot create a script larger than the max
+                }
+                return ConvertByteArrayToHexString(scriptbin.ToArray());
+            }
+        }
+
         public static void _NTP1ParseScript(NTP1Transactions tx)
         {
             if (tx.ntp1_opreturn.Length == 0) { return; } //Nothing inside
@@ -227,7 +293,7 @@ namespace VEDriversLite.Neblio
             if (op_code == 1)
             {
                 script_type = 0; //Issue transaction
-                ParseIssueTransaction(tx, scriptbin, op_code);
+                ParseIssueTransaction(tx, scriptbin);
             }
             else if (op_code == 16)
             {
@@ -297,7 +363,7 @@ namespace VEDriversLite.Neblio
         }
 
 
-        public static void ParseIssueTransaction(NTP1Transactions tx, byte[] scriptbin, int op_code)
+        public static void ParseIssueTransaction(NTP1Transactions tx, byte[] scriptbin)
         {
             tx.tx_type = 0;
 
@@ -388,6 +454,45 @@ namespace VEDriversLite.Neblio
             rev = ((rev & 0xAA) >> 1) | ((rev & 0x55) << 1);
             return (byte)rev;
         }
+
+        public static byte IssuanceFlagsToByte(IssuanceFlags flags)
+        {
+            BitArray bits = new BitArray(8);
+
+            // first 3 bits
+            bits[0] = (flags.Divisibility & 1) != 0;
+            bits[1] = (flags.Divisibility & 2) != 0;
+            bits[2] = (flags.Divisibility & 4) != 0;
+
+            // 4th bit
+            bits[3] = flags.Locked;
+
+            // 5th + 6th bits
+            int aggrPolicy = 0;
+            switch (flags.AggregationPolicy)
+            {
+                case AggregationPolicy.Aggregatable:
+                    aggrPolicy = 0;
+                    break;
+                case AggregationPolicy.NonAggregatable:
+                    aggrPolicy = 2;
+                    break;
+                default:
+                    throw new Exception("Unknown aggregation policy: " + flags.AggregationPolicy);
+            }
+            bits[4] = (aggrPolicy & 1) != 0;
+            bits[5] = (aggrPolicy & 2) != 0;
+
+            // Convert BitArray back to byte
+            byte[] bytes = new byte[1];
+            bits.CopyTo(bytes, 0);
+
+            // Reverse the bits
+            bytes[0] = ReverseBits(bytes[0]);
+
+            return bytes[0];
+        }
+
         public static IssuanceFlags ParseIssuanceFlag(byte flags)
         {
             IssuanceFlags result = new IssuanceFlags();
