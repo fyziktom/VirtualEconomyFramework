@@ -1121,21 +1121,14 @@ namespace VEDriversLite.NeblioAPI
                     var info = await GetTokenMetadata(tokenId);
                     t.TokenSymbol = info.MetadataOfIssuance?.Data.TokenName ?? string.Empty;
 
-                    var tus = new List<tokenUrlCarrier>();
-                    try
-                    {
-                        if (TokenMetadataCache.TryGetValue(t.TokenId, out var tokcache))
-                            tus = JsonConvert.DeserializeObject<List<tokenUrlCarrier>>(JsonConvert.SerializeObject(tokcache.MetadataOfIssuance?.Data.Urls ?? string.Empty));
-                        else
-                            tus = JsonConvert.DeserializeObject<List<tokenUrlCarrier>>(JsonConvert.SerializeObject(info.MetadataOfIssuance?.Data.Urls ?? string.Empty));
-                    }
-                    catch(Exception ex)
-                    {
-                        await Console.Out.WriteLineAsync("Cannot get image urls for token Id: " + t.TokenId);
-                    }
-                    var tu = tus?.FirstOrDefault();
+                    var tu = new tokenUrlCarrier();
+                    if (TokenMetadataCache.TryGetValue(t.TokenId, out var tokcache))
+                        tu = tokcache.MetadataOfIssuance?.Data.Urls?.FirstOrDefault();
+                    else
+                        tu = info.MetadataOfIssuance?.Data.Urls?.FirstOrDefault();
+
                     if (tu != null)
-                        t.ImageUrl = tu.url;
+                        t.ImageUrl = tu.url.Replace("https://ntp1-icons.ams3.digitaloceanspaces.com", "https://ntp1-icons.nebl.io");
                     else if (tu == null && t.TokenId == VENFTTokenId)
                         t.ImageUrl = VENFTImageLink;
 
@@ -1184,14 +1177,7 @@ namespace VEDriversLite.NeblioAPI
             else
                 return (totalAmount, null);
         }
-
-        private class tokenUrlCarrier
-        {
-            public string name { get; set; } = string.Empty;
-            public string url { get; set; } = string.Empty;
-            public string mimeType { get; set; } = string.Empty;
-        }
-        
+                
         /// <summary>
         /// Check supply of all tokens on address.
         /// </summary>
@@ -1219,26 +1205,19 @@ namespace VEDriversLite.NeblioAPI
                                 TokenSymbol = info.MetadataOfIssuance?.Data.TokenName ?? string.Empty,
                                 TokenId = toks.TokenId
                             };
-                            
-                            var tus = new List<tokenUrlCarrier>();
-                            try
-                            {
-                                if (TokenMetadataCache.TryGetValue(toks.TokenId, out var tokcache))
-                                    tus = JsonConvert.DeserializeObject<List<tokenUrlCarrier>>(JsonConvert.SerializeObject(tokcache.MetadataOfIssuance?.Data.Urls ?? string.Empty));
-                                else
-                                    tus = JsonConvert.DeserializeObject<List<tokenUrlCarrier>>(JsonConvert.SerializeObject(info.MetadataOfIssuance?.Data.Urls ?? string.Empty));
-                            }
-                            catch(Exception ex)
-                            {
-                                await Console.Out.WriteLineAsync("cannot parse images url for token Id: " + t.TokenId);
-                            }
 
-                            var tu = tus?.FirstOrDefault();
+                            var tu = new tokenUrlCarrier();
+
+                            if (TokenMetadataCache.TryGetValue(toks.TokenId, out var tokcache))
+                                tu = tokcache.MetadataOfIssuance?.Data.Urls?.FirstOrDefault();
+                            else
+                                tu = info.MetadataOfIssuance?.Data.Urls?.FirstOrDefault();
+
                             if (tu != null)
-                                t.ImageUrl = tu.url;
+                                t.ImageUrl = tu.url.Replace("https://ntp1-icons.ams3.digitaloceanspaces.com", "https://ntp1-icons.nebl.io");
                             else if (tu == null && t.TokenId == VENFTTokenId)
                                 t.ImageUrl = VENFTImageLink;
-                                
+
                             t.TokenId = toks.TokenId;
                             t.Amount += (double)toks.Amount;
 

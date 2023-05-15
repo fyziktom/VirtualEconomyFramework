@@ -775,26 +775,18 @@ namespace VEDriversLite.Indexer
             {
                 if (tokens.MetadataOfIssuance != null)
                 {
-                    var tkm = tokens.MetadataOfIssuance; //tokens.AdditionalProperties.FirstOrDefault().Value.ToString().Replace("\r\n", string.Empty);
+                    var tkm = tokens.MetadataOfIssuance;
 
-                    var tus = new List<tokenUrlCarrier>();
-                    try
-                    {
-                        tus = JsonConvert.DeserializeObject<List<tokenUrlCarrier>>(JsonConvert.SerializeObject(tkm.Data.Urls));
-                    }
-                    catch(Exception ex)
-                    {
-                        Console.WriteLine("Cannot parse token image for tokenId: " + tokens.TokenId);
-                    }
                     var tt = new TokenSupplyDto
                     {
                         TokenId = tokens.TokenId,
                         TokenSymbol = tkm.Data.TokenName
                     };
-                    var tu = tus.FirstOrDefault();
-                    if (tu != null)
-                        tt.ImageUrl = tu.url;
 
+                    var tu = tkm.Data.Urls.FirstOrDefault();
+                    if (tu != null)
+                        tt.ImageUrl = tu.url.Replace("https://ntp1-icons.ams3.digitaloceanspaces.com", "https://ntp1-icons.nebl.io");
+                    
                     tokeninfo.TokenId = tokens.TokenId;
                     tokeninfo.TokenName = tkm.Data.TokenName;
                     tokeninfo.MetadataOfIssuance = tkm;

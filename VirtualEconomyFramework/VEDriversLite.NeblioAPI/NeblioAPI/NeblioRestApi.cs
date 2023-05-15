@@ -6364,7 +6364,7 @@ namespace VEDriversLite.NeblioAPI
     
         [Newtonsoft.Json.JsonProperty("hex", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Hex { get; set; }
-    
+
         private System.Collections.Generic.IDictionary<string, object> _additionalProperties = new System.Collections.Generic.Dictionary<string, object>();
     
         [Newtonsoft.Json.JsonExtensionData]
@@ -6530,7 +6530,7 @@ namespace VEDriversLite.NeblioAPI
 
         /// <summary>Urls</summary>
         [Newtonsoft.Json.JsonProperty("urls")]
-        public object Urls { get; set; }
+        public List<tokenUrlCarrier> Urls { get; set; }
 
         /// <summary>Token description</summary>
         [Newtonsoft.Json.JsonProperty("description", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -6551,7 +6551,14 @@ namespace VEDriversLite.NeblioAPI
     
     
     }
-    
+
+    public class tokenUrlCarrier
+    {
+        public string name { get; set; } = string.Empty;
+        public string url { get; set; } = string.Empty;
+        public string mimeType { get; set; } = string.Empty;
+    }
+
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.4.0 (Newtonsoft.Json v11.0.0.0)")]
     public partial class UserData 
     {
