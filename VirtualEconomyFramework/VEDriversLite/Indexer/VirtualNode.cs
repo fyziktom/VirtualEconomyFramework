@@ -363,11 +363,7 @@ namespace VEDriversLite.Indexer
 
                     if (!string.IsNullOrEmpty(data))
                     {
-                        tx = new NTP1Transactions()
-                        {
-                            ntp1_opreturn = data,
-                            tx_type = TxType.TxType_Transfer
-                        };
+                        tx = new NTP1Transactions() { ntp1_opreturn = data };
                         NTP1ScriptHelpers._NTP1ParseScript(tx); //No metadata
 
                         var customDecompressed = StringExt.Decompress(tx.metadata);

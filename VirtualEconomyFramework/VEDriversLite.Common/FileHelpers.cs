@@ -316,5 +316,41 @@ namespace VEDriversLite.Common
             else
                 return false;
         }
+
+        /// <summary>
+        /// Get MIME type from the filename
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="NotSupportedException"></exception>
+        public static string GetMimeTypeFromImageFile(string fileName)
+        {
+            if (string.IsNullOrEmpty(fileName))
+                throw new ArgumentNullException(nameof(fileName));
+            
+            string extension = Path.GetExtension(fileName).ToLower();
+
+            switch (extension)
+            {
+                case ".jpeg":
+                case ".jpg":
+                    return "image/jpeg";
+                case ".png":
+                    return "image/png";
+                case ".gif":
+                    return "image/gif";
+                case ".bmp":
+                    return "image/bmp";
+                case ".tiff":
+                case ".tif":
+                    return "image/tiff";
+                case ".svg":
+                case ".svgz":
+                    return "image/svg+xml";
+                default:
+                    throw new NotSupportedException($"Unsupported file extension: {extension}");
+            }
+        }
     }
 }

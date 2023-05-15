@@ -1150,6 +1150,52 @@ namespace VEDriversLite.Neblio
         }
 
         /// <summary>
+        /// Send classic neblio payment
+        /// </summary>
+        /// <param name="receiver">Receiver Neblio Address</param>
+        /// <param name="amount">Ammount in Neblio</param>
+        /// <param name="message">Message in transaction data</param>
+        /// <returns></returns>
+        public async Task<(bool, string)> IssueTokens(string receiver, ulong amount, string tokenSymbol, string description, string issuerNick, string imageLink, string imageFileName, IDictionary<string, string> metadata)
+        {
+            if (IsLocked())
+            {
+                await InvokeAccountLockedEvent();
+                return (false, "Account is locked.");
+            }
+            var res = await CheckSpendableNeblio(10 + 0.01);
+            if (res.Item2 == null)
+            {
+                await InvokeErrorDuringSendEvent(res.Item1, "Not enough spendable inputs");
+                return (false, res.Item1);
+            }
+
+            var dto = await NFTHelpers.GetTokenIssueTxData(Address, receiver, amount, tokenSymbol, issuerNick, description, imageLink, imageFileName, "", metadata);
+
+            try
+            {
+                // send tx                                              
+                var transaction = await NeblioTransactionHelpers.IssueTokensAsync(dto, AccountKey, res.Item2);
+
+                var result = await SignBroadcastAndInvokeSucessEvent(transaction, "Neblio Payment Sent");
+                if (result.Item1)
+                {
+                    await StoreUsedUtxos(transaction, result.Item2);
+                    return (true, result.Item2);
+                }
+                
+            }
+            catch (Exception ex)
+            {
+                await InvokeErrorDuringSendEvent(ex.Message, "Unknown Error");
+                return (false, ex.Message);
+            }
+
+            await InvokeErrorDuringSendEvent("Unknown Error", "Unknown Error");
+            return (false, "Unexpected error during send.");
+        }
+
+        /// <summary>
         /// Send classic token payment. It must match same requirements as minting. It cannot use 1 token inputs (NFTs).
         /// </summary>
         /// <param name="tokenId">Token Id hash</param>

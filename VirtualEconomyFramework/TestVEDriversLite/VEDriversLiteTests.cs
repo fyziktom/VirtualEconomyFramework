@@ -571,6 +571,47 @@ namespace TestVEDriversLite
         }
 
         /// <summary>
+        /// Send 100 VENFT Tokens airdrop including 0.05NEBL
+        /// </summary>
+        /// <param name="param"></param>
+        [TestEntry]
+        public static void IssueNewTokens(string param)
+        {
+            IssueNewTokensAsync(param);
+        }
+        public static async Task IssueNewTokensAsync(string param)
+        {
+            /*
+            var split = param.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            if (split.Length < 1)
+                throw new Exception("Please input receiveraddress");
+
+            var receiver = split[0];
+            var tokid = "La58e9EeXUMx41uyfqk6kgVWAQq9yBs44nuQW8";
+            var tamount = 100;
+            var amount = 0.05;
+            */
+
+            var receiver = "";
+            var tokenSymbol = "SPOCK"; // must be unique!!!
+            ulong amount = 1000000000000000;
+            var imageLink = "https://ve-framework.com/ipfs/QmP3uXtMK7A7V38xtANTGrJgK43ZZkmCLh4R9WFKFhwgpA";
+            var imageFileName = "icon.png";
+            var nickname = "fyziktom";
+            var description = "Peace for All";
+
+            var meta = new Dictionary<string, string>();
+            meta.Add("Project", "VEFramework");
+            meta.Add("ProjectUrl", "https://veframework.com/");
+            meta.Add("Purpose", "Peace for all in the Universe. Cooperation, not competition.");
+            meta.Add("Tags", "#Peace #AI #Robots #Animals #Plants #Humans #Cooperation #NotCompetition #SaveTheEarth #Sustainibility #Resilience #GoverningOfCommons #OpenSource #DigitalTransformation");
+
+            var res = await account.IssueTokens("", amount, tokenSymbol, description, nickname, imageLink, imageFileName, meta);
+            Console.WriteLine("New TxId hash is: ");
+            Console.WriteLine(res);
+        }
+
+        /// <summary>
         /// Send Airdrop transaction to some Neblio Address
         /// This can send tokens and neblio in the same transaction
         /// </summary>

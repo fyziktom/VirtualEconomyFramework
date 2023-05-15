@@ -1,4 +1,4 @@
-﻿using Ipfs;
+using Ipfs;
 using Ipfs.Http;
 using NBitcoin;
 using Newtonsoft.Json;
@@ -1149,6 +1149,76 @@ namespace VEDriversLite.NFT
                 sendUtxo = new List<string>() { $"{NFT.Utxo}:{NFT.UtxoIndex}" },
                 SenderAddress = address,
                 ReceiverAddress = address
+            };
+
+            return dto;
+        }
+
+        /// <summary>
+        /// This function will create Dto for issue Token tx transaction
+        /// </summary>
+        /// <param name="address">sender address</param>
+        /// <returns></returns>
+        public static async Task<IssueTokenTxData> GetTokenIssueTxData(string issuingAddress, string receiver, ulong amount, string tokenSymbol, string issuerNick, string description, string imageLink, string imageFileName, string imageType, IDictionary<string,string> metadata = null )
+        {
+            if (string.IsNullOrEmpty(issuingAddress))
+                throw new Exception("Cannot create without address");
+            if (string.IsNullOrEmpty(tokenSymbol) && tokenSymbol.Length > 5)
+                throw new Exception("Cannot create without token symbol. Or symbol is longer than 5 characters.");
+            if (amount <= 0)
+                throw new Exception("Amout must be bigger than 0.");
+
+            if (string.IsNullOrEmpty(imageType))
+            {
+                var filename = imageFileName;
+                if (string.IsNullOrEmpty(filename))
+                    filename = imageLink;
+                var ext = FileHelpers.GetMimeTypeFromImageFile(filename);
+                if (!string.IsNullOrEmpty(ext))
+                    imageType = ext;
+                else
+                    imageType = "image/png";
+            }
+
+            var urls = new tokenUrlCarrier()
+            {
+                url = imageLink,
+                mimeType = imageType,
+                name = "icon",
+            };
+
+            var metaurls = new List<tokenUrlCarrier>() { urls };
+
+            MetadataOfIssuance meta = new MetadataOfIssuance()
+            {
+                Data = new Data2()
+                {
+                    Description = description,
+                    Issuer = issuerNick,
+                    TokenName = tokenSymbol,
+                    Urls = metaurls,
+                     UserData = new UserData4()
+                     {
+                          Meta = metadata.Select(data => new Meta3()
+                          {
+                              Key = data.Key,
+                              Value = data.Value,
+                              AdditionalProperties = new Dictionary<string, object>() { { "type", "String" } }
+                          }).ToList()
+                     }
+                }
+            };
+
+            if (string.IsNullOrEmpty(receiver))
+                receiver = issuingAddress;
+
+            // fill input data for issue token tx
+            var dto = new IssueTokenTxData()
+            {
+                Amount = amount,
+                IssuanceMetadata = meta,
+                SenderAddress = issuingAddress,
+                ReceiverAddress = receiver
             };
 
             return dto;
