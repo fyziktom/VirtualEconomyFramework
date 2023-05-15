@@ -1,4 +1,4 @@
-﻿using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
+using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
@@ -407,7 +407,7 @@ namespace TestVEDriversLite
             var tx = new NTP1Transactions()
             {
                 ntp1_opreturn = param,
-                tx_type = 1
+                tx_type = TxType.TxType_Transfer
             };
 
             NTP1ScriptHelpers._NTP1ParseScript(tx); //No metadata

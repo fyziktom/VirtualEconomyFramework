@@ -33,6 +33,12 @@ namespace VEDriversLite.Neblio
         Aggregatable,
         NonAggregatable
     }
+    public enum TxType
+    {
+        TxType_Issuance,
+        TxType_Transfer,
+        TxType_Burn
+    }
     public class NTP1Transactions
     {
         public string raw_tx_string = "";
@@ -46,7 +52,7 @@ namespace VEDriversLite.Neblio
             ntp1_instruct_list = new List<NTP1Instructions>();
             issuanceFlags = new IssuanceFlags();
         }
-        public int tx_type = 0;//0 = Issue, 1 = Transfer, 2 = Burn
+        public TxType tx_type = TxType.TxType_Issuance;//0 = Issue, 1 = Transfer, 2 = Burn
         public byte[] metadata = null;
     }
 
@@ -181,18 +187,16 @@ namespace VEDriversLite.Neblio
                     {
                         byte[] msize_bytes = BitConverter.GetBytes(msize);
                         if (BitConverter.IsLittleEndian == true)
-                        {
                             //We must convert this to big endian as protocol requires big endian
                             Array.Reverse(msize_bytes);
-                        }
+                        
                         scriptbin.Write(msize_bytes, 0, msize_bytes.Length); //Write the size of the metadata
                         scriptbin.Write(metadata, 0, metadata.Length); //Write the length of the metadata
                     }
                 }
                 if (scriptbin.Length > op_return_max_size)
-                {
                     return ""; //Cannot create a script larger than the max
-                }
+                
                 return ConvertByteArrayToHexString(scriptbin.ToArray());
             }
         }
@@ -263,18 +267,16 @@ namespace VEDriversLite.Neblio
                     {
                         byte[] msize_bytes = BitConverter.GetBytes(msize);
                         if (BitConverter.IsLittleEndian == true)
-                        {
                             //We must convert this to big endian as protocol requires big endian
                             Array.Reverse(msize_bytes);
-                        }
+                        
                         scriptbin.Write(msize_bytes, 0, msize_bytes.Length); //Write the size of the metadata
                         scriptbin.Write(metadata, 0, metadata.Length); //Write the length of the metadata
                     }
                 }
                 if (scriptbin.Length > op_return_max_size)
-                {
                     return ""; //Cannot create a script larger than the max
-                }
+                
                 return ConvertByteArrayToHexString(scriptbin.ToArray());
             }
         }
@@ -308,7 +310,7 @@ namespace VEDriversLite.Neblio
 
         public static void ParseTransferTransaction(NTP1Transactions tx, byte[] scriptbin)
         {
-            tx.tx_type = 1;
+            tx.tx_type = TxType.TxType_Transfer;
             scriptbin = ByteArrayErase(scriptbin, 4); //Erase the first 4 bytes
 
             //Now obtain the size of the transfer instructions
@@ -365,7 +367,7 @@ namespace VEDriversLite.Neblio
 
         public static void ParseIssueTransaction(NTP1Transactions tx, byte[] scriptbin)
         {
-            tx.tx_type = 0;
+            tx.tx_type = TxType.TxType_Issuance;
 
             scriptbin = ByteArrayErase(scriptbin, 4); //Erase the first 4 bytes ( 2 header, 1 protocol version and 1 op code)
 

@@ -366,7 +366,7 @@ namespace VEDriversLite.Indexer
                         tx = new NTP1Transactions()
                         {
                             ntp1_opreturn = data,
-                            tx_type = 1
+                            tx_type = TxType.TxType_Transfer
                         };
                         NTP1ScriptHelpers._NTP1ParseScript(tx); //No metadata
 
@@ -941,7 +941,7 @@ namespace VEDriversLite.Indexer
                 {
                     // Token transaction with metadata
                     metadata = t.Vout.FirstOrDefault(o => o.ScriptPubKey.Type == "nulldata")?.ScriptPubKey.Asm ?? string.Empty;
-                    var ntp1 = new NTP1Transactions() { tx_type = 1, ntp1_opreturn = string.Empty };
+                    var ntp1 = new NTP1Transactions() { tx_type = TxType.TxType_Transfer, ntp1_opreturn = string.Empty };
                     if (!string.IsNullOrEmpty(metadata))
                     {
                         var meta = metadata.Replace("OP_RETURN ", string.Empty);
