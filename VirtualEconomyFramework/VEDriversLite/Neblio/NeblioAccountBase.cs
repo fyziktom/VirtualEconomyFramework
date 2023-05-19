@@ -1236,7 +1236,7 @@ namespace VEDriversLite.Neblio
             try
             {                
                 // send tx
-                var transaction = await NeblioTransactionHelpers.SendTokenLotNewAsync(dto, AccountKey, res.Item2, tres.Item2);
+                var transaction = await NeblioTransactionHelpers.SendTokenLotNewAsync(dto, res.Item2, tres.Item2);
 
                 var result = await SignBroadcastAndInvokeSucessEvent(transaction, "Neblio Token Payment Sent");
                 if (result.Item1)
@@ -1361,7 +1361,7 @@ namespace VEDriversLite.Neblio
                 var mintNFTData = await NFTHelpers.GetMintNFTData(Address, AccountKey, nft, receiver);
                                 
                 // send tx
-                var transaction = await NeblioTransactionHelpers.MintNFTTokenAsync(mintNFTData, AccountKey, res.Item2, tres.Item2);
+                var transaction = await NeblioTransactionHelpers.MintNFTTokenAsync(mintNFTData, res.Item2, tres.Item2);
 
                 var result = await SignBroadcastAndInvokeSucessEvent(transaction, "Neblio NFT Minted");
                 if (result.Item1)
@@ -1415,7 +1415,7 @@ namespace VEDriversLite.Neblio
             {
                 var mintNFTData = await NFTHelpers.GetMintMultiNFTData(Address, nft, receiver);
 
-                var transaction = await NeblioTransactionHelpers.MintMultiNFTTokenAsync(mintNFTData, coppies, AccountKey, res.Item2, res.Item2);
+                var transaction = await NeblioTransactionHelpers.MintMultiNFTTokenAsync(mintNFTData, coppies, res.Item2, res.Item2);
 
                 var result = await SignBroadcastAndInvokeSucessEvent(transaction, "Neblio NFT Sent");
                 if (result.Item1)
@@ -1512,7 +1512,7 @@ namespace VEDriversLite.Neblio
 
                                         var mintNFTData = await NFTHelpers.GetMintMultiNFTData(Address, nft, receiver, multipleReceiversPart);
 
-                                        var transaction = await NeblioTransactionHelpers.MintMultiNFTTokenAsync(mintNFTData, maxInLot, AccountKey, sres.Item2.Item1, sres.Item2.Item2);
+                                        var transaction = await NeblioTransactionHelpers.MintMultiNFTTokenAsync(mintNFTData, maxInLot, sres.Item2.Item1, sres.Item2.Item2);
 
                                         txres = await NeblioTransactionHelpers.SignAndBroadcastTransaction(transaction, Secret);
 
@@ -1579,7 +1579,7 @@ namespace VEDriversLite.Neblio
 
                                     var mintNFTData = await NFTHelpers.GetMintMultiNFTData(Address, nft, receiver, multipleReceiversPart);
 
-                                    var transaction = await NeblioTransactionHelpers.MintMultiNFTTokenAsync(mintNFTData, rest, AccountKey, sres.Item2.Item1, sres.Item2.Item2);
+                                    var transaction = await NeblioTransactionHelpers.MintMultiNFTTokenAsync(mintNFTData, rest, sres.Item2.Item1, sres.Item2.Item2);
 
                                     txres = await NeblioTransactionHelpers.SignAndBroadcastTransaction(transaction, Secret);
 
@@ -1628,7 +1628,7 @@ namespace VEDriversLite.Neblio
                     {
                         var mintNFTData = await NFTHelpers.GetMintMultiNFTData(Address, nft, receiver, multipleReceivers);
 
-                        var transaction = await NeblioTransactionHelpers.MintMultiNFTTokenAsync(mintNFTData, cps, AccountKey, sres.Item2.Item1, sres.Item2.Item2);
+                        var transaction = await NeblioTransactionHelpers.MintMultiNFTTokenAsync(mintNFTData, cps, sres.Item2.Item1, sres.Item2.Item2);
 
                         var rtxid = await NeblioTransactionHelpers.SignAndBroadcastTransaction(transaction, Secret);
                         if (!string.IsNullOrEmpty(rtxid))
@@ -1721,7 +1721,7 @@ namespace VEDriversLite.Neblio
                 // send tx
                 var sendTokenTxData = await NFTHelpers.GetTxDataForDestroyNFTs(Address, nfts, receiver);                                             
 
-                var transaction = await NeblioTransactionHelpers.DestroyNFTAsync(sendTokenTxData, AccountKey, res.Item2, mintingUtxo:tres.Item2.FirstOrDefault());
+                var transaction = await NeblioTransactionHelpers.DestroyNFTAsync(sendTokenTxData, res.Item2, mintingUtxo:tres.Item2.FirstOrDefault());
 
                 var result = await SignBroadcastAndInvokeSucessEvent(transaction, "NFTs Destroyed.");
                 if (result.Item1)
@@ -2055,7 +2055,7 @@ namespace VEDriversLite.Neblio
             {
                 var sendTokenTxData = await NFTHelpers.GetNFTPaymentData(Address, receiver, nft, res.Item2);
                 
-                var transaction = await NeblioTransactionHelpers.SendNTP1TokenWithPaymentAPIAsync(sendTokenTxData, AccountKey, nft.Price, res.Item2, null, 0);
+                var transaction = await NeblioTransactionHelpers.SendNTP1TokenWithPaymentAPIAsync(sendTokenTxData, nft.Price, res.Item2, null, 0);
 
                 var result = await SignBroadcastAndInvokeSucessEvent(transaction, "Payment for NFT Sent");
                 if (result.Item1)
@@ -2104,7 +2104,7 @@ namespace VEDriversLite.Neblio
                 var sendTokenTxData = await NFTHelpers.GetTxDataForReturnNFTPayment(Address, NFT);
 
                 // send tx              
-                var transaction = await NeblioTransactionHelpers.SendNTP1TokenWithPaymentAPIAsync(sendTokenTxData, AccountKey, NFT.Price, res.Item2, NFT.Utxo, (int)NFT.UtxoIndex);
+                var transaction = await NeblioTransactionHelpers.SendNTP1TokenWithPaymentAPIAsync(sendTokenTxData, NFT.Price, res.Item2, NFT.Utxo, (int)NFT.UtxoIndex);
 
                 var rtxid = await NeblioTransactionHelpers.SignAndBroadcastTransaction(transaction, Secret);                                             
 
@@ -2172,7 +2172,7 @@ namespace VEDriversLite.Neblio
             try
             {           
                 // send tx
-                var transaction = await NeblioTransactionHelpers.SendNTP1TokenLotWithPaymentAPIAsync(dto, AccountKey, neblioAmount, res.Item2, tres.Item2);
+                var transaction = await NeblioTransactionHelpers.SendNTP1TokenLotWithPaymentAPIAsync(dto, neblioAmount, res.Item2, tres.Item2);
 
                 var result = await SignBroadcastAndInvokeSucessEvent(transaction, "Airdrop Sent");
                 if (result.Item1)
@@ -2401,7 +2401,7 @@ namespace VEDriversLite.Neblio
                                                 else
                                                     tokenTxData = await NFTHelpers.GetTokenTxDataCopy(Address, (PaymentNFT)p, pntosend);
                                                
-                                                    var transaction = await NeblioTransactionHelpers.SendMultiTokenAPIAsync(tokenTxData, AccountKey, res.Item2, isMintingOfCopy: true);
+                                                    var transaction = await NeblioTransactionHelpers.SendMultiTokenAPIAsync(tokenTxData, res.Item2, isMintingOfCopy: true);
 
                                                     rtxid = await NeblioTransactionHelpers.SignAndBroadcastTransaction(transaction, Secret);                                                    
 

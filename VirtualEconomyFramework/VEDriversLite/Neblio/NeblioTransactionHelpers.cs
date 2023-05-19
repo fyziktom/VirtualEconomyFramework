@@ -347,7 +347,7 @@ namespace VEDriversLite
         }
 
 
-        public static async Task<Transaction> SendTokenLotNewAsync(SendTokenTxData data, EncryptionKey ekey, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos, double fee = 20000)
+        public static async Task<Transaction> SendTokenLotNewAsync(SendTokenTxData data, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos, double fee = 20000)
         {
             if (data.Metadata == null || data.Metadata.Count == 0)
                 throw new Exception("Cannot send without metadata!");
@@ -356,14 +356,11 @@ namespace VEDriversLite
             BitcoinSecret key;
             BitcoinAddress addressForTx;
 
-            var k = GetAddressAndKey(ekey);
-            key = k.Item2;
-            addressForTx = k.Item1;
-
             // create receiver address
             BitcoinAddress recaddr;
             try
             {
+                addressForTx = BitcoinAddress.Create(data.SenderAddress, Network);
                 recaddr = BitcoinAddress.Create(data.ReceiverAddress, Network);
             }
             catch (Exception)
@@ -483,9 +480,9 @@ namespace VEDriversLite
         /// <param name="nutxos">Optional input neblio utxo</param>
         /// <param name="tutxos">Optional input token utxo</param>
         /// <returns>New Transaction Hash - TxId</returns>
-        public static async Task<Transaction> MintNFTTokenAsync(MintNFTData data, EncryptionKey ekey, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
+        public static async Task<Transaction> MintNFTTokenAsync(MintNFTData data, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
         {
-            return await MintMultiNFTTokenAsyncInternal(data, 0, ekey, nutxos, tutxos, false);
+            return await MintMultiNFTTokenAsyncInternal(data, 0, nutxos, tutxos, false);
         }
 
         /// <summary>
@@ -497,9 +494,9 @@ namespace VEDriversLite
         /// <param name="nutxos">Optional input neblio utxo</param>
         /// <param name="tutxos">Optional input token utxo</param>
         /// <returns>New Transaction Hash - TxId</returns>
-        public static async Task<Transaction> MintMultiNFTTokenAsync(MintNFTData data, int coppies, EncryptionKey ekey, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
+        public static async Task<Transaction> MintMultiNFTTokenAsync(MintNFTData data, int coppies, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
         {
-            return await MintMultiNFTTokenAsyncInternal(data, coppies, ekey, nutxos, tutxos, true);
+            return await MintMultiNFTTokenAsyncInternal(data, coppies, nutxos, tutxos, true);
         }
         /// <summary>
         /// Function will Mint NFT with the coppies
@@ -511,7 +508,7 @@ namespace VEDriversLite
         /// <param name="tutxos">Optional input token utxo</param>
         /// <param name="multiTokens">If there is the multi token it needs to check if there is no conflict</param>
         /// <returns>New Transaction Hash - TxId</returns>
-        public static async Task<Transaction> MintMultiNFTTokenAsyncInternal(MintNFTData data, int coppies, EncryptionKey ekey, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos, bool multiTokens, double fee = 20000)
+        public static async Task<Transaction> MintMultiNFTTokenAsyncInternal(MintNFTData data, int coppies, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos, bool multiTokens, double fee = 20000)
         {
             if (data.Metadata == null || data.Metadata.Count == 0)
                 throw new Exception("Cannot send without metadata!");
@@ -520,10 +517,8 @@ namespace VEDriversLite
 
             // load key and address
             BitcoinSecret key;
-            BitcoinAddress addressForTx;
+            BitcoinAddress addressForTx = BitcoinAddress.Create(data.SenderAddress, Network);
 
-            var k = GetAddressAndKey(ekey);
-            addressForTx = k.Item1;
             if (!string.IsNullOrEmpty(data.ReceiverAddress) || data.MultipleReceivers.Count > 0)
             {
                 if (data.MultipleReceivers.Count == 0)
@@ -630,12 +625,28 @@ namespace VEDriversLite
                 if (restOfToks > 0)
                     diffinSat -= Convert.ToUInt64(MinimumAmount);
 
-                if (receiverAddreses.Count > 0)
+                if (receiverAddreses.Count > 0 && coppies == 0)
                 {
                     foreach (var receiver in receiverAddreses)
                     {
                         diffinSat -= Convert.ToUInt64(MinimumAmount);
                         transaction.Outputs.Add(new Money(MinimumAmount), receiver.ScriptPubKey); // send to receiver NFT
+                    }
+                }
+                else if (receiverAddreses.Count == 1 && coppies > 0)
+                {
+                    for (var i = 0; i < coppies + 1; i++)
+                    {
+                        diffinSat -= Convert.ToUInt64(MinimumAmount);
+                        transaction.Outputs.Add(new Money(MinimumAmount), receiverAddreses.FirstOrDefault().ScriptPubKey); // send to receiver NFT
+                    }
+                }
+                else if (receiverAddreses.Count == 0 && coppies > 0)
+                {
+                    for (var i = 0; i < coppies + 1; i++)
+                    {
+                        diffinSat -= Convert.ToUInt64(MinimumAmount);
+                        transaction.Outputs.Add(new Money(MinimumAmount), addressForTx.ScriptPubKey); // send to receiver NFT
                     }
                 }
                 else
@@ -1939,7 +1950,7 @@ namespace VEDriversLite
         /// <param name="paymentUtxoToReturn">If you returning some payment fill this</param>
         /// <param name="paymentUtxoIndexToReturn">If you returning some payment fill this</param>
         /// <returns>New Transaction Hash - TxId</returns>
-        public static async Task<Transaction> SendNTP1TokenWithPaymentAPIAsync(SendTokenTxData data, EncryptionKey ekey, double neblAmount, ICollection<Utxos> nutxos, string paymentUtxoToReturn = null, int paymentUtxoIndexToReturn = 0)
+        public static async Task<Transaction> SendNTP1TokenWithPaymentAPIAsync(SendTokenTxData data, double neblAmount, ICollection<Utxos> nutxos, string paymentUtxoToReturn = null, int paymentUtxoIndexToReturn = 0)
         {
             if (data.Metadata == null || data.Metadata.Count == 0)
                 throw new Exception("Cannot send without metadata!");
@@ -1947,15 +1958,11 @@ namespace VEDriversLite
             // load key and address
             BitcoinSecret key;
             BitcoinAddress addressForTx;
-
-            var k = GetAddressAndKey(ekey);
-            key = k.Item2;
-            addressForTx = k.Item1;
-
             // create receiver address
             BitcoinAddress recaddr;
             try
             {
+                addressForTx = BitcoinAddress.Create(data.SenderAddress, Network);
                 recaddr = BitcoinAddress.Create(data.ReceiverAddress, Network);
             }
             catch (Exception)
@@ -1983,7 +1990,16 @@ namespace VEDriversLite
                 tutxo = new Utxos()
                 {
                     Txid = paymentUtxoToReturn,
-                    Index = paymentUtxoIndexToReturn
+                    Index = paymentUtxoIndexToReturn,
+                    Value = 0.0001,
+                    Tokens = new List<Tokens>()
+                      {
+                          new Tokens()
+                          {
+                              TokenId = data.Id,
+                              Amount = 1
+                          }
+                      }
                 };
             }
 
@@ -2250,7 +2266,7 @@ namespace VEDriversLite
         /// <param name="nutxos">Optional input neblio utxo</param>
         /// <param name="tutxos">Optional list of the token utxos </param>
         /// <returns>New Transaction Hash - TxId</returns>
-        public static async Task<Transaction> SendNTP1TokenLotWithPaymentAPIAsync(SendTokenTxData data, EncryptionKey ekey, double neblAmount, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
+        public static async Task<Transaction> SendNTP1TokenLotWithPaymentAPIAsync(SendTokenTxData data, double neblAmount, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos)
         {
             if (data.Metadata == null || data.Metadata.Count == 0)
                 throw new Exception("Cannot send without metadata!");
@@ -2259,14 +2275,11 @@ namespace VEDriversLite
             BitcoinSecret key;
             BitcoinAddress addressForTx;
 
-            var k = GetAddressAndKey(ekey);
-            key = k.Item2;
-            addressForTx = k.Item1;
-
             // create receiver address
             BitcoinAddress recaddr;
             try
             {
+                addressForTx = BitcoinAddress.Create(data.SenderAddress, Network);
                 recaddr = BitcoinAddress.Create(data.ReceiverAddress, Network);
             }
             catch (Exception)
@@ -2640,17 +2653,15 @@ namespace VEDriversLite
         /// <param name="isMintingOfCopy"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public static async Task<Transaction> SendMultiTokenAPIAsync(SendTokenTxData data, EncryptionKey ekey, ICollection<Utxos> nutxos, double fee = 20000, bool isMintingOfCopy = false)
+        public static async Task<Transaction> SendMultiTokenAPIAsync(SendTokenTxData data, ICollection<Utxos> nutxos, double fee = 20000, bool isMintingOfCopy = false)
         {
             // load key and address
             BitcoinSecret key;
             BitcoinAddress addressForTx;
-
-            var k = GetAddressAndKey(ekey);
-            addressForTx = k.Item1;
             BitcoinAddress recaddr;
             try
             {
+                addressForTx = BitcoinAddress.Create(data.SenderAddress, Network);
                 recaddr = BitcoinAddress.Create(data.ReceiverAddress, Network);
             }
             catch (Exception)
@@ -2975,17 +2986,15 @@ namespace VEDriversLite
         /// <param name="mintingUtxo"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public static async Task<Transaction> DestroyNFTAsync(SendTokenTxData data, EncryptionKey ekey, ICollection<Utxos> nutxos, double fee = 20000, Utxos mintingUtxo = null)
+        public static async Task<Transaction> DestroyNFTAsync(SendTokenTxData data, ICollection<Utxos> nutxos, double fee = 20000, Utxos mintingUtxo = null)
         {
             // load key and address
             BitcoinSecret key;
             BitcoinAddress addressForTx;
-
-            var k = GetAddressAndKey(ekey);
-            addressForTx = k.Item1;
             BitcoinAddress recaddr;
             try
             {
+                addressForTx = BitcoinAddress.Create(data.SenderAddress, Network);
                 recaddr = BitcoinAddress.Create(data.ReceiverAddress, Network);
             }
             catch (Exception)

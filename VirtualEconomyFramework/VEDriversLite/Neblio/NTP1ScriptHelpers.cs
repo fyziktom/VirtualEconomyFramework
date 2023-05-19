@@ -72,26 +72,8 @@ namespace VEDriversLite.Neblio
         /// <summary>
         /// Convert the hex string to bytes
         /// </summary>
-        /// <param name="hexString"></param>
+        /// <param name="input"></param>
         /// <returns></returns>
-        /// <exception cref="ArgumentNullException"></exception>
-        /// <exception cref="ArgumentException"></exception>
-        public static byte[] HexStringToBytes(string hexString)
-        {
-            if (hexString == null)
-                throw new ArgumentNullException("hexString");
-            
-            if (hexString.Length % 2 != 0)
-                throw new ArgumentException("hexString must have an even length", "hexString");
-            
-            var bytes = new byte[hexString.Length / 2];
-            for (int i = 0; i < bytes.Length; i++)
-            {
-                string currentHex = hexString.Substring(i * 2, 2);
-                bytes[i] = Convert.ToByte(currentHex, 16);
-            }
-            return bytes;
-        }
 
         public static byte[] UnhexToByteArray(string input)
         {
