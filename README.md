@@ -10,7 +10,11 @@ Virtual Economy framework zjednodušuje tvorbu Web3, blockchain, IoT a NFT aplik
 
 VEFramework je L2 vrstva nad prakticky kterýmkoliv blockchainem. Aktuálně na ukázku podporuje Neblio a Dogecoin.
 
-![Development with VEFramework](./assets/veframework.jpeg)
+![Development with VEFramework](https://ve-framework.com/ipfs/QmVoMw53Vo2ZsbMYLwXjEuh2wkmVvWKkM1mrac7qdKosWs)
+
+![Account](https://ve-framework.com/ipfs/QmdKkks4xmkiy1jdMoWqroYDKC8NRa6u5VeurKHXcpxMrY)
+
+![NFTs](https://ve-framework.com/ipfs/QmdVy8ZozfEicFd4v8NKiUAeX1vn8QmLYCFYAuB9u7PUCJ)
 
 ## Použití
 
