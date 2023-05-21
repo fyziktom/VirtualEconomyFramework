@@ -445,15 +445,34 @@ namespace VEFramework.BlockchainIndexerServer.Controllers
                     if (tutxos == null || tutxos.Count == 0)
                         throw new HttpResponseException((HttpStatusCode)501, $"You dont have Neblio on the address. Probably waiting for more than {NeblioAPIHelpers.MinimumConfirmations} confirmations.");
 
+                    // convert metadata JObject list (which is in real Dictionary<string,string> from request to dto Metadata dictionary.
+                    var meta = new Dictionary<string, string>();
+                    if (data.Metadata != null && data.Metadata.UserData.Meta.Count > 0)
+                    {
+                        foreach (var m in data.Metadata.UserData.Meta)
+                        {
+                            try
+                            {
+                                var v = JsonConvert.DeserializeObject<KeyValuePair<string, string>>(m.ToString());
+                                meta.Add(v.Key, v.Value);
+                            }
+                            catch(Exception ex)
+                            {
+                                await Console.Out.WriteLineAsync("Cannot deserialize metadata. " + ex.Message);
+                            }
+                        }
+                    }
+                    
                     var dto = new SendTokenTxData()
                     {
                         MultipleReceivers = data.To.ToList(),
                         Amount = totalTokensToSend,
                         Id = tokenId,
-                        SenderAddress = addr
+                        SenderAddress = addr,
+                        Metadata = meta
                     };
 
-                    var transaction = await NeblioTransactionHelpers.SendTokensToMultipleReceiversAsync(dto, data, nutxos, tutxos);
+                    var transaction = await NeblioTransactionHelpers.SendTokensToMultipleReceiversAsync(dto, nutxos, tutxos);
                     if (transaction != null)
                         return transaction;
                     else

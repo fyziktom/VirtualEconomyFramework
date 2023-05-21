@@ -102,7 +102,7 @@ namespace VEDriversLite.NFT.Coruzant
             {
                 // send tx
 
-                var transaction = await NeblioTransactionHelpers.SendNFTTokenAsync(dto, ekey, nutxos);
+                var transaction = await NeblioTransactionHelpers.SendNFTTokenAsync(dto, nutxos);
 
                 var rtxid = await NeblioTransactionHelpers.SignAndBroadcastTransaction(transaction, secret);
 

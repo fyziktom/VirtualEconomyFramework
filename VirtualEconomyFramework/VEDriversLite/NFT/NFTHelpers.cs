@@ -744,7 +744,7 @@ namespace VEDriversLite.NFT
                     };                                       
 
                     // send tx
-                   transaction  = await NeblioTransactionHelpers.MintNFTTokenAsync(dto, ekey, nutxos, tutxos);                    
+                   transaction  = await NeblioTransactionHelpers.MintNFTTokenAsync(dto, nutxos, tutxos);                    
                 }
                 else
                 {
@@ -757,7 +757,7 @@ namespace VEDriversLite.NFT
                         SenderAddress = address,
                         ReceiverAddress = receiver
                     };
-                    transaction = await NeblioTransactionHelpers.SendNFTTokenAsync(dto, ekey, nutxos);
+                    transaction = await NeblioTransactionHelpers.SendNFTTokenAsync(dto, nutxos);
                 }
 
                 return transaction;
@@ -803,7 +803,7 @@ namespace VEDriversLite.NFT
                         SenderAddress = address,
                         ReceiverAddress = receiver
                     };
-                    transaction = await NeblioTransactionHelpers.MintNFTTokenAsync(dto, ekey, nutxos, tutxos);
+                    transaction = await NeblioTransactionHelpers.MintNFTTokenAsync(dto, nutxos, tutxos);
                 }
                 else
                 {
@@ -816,7 +816,7 @@ namespace VEDriversLite.NFT
                         SenderAddress = address,
                         ReceiverAddress = receiver
                     };
-                    transaction = await NeblioTransactionHelpers.SendNFTTokenAsync(dto, ekey, nutxos);
+                    transaction = await NeblioTransactionHelpers.SendNFTTokenAsync(dto, nutxos);
                 }
                 return transaction;
                 

@@ -5958,8 +5958,8 @@ namespace VEDriversLite.NeblioAPI
     public partial class MetadataOfUtxo 
     {
         /// <summary>Metadata set by user on token for UTXO</summary>
-        [Newtonsoft.Json.JsonProperty("userData", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public UserData UserData { get; set; }
+        [Newtonsoft.Json.JsonProperty("userData")]
+        public UserData? UserData { get; set; }
     
         private System.Collections.Generic.IDictionary<string, object> _additionalProperties = new System.Collections.Generic.Dictionary<string, object>();
     
