@@ -187,6 +187,7 @@ namespace VEFrameworkUnitTest.Neblio
             var utxo = node.Utxos.Values.FirstOrDefault();
             Assert.True(node.Utxos.ContainsKey($"{transaction.Txid}:{0}"));
             Assert.Equal(NeblioTransactionHelpers.MinimumAmount, utxo.Value);
+            Assert.False(utxo.Used);
             Assert.Equal(20, utxo.TokenAmount);
             Assert.Equal("VENFT", utxo.TokenSymbol);
             Assert.Equal(NFTHelpers.TokenId, utxo.TokenId);
@@ -204,12 +205,104 @@ namespace VEFrameworkUnitTest.Neblio
             if (node.Utxos.TryGetValue($"{transaction.Txid}:{1}", out var utxo1))
             {
                 Assert.Equal(NeblioTransactionHelpers.MinimumAmount, utxo1.Value);
+                Assert.False(utxo1.Used);
                 Assert.Equal(20, utxo1.TokenAmount);
                 Assert.Equal("VENFT", utxo1.TokenSymbol);
                 Assert.Equal(NFTHelpers.TokenId, utxo1.TokenId);
                 Assert.Equal("NPivBSuWnt55d4eZjU1iH3W2U6dMksnobo", utxo1.OwnerAddress); 
                 Assert.True(utxo1.Indexed);
             }
+        }
+
+        [Fact]
+        public async void ParseInput_Valid_Test()
+        {
+            var resp = JsonConvert.DeserializeObject<RpcResponse>(NeblioTestHelpers.SplitNeblioTrokensTransaction);
+            var transactionObject = JsonConvert.DeserializeObject<GetTransactionInfoResponse>(resp.Result.ToString());
+
+            var node = getNode();
+            var fakeRpc = new FakeQTWalletRPCClient(node.QTRPConfig);
+            // load fake blocks info
+            foreach (var item in NeblioTestHelpers.TestingBlocksInfo)
+                fakeRpc.CommandFakeReposnes.TryAdd("getblock," + item.Key, item.Value);
+            // load fake tx info
+            fakeRpc.CommandFakeReposnes.TryAdd($"gettransaction,a953a7ba2d1e8bbaa23047b5a45f3c4de4ab71e0343430e563d190dff56db0a4", NeblioTestHelpers.SplitNeblioTrokensTransaction);
+            // load fake client to the node
+            node.QTRPCClient = fakeRpc;
+
+            var transaction = await node.GetTx(transactionObject.Txid);
+
+            node.Utxos.Clear();
+            var inputs = transaction.Vin.ToList();
+            var in_0 = inputs[0];
+            Assert.NotNull(in_0);
+            var time = TimeHelpers.UnixTimestampToDateTime((transaction.Time ?? 0.0) * 1000);
+
+            node.ProcessInput(inputs[0], transaction.Txid);
+
+            Assert.Single(node.Utxos);
+            var utxo = node.Utxos.Values.FirstOrDefault();
+            Assert.True(node.Utxos.ContainsKey($"{in_0.Txid}:{in_0.Vout}"));
+            Assert.True(utxo.Used);
+            Assert.True(utxo.TokenUtxo);
+            Assert.Equal(5448, utxo.TokenAmount);
+            Assert.Equal(NFTHelpers.TokenId, utxo.TokenId);
+            Assert.Equal("Nh7712QcTBT49NA7f9sB3WqX5WjbGLUmo8", utxo.OwnerAddress);
+            Assert.True(utxo.Indexed);
+
+            node.ProcessInput(inputs[0], transaction.Txid);
+
+            Assert.Single(node.Utxos);
+
+            node.ProcessInput(inputs[1], transaction.Txid);
+
+            Assert.Equal(2, node.Utxos.Count);
+            var in_1 = inputs[1];
+            Assert.True(node.Utxos.ContainsKey($"{in_1.Txid}:{in_1.Vout}"));
+            if (node.Utxos.TryGetValue($"{in_1.Txid}:{in_1.Vout}", out var utxo1))
+            {
+                Assert.True(utxo1.Used);
+                Assert.False(utxo1.TokenUtxo);
+                Assert.Equal("Nh7712QcTBT49NA7f9sB3WqX5WjbGLUmo8", utxo1.OwnerAddress);
+                Assert.True(utxo1.Indexed);
+            }
+        }
+
+        [Fact]
+        public async void ParseTokenMetadata_Valid_Test()
+        {
+            var resp = JsonConvert.DeserializeObject<RpcResponse>(NeblioTestHelpers.SplitNeblioTrokensTransaction);
+            var transactionObject = JsonConvert.DeserializeObject<GetTransactionInfoResponse>(resp.Result.ToString());
+
+            var node = getNode();
+            var fakeRpc = new FakeQTWalletRPCClient(node.QTRPConfig);
+            // load fake blocks info
+            foreach (var item in NeblioTestHelpers.TestingBlocksInfo)
+                fakeRpc.CommandFakeReposnes.TryAdd("getblock," + item.Key, item.Value);
+            // load fake tx info
+            fakeRpc.CommandFakeReposnes.TryAdd($"gettransaction,a953a7ba2d1e8bbaa23047b5a45f3c4de4ab71e0343430e563d190dff56db0a4", NeblioTestHelpers.SplitNeblioTrokensTransaction);
+            // load fake client to the node
+            node.QTRPCClient = fakeRpc;
+
+            var transaction = await node.GetTx(transactionObject.Txid);
+
+            node.Utxos.Clear();
+            var inputs = transaction.Vin.ToList();
+            var in_0 = inputs[0];
+            Assert.NotNull(in_0);
+
+            var tokMeta = node.ProcessTokensMetadata(inputs[0].Tokens.FirstOrDefault());
+
+            Assert.Equal(NFTHelpers.TokenId, tokMeta.TokenId);
+            Assert.Equal(7, tokMeta.Divisibility);
+            //Assert.Equal((ulong)1000000000000000, tokMeta.InitialIssuanceAmount); // must be parsed from the issuance Tx
+            Assert.Equal("VENFT", tokMeta.TokenName);
+            //Assert.Equal("NTUqno5PP8feqZTGSaoGQBEpS4BJRRrFkC", tokMeta.IssueAddress); // must be parsed from the issuance Tx
+            Assert.Equal("fyziktom", tokMeta.MetadataOfIssuance.Data.Issuer);
+            Assert.Equal("VEFramework NFTs", tokMeta.MetadataOfIssuance.Data.Description);
+            Assert.NotEqual("https://ntp1-icons.nebl.io/9560db5a3a83de661c7b5e5c36eef0e1470c9dd3.PNG", tokMeta.MetadataOfIssuance.Data.Urls.FirstOrDefault().url);
+            Assert.Equal("https://ntp1-icons.ams3.digitaloceanspaces.com/9560db5a3a83de661c7b5e5c36eef0e1470c9dd3.PNG", tokMeta.MetadataOfIssuance.Data.Urls.FirstOrDefault().url);
+            Assert.Equal("49ad447c7fc9dc3b8203a42b76f80dd5b79ccaa3cb7e9723e9ac05fb4c70c32c", tokMeta.IssuanceTxid);
         }
     }
 }
