@@ -27,7 +27,7 @@ namespace VEDriversLite.Common
     /// <summary>
     /// RPC client for QT Wallets
     /// </summary>
-    public class QTWalletRPCClient
+    public class QTWalletRPCClient : IQTWalletRPCClient
     {
         /// <summary>
         /// Constructor
@@ -143,7 +143,7 @@ namespace VEDriversLite.Common
         /// <summary>
         /// Initialize client. You need to load connection info first - usually during the construction
         /// </summary>
-        public void InitClients()
+        public virtual void InitClients()
         {
             try
             {
@@ -174,7 +174,7 @@ namespace VEDriversLite.Common
         /// <param name="param">First is command, then goes the parameters.</param>
         /// <param name="obj"></param>
         /// <returns></returns>
-        public async Task<string> RPCLocalCommandAsync(string param, object obj)
+        public virtual async Task<string> RPCLocalCommandAsync(string param, object obj)
         {
             var split = param.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
@@ -209,7 +209,7 @@ namespace VEDriversLite.Common
         /// <param name="command">RPC command name</param>
         /// <param name="parameters">string array of parameters</param>
         /// <returns></returns>
-        public async Task<string> RPCLocalCommandSplitedAsync(string command, string[] parameters)
+        public virtual async Task<string> RPCLocalCommandSplitedAsync(string command, string[] parameters)
         {
             if (parameters != null)
             {

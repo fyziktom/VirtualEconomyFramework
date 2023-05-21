@@ -5711,12 +5711,12 @@ namespace VEDriversLite.NeblioAPI
         public object Result { get; set; }
     
         /// <summary>Identifier of RCP caller</summary>
-        [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Id { get; set; }
+        [Newtonsoft.Json.JsonProperty("id")]
+        public string? Id { get; set; }
     
         /// <summary>Object containing any error information.</summary>
-        [Newtonsoft.Json.JsonProperty("error", Required = Newtonsoft.Json.Required.AllowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public object Error { get; set; }
+        [Newtonsoft.Json.JsonProperty("error")]
+        public object? Error { get; set; }
     
         private System.Collections.Generic.IDictionary<string, object> _additionalProperties = new System.Collections.Generic.Dictionary<string, object>();
     

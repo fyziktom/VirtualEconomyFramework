@@ -47,7 +47,7 @@ namespace VEDriversLite.Indexer
         /// <summary>
         /// Global RPC client for communication with QT Wallet
         /// </summary>
-        public QTWalletRPCClient QTRPCClient { get; set; } = new QTWalletRPCClient();
+        public IQTWalletRPCClient QTRPCClient { get; set; } = new QTWalletRPCClient();
 
         public bool InitClient(QTRPCConfig config)
         {
