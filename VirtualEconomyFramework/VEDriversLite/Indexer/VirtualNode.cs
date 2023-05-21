@@ -456,7 +456,7 @@ namespace VEDriversLite.Indexer
         /// </summary>
         /// <param name="tx"></param>
         /// <returns></returns>
-        public async Task<GetTransactionInfoResponse?> GetTx(string tx)
+        public async Task<GetTransactionInfoResponse?> GetTx(string tx, bool includePOS = false)
         {
             try
             {
@@ -475,7 +475,7 @@ namespace VEDriversLite.Indexer
                     try
                     {
                         var txr = JsonConvert.DeserializeObject<GetTransactionInfoResponse>(ores);
-                        if (IsTxPOS(txr))
+                        if (!includePOS && IsTxPOS(txr))
                             return null;
 
                         if (txr.Hex == null)
@@ -902,7 +902,7 @@ namespace VEDriversLite.Indexer
         /// <returns></returns>
         public async Task<GetTransactionInfoResponse?> ParseTransaction(string tx, double blockheight, bool includePOS = false )
         {
-            var t = await GetTx(tx);
+            var t = await GetTx(tx, includePOS);
                 
             if (t != null)
             {
@@ -1024,6 +1024,7 @@ namespace VEDriversLite.Indexer
                 {
                     //Console.WriteLine($"Loading transactions for {block.Hash} block.");
                     var txs = await GetBlockTransactions(block.Transactions, block.Height, false);
+                    block.Indexed = true;
                     if (Blocks.ContainsKey(block.Hash))
                     {
                         if (txs.Count == 0)
