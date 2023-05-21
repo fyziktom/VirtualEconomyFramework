@@ -1163,7 +1163,7 @@ namespace VEDriversLite.NFT
         {
             if (string.IsNullOrEmpty(issuingAddress))
                 throw new Exception("Cannot create without address");
-            if (string.IsNullOrEmpty(tokenSymbol) && tokenSymbol.Length > 5)
+            if (string.IsNullOrEmpty(tokenSymbol) && tokenSymbol?.Length > 5)
                 throw new Exception("Cannot create without token symbol. Or symbol is longer than 5 characters.");
             if (amount <= 0)
                 throw new Exception("Amout must be bigger than 0.");

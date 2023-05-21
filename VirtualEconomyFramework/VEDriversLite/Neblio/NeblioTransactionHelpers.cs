@@ -645,7 +645,7 @@ namespace VEDriversLite
                     for (var i = 0; i < coppies + 1; i++)
                     {
                         diffinSat -= Convert.ToUInt64(MinimumAmount);
-                        transaction.Outputs.Add(new Money(MinimumAmount), receiverAddreses.FirstOrDefault().ScriptPubKey); // send to receiver NFT
+                        transaction.Outputs.Add(new Money(MinimumAmount), receiverAddreses.FirstOrDefault()?.ScriptPubKey); // send to receiver NFT
                     }
                 }
                 else if (receiverAddreses.Count == 0 && coppies > 0)

@@ -164,10 +164,7 @@ namespace VEDriversLite.Common
             if (parameters != null)
             {
                 foreach (var par in parameters)
-                {
-                    par.TrimStart().TrimEnd();
-                    input += "," + par;
-                }
+                    input += "," + par.TrimStart().TrimEnd();
             }
 
             if (CommandFakeReposnes.TryGetValue(input, out var result))
