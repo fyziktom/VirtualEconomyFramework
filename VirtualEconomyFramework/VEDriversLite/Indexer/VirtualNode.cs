@@ -339,11 +339,6 @@ namespace VEDriversLite.Indexer
                     }
                     if (add != null)
                     {
-                        /*
-                        var ads = add.ToString();
-                        if (!addressesToUpdate.Contains(ads))
-                            addressesToUpdate.Add(ads);
-                        */
                         if (Addresses.TryGetValue(add.ToString(), out var addr))
                             addr.RemoveUtxo($"{input.PrevOut.Hash}:{input.PrevOut.N}");
                     }
@@ -442,13 +437,6 @@ namespace VEDriversLite.Indexer
                     }
                 }
             }
-
-            /*
-            Parallel.ForEach(addressesToUpdate, new ParallelOptions() { MaxDegreeOfParallelism = Environment.ProcessorCount }, address =>
-            {
-                UpdateAddressInfo(address, true);
-            });
-            */
         }
 
         /// <summary>
@@ -1062,6 +1050,9 @@ namespace VEDriversLite.Indexer
         /// <returns></returns>
         public async Task GetIndexedBlocksByNumbersStartToEnd(int start, int end, bool reverse = false)
         {
+            if (end < start)
+                throw new Exception("End block number cannot be less than start block number");
+
             var maxDegreeOfParallelism = Environment.ProcessorCount;
             var blocksIds = new int[end - start];
             if (reverse)
@@ -1091,6 +1082,11 @@ namespace VEDriversLite.Indexer
             }, maxDegreeOfParallelism: maxDegreeOfParallelism);
         }
 
+        /// <summary>
+        /// Convert GetBlockResponse to IndexedBlock
+        /// </summary>
+        /// <param name="blkn"></param>
+        /// <returns></returns>
         public IndexedBlock GetIndexedBlockFromResponse(GetBlockResponse blkn)
         {
             var b = new IndexedBlock()

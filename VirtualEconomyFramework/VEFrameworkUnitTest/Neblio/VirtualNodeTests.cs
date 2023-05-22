@@ -1,4 +1,4 @@
-﻿using Moq;
+using Moq;
 using NBitcoin;
 using Newtonsoft.Json;
 using System;
@@ -9,6 +9,7 @@ using System.Threading;
 using VEDriversLite;
 using VEDriversLite.Common;
 using VEDriversLite.Indexer;
+using VEDriversLite.Indexer.Dto;
 using VEDriversLite.Neblio;
 using VEDriversLite.NeblioAPI;
 using VEDriversLite.NFT;
@@ -303,6 +304,237 @@ namespace VEFrameworkUnitTest.Neblio
             Assert.NotEqual("https://ntp1-icons.nebl.io/9560db5a3a83de661c7b5e5c36eef0e1470c9dd3.PNG", tokMeta.MetadataOfIssuance.Data.Urls.FirstOrDefault().url);
             Assert.Equal("https://ntp1-icons.ams3.digitaloceanspaces.com/9560db5a3a83de661c7b5e5c36eef0e1470c9dd3.PNG", tokMeta.MetadataOfIssuance.Data.Urls.FirstOrDefault().url);
             Assert.Equal("49ad447c7fc9dc3b8203a42b76f80dd5b79ccaa3cb7e9723e9ac05fb4c70c32c", tokMeta.IssuanceTxid);
+        }
+
+
+        [Fact]
+        public async void GetAllAddressesTest_Valid_Test()
+        {
+            var add1 = Common.FakeDataGenerator.GetKeyAndAddress();
+            var add2 = Common.FakeDataGenerator.GetKeyAndAddress();
+            var add3 = Common.FakeDataGenerator.GetKeyAndAddress();
+
+            var node = getNode();
+            var utxos = new List<IndexedUtxo>()
+            {
+                new IndexedUtxo() { TransactionHash = Guid.NewGuid().ToString(), OwnerAddress = add1.Item1.ToString() },
+                new IndexedUtxo() { TransactionHash = Guid.NewGuid().ToString(), OwnerAddress = add2.Item1.ToString() },
+                new IndexedUtxo() { TransactionHash = Guid.NewGuid().ToString(), OwnerAddress = add3.Item1.ToString() }
+            };
+            foreach (var u in utxos)
+                node.Utxos.TryAdd(u.TransactionHashAndN, u);
+
+            var addresses = node.GetAllAddresses();
+
+            Assert.Equal(3, addresses.Count);
+            Assert.Contains(add1.Item1.ToString(), addresses);
+            Assert.Contains(add2.Item1.ToString(), addresses);
+            Assert.Contains(add3.Item1.ToString(), addresses);
+
+            addresses.Clear();
+
+            var utxo = new IndexedUtxo() { TransactionHash = Guid.NewGuid().ToString(), OwnerAddress = add1.Item1.ToString() };
+
+            node.Utxos.TryAdd(utxo.TransactionHashAndN, utxo);
+            Assert.Equal(4, node.Utxos.Count);
+
+            addresses = node.GetAllAddresses();
+
+            Assert.Equal(3, addresses.Count);
+            Assert.Contains(add1.Item1.ToString(), addresses);
+            Assert.Contains(add2.Item1.ToString(), addresses);
+            Assert.Contains(add3.Item1.ToString(), addresses);
+        }
+
+        [Fact]
+        public async void UpdateAddress_Valid_Test()
+        {
+            var add1 = Common.FakeDataGenerator.GetKeyAndAddress();
+            var add2 = Common.FakeDataGenerator.GetKeyAndAddress();
+
+            var node = getNode();
+            var utxos = new List<IndexedUtxo>()
+            {
+                new IndexedUtxo() { TransactionHash = Guid.NewGuid().ToString(), OwnerAddress = add1.Item1.ToString() },
+                new IndexedUtxo() { TransactionHash = Guid.NewGuid().ToString(), OwnerAddress = add1.Item1.ToString() },
+                new IndexedUtxo() { TransactionHash = Guid.NewGuid().ToString(), OwnerAddress = add2.Item1.ToString() },
+                new IndexedUtxo() { TransactionHash = Guid.NewGuid().ToString(), OwnerAddress = add2.Item1.ToString() },
+                new IndexedUtxo() { TransactionHash = Guid.NewGuid().ToString(), OwnerAddress = add2.Item1.ToString() }
+            };
+
+            foreach (var u in utxos)
+                node.Utxos.TryAdd(u.TransactionHashAndN, u);
+
+            node.UpdateAddressInfo(add1.Item1.ToString(), true);
+            if (node.Addresses.TryGetValue(add1.Item1.ToString(), out var a))
+            {
+                Assert.Equal(2, a.Utxos.Count());
+
+                var utxo = new IndexedUtxo() { TransactionHash = Guid.NewGuid().ToString(), OwnerAddress = add1.Item1.ToString() };
+                var utxo1 = new IndexedUtxo() { TransactionHash = Guid.NewGuid().ToString(), OwnerAddress = add1.Item1.ToString() };
+
+                node.Utxos.TryAdd(utxo.TransactionHashAndN, utxo);
+                node.Utxos.TryAdd(utxo1.TransactionHashAndN, utxo1);
+                Assert.Equal(2, a.Utxos.Count());
+
+                node.UpdateAddressInfo(add1.Item1.ToString(), true);
+                Assert.Equal(4, a.Utxos.Count());
+
+                var utxo2 = new IndexedUtxo() { TransactionHash = Guid.NewGuid().ToString(), OwnerAddress = add1.Item1.ToString() };
+                var utxo3 = new IndexedUtxo() { TransactionHash = Guid.NewGuid().ToString(), OwnerAddress = add1.Item1.ToString() };
+
+                node.Utxos.TryAdd(utxo2.TransactionHashAndN, utxo2);
+                node.Utxos.TryAdd(utxo3.TransactionHashAndN, utxo3);
+                Assert.Equal(4, a.Utxos.Count());
+
+                // test the force update (force update override the cache refresh time)
+                node.UpdateAddressInfo(add1.Item1.ToString(), false);
+                Assert.Equal(4, a.Utxos.Count());
+
+                node.UpdateAddressInfo(add1.Item1.ToString(), true);
+                Assert.Equal(6, a.Utxos.Count());
+            }
+        }
+
+
+        [Fact]
+        public async void GetAddressUtxosObjects_Valid_Test()
+        {
+            var add1 = Common.FakeDataGenerator.GetKeyAndAddress().Item1.ToString();
+            var add2 = Common.FakeDataGenerator.GetKeyAndAddress().Item1.ToString();
+
+            var node = getNode();
+            var utxos = new List<IndexedUtxo>()
+            {
+                new IndexedUtxo() { Used = false, TransactionHash = Guid.NewGuid().ToString(), OwnerAddress = add1 },
+                new IndexedUtxo() { Used = false, TransactionHash = Guid.NewGuid().ToString(), OwnerAddress = add1 },
+                new IndexedUtxo() { Used = false, TransactionHash = Guid.NewGuid().ToString(), OwnerAddress = add2 },
+                new IndexedUtxo() { Used = false, TransactionHash = Guid.NewGuid().ToString(), OwnerAddress = add2 },
+                new IndexedUtxo() { Used = false, TransactionHash = Guid.NewGuid().ToString(), OwnerAddress = add2 }
+            };
+
+            foreach (var u in utxos)
+                node.Utxos.TryAdd(u.TransactionHashAndN, u);
+
+            node.UpdateAddressInfo(add1, true);
+            node.UpdateAddressInfo(add2, true);
+
+            var address1Utxos = node.GetAddressUtxosObjects(add1);
+            var address2Utxos = node.GetAddressUtxosObjects(add2);
+
+            Assert.Equal(2, address1Utxos.Count());
+            Assert.Equal(3, address2Utxos.Count());
+
+            var utxo = new IndexedUtxo() { Used = true, TransactionHash = Guid.NewGuid().ToString(), OwnerAddress = add1 };
+            var utxo1 = new IndexedUtxo() { Used = true, TransactionHash = Guid.NewGuid().ToString(), OwnerAddress = add2 };
+            var utxo2 = new IndexedUtxo() { Used = true, TransactionHash = Guid.NewGuid().ToString(), OwnerAddress = add2 };
+
+            node.Utxos.TryAdd(utxo.TransactionHashAndN, utxo);
+            node.Utxos.TryAdd(utxo1.TransactionHashAndN, utxo1);
+            node.Utxos.TryAdd(utxo2.TransactionHashAndN, utxo2);
+            
+            node.UpdateAddressInfo(add1, true);
+            node.UpdateAddressInfo(add2, true);
+
+            var notused_address1Utxos = node.GetAddressUtxosObjects(add1);
+            var notused_address2Utxos = node.GetAddressUtxosObjects(add2);
+
+            Assert.Equal(2, notused_address1Utxos.Count());
+            Assert.Equal(3, notused_address2Utxos.Count());
+
+            // add token Utxo
+            var tutxo = new IndexedUtxo() { Used = false, TokenUtxo = true, TransactionHash = Guid.NewGuid().ToString(), OwnerAddress = add1 };
+            node.Utxos.TryAdd(tutxo.TransactionHashAndN, tutxo);
+            node.UpdateAddressInfo(add1, true);
+
+            var token_address1Utxos = node.GetAddressTokenUtxosObjects(add1);
+
+            Assert.Single(token_address1Utxos);
+        }
+
+
+
+        [Fact]
+        public async void GetIndexedBlockFromBlockResponse_Valid_Test()
+        {
+            var add1 = Common.FakeDataGenerator.GetKeyAndAddress().Item1.ToString();
+            var add2 = Common.FakeDataGenerator.GetKeyAndAddress().Item1.ToString();
+
+            var node = getNode();
+
+            var bl = NeblioTestHelpers.TestingBlocksInfo.FirstOrDefault().Value;
+            var blockr = JsonConvert.DeserializeObject<RpcResponse>(bl);
+            var block = JsonConvert.DeserializeObject<GetBlockResponse>(blockr.Result.ToString());
+            Assert.NotNull(block);
+
+            var indexedBlock = node.GetIndexedBlockFromResponse(block);
+
+            Assert.Equal(block.Hash, indexedBlock.Hash);
+            Assert.Equal(block.Height, indexedBlock.Height);
+            Assert.Equal(block.Tx, indexedBlock.Transactions);
+            Assert.Equal(block.Time, TimeHelpers.DateTimeToUnixTimestamp(indexedBlock.Time) / 1000);
+
+        }
+
+        [Fact]
+        public async void ConvertIndexedUtxoToUtxosObject_Valid_Test()
+        {
+            var add1 = FakeDataGenerator.GetKeyAndAddress().Item1.ToString();
+
+            var node = getNode();
+
+            var nuxo = FakeDataGenerator.GetFakeNeblioUtxo(add1, value: 100000000);
+            var tuxo = FakeDataGenerator.GetFakeNeblioTokenUtxo(add1, NFTHelpers.TokenId, amount: 1000);
+
+            var utxos = new List<IndexedUtxo>()
+            {
+                new IndexedUtxo()
+                {
+                     Blockheight = nuxo.Blockheight ?? 0.0,
+                     Blocktime = nuxo.Blocktime ?? 0.0,
+                     Used = false,
+                     TransactionHash = nuxo.Txid,
+                     Index = (int)nuxo.Index,
+                     Value = nuxo.Value ?? 0.0,
+                     OwnerAddress = add1,
+                     TokenUtxo = false
+                },
+                new IndexedUtxo()
+                {
+                     Blockheight = tuxo.Blockheight ?? 0.0,
+                     Blocktime = tuxo.Blocktime ?? 0.0,
+                     Used = false,
+                     TransactionHash = tuxo.Txid,
+                     Index = (int)tuxo.Index,
+                     Value = tuxo.Value ?? 0.0,
+                     OwnerAddress = add1,
+                     TokenUtxo = true,
+                     TokenAmount = 1000,
+                     TokenId = NFTHelpers.TokenId,
+                     TokenSymbol = "VENFT"
+                }
+            };
+
+            var indexedUtxos = VirtualNode.ConvertIndexedUtxoToUtxo(utxos);
+            Assert.Equal(2, indexedUtxos.Count());
+
+            var nuxo1 = indexedUtxos.FirstOrDefault();
+            Assert.Equal(nuxo.Txid, nuxo1.Txid);
+            Assert.Equal(nuxo.Blockheight, nuxo1.Blockheight);
+            Assert.Equal(nuxo.Value, nuxo1.Value);
+            Assert.Equal(nuxo.Blocktime, nuxo1.Blocktime);
+
+            var tuxo1 = indexedUtxos.LastOrDefault();
+            Assert.Equal(tuxo.Txid, tuxo1.Txid);
+            Assert.Equal(tuxo.Value, tuxo1.Value);
+            Assert.Equal(tuxo.Blocktime, tuxo1.Blocktime);
+            Assert.Single(tuxo1.Tokens);
+
+            var toks = tuxo1.Tokens.FirstOrDefault();
+            Assert.NotNull(toks);
+            Assert.Equal(1000, toks.Amount);
+            Assert.Equal(NFTHelpers.TokenId, toks.TokenId);
+
         }
     }
 }
