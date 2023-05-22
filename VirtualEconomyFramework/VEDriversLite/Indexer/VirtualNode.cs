@@ -308,13 +308,12 @@ namespace VEDriversLite.Indexer
                                 var prevTokenVout = prevVout.Tokens.FirstOrDefault();
                                 if (prevTokenVout != null)
                                 {
+                                    totalTokens += prevTokenVout.Amount ?? 0.0;
+                                    tokenId = prevTokenVout.TokenId;
+
                                     var ti = ProcessTokensMetadata(prevTokenVout);
                                     if (ti != null)
-                                    {
-                                        totalTokens += prevTokenVout.Amount ?? 0.0;
-                                        tokenId = prevTokenVout.TokenId;
                                         tokenSymbol = ti.TokenName;
-                                    }
 
                                     tokensFromInputs.Add(prevTokenVout);
                                 }
@@ -323,34 +322,17 @@ namespace VEDriversLite.Indexer
                     }
                 }
 
-                var split = input.ScriptSig.ToString().Split(' ');
-                if (split.Length >= 2)
-                {
-                    var pubkey = split[split.Length - 1];
-                    BitcoinAddress add = null;
-                    try
-                    {
-                        PubKey pk = new PubKey(pubkey);
-                        add = pk.GetAddress(ScriptPubKeyType.Legacy, NeblioTransactionHelpers.Network);
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine("Wrong public key input during parsing the Tx data. PubKey input:" + pubkey);
-                    }
-                    if (add != null)
-                    {
-                        if (Addresses.TryGetValue(add.ToString(), out var addr))
-                            addr.RemoveUtxo($"{input.PrevOut.Hash}:{input.PrevOut.N}");
-                    }
-                }
+                var add = NeblioTransactionHelpers.GetAddressFromSignedScriptPubKey(input.ScriptSig.ToString());
+                if (add != null && Addresses.TryGetValue(add.ToString(), out var addr))
+                    addr.RemoveUtxo($"{input.PrevOut.Hash}:{input.PrevOut.N}");
             }
 
+            var metadataString = string.Empty;
             var tx = new NTP1Transactions() { ntp1_instruct_list = new List<NTP1Instructions>() };
             var isTokenTx = false;
             var opReturnOutput = transaction.Outputs.FirstOrDefault(o => o.ScriptPubKey.IsUnspendable);
             if (opReturnOutput != null)
             {
-                isTokenTx = true;
                 var parsedInfo = opReturnOutput.ScriptPubKey.ToString();
                 if (!string.IsNullOrEmpty(parsedInfo) && parsedInfo.Contains("OP_RETURN"))
                 {
@@ -359,13 +341,17 @@ namespace VEDriversLite.Indexer
                     if (!string.IsNullOrEmpty(data))
                     {
                         tx = new NTP1Transactions() { ntp1_opreturn = data };
-                        NTP1ScriptHelpers._NTP1ParseScript(tx); //No metadata
-
-                        var customDecompressed = StringExt.Decompress(tx.metadata);
-                        var metadataString = Encoding.UTF8.GetString(customDecompressed);
-
-                        foreach (var inst in tx.ntp1_instruct_list)
-                            await Console.Out.WriteLineAsync($"Token amount in tx is: {inst.amount} on {inst.vout_num} output");
+                        try
+                        {
+                            NTP1ScriptHelpers._NTP1ParseScript(tx); //No metadata
+                            var customDecompressed = StringExt.Decompress(tx.metadata);
+                            metadataString = Encoding.UTF8.GetString(customDecompressed);
+                        }
+                        catch(Exception ex)
+                        {
+                            await Console.Out.WriteLineAsync("cannot parse token metadata: " + parsedInfo);
+                        }
+                        isTokenTx = true;
                     }
                 }
             }
@@ -376,64 +362,60 @@ namespace VEDriversLite.Indexer
                 var utxoId = $"{txid}:{i}";
                 if (!output.ScriptPubKey.IsUnspendable)
                 {
-                    if (!Utxos.TryGetValue(utxoId, out var utxo))
+                    var address = output.ScriptPubKey.GetDestinationAddress(NeblioTransactionHelpers.Network).ToString();
+
+                    var time = DateTime.UtcNow;
+                    var tmpheight = LatestGetBlockResponse;
+                    if (LatestGetBlockResponse < LatestLoadedBlock)
+                        tmpheight = LatestLoadedBlock;
+
+                    var ux = new IndexedUtxo()
                     {
-                        var address = output.ScriptPubKey.GetDestinationAddress(NeblioTransactionHelpers.Network).ToString();
-                        
-                        var time = DateTime.UtcNow;
-                        var tmpheight = LatestGetBlockResponse;
-                        if (LatestGetBlockResponse < LatestLoadedBlock)
-                            tmpheight = LatestLoadedBlock;
+                        TransactionHash = txid,
+                        Index = i,
+                        Value = (double)output.Value.Satoshi / NeblioTransactionHelpers.FromSatToMainRatio,
+                        OwnerAddress = address,
+                        Blockheight = -1,
+                        Blocktime = TimeHelpers.DateTimeToUnixTimestamp(time) / 1000,
+                        Time = time,
+                    };
 
-                        var ux = new IndexedUtxo()
+                    if (isTokenTx)
+                    {
+                        var tokenVout = tx.ntp1_instruct_list.FirstOrDefault(o => o.vout_num == i);
+                        if (tokenVout != null)
                         {
-                            TransactionHash = txid,
-                            Index = i,
-                            Value = (double)output.Value.Satoshi / NeblioTransactionHelpers.FromSatToMainRatio,
-                            OwnerAddress = address,
-                            Blockheight = -1,
-                            Blocktime = TimeHelpers.DateTimeToUnixTimestamp(time),
-                            Time = time
-                        };
-
-                        if (isTokenTx)
-                        {
-                            var tokenVout = tx.ntp1_instruct_list.FirstOrDefault(o => o.vout_num == i);
-                            if (tokenVout != null)
-                            {
-                                ux.TokenUtxo = true;
-                                ux.TokenAmount = tokenVout.amount;
-                                totalTokensSent += tokenVout.amount;
-                                ux.TokenSymbol = tokenSymbol;
-                                ux.TokenId = tokenId;
-                            }
-                        }
-
-                        if (i == transaction.Outputs.Count - 1 && 
-                            totalTokensSent > 0 && 
-                            transaction.Outputs[i].Value.Satoshi == NeblioTransactionHelpers.MinimumAmount)
-                        {
-                            ux.TokenAmount = totalTokens - totalTokensSent;
                             ux.TokenUtxo = true;
-                            ux.TokenId = tokenId;
+                            ux.TokenAmount = tokenVout.amount;
+                            totalTokensSent += tokenVout.amount;
                             ux.TokenSymbol = tokenSymbol;
+                            ux.TokenId = tokenId;
+                            if (!string.IsNullOrEmpty(metadataString))
+                                ux.Metadata = metadataString;
                         }
+                    }
 
-                        if (!string.IsNullOrEmpty(address) && !addressesToUpdate.Contains(address))
-                            addressesToUpdate.Add(address);
-                        
-                        if (Utxos.TryGetValue(utxoId, out var eu))
-                            eu = ux;
+                    if (i == transaction.Outputs.Count - 1 &&
+                        totalTokensSent > 0 &&
+                        transaction.Outputs[i].Value.Satoshi == NeblioTransactionHelpers.MinimumAmount)
+                    {
+                        ux.TokenAmount = totalTokens - totalTokensSent;
+                        ux.TokenUtxo = true;
+                        ux.TokenId = tokenId;
+                        ux.TokenSymbol = tokenSymbol;
+                    }
+
+                    if (Utxos.TryGetValue(utxoId, out var eu))
+                        eu = ux;
+                    else
+                        Utxos.TryAdd(utxoId, ux);
+
+                    if (Addresses.TryGetValue(ux.OwnerAddress, out var add))
+                    {
+                        if (ux.Used)
+                            add.RemoveUtxo(ux.TransactionHashAndN);
                         else
-                            Utxos.TryAdd(utxoId, ux);
-
-                        if (Addresses.TryGetValue(ux.OwnerAddress, out var add))
-                        {
-                            if (ux.Used)
-                                add.RemoveUtxo(ux.TransactionHashAndN);
-                            else
-                                add.AddUtxo(ux);
-                        }
+                            add.AddUtxo(ux);
                     }
                 }
             }
@@ -465,6 +447,12 @@ namespace VEDriversLite.Indexer
                         var txr = JsonConvert.DeserializeObject<GetTransactionInfoResponse>(ores);
                         if (!includePOS && IsTxPOS(txr))
                             return null;
+
+                        if (Transactions.TryGetValue(tx, out var txc))
+                        {
+                            if (txc.TxInfo == null)
+                                txc.TxInfo = txr;
+                        }
 
                         if (txr.Hex == null)
                             txr.Hex = string.Empty;
