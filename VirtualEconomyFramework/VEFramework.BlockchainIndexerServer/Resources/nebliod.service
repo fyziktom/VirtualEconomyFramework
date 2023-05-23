@@ -1,0 +1,14 @@
+[Unit]
+Description=Neblio blockchain node
+After=network.target
+
+[Service]
+WorkingDirectory=/home/YOUR_USERNAME/.neblio/
+ExecStart=/usr/local/bin/nebliod
+Restart=always
+RestartSec=10
+SyslogIdentifier=nebliod
+User=YOUR_USERNAME
+
+[Install]
+WantedBy=multi-user.target

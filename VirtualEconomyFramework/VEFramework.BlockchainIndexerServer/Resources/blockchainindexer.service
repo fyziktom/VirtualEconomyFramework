@@ -1,0 +1,15 @@
+[Unit]
+Description=My Blazor Server App
+After=network.target
+
+[Service]
+WorkingDirectory=/home/YOUR_USERNAME/vef/VirtualEconomyFramework/VirtualEconomyFramework/VEFramework.BlockchainIndexerServer/publish
+ExecStart=/home/YOUR_USERNAME/dotnet/dotnet /home/YOUR_USERNAME/vef/VirtualEconomyFramework/VirtualEconomyFramework/VEFramework.BlockchainIndexerServer/publish/VEFramework.BlockchainIndexerServer.dll
+Restart=always
+RestartSec=10
+SyslogIdentifier=blindexer
+User=YOUR_USERNAME
+
+[Install]
+WantedBy=multi-user.target
+

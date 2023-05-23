@@ -1,0 +1,15 @@
+[Unit]
+Description=InterPlanetary File System (IPFS) daemon
+After=network.target
+
+[Service]
+TimeoutStartSec=infinity
+Type=notify
+User=YOUR_USERNAME
+StateDirectory=ipfs
+Environment=IPFS_PATH=/home/YOUR_USERNAME/.ipfs/
+ExecStart=/usr/local/bin/ipfs daemon
+Restart=on-failure
+
+[Install]
+WantedBy=default.target
