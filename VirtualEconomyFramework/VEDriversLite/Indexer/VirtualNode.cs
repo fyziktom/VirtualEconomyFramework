@@ -263,7 +263,6 @@ namespace VEDriversLite.Indexer
             }
             var txid = transaction.GetHash().ToString();
 
-            var tokensFromInputs = new List<Tokens3>();
             var totalTokensSent = 0.0;
             var totalTokens = 0.0;
             var totalNeblioInput = 0.0;
@@ -279,9 +278,7 @@ namespace VEDriversLite.Indexer
                 {
                     utxo.Used = true;
                     utxo.UsedInTxHash = txid;
-                    if (!UsedUtxos.ContainsKey(utxoId))
-                        UsedUtxos.TryAdd(utxoId, txid);
-
+                    
                     if (utxo.TokenUtxo)
                     {
                         totalTokens += utxo.TokenAmount;
@@ -298,29 +295,27 @@ namespace VEDriversLite.Indexer
                     var prevTx = await GetTx(prevUtxo);
                     if (prevTx != null)
                     {
-                        if (prevTx.Vout.Count > prevUtxoIndex)
+                        var prevVout = prevTx.Vout.FirstOrDefault(v => v.N == prevUtxoIndex);
+                        if (prevVout != null)
                         {
-                            var prevVout = prevTx.Vout.FirstOrDefault(v => v.N == prevUtxoIndex);
-                            if (prevVout != null)
+                            totalNeblioInput += (prevVout.Value ?? 0.0);
+
+                            var prevTokenVout = prevVout.Tokens.FirstOrDefault();
+                            if (prevTokenVout != null)
                             {
-                                totalNeblioInput += (prevVout.Value ?? 0.0);
+                                totalTokens += prevTokenVout.Amount ?? 0.0;
+                                tokenId = prevTokenVout.TokenId;
 
-                                var prevTokenVout = prevVout.Tokens.FirstOrDefault();
-                                if (prevTokenVout != null)
-                                {
-                                    totalTokens += prevTokenVout.Amount ?? 0.0;
-                                    tokenId = prevTokenVout.TokenId;
-
-                                    var ti = ProcessTokensMetadata(prevTokenVout);
-                                    if (ti != null)
-                                        tokenSymbol = ti.TokenName;
-
-                                    tokensFromInputs.Add(prevTokenVout);
-                                }
+                                var ti = ProcessTokensMetadata(prevTokenVout);
+                                if (ti != null)
+                                    tokenSymbol = ti.TokenName;
                             }
                         }
                     }
                 }
+
+                if (!UsedUtxos.ContainsKey(utxoId))
+                    UsedUtxos.TryAdd(utxoId, txid);
 
                 var add = NeblioTransactionHelpers.GetAddressFromSignedScriptPubKey(input.ScriptSig.ToString());
                 if (add != null && Addresses.TryGetValue(add.ToString(), out var addr))
@@ -376,7 +371,7 @@ namespace VEDriversLite.Indexer
                         Value = (double)output.Value.Satoshi / NeblioTransactionHelpers.FromSatToMainRatio,
                         OwnerAddress = address,
                         Blockheight = -1,
-                        Blocktime = TimeHelpers.DateTimeToUnixTimestamp(time) / 1000,
+                        Blocktime = TimeHelpers.DateTimeToUnixTimestamp(time),
                         Time = time,
                     };
 
@@ -393,30 +388,31 @@ namespace VEDriversLite.Indexer
                             if (!string.IsNullOrEmpty(metadataString))
                                 ux.Metadata = metadataString;
                         }
-                    }
 
-                    if (i == transaction.Outputs.Count - 1 &&
-                        totalTokensSent > 0 &&
-                        transaction.Outputs[i].Value.Satoshi == NeblioTransactionHelpers.MinimumAmount)
-                    {
-                        ux.TokenAmount = totalTokens - totalTokensSent;
-                        ux.TokenUtxo = true;
-                        ux.TokenId = tokenId;
-                        ux.TokenSymbol = tokenSymbol;
+                        if (i == transaction.Outputs.Count - 1 &&
+                            totalTokensSent > 0 &&
+                            transaction.Outputs[i].Value.Satoshi == NeblioTransactionHelpers.MinimumAmount)
+                        {
+                            ux.TokenAmount = totalTokens - totalTokensSent;
+                            ux.TokenUtxo = true;
+                            ux.TokenId = tokenId;
+                            ux.TokenSymbol = tokenSymbol;
+                        }
                     }
 
                     if (Utxos.TryGetValue(utxoId, out var eu))
-                        eu = ux;
+                    {
+                        ux.Blocktime = eu.Blocktime;
+                        ux.Blockheight = eu.Blockheight;
+
+                        if (Utxos.TryRemove(utxoId, out eu))
+                            Utxos.TryAdd(utxoId, ux);
+                    }
                     else
                         Utxos.TryAdd(utxoId, ux);
 
                     if (Addresses.TryGetValue(ux.OwnerAddress, out var add))
-                    {
-                        if (ux.Used)
-                            add.RemoveUtxo(ux.TransactionHashAndN);
-                        else
-                            add.AddUtxo(ux);
-                    }
+                        add.AddUtxo(ux);
                 }
             }
         }

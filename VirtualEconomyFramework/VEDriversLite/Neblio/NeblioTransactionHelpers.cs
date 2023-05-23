@@ -390,7 +390,7 @@ namespace VEDriversLite
         /// <param name="fee"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public static async Task<Transaction> SendTokenLotNewAsync(SendTokenTxData data, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos, double fee = 20000)
+        public static Transaction SendTokenLotNewAsync(SendTokenTxData data, ICollection<Utxos> nutxos, ICollection<Utxos> tutxos, double fee = 20000)
         {
             if (data.Metadata == null || data.Metadata.Count == 0)
                 throw new Exception("Cannot send without metadata!");
@@ -1104,33 +1104,23 @@ namespace VEDriversLite
         /// <param name="ekey">Input EncryptionKey of the account</param>
         /// <param name="nutxos">Optional input neblio utxo</param>
         /// <returns>New Transaction Hash - TxId</returns>
-        public static Transaction GetNeblioTransactionObject(SendTxData data, EncryptionKey ekey, ICollection<Utxos> nutxos)
+        public static Transaction GetNeblioTransactionObject(SendTxData data, ICollection<Utxos> nutxos)
         {
             if (data == null)
                 throw new Exception("Data cannot be null!");
 
-            if (ekey == null)
-                throw new Exception("Account cannot be null!");
-
             // create receiver address
+            BitcoinAddress addressForTx;
             BitcoinAddress recaddr;
             try
             {
+                addressForTx = BitcoinAddress.Create(data.SenderAddress, Network);
                 recaddr = BitcoinAddress.Create(data.ReceiverAddress, Network);
             }
             catch (Exception)
             {
                 throw new Exception("Cannot send transaction. cannot create receiver address!");
             }
-
-            // load key and address
-            BitcoinSecret key;
-            BitcoinAddress addressForTx;
-
-            var k = GetAddressAndKey(ekey, data.Password);
-            key = k.Item2;
-            addressForTx = k.Item1;
-
 
             var tx = GetTransactionWithNeblioInputs(nutxos, addressForTx);
             if (tx.Item1 == null)
@@ -1483,7 +1473,7 @@ namespace VEDriversLite
         /// <param name="transaction">NBitcoin Transaction object</param>
         /// <param name="key">NBitcoin Key - must contain Private Key</param>
         /// <returns>New Transaction Hash - TxId</returns>
-        private static async Task<string> SignAndBroadcast(Transaction transaction, BitcoinSecret key)
+        public static async Task<string> SignAndBroadcast(Transaction transaction, BitcoinSecret key, bool withBroadcast = true, List<Utxos> addrutxos = null)
         {
             BitcoinAddress address = key.PubKey.GetAddress(ScriptPubKeyType.Legacy, Network);
 
@@ -1491,7 +1481,8 @@ namespace VEDriversLite
             List<ICoin> coins = new List<ICoin>();
             try
             {
-                var addrutxos = await NeblioAPIHelpers.GetAddressUtxosListFromNewAPIAsync(address.ToString());
+                if (addrutxos == null)
+                    addrutxos = await NeblioAPIHelpers.GetAddressUtxosListFromNewAPIAsync(address.ToString());
 
                 // add all spendable coins of this address
                 foreach (var inp in addrutxos)
@@ -1543,9 +1534,13 @@ namespace VEDriversLite
             // broadcast            
             var txhex = transaction.ToHex();
 
-            //var res = await NeblioAPIHelpers.BroadcastSignedTransaction(txhex);
-            var res = await NeblioAPIHelpers.BroadcastTransactionVEAPI(txhex);
-            return res;
+            if (withBroadcast)
+            {
+                //var res = await NeblioAPIHelpers.BroadcastSignedTransaction(txhex);
+                var res = await NeblioAPIHelpers.BroadcastTransactionVEAPI(txhex);
+                return res;
+            }
+            return txhex;
         }
 
         //////////////////////////////////////

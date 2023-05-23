@@ -97,7 +97,7 @@ namespace VEFrameworkUnitTest.Neblio
                 Metadata = meta
             };
 
-            var transaction = await NeblioTransactionHelpers.SendTokenLotNewAsync(sendTxData, new List<Utxos> { nuxo }, new List<Utxos> { tuxo });
+            var transaction = NeblioTransactionHelpers.SendTokenLotNewAsync(sendTxData, new List<Utxos> { nuxo }, new List<Utxos> { tuxo });
 
             Assert.NotNull(transaction);
             Assert.Equal(2, transaction.Inputs.Count);

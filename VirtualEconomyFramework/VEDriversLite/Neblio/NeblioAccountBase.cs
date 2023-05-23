@@ -1020,7 +1020,7 @@ namespace VEDriversLite.Neblio
             try
             {
                 // send tx                                              
-                var transaction = NeblioTransactionHelpers.GetNeblioTransactionObject(dto, AccountKey, res.Item2);
+                var transaction = NeblioTransactionHelpers.GetNeblioTransactionObject(dto, res.Item2);
 
                 var result = await SignBroadcastAndInvokeSucessEvent(transaction, "Neblio Payment Sent");
                 if (result.Item1)
@@ -1073,7 +1073,7 @@ namespace VEDriversLite.Neblio
             try
             {
                 // send tx                
-                var transaction = NeblioTransactionHelpers.GetNeblioTransactionObject(dto, AccountKey, utxos);
+                var transaction = NeblioTransactionHelpers.GetNeblioTransactionObject(dto, utxos);
 
                 var result = await SignBroadcastAndInvokeSucessEvent(transaction, "Neblio Payment Sent");
                 if (result.Item1)
@@ -1236,7 +1236,7 @@ namespace VEDriversLite.Neblio
             try
             {                
                 // send tx
-                var transaction = await NeblioTransactionHelpers.SendTokenLotNewAsync(dto, res.Item2, tres.Item2);
+                var transaction = NeblioTransactionHelpers.SendTokenLotNewAsync(dto, res.Item2, tres.Item2);
 
                 var result = await SignBroadcastAndInvokeSucessEvent(transaction, "Neblio Token Payment Sent");
                 if (result.Item1)

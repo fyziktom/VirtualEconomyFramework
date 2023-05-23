@@ -216,8 +216,8 @@ namespace VEFramework.BlockchainIndexerServer.Controllers
         /// Broadcast raw signed transaction through node
         /// </summary>
         /// <returns>Transaction Id</returns>
-        [HttpPost]
         [AllowCrossSiteJsonAttribute]
+        [HttpPost]
         [Route("BroadcastTransaction")]
         public async Task<BroadcastTransactionResponseDto> BroadcastTransaction([FromBody] BroadcastTransactionRequestDto data)
         {
