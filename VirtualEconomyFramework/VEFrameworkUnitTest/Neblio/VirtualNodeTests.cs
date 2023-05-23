@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using VEDriversLite;
 using VEDriversLite.Common;
 using VEDriversLite.Indexer;
@@ -34,7 +35,7 @@ namespace VEFrameworkUnitTest.Neblio
 
 
         [Fact]
-        public async void GetSplitTokenTransaction_Valid_Test()
+        public async Task GetSplitTokenTransaction_Valid_Test()
         {
             var resp = JsonConvert.DeserializeObject<RpcResponse>(NeblioTestHelpers.SplitNeblioTrokensTransaction);
             var transactionObject = JsonConvert.DeserializeObject<GetTransactionInfoResponse>(resp.Result.ToString());
@@ -75,7 +76,7 @@ namespace VEFrameworkUnitTest.Neblio
         }
 
         [Fact]
-        public async void GetBlockInfo_Valid_Test()
+        public async Task GetBlockInfo_Valid_Test()
         {
             var node = getNode();
             var fakeRpc = new FakeQTWalletRPCClient(node.QTRPConfig);
@@ -120,7 +121,7 @@ namespace VEFrameworkUnitTest.Neblio
         }
 
         [Fact]
-        public async void GetLoadBlockTransactions_Valid_Test()
+        public async Task GetLoadBlockTransactions_Valid_Test()
         {
             var node = getNode();
             var fakeRpc = new FakeQTWalletRPCClient(node.QTRPConfig);
@@ -159,7 +160,7 @@ namespace VEFrameworkUnitTest.Neblio
         }
 
         [Fact]
-        public async void ParseOutput_Valid_Test()
+        public async Task ParseOutput_Valid_Test()
         {
             var resp = JsonConvert.DeserializeObject<RpcResponse>(NeblioTestHelpers.SplitNeblioTrokensTransaction);
             var transactionObject = JsonConvert.DeserializeObject<GetTransactionInfoResponse>(resp.Result.ToString());
@@ -216,7 +217,7 @@ namespace VEFrameworkUnitTest.Neblio
         }
 
         [Fact]
-        public async void ParseInput_Valid_Test()
+        public async Task ParseInput_Valid_Test()
         {
             var resp = JsonConvert.DeserializeObject<RpcResponse>(NeblioTestHelpers.SplitNeblioTrokensTransaction);
             var transactionObject = JsonConvert.DeserializeObject<GetTransactionInfoResponse>(resp.Result.ToString());
@@ -270,7 +271,7 @@ namespace VEFrameworkUnitTest.Neblio
         }
 
         [Fact]
-        public async void ParseTokenMetadata_Valid_Test()
+        public async Task ParseTokenMetadata_Valid_Test()
         {
             var resp = JsonConvert.DeserializeObject<RpcResponse>(NeblioTestHelpers.SplitNeblioTrokensTransaction);
             var transactionObject = JsonConvert.DeserializeObject<GetTransactionInfoResponse>(resp.Result.ToString());
@@ -308,7 +309,7 @@ namespace VEFrameworkUnitTest.Neblio
 
 
         [Fact]
-        public async void GetAllAddressesTest_Valid_Test()
+        public void GetAllAddressesTest_Valid_Test()
         {
             var add1 = Common.FakeDataGenerator.GetKeyAndAddress();
             var add2 = Common.FakeDataGenerator.GetKeyAndAddress();
@@ -347,7 +348,7 @@ namespace VEFrameworkUnitTest.Neblio
         }
 
         [Fact]
-        public async void UpdateAddress_Valid_Test()
+        public void UpdateAddress_Valid_Test()
         {
             var add1 = Common.FakeDataGenerator.GetKeyAndAddress();
             var add2 = Common.FakeDataGenerator.GetKeyAndAddress();
@@ -398,7 +399,7 @@ namespace VEFrameworkUnitTest.Neblio
 
 
         [Fact]
-        public async void GetAddressUtxosObjects_Valid_Test()
+        public void GetAddressUtxosObjects_Valid_Test()
         {
             var add1 = Common.FakeDataGenerator.GetKeyAndAddress().Item1.ToString();
             var add2 = Common.FakeDataGenerator.GetKeyAndAddress().Item1.ToString();
@@ -455,7 +456,7 @@ namespace VEFrameworkUnitTest.Neblio
 
 
         [Fact]
-        public async void GetIndexedBlockFromBlockResponse_Valid_Test()
+        public void GetIndexedBlockFromBlockResponse_Valid_Test()
         {
             var add1 = Common.FakeDataGenerator.GetKeyAndAddress().Item1.ToString();
             var add2 = Common.FakeDataGenerator.GetKeyAndAddress().Item1.ToString();
@@ -477,7 +478,7 @@ namespace VEFrameworkUnitTest.Neblio
         }
 
         [Fact]
-        public async void ConvertIndexedUtxoToUtxosObject_Valid_Test()
+        public void ConvertIndexedUtxoToUtxosObject_Valid_Test()
         {
             var add1 = FakeDataGenerator.GetKeyAndAddress().Item1.ToString();
 
@@ -538,7 +539,7 @@ namespace VEFrameworkUnitTest.Neblio
         }
 
         [Fact]
-        public async void ProcessBroadcastedTransactionPureNeblio_Valid_Test()
+        public async Task ProcessBroadcastedTransactionPureNeblio_Valid_Test()
         {
             var ownerInput = FakeDataGenerator.GetKeyAndAddress();
             var owner = ownerInput.Item1.ToString();
@@ -592,7 +593,7 @@ namespace VEFrameworkUnitTest.Neblio
         }
 
         [Fact]
-        public async void ProcessBroadcastedTransactionWithTokenLot_Valid_Test()
+        public async Task ProcessBroadcastedTransactionWithTokenLot_Valid_Test()
         {
             var ownerInput = FakeDataGenerator.GetKeyAndAddress();
             var owner = ownerInput.Item1.ToString();
@@ -681,6 +682,88 @@ namespace VEFrameworkUnitTest.Neblio
             Assert.Equal("VENFT", add1UtxosAfterBroadcast[0].TokenSymbol);
             Assert.Equal(4, node.UsedUtxos.Count);
             Assert.Equal(7, node.Utxos.Count);
+
+        }
+
+        [Fact]
+        public async Task ProcessBroadcastedTransactionWithMintNFT_Valid_Test()
+        {
+            var ownerInput = FakeDataGenerator.GetKeyAndAddress();
+            var owner = ownerInput.Item1.ToString();
+            var ownerKey = ownerInput.Item2;
+
+            var node = getNode();
+            var nuxos = new List<IndexedUtxo>();
+            var tuxos = new List<IndexedUtxo>();
+            var hashes = NeblioTestHelpers.HashesOfTxs.Values.ToArray();
+            var amountOfTokensToSend = 50;
+
+            // nebl utxo to cover the fee
+            nuxos.Add(new IndexedUtxo()
+            {
+                Index = 0,
+                TransactionHash = hashes[0],
+                Value = 1 * NeblioTransactionHelpers.FromSatToMainRatio,
+                OwnerAddress = owner,
+                Time = DateTime.UtcNow
+            });
+            // token utxo
+            tuxos.Add(new IndexedUtxo()
+            {
+                Index = 3,
+                TransactionHash = hashes[3],
+                Value = NeblioTransactionHelpers.MinimumAmount,
+                OwnerAddress = owner,
+                TokenAmount = 100,
+                TokenId = NFTHelpers.TokenId,
+                TokenUtxo = true,
+                TokenSymbol = "VENFT",
+                Time = DateTime.UtcNow
+            });
+
+            foreach (var u in nuxos)
+                node.Utxos.TryAdd(u.TransactionHashAndN, u);
+            foreach (var u in tuxos)
+                node.Utxos.TryAdd(u.TransactionHashAndN, u);
+
+            node.UpdateAddressInfo(owner, true);
+
+            var unuxos = VirtualNode.ConvertIndexedUtxoToUtxo(nuxos);
+            var utuxos = VirtualNode.ConvertIndexedUtxoToUtxo(tuxos);
+
+            var transaction = await NeblioTransactionHelpers.MintNFTTokenAsync(new MintNFTData()
+            {
+                Id = NFTHelpers.TokenId,
+                SenderAddress = owner,
+                ReceiverAddress = owner,
+                Metadata = new Dictionary<string, string>() { { "test", "metadata" } }
+            }, unuxos, utuxos);
+
+            var alluxos = new List<Utxos>()
+            {
+                unuxos.FirstOrDefault(),
+                utuxos.FirstOrDefault()
+            };
+
+            var result = await NeblioTransactionHelpers.SignAndBroadcast(transaction, ownerKey, false, alluxos);
+
+            var ownerUtxosBeforeBroadcast = node.GetAddressUtxosObjects(owner);
+            Assert.Equal(2, ownerUtxosBeforeBroadcast.Count());
+            
+            await node.ProcessBroadcastedTransaction(result);
+
+            var ownerUtxosAfterBroadcast = node.GetAddressUtxosObjects(owner).ToList();
+
+            Assert.Equal(3, ownerUtxosAfterBroadcast.Count);
+            Assert.Contains(ownerUtxosAfterBroadcast, u => u.TokenUtxo && u.TokenAmount == 1);
+
+            Assert.Equal(ownerUtxosBeforeBroadcast.Where(u => u.TokenUtxo)
+                                                 .Select(u => u.TokenAmount).Sum() - 1,
+                         ownerUtxosAfterBroadcast.Where(u => u.TokenUtxo && !u.Used && u.TokenAmount != 1)
+                                                 .Select(u => u.TokenAmount).Sum());
+
+            Assert.Equal(2, node.UsedUtxos.Count);
+            Assert.Equal(5, node.Utxos.Count);
 
         }
     }
