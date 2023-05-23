@@ -62,6 +62,8 @@ namespace VEDriversLite.Common
             }
         }
 
+        public bool SSL { get; set; } = false;
+
         private bool _isConnected = true;
         /// <summary>
         /// Is connected to RPC server flag

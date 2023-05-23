@@ -42,6 +42,10 @@ namespace VEDriversLite.Common
         /// Is connected to RPC server flag
         /// </summary>
         bool IsConnected { get; }
+        /// <summary>
+        /// Use https instead of http
+        /// </summary>
+        bool SSL { get; set; }
         ///<summary>
         /// Initialize client. You need to load connection info first - usually during the construction
         /// </summary>
