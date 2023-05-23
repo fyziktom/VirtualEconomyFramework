@@ -1119,7 +1119,7 @@ namespace VEDriversLite
             }
             catch (Exception)
             {
-                throw new Exception("Cannot send transaction. cannot create receiver address!");
+                throw new Exception("Cannot send transaction. cannot create address!");
             }
 
             var tx = GetTransactionWithNeblioInputs(nutxos, addressForTx);

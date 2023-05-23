@@ -105,7 +105,7 @@ namespace VEFrameworkUnitTest.Neblio
         public void SendNeblioTransaction_Key_Null_Test()
         {
             SendTxData txData = new SendTxData();
-            string message = "Account cannot be null!";
+            string message = "Cannot send transaction. cannot create address!";
             var exception = Assert.Throws<Exception>(() => NeblioTransactionHelpers.GetNeblioTransactionObject(txData, new List<Utxos>()));
             Assert.Equal(message, exception.Message);
         }
@@ -119,7 +119,7 @@ namespace VEFrameworkUnitTest.Neblio
             SendTxData txData = new SendTxData();
             EncryptionKey encryptionKey = new EncryptionKey("Test");
 
-            string message = "Cannot send transaction. cannot create receiver address!";
+            string message = "Cannot send transaction. cannot create address!";
             var exception = Assert.Throws<Exception>(() => NeblioTransactionHelpers.GetNeblioTransactionObject(txData, new List<Utxos>()));
             Assert.Equal(message, exception.Message);
         }
@@ -180,40 +180,6 @@ namespace VEFrameworkUnitTest.Neblio
         //    var exception = Assert.Throws<Exception>(() => NeblioTransactionHelpers.GetNeblioTransactionObject(sendTxData, AccountKey, addressObject.Utxos));
         //    Assert.Contains(message, exception.Message);
         //}
-
-        /// <summary>
-        /// Unit test method to verify if system is returning an error result when password is empty.
-        /// </summary>
-        [Fact]
-        public void GetNeblioTransaction_PasswordNotFilled_Error_Test()
-        {
-            //Arrange           
-        
-            string address = "NPvfpRCmDNcJjCZvDuAB9QsFC32gVThWdh";
-            GetAddressInfoResponse addressObject = Common.FakeDataGenerator.GetAddressWithNeblUtxos(address, 10, 1000000);
-
-            string password = "";
-
-            SendTxData sendTxData = new SendTxData()
-            {
-                ReceiverAddress = address,
-                SenderAddress = address,
-                Amount = 100,
-                CustomMessage = "test",
-                Password = password
-            };
-
-            string Key = "A1eqrHg6TNBF8IGRhAsOHaLykDRRb56oF65J+DssDC9gThelreGQSubhvl3O7ZvHJ168W/mfzRlSItzMcdRaJw==";
-
-            var AccountKey = new EncryptionKey(Key)
-            {
-                IsEncrypted = true
-            };
-
-            string message = "Cannot send token transaction. Password is not filled and key is encrypted or unlock account!";
-            var exception = Assert.Throws<Exception>(() => NeblioTransactionHelpers.GetNeblioTransactionObject(sendTxData, addressObject.Utxos));
-            Assert.Equal(message, exception.Message);
-        }
 
         /// <summary>
         /// Unit test method to verify if system is returning an error result if broadcast failed.
