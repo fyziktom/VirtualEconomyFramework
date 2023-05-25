@@ -14,6 +14,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using VEDriversLite.Common;
 
 namespace VEFramework.BlockchainIndexerServer
 {
@@ -58,6 +59,19 @@ namespace VEFramework.BlockchainIndexerServer
                 await Console.Out.WriteLineAsync("Cannot init QTRPC Client! Please check settings in appsetting.json" + ex);
             }
 
+            // load list of the blocks where are just PoS transactions if it exists
+            var filecontent = FileHelpers.ReadTextFromFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "posblocks.json"));
+            try
+            {
+                MainDataContext.PoSBlocks = JsonConvert.DeserializeObject<Dictionary<string, int>>(filecontent) ?? new Dictionary<string, int>();
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("Cannot deserialize the list of the posblocks. Please check the file consitency.");
+            }
+            // register event for finding new block with just PoS Tx
+            MainDataContext.Node.NewJustPoSBlockEvent += Node_NewJustPoSBlockEvent;
+
             await Console.Out.WriteLineAsync("Initial loading of data...");
 
             var latestBlock = await MainDataContext.Node.GetLatestBlockNumber();
@@ -66,7 +80,9 @@ namespace VEFramework.BlockchainIndexerServer
             int offset = latestBlock - MainDataContext.NumberOfBlocksInHistory;
             double start = 0 + offset;
             double end = MainDataContext.NumberOfBlocksInHistory + start;
-            await MainDataContext.Node.GetIndexedBlocksByNumbersOffsetAndAmount(offset, MainDataContext.NumberOfBlocksInHistory);
+            await MainDataContext.Node.GetIndexedBlocksByNumbersOffsetAndAmount(offset, 
+                                                                                MainDataContext.NumberOfBlocksInHistory, 
+                                                                                blocksToSkip: MainDataContext.PoSBlocks);
             MainDataContext.LatestLoadedBlock = latestBlock;
 
             await Console.Out.WriteLineAsync("Blocks are loaded :)");
@@ -92,6 +108,9 @@ namespace VEFramework.BlockchainIndexerServer
                 MainDataContext.Node.UpdateAddressInfo(add, true);
             });
 
+            storePoSBlocks();
+            var storePoSBlocksDict = 10;
+
             await Console.Out.WriteLineAsync("");
             await Console.Out.WriteLineAsync("");
             await Console.Out.WriteLineAsync("Starting main loop...");
@@ -107,12 +126,10 @@ namespace VEFramework.BlockchainIndexerServer
                             {
                                 if (oldestBlock > 0 && oldestBlock > MainDataContext.OldestBlockToLoad)
                                 {
-                                    
-                                    
                                     double numOfblcks = 250;
                                     var avg = MainDataContext.AverageTimeToIndexBlock;
                                     if (avg > 0)
-                                        numOfblcks = Math.Round(5000000 / avg,0);
+                                        numOfblcks = Math.Round(5000000 / avg, 0);
                                     await Console.Out.WriteLineAsync($"\tInstead of waiting load {numOfblcks} blocks from history. It should fit into 5s...");
 
                                     if ((oldestBlock - numOfblcks) >= 0)
@@ -126,7 +143,9 @@ namespace VEFramework.BlockchainIndexerServer
 
                                     var stopwatch = new Stopwatch();
                                     stopwatch.Start();
-                                    await MainDataContext.Node.GetIndexedBlocksByNumbersOffsetAndAmount(offset, (int)numOfblcks);
+                                    await MainDataContext.Node.GetIndexedBlocksByNumbersOffsetAndAmount(offset, 
+                                                                                                        (int)numOfblcks,
+                                                                                                        blocksToSkip: MainDataContext.PoSBlocks);
                                     await MainDataContext.Node.LoadAllBlocksTransactions();
                                     stopwatch.Stop();
                                     var time = (long)(stopwatch.ElapsedMilliseconds * 1000) / (long)numOfblcks;
@@ -149,9 +168,21 @@ namespace VEFramework.BlockchainIndexerServer
                                 {
                                     await Console.Out.WriteLineAsync($"Loading new blocks up to {latestBlock}...");
                                     var numOfb = latestBlock - (int)MainDataContext.LatestLoadedBlock;
-                                    await MainDataContext.Node.GetIndexedBlocksByNumbersOffsetAndAmount((int)MainDataContext.LatestLoadedBlock, numOfb);
+                                    await MainDataContext.Node.GetIndexedBlocksByNumbersOffsetAndAmount((int)MainDataContext.LatestLoadedBlock, 
+                                                                                                        numOfb,
+                                                                                                        blocksToSkip: MainDataContext.PoSBlocks);
                                     MainDataContext.LatestLoadedBlock = latestBlock;
                                     await MainDataContext.Node.LoadAllBlocksTransactions();
+                                }
+
+                                if (storePoSBlocksDict <= 0)
+                                {
+                                    storePoSBlocks();
+                                    storePoSBlocksDict = 10;
+                                }
+                                else
+                                {
+                                    storePoSBlocksDict--;
                                 }
                             }
                         }
@@ -171,6 +202,28 @@ namespace VEFramework.BlockchainIndexerServer
                 lifetime.StopApplication();
             }
 
+        }
+
+        private void storePoSBlocks()
+        {
+            // store the list of the blocks which contais just PoS transactions
+            try
+            {
+                FileHelpers.WriteTextToFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "posblocks.json"), JsonConvert.SerializeObject(MainDataContext.PoSBlocks, Formatting.Indented));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Cannot save list of PoSBlocks to the file.");
+            }
+        }
+
+        private void Node_NewJustPoSBlockEvent(object? sender, (string, int) e)
+        {
+            if (!string.IsNullOrEmpty(e.Item1))
+            {
+                if (!MainDataContext.PoSBlocks.ContainsKey(e.Item1))
+                    MainDataContext.PoSBlocks.Add(e.Item1, e.Item2);
+            }
         }
 
         public override async Task StopAsync(CancellationToken cancellationToken)

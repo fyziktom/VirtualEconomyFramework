@@ -36,9 +36,10 @@ builder.Services
     .AddFontAwesomeIcons();
 
 #if DEBUG
-var baseadd = "http://localhost:5000/";
+//var baseadd = "http://localhost:5000/";
+var baseadd = "http://localhost:7267/";
 #else
-var baseadd = "https://blockchainsapi.azurewebsites.net/";//"http://localhost:5000/";
+var baseadd = "https://ve-framework.com/";//"http://localhost:5000/";
 #endif
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(baseadd) });

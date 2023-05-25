@@ -47,5 +47,10 @@ namespace VEFramework.BlockchainIndexerServer
         /// History of stopwatch of indexing of blocks in microseconds
         /// </summary>
         public static List<double> AverageTimeToIndexBlockHistory { get; set; } = new List<double>();
+        /// <summary>
+        /// Blocks where are just PoS transactions
+        /// It should be loaded from the file if it exists from some last loading
+        /// </summary>
+        public static Dictionary<string, int> PoSBlocks { get; set; } = new Dictionary<string, int>();
     }
 }

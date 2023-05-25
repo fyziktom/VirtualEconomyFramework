@@ -40,6 +40,7 @@ namespace VEDriversLite.Indexer
 
         public double LatestLoadedBlock { get; set; } = 0;
         public double LatestGetBlockResponse { get; set; } = 0;
+
         /// <summary>
         /// QT Wallet RPC parameters
         /// </summary>
@@ -49,6 +50,18 @@ namespace VEDriversLite.Indexer
         /// </summary>
         public IQTWalletRPCClient QTRPCClient { get; set; } = new QTWalletRPCClient();
 
+        ///<summary>
+        /// Event for registering new block which contains just PoS transaction 
+        /// and should be stored in topper layer
+        /// </summary>
+        public event EventHandler<(string,int)> NewJustPoSBlockEvent;
+
+        /// <summary>
+        /// Init RPC client with specific config
+        /// It just load the config not test the connection now
+        /// </summary>
+        /// <param name="config"></param>
+        /// <returns></returns>
         public bool InitClient(QTRPCConfig config)
         {
             QTRPConfig = config ?? new QTRPCConfig();
@@ -964,7 +977,7 @@ namespace VEDriversLite.Indexer
         /// <param name="txs"></param>
         /// <param name="blocknumber"></param>
         /// <returns></returns>
-        public async Task<List<GetTransactionInfoResponse>?> GetBlockTransactions(List<string> txs, double blockheight, bool includePOS = false)
+        public async Task<List<GetTransactionInfoResponse>?> GetBlockTransactions(List<string> txs, double blockheight, bool includePOS = false, string blockhash = "")
         {
             if (txs == null)
                 return null;
@@ -978,6 +991,9 @@ namespace VEDriversLite.Indexer
                     result.Add(t);
             }
 
+            if (txs.Count > 0 && result.Count == 0)
+                NewJustPoSBlockEvent?.Invoke(this, (blockhash, (int)blockheight));
+            
             return result;
         }
 
@@ -992,10 +1008,11 @@ namespace VEDriversLite.Indexer
             if (blocks.Count > 0)
             {
                 //Console.WriteLine($"Loading transactions for {blocks.Count} blocks.");
-                await blocks.ParallelForEachAsync(async block =>
+                //await blocks.ParallelForEachAsync(async block =>
+                foreach(var block in blocks)
                 {
                     //Console.WriteLine($"Loading transactions for {block.Hash} block.");
-                    var txs = await GetBlockTransactions(block.Transactions, block.Height, false);
+                    var txs = await GetBlockTransactions(block.Transactions, block.Height, false, block.Hash);
                     block.Indexed = true;
                     if (Blocks.ContainsKey(block.Hash))
                     {
@@ -1008,7 +1025,7 @@ namespace VEDriversLite.Indexer
                                 blk.Indexed = true;
                         }
                     }
-                }, maxDegreeOfParallelism: Environment.ProcessorCount);
+                }//, maxDegreeOfParallelism: Environment.ProcessorCount);
             }
         }
 
@@ -1020,9 +1037,9 @@ namespace VEDriversLite.Indexer
         /// <param name="numberOfBlocks">number of blocks to load</param>
         /// <param name="reverse">Load from end to start</param>
         /// <returns></returns>
-        public async Task GetIndexedBlocksByNumbersOffsetAndAmount(int offset, int numberOfBlocks, bool reverse = false)
+        public async Task GetIndexedBlocksByNumbersOffsetAndAmount(int offset, int numberOfBlocks, bool reverse = false, Dictionary<string,int>? blocksToSkip = null)
         {
-            await GetIndexedBlocksByNumbersStartToEnd(offset, offset + numberOfBlocks, reverse);
+            await GetIndexedBlocksByNumbersStartToEnd(offset, offset + numberOfBlocks, reverse, blocksToSkip);
         }
         /// <summary>
         /// Get Indexed blocks based on their number. 
@@ -1032,7 +1049,7 @@ namespace VEDriversLite.Indexer
         /// <param name="end">End number of block</param>
         /// <param name="reverse">Load from end to start</param>
         /// <returns></returns>
-        public async Task GetIndexedBlocksByNumbersStartToEnd(int start, int end, bool reverse = false)
+        public async Task GetIndexedBlocksByNumbersStartToEnd(int start, int end, bool reverse = false, Dictionary<string,int>? blocksToSkip = null)
         {
             if (end < start)
                 throw new Exception("End block number cannot be less than start block number");
@@ -1050,18 +1067,24 @@ namespace VEDriversLite.Indexer
                     blocksIds[i] = i + start;
             }
 
+            var skipblocks = (blocksToSkip != null && blocksToSkip.Count > 0) ? true : false;
+
             await blocksIds.ParallelForEachAsync(async item =>
             {
-                var blkn = await GetBlockByNumber(item);
-                if (blkn != null)
+                if (!skipblocks || (skipblocks && !blocksToSkip.Values.Any(b => b == item)))
                 {
-                    var add = true;
+                    var blkn = await GetBlockByNumber(item);
+                    if (blkn != null)
+                    {
+                        var add = true;
 
-                    if (!string.IsNullOrEmpty(blkn.Flags) && blkn.Flags == "proof-of-stake" && blkn.Tx.Count == 2 && (blkn.Size >= 400 && blkn.Size <= 450))
-                        add = false;
+                        if (!string.IsNullOrEmpty(blkn.Flags) && blkn.Flags == "proof-of-stake" && blkn.Tx.Count == 2 && (blkn.Size >= 400 && blkn.Size <= 450))
+                            add = false;
 
-                    if (add)
-                        Blocks.TryAdd(blkn.Hash, GetIndexedBlockFromResponse(blkn));
+
+                        if (add)
+                            Blocks.TryAdd(blkn.Hash, GetIndexedBlockFromResponse(blkn));
+                    }
                 }
             }, maxDegreeOfParallelism: maxDegreeOfParallelism);
         }

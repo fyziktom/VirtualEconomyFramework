@@ -305,6 +305,21 @@ namespace VEDriversLite.Common
                 return string.Empty;
         }
         /// <summary>
+        /// Read text file line by line
+        /// Function check if file exists
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public static IEnumerable<string> ReadAllLines(string path)
+        {
+            if (File.Exists(path))
+            {
+                var lines = File.ReadAllLines(path);
+                foreach (var line in lines)
+                    yield return line;
+            }
+        }
+        /// <summary>
         /// Check if the file exists
         /// </summary>
         /// <param name="path">Path of the file</param>
