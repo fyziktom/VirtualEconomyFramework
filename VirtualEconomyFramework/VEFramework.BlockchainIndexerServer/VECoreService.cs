@@ -62,10 +62,10 @@ namespace VEFramework.BlockchainIndexerServer
 
             var latestBlock = await MainDataContext.Node.GetLatestBlockNumber();
 
-            var oldestBlock = latestBlock - MainDataContext.NumberOfBlocksInHistory;
-            var offset = latestBlock - MainDataContext.NumberOfBlocksInHistory;
-            var start = 0 + offset;
-            var end = MainDataContext.NumberOfBlocksInHistory + start;
+            double oldestBlock = latestBlock - MainDataContext.NumberOfBlocksInHistory;
+            int offset = latestBlock - MainDataContext.NumberOfBlocksInHistory;
+            double start = 0 + offset;
+            double end = MainDataContext.NumberOfBlocksInHistory + start;
             await MainDataContext.Node.GetIndexedBlocksByNumbersOffsetAndAmount(offset, MainDataContext.NumberOfBlocksInHistory);
             MainDataContext.LatestLoadedBlock = latestBlock;
 
@@ -108,10 +108,15 @@ namespace VEFramework.BlockchainIndexerServer
                                 if (oldestBlock > 0 && oldestBlock > MainDataContext.OldestBlockToLoad)
                                 {
                                     
-                                    await Console.Out.WriteLineAsync("\tInstead of waiting load some few blocks from history...");
-                                    var numOfblcks = 2000;
-                                    if ((oldestBlock - 2000) >= 0)
-                                        offset = oldestBlock - numOfblcks;
+                                    
+                                    double numOfblcks = 250;
+                                    var avg = MainDataContext.AverageTimeToIndexBlock;
+                                    if (avg > 0)
+                                        numOfblcks = Math.Round(5000000 / avg,0);
+                                    await Console.Out.WriteLineAsync($"\tInstead of waiting load {numOfblcks} blocks from history. It should fit into 5s...");
+
+                                    if ((oldestBlock - numOfblcks) >= 0)
+                                        offset = (int)(oldestBlock - numOfblcks);
                                     else
                                     {
                                         numOfblcks = oldestBlock;
@@ -121,7 +126,7 @@ namespace VEFramework.BlockchainIndexerServer
 
                                     var stopwatch = new Stopwatch();
                                     stopwatch.Start();
-                                    await MainDataContext.Node.GetIndexedBlocksByNumbersOffsetAndAmount(offset, numOfblcks);
+                                    await MainDataContext.Node.GetIndexedBlocksByNumbersOffsetAndAmount(offset, (int)numOfblcks);
                                     await MainDataContext.Node.LoadAllBlocksTransactions();
                                     stopwatch.Stop();
                                     var time = (long)(stopwatch.ElapsedMilliseconds * 1000) / (long)numOfblcks;
