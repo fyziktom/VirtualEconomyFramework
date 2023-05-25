@@ -64,8 +64,12 @@ namespace VEFramework.BlockchainIndexerServer.Controllers
             {
                 if (!string.IsNullOrEmpty(utxo))
                 {
-                    var nft = await NFTFactory.GetNFT(NFTHelpers.TokenId, utxo, index, 0, true);
-                    return nft;
+                    var txinfo = await MainDataContext.Node.GetTx(utxo);
+                    if (txinfo != null)
+                    {
+                        var nft = await NFTFactory.GetNFT("", utxo, index, 0, true, txinfo: txinfo);
+                        return nft;
+                    }
                 }
 
                 return null;
@@ -90,8 +94,12 @@ namespace VEFramework.BlockchainIndexerServer.Controllers
             {
                 if(!string.IsNullOrEmpty(utxo))
                 {
-                    var nft = await NFTFactory.GetNFT(NFTHelpers.TokenId, utxo, 0, 0, true);
-                    return nft;
+                    var txinfo = await MainDataContext.Node.GetTx(utxo);
+                    if (txinfo != null)
+                    {
+                        var nft = await NFTFactory.GetNFT("", utxo, 0, 0, true, txinfo: txinfo);
+                        return nft;
+                    }
                 }
 
                 return null;
