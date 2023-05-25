@@ -80,8 +80,9 @@ namespace VEDriversLite.NeblioAPI
         //#if DEBUG
         //public static string NewAPIAddress { get; set; } = "https://localhost:7267/";
         //#else
-        public static string NewAPIAddress { get; set; } = "http://localhost:5000/";
-        //#endif
+        public static string NewAPIAddress { get; set; } = "https://blockchainsapi.azurewebsites.net/";//"https://ve-framework.com/"; //"http://localhost:5000/";
+        //public static string NewAPIAddress { get; set; } = "http://localhost:5000/";
+//#endif
         /// <summary>
         /// Check if the number of the confirmation is enough for doing transactions.
         /// It mainly usefull for UI stuff or console.
@@ -265,6 +266,8 @@ namespace VEDriversLite.NeblioAPI
             using (var content = new StringContent(cnt, System.Text.Encoding.UTF8, "application/json"))
             {
                 httpClient.DefaultRequestHeaders.Add("mode", "no-cors");
+                httpClient.DefaultRequestHeaders.Add("Accept", "*/*");
+
                 HttpResponseMessage result = await client.PostAsync(url, content);
                 if (result.StatusCode == System.Net.HttpStatusCode.OK)
                 {
@@ -471,7 +474,17 @@ namespace VEDriversLite.NeblioAPI
                         Tokens = new List<Tokens>()
                     };
                     if (ux.TokenUtxo)
-                        nux.Tokens.Add(new Tokens() { Amount = ux.TokenAmount, TokenId = ux.TokenId });
+                    {
+                        var tok = new Tokens() { Amount = ux.TokenAmount, TokenId = ux.TokenId };
+                        if (ux.Blockheight == -1 && ux.TokenAmount == 1 && !string.IsNullOrEmpty(ux.Metadata))
+                        {
+                            tok.AdditionalProperties = new Dictionary<string, object>()
+                            {
+                                { "metadata" , ux.Metadata }
+                            };
+                        }
+                        nux.Tokens.Add(tok);
+                    }
 
                     ouxox.Add(nux);
                 }

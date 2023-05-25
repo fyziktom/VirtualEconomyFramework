@@ -368,10 +368,10 @@ namespace VEDriversLite.Indexer
                     {
                         TransactionHash = txid,
                         Index = i,
-                        Value = (double)output.Value.Satoshi / NeblioTransactionHelpers.FromSatToMainRatio,
+                        Value = (double)output.Value.Satoshi,
                         OwnerAddress = address,
                         Blockheight = -1,
-                        Blocktime = TimeHelpers.DateTimeToUnixTimestamp(time),
+                        Blocktime = Math.Round(TimeHelpers.DateTimeToUnixTimestamp(time) / 1000, 0),
                         Time = time,
                     };
 

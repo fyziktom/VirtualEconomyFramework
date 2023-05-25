@@ -9,6 +9,7 @@ using VEDriversLite.NFT.DevicesNFTs;
 using VEDriversLite.NFT.Imaging.Xray;
 using VEDriversLite.NeblioAPI;
 using VEDriversLite.Common;
+using Newtonsoft.Json;
 
 namespace VEDriversLite.NFT
 {
@@ -152,31 +153,58 @@ namespace VEDriversLite.NFT
                                               bool skipTheType = false,
                                               NFTTypes skipType = NFTTypes.Image,
                                               string address = "",
-                                              NeblioAPI.GetTransactionInfoResponse txinfo = null)
+                                              NeblioAPI.GetTransactionInfoResponse txinfo = null,
+                                              string metadataString = "")
         {
             NFTTypes type = NFTTypes.Image;
             INFT nft = null;
-
-            if (txinfo == null)
-                txinfo = await NeblioAPIHelpers.GetTransactionInfo(utxo);
-            if (txinfo == null)
-                return null;
-            if (txinfo.Vout == null)
-                return null;
+            var meta = new Dictionary<string, string>();
             var tokid = tokenId;
-            try
+            if (!string.IsNullOrEmpty(tokenId) && !string.IsNullOrEmpty(metadataString))
             {
-                var tid = txinfo.Vout.ToList()[utxoindex]?.Tokens.ToList()[0];
-                if (tid == null) return null;
-                if (tid.Amount > 1) return null;
-                
-                tokid = tid.TokenId;
-                if (string.IsNullOrEmpty(tokid))
-                    tokid = NFTHelpers.TokenId;
+                try
+                {
+                    var dto = JsonConvert.DeserializeObject<MetadataOfUtxo>(metadataString);
+                    foreach (var o in dto.UserData.Meta)
+                    {
+                        var od = JsonConvert.DeserializeObject<IDictionary<string, string>>(o.ToString());
+                        if (od != null && od.Count > 0)
+                        {
+                            var of = od.First();
+                            if (!meta.ContainsKey(of.Key))
+                                meta.Add(of.Key, of.Value);
+                        }
+                    }
+                    txinfo = new GetTransactionInfoResponse();
+                }
+                catch(Exception ex)
+                {
+                    Console.WriteLine("Wrong type of input metadata for creating NFT.");
+                }
             }
-            catch
+            else
             {
-                return null;
+                if (txinfo == null)
+                    txinfo = await NeblioAPIHelpers.GetTransactionInfo(utxo);
+                if (txinfo == null)
+                    return null;
+                if (txinfo.Vout == null)
+                    return null;
+
+                try
+                {
+                    var tid = txinfo.Vout.ToList()[utxoindex]?.Tokens.ToList()[0];
+                    if (tid == null) return null;
+                    if (tid.Amount > 1) return null;
+
+                    tokid = tid.TokenId;
+                    if (string.IsNullOrEmpty(tokid))
+                        tokid = NFTHelpers.TokenId;
+                }
+                catch
+                {
+                    return null;
+                }
             }
             
             if (VEDLDataContext.AllowCache && tokid == NFTHelpers.TokenId)
@@ -206,21 +234,21 @@ namespace VEDriversLite.NFT
                     return null;
                 }
             }
-            
-            var metadata = string.Empty;
-            if (txinfo.Vout.Where(o => o.ScriptPubKey.Type == "nulldata").Any())
-            {
-                // Token transaction with metadata
-                metadata = txinfo.Vout.Where(o => o.ScriptPubKey.Type == "nulldata").FirstOrDefault()?.ScriptPubKey.Asm ?? string.Empty;
-            }
 
-            var meta = NeblioTransactionHelpers.ParseCustomMetadata(metadata);
+            if (meta.Count == 0)
+            {
+                var metadataR = string.Empty;
+                // Find Token transaction with metadata
+                if (txinfo.Vout.Where(o => o.ScriptPubKey.Type == "nulldata").Any())
+                    metadataR = txinfo.Vout.Where(o => o.ScriptPubKey.Type == "nulldata").FirstOrDefault()?.ScriptPubKey.Asm ?? string.Empty;
+                
+                meta = NeblioTransactionHelpers.ParseCustomMetadata(metadataR);
+            }
 
             if (meta == null)
                 return null;
             else if (meta.Count == 0 || meta.Count == 1)
                 return null;
-
 
             try
             {
