@@ -80,7 +80,7 @@ namespace VEDriversLite.NeblioAPI
         //#if DEBUG
         //public static string NewAPIAddress { get; set; } = "https://localhost:7267/";
         //#else
-        public static string NewAPIAddress { get; set; } = "https://blockchainsapi.azurewebsites.net/";//"https://ve-framework.com/"; //"http://localhost:5000/";
+        public static string NewAPIAddress { get; set; } = "https://ve-framework.com/";
         //public static string NewAPIAddress { get; set; } = "http://localhost:5000/";
 //#endif
         /// <summary>
