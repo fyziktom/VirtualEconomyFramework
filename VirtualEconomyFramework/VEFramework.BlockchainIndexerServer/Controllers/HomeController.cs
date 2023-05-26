@@ -22,6 +22,8 @@ using NBitcoin;
 using System.Text;
 using VEDriversLite.Neblio;
 using VEDriversLite.Common;
+using VEDriversLite.StorageDriver.StorageDrivers.Dto;
+using VEDriversLite.StorageDriver.StorageDrivers;
 
 namespace VEFramework.BlockchainIndexerServer.Controllers
 {
@@ -99,6 +101,88 @@ namespace VEFramework.BlockchainIndexerServer.Controllers
                     {
                         var nft = await NFTFactory.GetNFT("", utxo, 0, 0, true, txinfo: txinfo);
                         return nft;
+                    }
+                }
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+                throw new HttpResponseException((HttpStatusCode)501, $"Cannot get NFT {utxo}!");
+            }
+        }
+        
+        /// <summary>
+        /// Item and its type
+        /// </summary>
+        public class GetNFTTextDataItemsItemDto
+        {
+            public string StringContent { get; set; } = string.Empty;
+            public string Type { get; set; } = string.Empty;
+        }
+        /// <summary>
+        /// Get NFT Text Data items Dto. Contains list of the all items which match text format.
+        /// </summary>
+        public class GetNFTTextDataItemsDto
+        {
+            /// <summary>
+            /// Downloaded text items
+            /// </summary>
+            public Dictionary<string, GetNFTTextDataItemsItemDto> Items { get; set; } = new Dictionary<string, GetNFTTextDataItemsItemDto>();
+        }
+        /// <summary>
+        /// Get NFT text dataitems by utxo and index
+        /// It means if there is any JSON or Mermaid or plain text or html content it will download it from IPFS and provide.
+        /// </summary>
+        /// <returns>Account Balance Response Dto</returns>
+        [AllowCrossSiteJsonAttribute]
+        [HttpGet]
+        [Route("GetNFTTextDataItems/{utxo}/{index}")]
+        public async Task<GetNFTTextDataItemsDto> GetNFTTextDataItems(string utxo, int index)
+        {
+            try
+            {
+                var response = new GetNFTTextDataItemsDto();
+
+                if (!string.IsNullOrEmpty(utxo))
+                {
+                    var txinfo = await MainDataContext.Node.GetTx(utxo);
+                    if (txinfo != null)
+                    {
+                        var nft = await NFTFactory.GetNFT("", utxo, index, 0, true, txinfo: txinfo);
+                        if (nft.DataItems.Count > 0)
+                        {
+                            var items = nft.DataItems.Where(x => x.Type == DataItemType.Text || 
+                                                                 x.Type == DataItemType.Mermaid || 
+                                                                 x.Type == DataItemType.HTML || 
+                                                                 x.Type == DataItemType.Markdown || 
+                                                                 x.Type == DataItemType.JSON).ToList();
+                            foreach(var item in items)
+                            {
+                                try
+                                {
+                                    var data = await VEDLDataContext.Storage.GetFileFromIPFS(new ReadFileRequestDto()
+                                    {
+                                        Hash = item.Hash
+                                    });
+
+                                    if (data.Item1)
+                                    {
+                                        response.Items.Add(item.Hash, new GetNFTTextDataItemsItemDto()
+                                        {
+                                            StringContent = Encoding.UTF8.GetString(data.Item2),
+                                            Type = Enum.GetName(typeof(DataItemType), item.Type) ?? "Text"
+                                        });
+                                    }
+                                }
+                                catch(Exception ex)
+                                {
+                                    await Console.Out.WriteLineAsync($"Cannot get one of the data items for utxo {utxo}:{index}. " + ex.Message);
+                                }
+                            }
+
+                            return response;
+                        }
                     }
                 }
 

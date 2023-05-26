@@ -59,6 +59,25 @@ namespace VEFramework.BlockchainIndexerServer
                 await Console.Out.WriteLineAsync("Cannot init QTRPC Client! Please check settings in appsetting.json" + ex);
             }
 
+            var res = await VEDriversLite.VEDLDataContext.Storage.AddDriver(new VEDriversLite.StorageDriver.StorageDrivers.Dto.StorageDriverConfigDto()
+            {
+                Type = "IPFS",
+                Name = "VEF",
+                Location = "Cloud",
+                ID = "VEF",
+                IsPublicGateway = true,
+                IsLocal = false,
+                ConnectionParams = new VEDriversLite.StorageDriver.StorageDrivers.StorageDriverConnectionParams()
+                {
+                    APIUrl = "https://ve-framework.com/",
+                    APIPort = 443,
+                    Secured = false,
+                    GatewayURL = "https://ve-framework.com/ipfs/",
+                    GatewayPort = 443,
+                }
+            });
+
+
             // load list of the blocks where are just PoS transactions if it exists
             var filecontent = FileHelpers.ReadTextFromFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "posblocks.json"));
             try
