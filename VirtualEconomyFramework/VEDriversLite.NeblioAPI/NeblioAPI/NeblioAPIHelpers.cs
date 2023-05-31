@@ -77,12 +77,7 @@ namespace VEDriversLite.NeblioAPI
         /// <summary>
         /// Address of VEFramework.BlockchainIndexerServer API
         /// </summary>
-        //#if DEBUG
-        //public static string NewAPIAddress { get; set; } = "https://localhost:7267/";
-        //#else
-        public static string NewAPIAddress { get; set; } = "https://ve-framework.com/";
-        //public static string NewAPIAddress { get; set; } = "http://localhost:5000/";
-//#endif
+        public static string NewAPIAddress { get; set; } = "https://ve-framework.com/"; //:5000 or :7267 when local BIS for dev
         /// <summary>
         /// Check if the number of the confirmation is enough for doing transactions.
         /// It mainly usefull for UI stuff or console.

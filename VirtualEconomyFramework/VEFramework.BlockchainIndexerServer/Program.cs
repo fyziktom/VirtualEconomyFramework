@@ -6,9 +6,13 @@ using BlazorPanzoom;
 using IndexedDB.Blazor;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using VEDriversLite.NeblioAPI;
 using VEFramework.BlockchainIndexerServer;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Naète konfiguraci z appsettings.json
+var configuration = builder.Configuration;
 
 // Add services to the container.
 builder.Services.AddRazorPages();
@@ -35,13 +39,10 @@ builder.Services
     .AddBootstrapProviders()
     .AddFontAwesomeIcons();
 
-#if DEBUG
-//var baseadd = "http://localhost:5000/";
-var baseadd = "http://localhost:7267/";
-#else
-var baseadd = "https://ve-framework.com/";//"http://localhost:5000/";
-#endif
+var baseadd = configuration["BaseAddress"] ?? "https://ve-framework.com";
+var apiAddress = configuration["APIAddress"] ?? "https://ve-framework.com";
 
+NeblioAPIHelpers.NewAPIAddress = apiAddress;
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(baseadd) });
 
 builder.Services.AddScoped<AppData>();

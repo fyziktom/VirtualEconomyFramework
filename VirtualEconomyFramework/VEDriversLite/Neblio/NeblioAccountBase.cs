@@ -9,6 +9,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using VEDriversLite.Bookmarks;
+using VEDriversLite.Common;
 using VEDriversLite.Dto;
 using VEDriversLite.Events;
 using VEDriversLite.Indexer.Dto;
@@ -947,7 +948,7 @@ namespace VEDriversLite.Neblio
 
         #region UtxoUsedStorageAndCheck
 
-        private async Task StoreUsedUtxos(Transaction tx, string txid)
+        private async Task StoreUsedUtxos(Transaction tx, string txid, bool isNFTTx = false, string tokenId = "")
         {
             if (tx == null || !string.IsNullOrEmpty(txid)) return;
             var txidu256 = uint256.Parse(txid);
@@ -1366,7 +1367,7 @@ namespace VEDriversLite.Neblio
                 var result = await SignBroadcastAndInvokeSucessEvent(transaction, "Neblio NFT Minted");
                 if (result.Item1)
                 {
-                    await StoreUsedUtxos(transaction, result.Item2);
+                    await StoreUsedUtxos(transaction, result.Item2, true, nft.TokenId);
                     if (NFT.Type == NFTTypes.Profile)
                         Profile = NFT as ProfileNFT;
                     return (true, result.Item2);
@@ -1839,7 +1840,7 @@ namespace VEDriversLite.Neblio
                 var result = await SignBroadcastAndInvokeSucessEvent(transaction, "NFT Changed");
                 if (result.Item1)
                 {
-                    await StoreUsedUtxos(transaction, result.Item2);
+                    await StoreUsedUtxos(transaction, result.Item2, true, nft.TokenId);
                     return (true, result.Item2);
                 }
             }
@@ -2010,7 +2011,7 @@ namespace VEDriversLite.Neblio
                 var result = await SignBroadcastAndInvokeSucessEvent(transaction, "NFT Ticket used.");
                 if (result.Item1)
                 {
-                    await StoreUsedUtxos(transaction, result.Item2);
+                    await StoreUsedUtxos(transaction, result.Item2, true, nft.TokenId);
                     return (true, result.Item2);
                 }
             }

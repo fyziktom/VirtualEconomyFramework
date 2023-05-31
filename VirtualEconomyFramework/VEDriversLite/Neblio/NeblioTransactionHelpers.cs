@@ -2131,5 +2131,28 @@ namespace VEDriversLite
             return null;
         }
 
+        public static PubKey? GetPubKeyFromSignedScriptPubKey(string scriptAsm)
+        {
+            if (string.IsNullOrEmpty(scriptAsm))
+                return null;
+
+            var split = scriptAsm.Split(' ');
+            if (split.Length >= 2)
+            {
+                var pubkey = split[split.Length - 1];
+                BitcoinAddress add = null;
+                try
+                {
+                    var pk = new PubKey(pubkey);
+                    return pk;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Wrong public key input during parsing the Tx data. PubKey input:" + pubkey);
+                }
+            }
+            return null;
+        }
+
     }
 }
