@@ -181,48 +181,6 @@ namespace VEFrameworkUnitTest.Neblio
         //    Assert.Contains(message, exception.Message);
         //}
 
-        /// <summary>
-        /// Unit test method to verify if system is returning an error result if broadcast failed.
-        /// </summary>
-        [Fact]
-        public void SendNeblioTransaction_CannotSignTransaction_Error_Test()
-        {
-            //Arrange           
-            
-            var res = Common.FakeDataGenerator.GetKeyAndAddress();
-
-            string address = res.Item1.ToString();
-            string key = res.Item2.ToString();
-            var AccountKey = new EncryptionKey(key);
-
-            // to load to the API which are requested during sign procedure - wrong not spendable coins
-            GetAddressInfoResponse addressObject = Common.FakeDataGenerator.GetAddressWithNeblUtxos(address, 10, 1000000);
-            // to load to the Send tx command as input utxos - fake actual spendable utxos on the address
-            GetAddressInfoResponse addressObject1 = Common.FakeDataGenerator.GetAddressWithNeblUtxos(address, 10, 1000000);
-
-            SendTxData sendTxData = new SendTxData()
-            {
-                ReceiverAddress = address,
-                SenderAddress = address,
-                Amount = 100,
-                CustomMessage = "test",
-                Password = ""
-            };
-            
-            var k = NeblioTransactionHelpers.GetAddressAndKey(AccountKey);
-            var key1 = k.Item2;
-
-            // TODO: split sign and broadcast tx. needs mock of the Utxos list to pass the signing
-            /*
-            string message = "";
-            
-            var transaction = NeblioTransactionHelpers.GetNeblioTransactionObject(sendTxData, AccountKey, addressObject1.Utxos);
-
-            var exception = Assert.ThrowsAsync<Exception>(async ()=> await NeblioTransactionHelpers.SignAndBroadcastTransaction(transaction, key1));
-            
-            Assert.Contains(message, exception.Result.Message);
-            */
-        }
 
         /// <summary>
         /// Unit test method to verify inputs in transactions

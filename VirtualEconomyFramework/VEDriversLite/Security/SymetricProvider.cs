@@ -26,6 +26,9 @@ namespace VEDriversLite.Security
 
         public static string JoinIVToString(string etext, byte[] iv)
         {
+            if (iv == null)
+                return etext;
+
             var bet = Encoding.UTF8.GetBytes(etext);
             var ivet = new byte[iv.Length + bet.Length + IVDivider.Length];
             iv.CopyTo(ivet, 0);
