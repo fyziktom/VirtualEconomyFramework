@@ -453,6 +453,98 @@ namespace VEFrameworkUnitTest.Neblio
             Assert.Single(token_address1Utxos);
         }
 
+        [Fact]
+        public void GetAddressTokenSupplies_Valid_Test()
+        {
+            var add1 = Common.FakeDataGenerator.GetKeyAndAddress().Item1.ToString();
+            var add2 = Common.FakeDataGenerator.GetKeyAndAddress().Item1.ToString();
+
+            var node = getNode();
+            var utxo1hash = Guid.NewGuid().ToString();
+            var utxo2hash = Guid.NewGuid().ToString();
+            var txtime = TimeHelpers.DateTimeToUnixTimestamp(DateTime.UtcNow);
+            var txtime1 = TimeHelpers.DateTimeToUnixTimestamp(DateTime.UtcNow + new TimeSpan(0,0,1));
+            var utxos = new List<IndexedUtxo>()
+            {
+                new IndexedUtxo() { TokenAmount = 50, Blockheight = 100, Blocktime = txtime, Used = false, TokenUtxo = true, TokenId = NFTHelpers.TokenId, TokenSymbol = "VENFT", TransactionHash = utxo1hash, OwnerAddress = add1 },
+                new IndexedUtxo() { TokenAmount = 50, Blockheight = 101, Blocktime = txtime1, Used = false, TokenUtxo = true, TokenId = NFTHelpers.TokenId, TokenSymbol = "VENFT", TransactionHash = utxo2hash, OwnerAddress = add1 }
+            };
+
+            foreach (var u in utxos)
+                node.Utxos.TryAdd(u.TransactionHashAndN, u);
+
+            // it is necessary to have token info in cache
+            node.TokenInfoCache.TryAdd(NFTHelpers.TokenId, new TokenSupplyDto() 
+            { 
+                TokenId = NFTHelpers.TokenId, 
+                ImageUrl = NeblioAPIHelpers.VENFTImageLink, 
+                TokenSymbol = "VENFT" 
+            });
+
+            node.UpdateAddressInfo(add1, true);
+
+            var address1supplies = node.GetAddressTokenSupplies(add1);
+
+            Assert.Single(address1supplies);
+            Assert.Equal(100, address1supplies[NFTHelpers.TokenId].Amount);
+
+            // create new tx hash, where output has been spent
+            var newUtxoHash = Guid.NewGuid().ToString();
+            var newtxtime = TimeHelpers.DateTimeToUnixTimestamp(DateTime.UtcNow + new TimeSpan(0, 0, 2));
+
+            // set output as used in new tx
+            if (node.Utxos.TryGetValue($"{utxo1hash}:{0}", out var ut))
+            {
+                ut.Used = true;
+                ut.UsedInTxHash = newUtxoHash;
+            }
+            if (node.Utxos.TryGetValue($"{utxo2hash}:{0}", out var ut2))
+            {
+                ut2.Used = true;
+                ut2.UsedInTxHash = newUtxoHash;
+            }
+
+            node.UsedUtxos.TryAdd($"{utxo1hash}:{0}", newUtxoHash);
+            // send 50 tokens to another address
+            var newUtxo = new IndexedUtxo()
+            {
+                TokenAmount = 50,
+                Used = false,
+                TokenUtxo = true,
+                TokenId = NFTHelpers.TokenId,
+                TokenSymbol = "VENFT",
+                TransactionHash = newUtxoHash,
+                OwnerAddress = add2,
+                Blockheight = 102,
+                Blocktime = newtxtime
+            };
+
+            // send 50 tokens to back
+            var newUtxo1 = new IndexedUtxo()
+            {
+                TokenAmount = 50,
+                Used = false,
+                TokenUtxo = true,
+                Index = 1,
+                TokenId = NFTHelpers.TokenId,
+                TokenSymbol = "VENFT",
+                TransactionHash = newUtxoHash,
+                OwnerAddress = add1,
+                Blockheight = 102,
+                Blocktime = newtxtime
+            };
+
+            node.Utxos.TryAdd(newUtxo.TransactionHashAndN, newUtxo);
+            node.Utxos.TryAdd(newUtxo1.TransactionHashAndN, newUtxo1);
+
+            node.UpdateAddressInfo(add1, true);
+
+            address1supplies = node.GetAddressTokenSupplies(add1);
+
+            Assert.Single(address1supplies);
+            Assert.Equal(50, address1supplies[NFTHelpers.TokenId].Amount);
+            
+        }
 
 
         [Fact]
