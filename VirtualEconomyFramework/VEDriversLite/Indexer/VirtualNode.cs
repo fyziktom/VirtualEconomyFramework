@@ -822,21 +822,24 @@ namespace VEDriversLite.Indexer
                     {
                         var tokens = output.Tokens.FirstOrDefault();
 
-                        try
+                        if (tokens != null)
                         {
-                            var metadataDict = NeblioTransactionHelpers.ParseCustomMetadata(metadata);
-                            var metadataString = JsonConvert.SerializeObject(metadataDict);
+                            try
+                            {
+                                var metadataDict = NeblioTransactionHelpers.ParseCustomMetadata(metadata);
+                                var metadataString = JsonConvert.SerializeObject(metadataDict);
 
-                            ux.Metadata = metadataString;
+                                ux.Metadata = metadataString;
+                            }
+                            catch { }
+
+                            var tokeninfo = ProcessTokensMetadata(tokens);
+
+                            ux.TokenId = tokens.TokenId;
+                            ux.TokenUtxo = true;
+                            ux.TokenAmount = tokens.Amount ?? 0.0;
+                            ux.TokenSymbol = tokeninfo.TokenName;
                         }
-                        catch { }
-
-                        var tokeninfo = ProcessTokensMetadata(tokens);
-
-                        ux.TokenId = tokens.TokenId;
-                        ux.TokenUtxo = true;
-                        ux.TokenAmount = tokens.Amount ?? 0.0;
-                        ux.TokenSymbol = tokeninfo.TokenName;
                     }
 
                     if (UsedUtxos.TryGetValue(u, out var utxid))
