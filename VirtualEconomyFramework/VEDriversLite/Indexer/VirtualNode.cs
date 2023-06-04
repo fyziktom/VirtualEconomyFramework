@@ -746,14 +746,14 @@ namespace VEDriversLite.Indexer
         /// <returns></returns>
         public GetTokenMetadataResponse ProcessTokensMetadata(Tokens3 tokens)
         {
-            var tokeninfo = new GetTokenMetadataResponse();
-
             if (TokenMetadataCache.TryGetValue(tokens.TokenId, out var ti))
             {
-                tokeninfo = ti;
+                return ti;
             }
             else
             {
+                var tokeninfo = new GetTokenMetadataResponse();
+
                 if (tokens.MetadataOfIssuance != null)
                 {
                     var tkm = tokens.MetadataOfIssuance;
@@ -781,9 +781,9 @@ namespace VEDriversLite.Indexer
                     if (!TokenInfoCache.ContainsKey(tokens.TokenId))
                         TokenInfoCache.TryAdd(tokens.TokenId, tt);
                 }
-            }
 
-            return tokeninfo;
+                return tokeninfo;
+            }
         }
 
         /// <summary>
@@ -801,17 +801,11 @@ namespace VEDriversLite.Indexer
                 {
                     var u = $"{txid}:{output.N}";
                     var a = string.Empty;
-                    try
-                    {
-                        var ao = output.ScriptPubKey.Addresses.FirstOrDefault();
-                        if (ao != null)
-                            a = ao;
-                    }
-                    catch(Exception ex) 
-                    {
-                        Console.WriteLine($"Cannot parse output {output.N} address in the tx {txid}.");
-                    }
-
+                    
+                    var ao = output.ScriptPubKey?.Addresses?.FirstOrDefault();
+                    if (ao != null)
+                        a = ao;
+                    
                     var ux = new IndexedUtxo()
                     {
                         Indexed = true,
@@ -824,16 +818,20 @@ namespace VEDriversLite.Indexer
                         Time = time
                     };
 
-                    var tokeninfo = new GetTokenMetadataResponse();
-                    var tokens = output.Tokens.FirstOrDefault();
-                    if (tokens != null)
+                    if (output.Tokens.Any())
                     {
-                        var metadataDict = NeblioTransactionHelpers.ParseCustomMetadata(metadata);
-                        var metadataString = JsonConvert.SerializeObject(metadataDict);
+                        var tokens = output.Tokens.FirstOrDefault();
 
-                        ux.Metadata = metadataString;
+                        try
+                        {
+                            var metadataDict = NeblioTransactionHelpers.ParseCustomMetadata(metadata);
+                            var metadataString = JsonConvert.SerializeObject(metadataDict);
 
-                        tokeninfo = ProcessTokensMetadata(tokens);
+                            ux.Metadata = metadataString;
+                        }
+                        catch { }
+
+                        var tokeninfo = ProcessTokensMetadata(tokens);
 
                         ux.TokenId = tokens.TokenId;
                         ux.TokenUtxo = true;
@@ -922,13 +920,13 @@ namespace VEDriversLite.Indexer
                 {
                     // Token transaction with metadata
                     metadata = t.Vout.FirstOrDefault(o => o.ScriptPubKey.Type == "nulldata")?.ScriptPubKey.Asm ?? string.Empty;
-                    var ntp1 = new NTP1Transactions() { tx_type = TxType.TxType_Transfer, ntp1_opreturn = string.Empty };
-                    if (!string.IsNullOrEmpty(metadata))
+                    if (!string.IsNullOrEmpty(metadata) && metadata.Contains("OP_RETURN " + NTP1ScriptHelpers.ProtocolHeader))
                     {
-                        var meta = metadata.Replace("OP_RETURN ", string.Empty);
-                        ntp1.ntp1_opreturn = meta;
                         try
                         {
+                            var ntp1 = new NTP1Transactions() { tx_type = TxType.TxType_Transfer, ntp1_opreturn = string.Empty };
+                            var meta = metadata.Replace("OP_RETURN ", string.Empty);
+                            ntp1.ntp1_opreturn = meta;
                             NTP1ScriptHelpers._NTP1ParseScript(ntp1);
                             if (ntp1.ntp1_instruct_list != null && ntp1.ntp1_instruct_list.Count >= 1)
                             {
@@ -936,15 +934,13 @@ namespace VEDriversLite.Indexer
                                     voutsWithMeta.Add(inst.vout_num);
                             }
                         }
-                        catch (Exception ex)
-                        {
-                        }
+                        catch { }
                     }
                 }
                 
                 Parallel.ForEach(t.Vout, options, item =>
                 {
-                    if (item.ScriptPubKey.Type != "nulldata")
+                    if (item.ScriptPubKey?.Type != "nulldata")
                     {
                         item.Blockheight = blockheight;
                         if (voutsWithMeta.Count > 0 && voutsWithMeta.Contains((int)item.N))
@@ -992,7 +988,14 @@ namespace VEDriversLite.Indexer
             }
 
             if (txs.Count > 0 && result.Count == 0)
+            {
+                foreach(var tx in txs)
+                {
+                    if (Transactions.ContainsKey(tx))
+                        Transactions.TryRemove(tx, out var t);
+                }
                 NewJustPoSBlockEvent?.Invoke(this, (blockhash, (int)blockheight));
+            }
             
             return result;
         }

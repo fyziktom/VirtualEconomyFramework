@@ -70,6 +70,11 @@ namespace VEDriversLite.Neblio
     public class NTP1ScriptHelpers
     {
         /// <summary>
+        /// Protocol header for NTP1
+        /// </summary>
+        public const string ProtocolHeader = "4e54";
+
+        /// <summary>
         /// Convert the hex string to bytes
         /// </summary>
         /// <param name="input"></param>
@@ -134,7 +139,7 @@ namespace VEDriversLite.Neblio
             if (TIs.Count > 255) { return string.Empty; } //Cannot create transaction greater than 255 instructions
 
             //Constants
-            byte[] header = ConvertHexStringToByteArray("4e5403"); //Represents chars NT and byte protocal version (3)
+            byte[] header = ConvertHexStringToByteArray($"{ProtocolHeader}03"); //Represents chars NT and byte protocal version (3)
             byte op_code = 16; //Transer transaction
             int op_return_max_size = 4096; //Maximum size of the scriptbin
 
@@ -191,7 +196,7 @@ namespace VEDriversLite.Neblio
             if (tokenSymbol.Length > 5) { return string.Empty; } //Token symbol cannot be greater than 5 characters
             
             //Constants
-            byte[] header = ConvertHexStringToByteArray("4e5403"); //Represents chars NT and byte protocal version (3)
+            byte[] header = ConvertHexStringToByteArray($"{ProtocolHeader}03"); //Represents chars NT and byte protocal version (3)
             byte op_code = 1; //Issue transaction
             int op_return_max_size = 4096; //Maximum size of the scriptbin
 
