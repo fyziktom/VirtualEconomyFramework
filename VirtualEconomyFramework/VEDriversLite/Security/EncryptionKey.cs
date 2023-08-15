@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NBitcoin;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -118,7 +119,7 @@ namespace VEDriversLite.Security
         {
             if (returnEncrypted)
             {
-                return _key;
+                return SymetricProvider.JoinIVToString(_key, IV);
             }
 
             if (passwordLoaded && string.IsNullOrEmpty(password))
@@ -146,7 +147,7 @@ namespace VEDriversLite.Security
             else
             {
                 if (!IsEncrypted)
-                    return _key;
+                    return SymetricProvider.JoinIVToString(_key, IV);
             }
             return null;
         }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 using System.Threading.Tasks;
+using VEDriversLite.NeblioAPI;
 
 namespace VEDriversLite.NFT
 {
@@ -169,7 +170,7 @@ namespace VEDriversLite.NFT
         /// </summary>
         /// <param name="lastmetadata"></param>
         /// <returns></returns>
-        public override Task ParseOriginData(IDictionary<string, string> lastmetadata)
+        public override Task ParseOriginData(IDictionary<string, string> lastmetadata, GetTransactionInfoResponse txinfo = null)
         {
             return Task.CompletedTask;
         }

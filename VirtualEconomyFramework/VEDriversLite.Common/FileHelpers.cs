@@ -1,4 +1,6 @@
-﻿using System;
+﻿using ICSharpCode.SharpZipLib.Zip.Compression;
+using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
@@ -45,6 +47,67 @@ namespace VEDriversLite.Common
                 }
 
                 return output.ToArray();
+            }
+        }
+
+        /// <summary>
+        /// Dedcompress bytes with Zlib deflation
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public static byte[] DecompressStringZlib(string dataString)
+        {
+            var data = Encoding.ASCII.GetBytes(dataString); 
+            var decompressed = DecompressZlib(data);
+            return decompressed;
+        }
+
+
+        /// <summary>
+        /// Compress user metadata working for NTP1 metadata
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public static byte[] Compress(byte[] data)
+        {
+            using (var inputStream = new MemoryStream(data))
+            using (var outputStream = new MemoryStream())
+            //using (var deflaterStream = new DeflaterOutputStream(outputStream, new Deflater((int)Deflater.CompressionLevel.BEST_COMPRESSION, false)) { IsStreamOwner = false })
+            using (var deflaterStream = new DeflaterOutputStream(outputStream))
+            {
+                inputStream.CopyTo(deflaterStream);
+                deflaterStream.Finish();
+                return outputStream.ToArray();
+            }
+        }
+        /// <summary>
+        /// Decompress user metadata working for NTP1 metadata
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public static byte[] Decompress(byte[] data)
+        {
+            if (data.Length == 0)
+                return Array.Empty<byte>();
+
+            var outputStream = new MemoryStream();
+            using (var compressedStream = new MemoryStream(data))
+            using (var inputStream = new InflaterInputStream(compressedStream))
+            {
+                inputStream.CopyTo(outputStream);
+                outputStream.Position = 0;
+                return outputStream.ToArray();
+            }
+        }
+
+        public static byte[] DecompressZlib(byte[] data)
+        {
+            using (var compressedStream = new MemoryStream(data))
+            using (var deflateStream = new DeflateStream(compressedStream, CompressionMode.Decompress))
+            using (var resultStream = new MemoryStream())
+            {
+                deflateStream.CopyTo(resultStream);
+                return resultStream.ToArray();
             }
         }
 
@@ -242,6 +305,21 @@ namespace VEDriversLite.Common
                 return string.Empty;
         }
         /// <summary>
+        /// Read text file line by line
+        /// Function check if file exists
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public static IEnumerable<string> ReadAllLines(string path)
+        {
+            if (File.Exists(path))
+            {
+                var lines = File.ReadAllLines(path);
+                foreach (var line in lines)
+                    yield return line;
+            }
+        }
+        /// <summary>
         /// Check if the file exists
         /// </summary>
         /// <param name="path">Path of the file</param>
@@ -252,6 +330,42 @@ namespace VEDriversLite.Common
                 return true;
             else
                 return false;
+        }
+
+        /// <summary>
+        /// Get MIME type from the filename
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="NotSupportedException"></exception>
+        public static string GetMimeTypeFromImageFile(string fileName)
+        {
+            if (string.IsNullOrEmpty(fileName))
+                throw new ArgumentNullException(nameof(fileName));
+            
+            string extension = Path.GetExtension(fileName).ToLower();
+
+            switch (extension)
+            {
+                case ".jpeg":
+                case ".jpg":
+                    return "image/jpeg";
+                case ".png":
+                    return "image/png";
+                case ".gif":
+                    return "image/gif";
+                case ".bmp":
+                    return "image/bmp";
+                case ".tiff":
+                case ".tif":
+                    return "image/tiff";
+                case ".svg":
+                case ".svgz":
+                    return "image/svg+xml";
+                default:
+                    throw new NotSupportedException($"Unsupported file extension: {extension}");
+            }
         }
     }
 }

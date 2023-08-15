@@ -324,7 +324,7 @@ namespace VEDriversLite.NFT
         /// </summary>
         /// <param name="lastmetadata"></param>
         /// <returns></returns>
-        Task ParseOriginData(IDictionary<string,string> lastmetadata);
+        Task ParseOriginData(IDictionary<string,string> lastmetadata, GetTransactionInfoResponse txinfo = null);
         /// <summary>
         /// Parse info about the sellfrom the metadata of the NFT
         /// </summary>

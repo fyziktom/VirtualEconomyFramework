@@ -189,7 +189,7 @@ namespace VEDriversLite.NFT
         /// </summary>
         /// <param name="lastmetadata"></param>
         /// <returns></returns>
-        public abstract Task ParseOriginData(IDictionary<string, string> lastmetadata);
+        public abstract Task ParseOriginData(IDictionary<string, string> lastmetadata, GetTransactionInfoResponse txinfo = null);
         /// <summary>
         /// Retrive the Metadata of the actual NFT. 
         /// It will take the correct properties and translate them to the dictionary which can be add to the token transaction metdata

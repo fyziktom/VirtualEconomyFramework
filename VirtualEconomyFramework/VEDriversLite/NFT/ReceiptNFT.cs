@@ -105,7 +105,7 @@ namespace VEDriversLite.NFT
         /// </summary>
         /// <param name="lastmetadata"></param>
         /// <returns></returns>
-        public override Task ParseOriginData(IDictionary<string, string> lastmetadata)
+        public override Task ParseOriginData(IDictionary<string, string> lastmetadata, GetTransactionInfoResponse txinfo = null)
         {
             return Task.CompletedTask;
         }

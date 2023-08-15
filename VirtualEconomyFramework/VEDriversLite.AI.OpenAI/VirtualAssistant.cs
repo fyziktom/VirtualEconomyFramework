@@ -41,7 +41,7 @@ namespace VEDriversLite.AI.OpenAI
         /// <summary>
         /// Main used model
         /// </summary>
-        public string MainTextModel { get; set; } = Models.ChatGpt3_5Turbo;
+        public string MainTextModel { get; set; } = Models.Gpt_4;
 
         /// <summary>
         /// Init the assistants. It must be called before calls

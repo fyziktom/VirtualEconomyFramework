@@ -4912,18 +4912,18 @@ namespace VEDriversLite.NeblioAPI
         /// <summary>Block height of this transaction</summary>
         [Newtonsoft.Json.JsonProperty("blockheight", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public double? Blockheight { get; set; }
-    
+
         /// <summary>Total NEBL sent in this transaction in satoshis</summary>
-        [Newtonsoft.Json.JsonProperty("totalsent", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public double? Totalsent { get; set; }
-    
+        [Newtonsoft.Json.JsonProperty("totalsent")]
+        public double? Totalsent { get; set; } = 0.0;
+
         /// <summary>Total NEBL used as fee for this transcation in satoshis</summary>
-        [Newtonsoft.Json.JsonProperty("fee", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public double? Fee { get; set; }
-    
+        [Newtonsoft.Json.JsonProperty("fee")]
+        public double? Fee { get; set; } = 0.0;
+
         /// <summary>Hash of the block this transaction is in</summary>
         [Newtonsoft.Json.JsonProperty("blockhash", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Blockhash { get; set; }
+        public string Blockhash { get; set; } = string.Empty;
     
         /// <summary>Transaction time</summary>
         [Newtonsoft.Json.JsonProperty("time", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -4941,8 +4941,9 @@ namespace VEDriversLite.NeblioAPI
             get { return _additionalProperties; }
             set { _additionalProperties = value; }
         }
-    
-    
+        /// <summary>Number of transaction confirmations</summary>
+        [Newtonsoft.Json.JsonProperty("metadataOfUtxos")]
+        public MetadataOfUtxo? MetadataOfUtxos { get; set; }
     }
     
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.4.0 (Newtonsoft.Json v11.0.0.0)")]
@@ -4957,64 +4958,64 @@ namespace VEDriversLite.NeblioAPI
         public string TokenName { get; set; }
 
         /// <summary>Example UTXO containing this token.</summary>
-        [Newtonsoft.Json.JsonProperty("someUtxo", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string SomeUtxo { get; set; }
+        [Newtonsoft.Json.JsonProperty("someUtxo")]
+        public string? SomeUtxo { get; set; }
     
         /// <summary>Decimal places the token is divisible to</summary>
-        [Newtonsoft.Json.JsonProperty("divisibility", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonProperty("divisibility")]
         public double? Divisibility { get; set; }
     
         /// <summary>Whether issuance of more tokens is locked</summary>
-        [Newtonsoft.Json.JsonProperty("lockStatus", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonProperty("lockStatus")]
         public bool? LockStatus { get; set; }
     
         /// <summary>Whether the tokens are aggregatable</summary>
-        [Newtonsoft.Json.JsonProperty("aggregationPolicy", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string AggregationPolicy { get; set; }
+        [Newtonsoft.Json.JsonProperty("aggregationPolicy")]
+        public string? AggregationPolicy { get; set; }
     
         /// <summary>Total tokens issued in initial issuance</summary>
-        [Newtonsoft.Json.JsonProperty("initialIssuanceAmount", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonProperty("initialIssuanceAmount")]
         public double? InitialIssuanceAmount { get; set; }
     
         /// <summary>Total number of tokens in supply</summary>
-        [Newtonsoft.Json.JsonProperty("totalSupply", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonProperty("totalSupply")]
         public double? TotalSupply { get; set; }
     
         /// <summary>Total number of addresses this token is held at</summary>
-        [Newtonsoft.Json.JsonProperty("numOfHolders", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonProperty("numOfHolders")]
         public double? NumOfHolders { get; set; }
     
         /// <summary>Total number of transactions of this token</summary>
-        [Newtonsoft.Json.JsonProperty("numOfTransfers", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonProperty("numOfTransfers")]
         public double? NumOfTransfers { get; set; }
     
         /// <summary>Total number of times this token has been issued</summary>
-        [Newtonsoft.Json.JsonProperty("numOfIssuance", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonProperty("numOfIssuance")]
         public double? NumOfIssuance { get; set; }
     
         /// <summary>Number of times tokens have been burned</summary>
-        [Newtonsoft.Json.JsonProperty("numOfBurns", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonProperty("numOfBurns")]
         public double? NumOfBurns { get; set; }
     
         /// <summary>Block number token was issued in</summary>
-        [Newtonsoft.Json.JsonProperty("firstBlock", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonProperty("firstBlock")]
         public double? FirstBlock { get; set; }
     
         /// <summary>TXID the token was issued with</summary>
-        [Newtonsoft.Json.JsonProperty("issuanceTxid", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string IssuanceTxid { get; set; }
+        [Newtonsoft.Json.JsonProperty("issuanceTxid")]
+        public string? IssuanceTxid { get; set; }
     
         /// <summary>Address that issued the tokens</summary>
-        [Newtonsoft.Json.JsonProperty("issueAddress", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string IssueAddress { get; set; }
+        [Newtonsoft.Json.JsonProperty("issueAddress")]
+        public string? IssueAddress { get; set; }
     
         /// <summary>Metadata set at issuance</summary>
-        [Newtonsoft.Json.JsonProperty("metadataOfIssuance", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public MetadataOfIssuance MetadataOfIssuance { get; set; }
+        [Newtonsoft.Json.JsonProperty("metadataOfIssuance")]
+        public MetadataOfIssuance? MetadataOfIssuance { get; set; }
     
         /// <summary>Metadata set for UTXO</summary>
-        [Newtonsoft.Json.JsonProperty("metadataOfUtxo", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public MetadataOfUtxo MetadataOfUtxo { get; set; }
+        [Newtonsoft.Json.JsonProperty("metadataOfUtxo")]
+        public MetadataOfUtxo? MetadataOfUtxo { get; set; }
     
         private System.Collections.Generic.IDictionary<string, object> _additionalProperties = new System.Collections.Generic.Dictionary<string, object>();
     
@@ -5352,7 +5353,10 @@ namespace VEDriversLite.NeblioAPI
         /// <summary>Hash of the next block on the chain</summary>
         [Newtonsoft.Json.JsonProperty("nextblockhash", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Nextblockhash { get; set; }
-    
+        /// <summary>Hash of the next block on the chain</summary>
+        [Newtonsoft.Json.JsonProperty("flags")]
+        public string Flags { get; set; }
+
         /// <summary>Number of NEBL awarded in this block</summary>
         [Newtonsoft.Json.JsonProperty("reward", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public double? Reward { get; set; }
@@ -5707,12 +5711,12 @@ namespace VEDriversLite.NeblioAPI
         public object Result { get; set; }
     
         /// <summary>Identifier of RCP caller</summary>
-        [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Id { get; set; }
+        [Newtonsoft.Json.JsonProperty("id")]
+        public string? Id { get; set; }
     
         /// <summary>Object containing any error information.</summary>
-        [Newtonsoft.Json.JsonProperty("error", Required = Newtonsoft.Json.Required.AllowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public object Error { get; set; }
+        [Newtonsoft.Json.JsonProperty("error")]
+        public object? Error { get; set; }
     
         private System.Collections.Generic.IDictionary<string, object> _additionalProperties = new System.Collections.Generic.Dictionary<string, object>();
     
@@ -5865,7 +5869,7 @@ namespace VEDriversLite.NeblioAPI
         public PreviousOutput PreviousOutput { get; set; }
     
         [Newtonsoft.Json.JsonProperty("tokens", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.ICollection<Tokens2> Tokens { get; set; }
+        public System.Collections.Generic.ICollection<Tokens3> Tokens { get; set; }
 
         /// <summary>Value of input in NEBL satoshi</summary>
         [Newtonsoft.Json.JsonProperty("valueSat", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -5903,13 +5907,13 @@ namespace VEDriversLite.NeblioAPI
     
         [Newtonsoft.Json.JsonProperty("tokens", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.ICollection<Tokens3> Tokens { get; set; }
-    
+
         /// <summary>Whether this output has now been used</summary>
-        [Newtonsoft.Json.JsonProperty("used", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public bool? Used { get; set; }
+        [Newtonsoft.Json.JsonProperty("used")]
+        public bool? Used { get; set; } = false;
     
         /// <summary>Blockheight of this transaction</summary>
-        [Newtonsoft.Json.JsonProperty("blockheight", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonProperty("blockheight")]
         public double? Blockheight { get; set; }
     
         /// <summary>Blockheight this output was used in</summary>
@@ -5954,8 +5958,8 @@ namespace VEDriversLite.NeblioAPI
     public partial class MetadataOfUtxo 
     {
         /// <summary>Metadata set by user on token for UTXO</summary>
-        [Newtonsoft.Json.JsonProperty("userData", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public UserData UserData { get; set; }
+        [Newtonsoft.Json.JsonProperty("userData")]
+        public UserData? UserData { get; set; }
     
         private System.Collections.Generic.IDictionary<string, object> _additionalProperties = new System.Collections.Generic.Dictionary<string, object>();
     
@@ -6360,7 +6364,7 @@ namespace VEDriversLite.NeblioAPI
     
         [Newtonsoft.Json.JsonProperty("hex", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Hex { get; set; }
-    
+
         private System.Collections.Generic.IDictionary<string, object> _additionalProperties = new System.Collections.Generic.Dictionary<string, object>();
     
         [Newtonsoft.Json.JsonExtensionData]
@@ -6382,10 +6386,10 @@ namespace VEDriversLite.NeblioAPI
         [Newtonsoft.Json.JsonProperty("hex", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Hex { get; set; }
     
-        [Newtonsoft.Json.JsonProperty("reqSigs", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonProperty("reqSigs", Required = Newtonsoft.Json.Required.AllowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public double? ReqSigs { get; set; }
     
-        [Newtonsoft.Json.JsonProperty("type", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonProperty("type", Required = Newtonsoft.Json.Required.AllowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Type { get; set; }
     
         [Newtonsoft.Json.JsonProperty("addresses", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -6447,18 +6451,18 @@ namespace VEDriversLite.NeblioAPI
     {
         [Newtonsoft.Json.JsonProperty("asm", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Asm { get; set; }
-    
-        [Newtonsoft.Json.JsonProperty("hex", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Hex { get; set; }
-    
-        [Newtonsoft.Json.JsonProperty("reqSigs", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public double? ReqSigs { get; set; }
-    
-        [Newtonsoft.Json.JsonProperty("type", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Type { get; set; }
-    
-        [Newtonsoft.Json.JsonProperty("addresses", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.ICollection<string> Addresses { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("hex")]
+        public string Hex { get; set; } = string.Empty;
+
+        [Newtonsoft.Json.JsonProperty("reqSigs")]
+        public double? ReqSigs { get; set; } = 0.0;
+
+        [Newtonsoft.Json.JsonProperty("type")]
+        public string Type { get; set; } = string.Empty;
+
+        [Newtonsoft.Json.JsonProperty("addresses")]
+        public System.Collections.Generic.ICollection<string> Addresses { get; set; } = new List<string>();
     
         private System.Collections.Generic.IDictionary<string, object> _additionalProperties = new System.Collections.Generic.Dictionary<string, object>();
     
@@ -6507,8 +6511,10 @@ namespace VEDriversLite.NeblioAPI
             get { return _additionalProperties; }
             set { _additionalProperties = value; }
         }
-    
-    
+        /// <summary>Number of transaction confirmations</summary>
+        [Newtonsoft.Json.JsonProperty("metadataOfIssuance")]
+        public MetadataOfIssuance? MetadataOfIssuance { get; set; }
+
     }
     
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.4.0 (Newtonsoft.Json v11.0.0.0)")]
@@ -6523,8 +6529,8 @@ namespace VEDriversLite.NeblioAPI
         public string Issuer { get; set; }
 
         /// <summary>Urls</summary>
-        [Newtonsoft.Json.JsonProperty("urls", Required = Newtonsoft.Json.Required.AllowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public object Urls { get; set; }
+        [Newtonsoft.Json.JsonProperty("urls")]
+        public List<tokenUrlCarrier> Urls { get; set; }
 
         /// <summary>Token description</summary>
         [Newtonsoft.Json.JsonProperty("description", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -6545,7 +6551,14 @@ namespace VEDriversLite.NeblioAPI
     
     
     }
-    
+
+    public class tokenUrlCarrier
+    {
+        public string name { get; set; } = string.Empty;
+        public string url { get; set; } = string.Empty;
+        public string mimeType { get; set; } = string.Empty;
+    }
+
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.4.0 (Newtonsoft.Json v11.0.0.0)")]
     public partial class UserData 
     {

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using VEDriversLite;
+using VEDriversLite.Common;
 using Xunit;
 
 namespace VEFrameworkUnitTest.DogeCoin

@@ -27,18 +27,18 @@ namespace VEDriversLite.Common
     /// <summary>
     /// RPC client for QT Wallets
     /// </summary>
-    public class QTWalletRPCClient
+    public class QTWalletRPCClient : IQTWalletRPCClient
     {
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="baseurl">connection url or IP of QT wallet RPC server</param>
         /// <param name="port">connection port of QT wallet RPC server</param>
-        public QTWalletRPCClient(string baseurl = "127.0.0.1", int port = 6326)
+        public QTWalletRPCClient(string baseurl = "127.0.0.1", int port = 6326, bool usessl = false)
         {
             ConnectionUrlBaseAddress = baseurl;
             ConnectionPort = port;
-
+            SSL = usessl;
             Console.WriteLine("Connection Wallet Address setted to:" + ConnectionAddress);
         }
         /// <summary>
@@ -51,8 +51,8 @@ namespace VEDriversLite.Common
             ConnectionPort = cfg.Port;
             User = cfg.User;
             Pass = cfg.Pass;
-
-            Console.WriteLine("Connection Wallet Address setted to:" + ConnectionAddress);
+            SSL = cfg.SSL;
+            //Console.WriteLine("Connection Wallet Address setted to:" + ConnectionAddress);
         }
         /// <summary>
         /// Base URL for connection to RPC server
@@ -71,10 +71,19 @@ namespace VEDriversLite.Common
         {
             get
             {
-                _connectionAddress = $"http://{ConnectionUrlBaseAddress}:{ConnectionPort}/";
+                var http = "http";
+                if (SSL)
+                    http = "https";
+
+                if (ConnectionPort > 0)
+                    _connectionAddress = $"{http}://{ConnectionUrlBaseAddress}:{ConnectionPort}/";
+                else
+                    _connectionAddress = $"{http}://{ConnectionUrlBaseAddress}/";
                 return _connectionAddress;
             }
         }
+
+        public bool SSL { get; set; } = false;
 
         private bool _isConnected = false;
         /// <summary>
@@ -143,7 +152,7 @@ namespace VEDriversLite.Common
         /// <summary>
         /// Initialize client. You need to load connection info first - usually during the construction
         /// </summary>
-        public void InitClients()
+        public virtual void InitClients()
         {
             try
             {
@@ -174,7 +183,7 @@ namespace VEDriversLite.Common
         /// <param name="param">First is command, then goes the parameters.</param>
         /// <param name="obj"></param>
         /// <returns></returns>
-        public async Task<string> RPCLocalCommandAsync(string param, object obj)
+        public virtual async Task<string> RPCLocalCommandAsync(string param, object obj)
         {
             var split = param.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
@@ -209,7 +218,7 @@ namespace VEDriversLite.Common
         /// <param name="command">RPC command name</param>
         /// <param name="parameters">string array of parameters</param>
         /// <returns></returns>
-        public async Task<string> RPCLocalCommandSplitedAsync(string command, string[] parameters)
+        public virtual async Task<string> RPCLocalCommandSplitedAsync(string command, string[] parameters)
         {
             if (parameters != null)
             {

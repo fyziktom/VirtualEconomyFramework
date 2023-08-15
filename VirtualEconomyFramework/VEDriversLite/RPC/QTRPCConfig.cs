@@ -27,5 +27,9 @@ namespace VEDriversLite.Common
         /// Password for RPC server
         /// </summary>
         public string Pass { get; set; } = "userpass";
+        /// <summary>
+        /// If you are using SSL connection to RPC server through reverse proxy
+        /// </summary>
+        public bool SSL { get; set; } = false;
     }
 }

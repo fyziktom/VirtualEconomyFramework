@@ -122,13 +122,19 @@
         {
             AppData.Account.Refreshed -= RefreshedHandler;
             AppData.Account.Refreshed += RefreshedHandler;
+            AppData.Account.NewEventInfo += NewEventInfoHandler;
         }
         await base.OnAfterRenderAsync( firstRender );
     }
     private async void RefreshedHandler( object sender, EventArgs e )
     {
         await InvokeAsync(StateHasChanged);
-    }    
+    }   
+    
+    private async void NewEventInfoHandler(object sender, VEDriversLite.Events.IEventInfo e)
+    {
+        await InvokeAsync(StateHasChanged);
+    }
 
     async Task OpenImageDetailModalHandler(INFT nft)
     {

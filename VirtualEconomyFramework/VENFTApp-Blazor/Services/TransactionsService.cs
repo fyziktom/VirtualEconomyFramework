@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using VEDriversLite;
+using VEDriversLite.Common;
 using VEDriversLite.NeblioAPI;
 
 public class TransactionsService

@@ -1,0 +1,2175 @@
+openapi: 3.0.1
+info:
+  title: VEFramework.BlockchainIndexerServer
+  version: '1.0'
+paths:
+  /api/GetNFT/{utxo}/{index}:
+    get:
+      operationId: getNFTwithIndex
+      summary: Get NFT data as JSON with specified utxo and index.
+      tags:
+        - Home
+      parameters:
+        - name: utxo
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: index
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/INFT'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/INFT'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/INFT'
+  /api/GetNFT/{utxo}:
+    get:
+      operationId: getNFT
+      summary: Get NFT data as JSON with specified utxo and basic 0 index.
+      tags:
+        - Home
+      parameters:
+        - name: utxo
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/INFT'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/INFT'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/INFT'
+  /api/GetNFTTextDataItems/{utxo}/{index}:
+    get:
+      operationId: getNFTTextDataItems
+      summary: Get NFT DataItems which are text based (mermaid, json, text, html, etc.) with specified utxo and index (use 0 index if none provided. it is separated by ":" usually when user writes it).
+      tags:
+        - Home
+      parameters:
+        - name: utxo
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: index
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/GetNFTTextDataItemsItemDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetNFTTextDataItemsItemDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/GetNFTTextDataItemsItemDto'
+  /api/GetTransactionInfo/{txid}:
+    get:
+      operationId: getTransactionInfo
+      summary: Get transaction info. same info as you can get from the node
+      tags:
+        - Home
+      parameters:
+        - name: txid
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/GetTransactionInfoResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetTransactionInfoResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/GetTransactionInfoResponse'
+  /api/GetBlockInfo/{blockhash}:
+    get:
+      operationId: getBlockInfo
+      summary: Get block info if you know blockhash. Same info as you can get from the node.
+      tags:
+        - Home
+      parameters:
+        - name: hash
+          in: query
+          schema:
+            type: string
+        - name: blockhash
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/GetBlockResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetBlockResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/GetBlockResponse'
+  /api/GetBlockInfo/{blocknumber}:
+    get:
+      operationId: getBlockInfoByNumber
+      summary: Get block info if you know block number/height. Same info as you can get from the node.
+      tags:
+        - Home
+      parameters:
+        - name: number
+          in: query
+          schema:
+            type: integer
+            format: int32
+        - name: blocknumber
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/GetBlockResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetBlockResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/GetBlockResponse'
+  /api/GetLatestBlockheight:
+    get:
+      operationId: getLatestBlockHeight
+      summary: Get block latest height. It means number of block which is newest in blockchain
+      tags:
+        - Home
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                type: integer
+                format: int32
+            application/json:
+              schema:
+                type: integer
+                format: int32
+            text/json:
+              schema:
+                type: integer
+                format: int32
+  /api/BroadcastTransaction:
+    post:
+      operationId: broadcastTransaction
+      summary: Broadcast raw hex signed transaction into Neblio blockchain network
+      tags:
+        - Home
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BroadcastTransactionRequestDto'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/BroadcastTransactionRequestDto'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/BroadcastTransactionRequestDto'
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/BroadcastTransactionResponseDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BroadcastTransactionResponseDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/BroadcastTransactionResponseDto'
+  /api/GetAddressInfo/{address}:
+    get:
+      operationId: getAddressInfo
+      summary: Get information about the address. It returns balance, utxos list, count of transaction and other useful info.
+      tags:
+        - Home
+      parameters:
+        - name: address
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/IndexedAddress'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IndexedAddress'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/IndexedAddress'
+  /api/GetAddressUtxos/{address}:
+    get:
+      operationId: getAddressUtxos
+      summary: Get address available utxos list.
+      tags:
+        - Home
+      parameters:
+        - name: address
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/IndexedUtxo'
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/IndexedUtxo'
+            text/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/IndexedUtxo'
+  /api/GetAddressTokenUtxos/{address}:
+    get:
+      operationId: getAddressTokenUtxos
+      summary: Get address available tokens utxos.
+      tags:
+        - Home
+      parameters:
+        - name: address
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/IndexedUtxo'
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/IndexedUtxo'
+            text/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/IndexedUtxo'
+  /api/GetAddressTransactions/{address}/{skip}/{take}:
+    get:
+      operationId: getAddressTransactions
+      summary: Get address transactions. You can skip some and take some specific amount. It has listing.
+      tags:
+        - Home
+      parameters:
+        - name: address
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: skip
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+        - name: take
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                type: array
+                items:
+                  type: string
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+            text/json:
+              schema:
+                type: array
+                items:
+                  type: string
+  /api/GetAddressTokensSupplies/{address}:
+    get:
+      operationId: getAddressTokenSupplies
+      summary: Get address token supplies.
+      tags:
+        - Home
+      parameters:
+        - name: address
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                type: object
+                additionalProperties:
+                  $ref: '#/components/schemas/TokenSupplyDto'
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  $ref: '#/components/schemas/TokenSupplyDto'
+            text/json:
+              schema:
+                type: object
+                additionalProperties:
+                  $ref: '#/components/schemas/TokenSupplyDto'
+  /api/GetTokenMetadata/{tokenId}:
+    get:
+      operationId: getTokenMetadata
+      summary: Get metadata of issuance of specific token based on its ID. It is id of token, not the transaction.
+      tags:
+        - Home
+      parameters:
+        - name: tokenId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/GetTokenMetadataResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetTokenMetadataResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/GetTokenMetadataResponse'
+  /api/CreateNotSignedTokenTransaction:
+    post:
+      operationId: createNotSignedTokenTransaction
+      summary: Create not signed transaction of some tokens based on the input specification.
+      tags:
+        - Home
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendTokenRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/SendTokenRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/SendTokenRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Transaction'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transaction'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Transaction'
+  /api/CreateNotSignedIssueTransaction:
+    post:
+      operationId: createNotSignedIssueTransaction
+      summary: Create not signed transaction of issuing new tokens based on the input specification.
+      tags:
+        - Home
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IssueTokenRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/IssueTokenRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/IssueTokenRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Transaction'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transaction'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/Transaction'
+  /api/ParseNTP1Data/{opreturndata}:
+    get:
+      operationId: parseNTP1Data
+      summary: parse NTP1 Neblio token protocol OP_RETURN data, ideal is send just data part. It starts with "4e54" header and this inside as start of user data part "789c"
+      tags:
+        - Home
+      parameters:
+        - name: opreturndata
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ParseNTP1DataResponseDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParseNTP1DataResponseDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ParseNTP1DataResponseDto'
+  /api/GetServerSyncStatus:
+    get:
+      operationId: getServerSyncStatus
+      summary: Get information about state of the indexing server.
+      tags:
+        - Home
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/ServerStatusDto'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerStatusDto'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ServerStatusDto'
+  /api/ChangeLatestLoadedBlock/{height}:
+    get:
+      operationId: changeLatestLoadedBlock
+      summary: Change latest block which should be loaded back into history.
+      tags:
+        - Home
+      parameters:
+        - name: height
+          in: path
+          required: true
+          schema:
+            type: number
+            format: double
+      responses:
+        '200':
+          description: Success
+components:
+  schemas:
+    BroadcastDataResponseDto:
+      type: object
+      properties:
+        network:
+          type: string
+          nullable: true
+        txid:
+          type: string
+          nullable: true
+      additionalProperties: false
+    BroadcastTransactionRequestDto:
+      type: object
+      properties:
+        network:
+          type: string
+          nullable: true
+        tx_hex:
+          type: string
+          nullable: true
+      additionalProperties: false
+    BroadcastTransactionResponseDto:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/BroadcastDataResponseDto'
+      additionalProperties: false
+    Data2:
+      type: object
+      properties:
+        tokenName:
+          type: string
+          nullable: true
+        issuer:
+          type: string
+          nullable: true
+        urls:
+          type: array
+          items:
+            $ref: '#/components/schemas/tokenUrlCarrier'
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        userData:
+          $ref: '#/components/schemas/UserData4'
+        additionalProperties:
+          type: object
+          additionalProperties: {}
+          nullable: true
+      additionalProperties: false
+    DataItemStorageType:
+      enum:
+        - 0
+        - 1
+        - 2
+        - 3
+      type: integer
+      format: int32
+    DataItemType:
+      enum:
+        - 0
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+        - 9
+        - 5000
+        - 5001
+      type: integer
+      format: int32
+    DogeftInfo:
+      type: object
+      properties:
+        license:
+          type: string
+          nullable: true
+        coppies:
+          type: integer
+          format: int32
+        authorUrl:
+          type: string
+          nullable: true
+        rewardSchemeName:
+          type: string
+          nullable: true
+        authorDogeAddress:
+          type: string
+          nullable: true
+        isEmpty:
+          type: boolean
+          readOnly: true
+      additionalProperties: false
+    Encryptions:
+      type: object
+      properties:
+        key:
+          type: string
+          nullable: true
+        pubkey:
+          type: string
+          nullable: true
+        format:
+          type: string
+          nullable: true
+        type:
+          type: string
+          nullable: true
+        additionalProperties:
+          type: object
+          additionalProperties: {}
+          nullable: true
+      additionalProperties: false
+    Encryptions2:
+      type: object
+      properties:
+        key:
+          type: string
+          nullable: true
+        pubkey:
+          type: string
+          nullable: true
+        format:
+          type: string
+          nullable: true
+        type:
+          type: string
+          nullable: true
+        additionalProperties:
+          type: object
+          additionalProperties: {}
+          nullable: true
+      additionalProperties: false
+    Expiration:
+      type: object
+      properties:
+        validUntil:
+          type: number
+          format: double
+          nullable: true
+        locked:
+          type: boolean
+          nullable: true
+        additionalProperties:
+          type: object
+          additionalProperties: {}
+          nullable: true
+      additionalProperties: false
+    Expiration2:
+      type: object
+      properties:
+        validUntil:
+          type: number
+          format: double
+          nullable: true
+        locked:
+          type: boolean
+          nullable: true
+        additionalProperties:
+          type: object
+          additionalProperties: {}
+          nullable: true
+      additionalProperties: false
+    Fees:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Items'
+          nullable: true
+        locked:
+          type: boolean
+          nullable: true
+        additionalProperties:
+          type: object
+          additionalProperties: {}
+          nullable: true
+      additionalProperties: false
+    Fees2:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Items2'
+          nullable: true
+        locked:
+          type: boolean
+          nullable: true
+        additionalProperties:
+          type: object
+          additionalProperties: {}
+          nullable: true
+      additionalProperties: false
+    Flags:
+      type: object
+      properties:
+        splitChange:
+          type: boolean
+          nullable: true
+        additionalProperties:
+          type: object
+          additionalProperties: {}
+          nullable: true
+      additionalProperties: false
+    Flags2:
+      type: object
+      properties:
+        splitChange:
+          type: boolean
+          nullable: true
+        additionalProperties:
+          type: object
+          additionalProperties: {}
+          nullable: true
+      additionalProperties: false
+    GetBlockResponse:
+      type: object
+      properties:
+        hash:
+          type: string
+          nullable: true
+        confirmations:
+          type: number
+          format: double
+          nullable: true
+        size:
+          type: number
+          format: double
+          nullable: true
+        height:
+          type: number
+          format: double
+          nullable: true
+        version:
+          type: number
+          format: double
+          nullable: true
+        merkleroot:
+          type: string
+          nullable: true
+        tx:
+          type: array
+          items:
+            type: string
+          nullable: true
+        time:
+          type: number
+          format: double
+          nullable: true
+        nonce:
+          type: number
+          format: double
+          nullable: true
+        bits:
+          type: string
+          nullable: true
+        difficulty:
+          type: number
+          format: double
+          nullable: true
+        previousblockhash:
+          type: string
+          nullable: true
+        nextblockhash:
+          type: string
+          nullable: true
+        flags:
+          type: string
+          nullable: true
+        reward:
+          type: number
+          format: double
+          nullable: true
+        additionalProperties:
+          type: object
+          additionalProperties: {}
+          nullable: true
+      additionalProperties: false
+    GetNFTTextDataItemsDto:
+      type: object
+      properties:
+        items:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/GetNFTTextDataItemsItemDto'
+          nullable: true
+      additionalProperties: false
+    GetNFTTextDataItemsItemDto:
+      type: object
+      properties:
+        stringContent:
+          type: string
+          nullable: true
+        type:
+          type: string
+          nullable: true
+      additionalProperties: false
+    GetTokenMetadataResponse:
+      type: object
+      properties:
+        tokenId:
+          type: string
+          nullable: true
+        tokenName:
+          type: string
+          nullable: true
+        someUtxo:
+          type: string
+          nullable: true
+        divisibility:
+          type: number
+          format: double
+          nullable: true
+        lockStatus:
+          type: boolean
+          nullable: true
+        aggregationPolicy:
+          type: string
+          nullable: true
+        initialIssuanceAmount:
+          type: number
+          format: double
+          nullable: true
+        totalSupply:
+          type: number
+          format: double
+          nullable: true
+        numOfHolders:
+          type: number
+          format: double
+          nullable: true
+        numOfTransfers:
+          type: number
+          format: double
+          nullable: true
+        numOfIssuance:
+          type: number
+          format: double
+          nullable: true
+        numOfBurns:
+          type: number
+          format: double
+          nullable: true
+        firstBlock:
+          type: number
+          format: double
+          nullable: true
+        issuanceTxid:
+          type: string
+          nullable: true
+        issueAddress:
+          type: string
+          nullable: true
+        metadataOfIssuance:
+          $ref: '#/components/schemas/MetadataOfIssuance'
+        metadataOfUtxo:
+          $ref: '#/components/schemas/MetadataOfUtxo'
+        additionalProperties:
+          type: object
+          additionalProperties: {}
+          nullable: true
+      additionalProperties: false
+    GetTransactionInfoResponse:
+      type: object
+      properties:
+        hex:
+          type: string
+          nullable: true
+        txid:
+          type: string
+          nullable: true
+        version:
+          type: number
+          format: double
+          nullable: true
+        locktime:
+          type: number
+          format: double
+          nullable: true
+        vin:
+          type: array
+          items:
+            $ref: '#/components/schemas/Vin'
+          nullable: true
+        vout:
+          type: array
+          items:
+            $ref: '#/components/schemas/Vout'
+          nullable: true
+        blocktime:
+          type: number
+          format: double
+          nullable: true
+        blockheight:
+          type: number
+          format: double
+          nullable: true
+        totalsent:
+          type: number
+          format: double
+          nullable: true
+        fee:
+          type: number
+          format: double
+          nullable: true
+        blockhash:
+          type: string
+          nullable: true
+        time:
+          type: number
+          format: double
+          nullable: true
+        confirmations:
+          type: number
+          format: double
+          nullable: true
+        additionalProperties:
+          type: object
+          additionalProperties: {}
+          nullable: true
+        metadataOfUtxos:
+          $ref: '#/components/schemas/MetadataOfUtxo'
+      additionalProperties: false
+    Holders2:
+      type: object
+      properties:
+        address:
+          type: string
+          nullable: true
+        locked:
+          type: boolean
+          nullable: true
+        additionalProperties:
+          type: object
+          additionalProperties: {}
+          nullable: true
+      additionalProperties: false
+    Holders3:
+      type: object
+      properties:
+        address:
+          type: string
+          nullable: true
+        locked:
+          type: boolean
+          nullable: true
+        additionalProperties:
+          type: object
+          additionalProperties: {}
+          nullable: true
+      additionalProperties: false
+    INFT:
+      type: object
+      properties:
+        typeText:
+          type: string
+          nullable: true
+        type:
+          $ref: '#/components/schemas/NFTTypes'
+        name:
+          type: string
+          nullable: true
+        author:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        text:
+          type: string
+          nullable: true
+        link:
+          type: string
+          nullable: true
+        iconLink:
+          type: string
+          nullable: true
+        imageLink:
+          type: string
+          nullable: true
+        imageData:
+          type: string
+          format: byte
+          nullable: true
+        base64Data:
+          type: string
+          nullable: true
+        preview:
+          type: string
+          nullable: true
+        previewData:
+          type: string
+          format: byte
+          nullable: true
+        tags:
+          type: string
+          nullable: true
+        tagsList:
+          type: array
+          items:
+            type: string
+          nullable: true
+        dataItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/NFTDataItem'
+          nullable: true
+        utxo:
+          type: string
+          nullable: true
+        utxoIndex:
+          type: integer
+          format: int32
+        shortHash:
+          type: string
+          nullable: true
+          readOnly: true
+        nftOriginTxId:
+          type: string
+          nullable: true
+        sourceTxId:
+          type: string
+          nullable: true
+        tokenId:
+          type: string
+          nullable: true
+        price:
+          type: number
+          format: double
+        priceActive:
+          type: boolean
+        dogePrice:
+          type: number
+          format: double
+        dogePriceActive:
+          type: boolean
+        dogeAddress:
+          type: string
+          nullable: true
+        sellJustCopy:
+          type: boolean
+        dogeftInfo:
+          $ref: '#/components/schemas/DogeftInfo'
+        isLoaded:
+          type: boolean
+        isInThePayments:
+          type: boolean
+        soldInfo:
+          $ref: '#/components/schemas/NFTSoldInfo'
+        time:
+          type: string
+          format: date-time
+        history:
+          type: array
+          items:
+            $ref: '#/components/schemas/INFT'
+          nullable: true
+        txDetails:
+          $ref: '#/components/schemas/GetTransactionInfoResponse'
+      additionalProperties: false
+    IndexedAddress:
+      type: object
+      properties:
+        address:
+          type: string
+          nullable: true
+        indexed:
+          type: boolean
+        lastUpdated:
+          type: string
+          format: date-time
+        countOfTransactions:
+          type: integer
+          format: int32
+          readOnly: true
+        tokenSupplies:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/TokenSupplyDto'
+          nullable: true
+        neblioBalance:
+          type: number
+          format: double
+          readOnly: true
+        utxos:
+          type: array
+          items:
+            $ref: '#/components/schemas/IndexedUtxo'
+          nullable: true
+          readOnly: true
+      additionalProperties: false
+    IndexedUtxo:
+      type: object
+      properties:
+        indexed:
+          type: boolean
+        transactionHashAndN:
+          type: string
+          nullable: true
+          readOnly: true
+        transactionHash:
+          type: string
+          nullable: true
+        index:
+          type: integer
+          format: int32
+        ownerAddress:
+          type: string
+          nullable: true
+        used:
+          type: boolean
+        tokenUtxo:
+          type: boolean
+        value:
+          type: number
+          format: double
+        blockheight:
+          type: number
+          format: double
+        blocktime:
+          type: number
+          format: double
+        time:
+          type: string
+          format: date-time
+        usedInTxHash:
+          type: string
+          nullable: true
+        tokenId:
+          type: string
+          nullable: true
+        tokenAmount:
+          type: number
+          format: double
+        tokenSymbol:
+          type: string
+          nullable: true
+        metadata:
+          type: string
+          nullable: true
+      additionalProperties: false
+    IssueTokenRequest:
+      type: object
+      properties:
+        issueAddress:
+          type: string
+          nullable: true
+        amount:
+          type: number
+          format: double
+        divisibility:
+          type: number
+          format: double
+        fee:
+          type: number
+          format: double
+        reissuable:
+          type: boolean
+        flags:
+          $ref: '#/components/schemas/Flags'
+        transfer:
+          type: array
+          items:
+            $ref: '#/components/schemas/Transfer'
+          nullable: true
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+        additionalProperties:
+          type: object
+          additionalProperties: {}
+          nullable: true
+      additionalProperties: false
+    Items:
+      type: object
+      properties:
+        address:
+          type: string
+          nullable: true
+        tokenId:
+          type: string
+          nullable: true
+        value:
+          type: string
+          nullable: true
+        additionalProperties:
+          type: object
+          additionalProperties: {}
+          nullable: true
+      additionalProperties: false
+    Items2:
+      type: object
+      properties:
+        address:
+          type: string
+          nullable: true
+        tokenId:
+          type: string
+          nullable: true
+        value:
+          type: string
+          nullable: true
+        additionalProperties:
+          type: object
+          additionalProperties: {}
+          nullable: true
+      additionalProperties: false
+    JToken:
+      type: array
+      items:
+        $ref: '#/components/schemas/JToken'
+    LockTime:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date-time
+          readOnly: true
+        height:
+          type: integer
+          format: int32
+          readOnly: true
+        value:
+          type: integer
+          format: int32
+          readOnly: true
+        isHeightLock:
+          type: boolean
+          readOnly: true
+        isTimeLock:
+          type: boolean
+          readOnly: true
+      additionalProperties: false
+    Meta:
+      type: object
+      properties:
+        key:
+          type: string
+          nullable: true
+        value:
+          type: string
+          nullable: true
+        additionalProperties:
+          type: object
+          additionalProperties: {}
+          nullable: true
+      additionalProperties: false
+    Meta3:
+      type: object
+      properties:
+        key:
+          type: string
+          nullable: true
+        value:
+          type: string
+          nullable: true
+        additionalProperties:
+          type: object
+          additionalProperties: {}
+          nullable: true
+      additionalProperties: false
+    Metadata:
+      type: object
+      properties:
+        tokenName:
+          type: string
+          nullable: true
+        issuer:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        urls:
+          type: array
+          items:
+            $ref: '#/components/schemas/Urls'
+          nullable: true
+        userData:
+          $ref: '#/components/schemas/UserData2'
+        encryptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Encryptions'
+          nullable: true
+        rules:
+          $ref: '#/components/schemas/Rules'
+        additionalProperties:
+          type: object
+          additionalProperties: {}
+          nullable: true
+      additionalProperties: false
+    Metadata2:
+      type: object
+      properties:
+        tokenName:
+          type: string
+          nullable: true
+        issuer:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        urls:
+          type: array
+          items:
+            $ref: '#/components/schemas/Urls2'
+          nullable: true
+        userData:
+          $ref: '#/components/schemas/UserData3'
+        encryptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Encryptions2'
+          nullable: true
+        rules:
+          $ref: '#/components/schemas/Rules2'
+        additionalProperties:
+          type: object
+          additionalProperties: {}
+          nullable: true
+      additionalProperties: false
+    MetadataOfIssuance:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/Data2'
+        additionalProperties:
+          type: object
+          additionalProperties: {}
+          nullable: true
+      additionalProperties: false
+    MetadataOfUtxo:
+      type: object
+      properties:
+        userData:
+          $ref: '#/components/schemas/UserData'
+        additionalProperties:
+          type: object
+          additionalProperties: {}
+          nullable: true
+      additionalProperties: false
+    Money:
+      type: object
+      properties:
+        satoshi:
+          type: integer
+          format: int64
+          readOnly: true
+      additionalProperties: false
+    NFTDataItem:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/DataItemType'
+        hash:
+          type: string
+          nullable: true
+        storage:
+          $ref: '#/components/schemas/DataItemStorageType'
+        tagsList:
+          type: array
+          items:
+            type: string
+          nullable: true
+        data:
+          type: string
+          format: byte
+          nullable: true
+        base64Data:
+          type: string
+          nullable: true
+        isMain:
+          type: boolean
+      additionalProperties: false
+    NFTSoldInfo:
+      type: object
+      properties:
+        paymentTxId:
+          type: string
+          nullable: true
+        amount:
+          type: number
+          format: double
+        currency:
+          type: string
+          nullable: true
+        platform:
+          type: string
+          nullable: true
+        sellAsMultipleCopy:
+          type: boolean
+        maxSupply:
+          type: integer
+          format: int32
+        originalNFTTemplate:
+          type: string
+          nullable: true
+        isEmpty:
+          type: boolean
+          readOnly: true
+      additionalProperties: false
+    NFTTypes:
+      enum:
+        - 0
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+        - 9
+        - 10
+        - 11
+        - 12
+        - 13
+        - 101
+        - 102
+        - 103
+        - 104
+        - 105
+        - 1001
+        - 1002
+        - 1003
+        - 1004
+        - 1005
+        - 1006
+        - 1007
+        - 1008
+        - 1895
+        - 1896
+        - 5000
+      type: integer
+      format: int32
+    NTP1Instructions:
+      type: object
+      additionalProperties: false
+    OutPoint:
+      type: object
+      properties:
+        isNull:
+          type: boolean
+          readOnly: true
+        hash:
+          $ref: '#/components/schemas/uint256'
+        'n':
+          type: integer
+          format: int32
+      additionalProperties: false
+    ParseNTP1DataResponseDto:
+      type: object
+      properties:
+        parsedMetadata:
+          type: string
+          nullable: true
+        transferInstructions:
+          type: array
+          items:
+            $ref: '#/components/schemas/NTP1Instructions'
+          nullable: true
+        txType:
+          $ref: '#/components/schemas/TxType'
+        tokenIssueSymbol:
+          type: string
+          nullable: true
+        tokenIssueAmount:
+          type: integer
+          format: int64
+      additionalProperties: false
+    PreviousOutput:
+      type: object
+      properties:
+        asm:
+          type: string
+          nullable: true
+        hex:
+          type: string
+          nullable: true
+        reqSigs:
+          type: number
+          format: double
+          nullable: true
+        type:
+          type: string
+          nullable: true
+        addresses:
+          type: array
+          items:
+            type: string
+          nullable: true
+        additionalProperties:
+          type: object
+          additionalProperties: {}
+          nullable: true
+      additionalProperties: false
+    Rules:
+      type: object
+      properties:
+        fees:
+          $ref: '#/components/schemas/Fees'
+        holders:
+          type: array
+          items:
+            $ref: '#/components/schemas/Holders2'
+          nullable: true
+        expiration:
+          $ref: '#/components/schemas/Expiration'
+        additionalProperties:
+          type: object
+          additionalProperties: {}
+          nullable: true
+      additionalProperties: false
+    Rules2:
+      type: object
+      properties:
+        fees:
+          $ref: '#/components/schemas/Fees2'
+        holders:
+          type: array
+          items:
+            $ref: '#/components/schemas/Holders3'
+          nullable: true
+        expiration:
+          $ref: '#/components/schemas/Expiration2'
+        additionalProperties:
+          type: object
+          additionalProperties: {}
+          nullable: true
+      additionalProperties: false
+    Script:
+      type: object
+      properties:
+        length:
+          type: integer
+          format: int32
+          readOnly: true
+        paymentScript:
+          $ref: '#/components/schemas/Script'
+        isPushOnly:
+          type: boolean
+          readOnly: true
+        hasCanonicalPushes:
+          type: boolean
+          readOnly: true
+        hash:
+          $ref: '#/components/schemas/ScriptId'
+        witHash:
+          $ref: '#/components/schemas/WitScriptId'
+        isMalleable:
+          type: boolean
+          readOnly: true
+        isUnspendable:
+          type: boolean
+          readOnly: true
+        isValid:
+          type: boolean
+          readOnly: true
+      additionalProperties: false
+    ScriptId:
+      type: object
+      properties:
+        scriptPubKey:
+          $ref: '#/components/schemas/Script'
+      additionalProperties: false
+    ScriptPubKey:
+      type: object
+      properties:
+        asm:
+          type: string
+          nullable: true
+        hex:
+          type: string
+          nullable: true
+        reqSigs:
+          type: number
+          format: double
+          nullable: true
+        type:
+          type: string
+          nullable: true
+        addresses:
+          type: array
+          items:
+            type: string
+          nullable: true
+        additionalProperties:
+          type: object
+          additionalProperties: {}
+          nullable: true
+      additionalProperties: false
+    ScriptSig:
+      type: object
+      properties:
+        asm:
+          type: string
+          nullable: true
+        hex:
+          type: string
+          nullable: true
+        additionalProperties:
+          type: object
+          additionalProperties: {}
+          nullable: true
+      additionalProperties: false
+    SendTokenRequest:
+      type: object
+      properties:
+        fee:
+          type: number
+          format: double
+        from:
+          type: array
+          items:
+            type: string
+          nullable: true
+        sendutxo:
+          type: array
+          items:
+            type: string
+          nullable: true
+        to:
+          type: array
+          items:
+            $ref: '#/components/schemas/To'
+          nullable: true
+        flags:
+          $ref: '#/components/schemas/Flags2'
+        metadata:
+          $ref: '#/components/schemas/Metadata2'
+        additionalProperties:
+          type: object
+          additionalProperties: {}
+          nullable: true
+      additionalProperties: false
+    Sequence:
+      type: object
+      properties:
+        value:
+          type: integer
+          format: int32
+        isRelativeLock:
+          type: boolean
+          readOnly: true
+        isRBF:
+          type: boolean
+          readOnly: true
+        lockType:
+          $ref: '#/components/schemas/SequenceLockType'
+        lockHeight:
+          type: integer
+          format: int32
+          readOnly: true
+        lockPeriod:
+          $ref: '#/components/schemas/TimeSpan'
+      additionalProperties: false
+    SequenceLockType:
+      enum:
+        - 0
+        - 1
+      type: integer
+      format: int32
+    ServerStatusDto:
+      type: object
+      properties:
+        countOfBlocks:
+          type: number
+          format: double
+        countOfIndexedBlocks:
+          type: number
+          format: double
+        averageTimeToIndexBlockInMilliseconds:
+          type: number
+          format: double
+        countOfTransactions:
+          type: number
+          format: double
+        countOfUtxos:
+          type: number
+          format: double
+        countOfUsedUtxos:
+          type: number
+          format: double
+        countOfAddresses:
+          type: number
+          format: double
+        actualOldestLoadedBlock:
+          type: number
+          format: double
+        latestLoadedBlock:
+          type: number
+          format: double
+        oldestBlockToLoad:
+          type: number
+          format: double
+        restToLoad:
+          type: number
+          format: double
+          readOnly: true
+        restToLoadInPercentage:
+          type: number
+          format: double
+          readOnly: true
+        actualLoadingStatus:
+          type: number
+          format: double
+          readOnly: true
+        estimatedTimeToFinishInMinutes:
+          type: number
+          format: double
+          readOnly: true
+        estimatedTimeToFinishInHours:
+          type: number
+          format: double
+          readOnly: true
+      additionalProperties: false
+    TimeSpan:
+      type: object
+      properties:
+        ticks:
+          type: integer
+          format: int64
+        days:
+          type: integer
+          format: int32
+          readOnly: true
+        hours:
+          type: integer
+          format: int32
+          readOnly: true
+        milliseconds:
+          type: integer
+          format: int32
+          readOnly: true
+        microseconds:
+          type: integer
+          format: int32
+          readOnly: true
+        nanoseconds:
+          type: integer
+          format: int32
+          readOnly: true
+        minutes:
+          type: integer
+          format: int32
+          readOnly: true
+        seconds:
+          type: integer
+          format: int32
+          readOnly: true
+        totalDays:
+          type: number
+          format: double
+          readOnly: true
+        totalHours:
+          type: number
+          format: double
+          readOnly: true
+        totalMilliseconds:
+          type: number
+          format: double
+          readOnly: true
+        totalMicroseconds:
+          type: number
+          format: double
+          readOnly: true
+        totalNanoseconds:
+          type: number
+          format: double
+          readOnly: true
+        totalMinutes:
+          type: number
+          format: double
+          readOnly: true
+        totalSeconds:
+          type: number
+          format: double
+          readOnly: true
+      additionalProperties: false
+    To:
+      type: object
+      properties:
+        address:
+          type: string
+          nullable: true
+        amount:
+          type: number
+          format: double
+          nullable: true
+        tokenId:
+          type: string
+          nullable: true
+        additionalProperties:
+          type: object
+          additionalProperties: {}
+          nullable: true
+      additionalProperties: false
+    TokenSupplyDto:
+      type: object
+      properties:
+        tokenSymbol:
+          type: string
+          nullable: true
+        tokenId:
+          type: string
+          nullable: true
+        amount:
+          type: number
+          format: double
+        imageUrl:
+          type: string
+          nullable: true
+      additionalProperties: false
+    Tokens3:
+      type: object
+      properties:
+        tokenId:
+          type: string
+          nullable: true
+        amount:
+          type: number
+          format: double
+          nullable: true
+        issueTxid:
+          type: string
+          nullable: true
+        divisibility:
+          type: number
+          format: double
+          nullable: true
+        lockStatus:
+          type: boolean
+          nullable: true
+        aggregationPolicy:
+          type: string
+          nullable: true
+        additionalProperties:
+          type: object
+          additionalProperties: {}
+          nullable: true
+        metadataOfIssuance:
+          $ref: '#/components/schemas/MetadataOfIssuance'
+      additionalProperties: false
+    Transaction:
+      type: object
+      properties:
+        rbf:
+          type: boolean
+          readOnly: true
+        version:
+          type: integer
+          format: int32
+        totalOut:
+          $ref: '#/components/schemas/Money'
+        lockTime:
+          $ref: '#/components/schemas/LockTime'
+        inputs:
+          type: array
+          items:
+            $ref: '#/components/schemas/TxIn'
+          nullable: true
+          readOnly: true
+        outputs:
+          type: array
+          items:
+            $ref: '#/components/schemas/TxOut'
+          nullable: true
+          readOnly: true
+        isCoinBase:
+          type: boolean
+          readOnly: true
+        hasWitness:
+          type: boolean
+          readOnly: true
+      additionalProperties: false
+    Transfer:
+      type: object
+      properties:
+        address:
+          type: string
+          nullable: true
+        amount:
+          type: number
+          format: double
+          nullable: true
+        additionalProperties:
+          type: object
+          additionalProperties: {}
+          nullable: true
+      additionalProperties: false
+    TxIn:
+      type: object
+      properties:
+        sequence:
+          $ref: '#/components/schemas/Sequence'
+        prevOut:
+          $ref: '#/components/schemas/OutPoint'
+        scriptSig:
+          $ref: '#/components/schemas/Script'
+        witScript:
+          $ref: '#/components/schemas/WitScript'
+        isFinal:
+          type: boolean
+          readOnly: true
+      additionalProperties: false
+    TxOut:
+      type: object
+      properties:
+        scriptPubKey:
+          $ref: '#/components/schemas/Script'
+        value:
+          $ref: '#/components/schemas/Money'
+      additionalProperties: false
+    TxType:
+      enum:
+        - 0
+        - 1
+        - 2
+      type: integer
+      format: int32
+    Urls:
+      type: object
+      properties:
+        name:
+          type: string
+          nullable: true
+        url:
+          type: string
+          nullable: true
+        mimeType:
+          type: string
+          nullable: true
+        dataHash:
+          type: string
+          nullable: true
+        additionalProperties:
+          type: object
+          additionalProperties: {}
+          nullable: true
+      additionalProperties: false
+    Urls2:
+      type: object
+      properties:
+        name:
+          type: string
+          nullable: true
+        url:
+          type: string
+          nullable: true
+        mimeType:
+          type: string
+          nullable: true
+        dataHash:
+          type: string
+          nullable: true
+        additionalProperties:
+          type: object
+          additionalProperties: {}
+          nullable: true
+      additionalProperties: false
+    UserData:
+      type: object
+      properties:
+        meta:
+          type: array
+          items: {}
+          nullable: true
+        additionalProperties:
+          type: object
+          additionalProperties: {}
+          nullable: true
+      additionalProperties: false
+    UserData2:
+      type: object
+      properties:
+        meta:
+          type: array
+          items:
+            $ref: '#/components/schemas/Meta'
+          nullable: true
+        additionalProperties:
+          type: object
+          additionalProperties: {}
+          nullable: true
+      additionalProperties: false
+    UserData3:
+      type: object
+      properties:
+        meta:
+          type: array
+          items:
+            type: object
+            additionalProperties:
+              $ref: '#/components/schemas/JToken'
+          nullable: true
+        additionalProperties:
+          type: object
+          additionalProperties: {}
+          nullable: true
+      additionalProperties: false
+    UserData4:
+      type: object
+      properties:
+        meta:
+          type: array
+          items:
+            $ref: '#/components/schemas/Meta3'
+          nullable: true
+        additionalProperties:
+          type: object
+          additionalProperties: {}
+          nullable: true
+      additionalProperties: false
+    Vin:
+      type: object
+      properties:
+        txid:
+          type: string
+          nullable: true
+        addr:
+          type: string
+          nullable: true
+        vout:
+          type: number
+          format: double
+          nullable: true
+        scriptSig:
+          $ref: '#/components/schemas/ScriptSig'
+        sequence:
+          type: number
+          format: double
+          nullable: true
+        previousOutput:
+          $ref: '#/components/schemas/PreviousOutput'
+        tokens:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tokens3'
+          nullable: true
+        value:
+          type: number
+          format: double
+          nullable: true
+        valueSat:
+          type: number
+          format: double
+          nullable: true
+        additionalProperties:
+          type: object
+          additionalProperties: {}
+          nullable: true
+      additionalProperties: false
+    Vout:
+      type: object
+      properties:
+        value:
+          type: number
+          format: double
+          nullable: true
+        'n':
+          type: number
+          format: double
+          nullable: true
+        scriptPubKey:
+          $ref: '#/components/schemas/ScriptPubKey'
+        tokens:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tokens3'
+          nullable: true
+        used:
+          type: boolean
+          nullable: true
+        blockheight:
+          type: number
+          format: double
+          nullable: true
+        usedBlockheight:
+          type: number
+          format: double
+          nullable: true
+        usedTxid:
+          type: string
+          nullable: true
+        additionalProperties:
+          type: object
+          additionalProperties: {}
+          nullable: true
+      additionalProperties: false
+    WitScript:
+      type: object
+      properties:
+        pushes:
+          type: array
+          items:
+            type: string
+            format: byte
+          nullable: true
+          readOnly: true
+        pushCount:
+          type: integer
+          format: int32
+          readOnly: true
+      additionalProperties: false
+    WitScriptId:
+      type: object
+      properties:
+        hashForLookUp:
+          $ref: '#/components/schemas/ScriptId'
+        scriptPubKey:
+          $ref: '#/components/schemas/Script'
+      additionalProperties: false
+    tokenUrlCarrier:
+      type: object
+      properties:
+        name:
+          type: string
+          nullable: true
+        url:
+          type: string
+          nullable: true
+        mimeType:
+          type: string
+          nullable: true
+      additionalProperties: false
+    uint256:
+      type: object
+      properties:
+        size:
+          type: integer
+          format: int32
+          readOnly: true
+      additionalProperties: false

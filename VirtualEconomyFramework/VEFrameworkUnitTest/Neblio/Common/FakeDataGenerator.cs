@@ -212,5 +212,23 @@ namespace VEFrameworkUnitTest.Neblio.Common
 
             return response;
         }
+
+        public static Dictionary<string, string> GetMetadata()
+        {
+            var result = new Dictionary<string, string>();
+            result.Add("BrightFuture", "Bright Future");
+            result.Add("PositiveOutcome", "Positive Outcome");
+            result.Add("SuccessfulVenture", "Successful Venture");
+            result.Add("HappyMoments", "Happy Moments");
+            result.Add("InspiringJourney", "Inspiring Journey");
+            result.Add("CreativeSpark", "Creative Spark");
+            result.Add("PowerfulImpact", "Powerful Impact");
+            result.Add("JoyfulExperience", "Joyful Experience");
+            result.Add("InnovativeIdeas", "Innovative Ideas");
+            result.Add("HarmoniousBalance", "Harmonious Balance");
+
+            return result;
+        }
+
     }
 }

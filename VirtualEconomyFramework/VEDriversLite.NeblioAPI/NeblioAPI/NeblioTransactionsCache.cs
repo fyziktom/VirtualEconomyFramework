@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.Extensions.Caching.Memory;
 using System.Threading.Tasks;
+using System.Net;
 
 namespace VEDriversLite.NeblioAPI
 {
@@ -29,13 +30,26 @@ namespace VEDriversLite.NeblioAPI
             }
             else
             {
+                /*
                 var data = await NeblioAPIHelpers.GetClient().GetTransactionInfoAsync(utxo);
 
                 if (data != null && data.Blockheight != null && data.Confirmations != null)
                 {
                     blockHeightValue = data.Blockheight.Value + data.Confirmations.Value;
                 }
-                SetChacheValue(address, blockHeightValue);
+                */
+                var httpClient = new HttpClient();
+                var res = await httpClient.GetStringAsync($"{NeblioAPIHelpers.NewAPIAddress.Trim('/')}/api/GetLatestBlockheight");
+                try
+                {
+                    var bh = Convert.ToInt32(res);
+                    blockHeightValue = bh;
+                    SetChacheValue(address, blockHeightValue);
+                }
+                catch (Exception ex)
+                {
+                    await Console.Out.WriteLineAsync("Cannot get latest block height.");
+                }
             }
             return blockHeightValue;
         }
