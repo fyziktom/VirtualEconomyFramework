@@ -1,6 +1,8 @@
 [![VEDriversLite](https://img.shields.io/nuget/v/VEFramework.VEDriversLite?label=VEDriversLite)](https://www.nuget.org/packages/VEFramework.VEDriversLite/)
 [![VEBlazor](https://img.shields.io/nuget/v/VEFramework.VEBlazor?label=VEBlazor)](https://www.nuget.org/packages/VEFramework.VEBlazor/)
+[![VEDriversLite.AI.OpenAI](https://img.shields.io/nuget/v/VEDriversLite.AI.OpenAI?label=VEDriversLite.AI.OpenAI)](https://www.nuget.org/packages/VEDriversLite.AI.OpenAI)
 [![VEBlazor.Editable](https://img.shields.io/nuget/v/VEFramework.VEBlazor.Editable?label=VEBlazor.Editable)](https://www.nuget.org/packages/VEFramework.VEBlazor.Editable/)
+[![VEDriversLite.NeblioAPI](https://img.shields.io/nuget/v/VEFramework.VEDriversLite.NeblioAPI?label=VEDriversLite.NeblioAPI)](https://www.nuget.org/packages/VEFramework.VEDriversLite.NeblioAPI/)
 
 # VEFramework
 
@@ -8,15 +10,30 @@ Virtual Economy framework zjednodušuje tvorbu Web3, blockchain, IoT a NFT aplik
 
 VEFramework je L2 vrstva nad prakticky kterýmkoliv blockchainem. Aktuálně na ukázku podporuje Neblio a Dogecoin.
 
-![Development with VEFramework](./assets/veframework.jpeg)
+![Development with VEFramework](https://ve-framework.com/ipfs/QmVoMw53Vo2ZsbMYLwXjEuh2wkmVvWKkM1mrac7qdKosWs)
+
+![Account](https://ve-framework.com/ipfs/QmdKkks4xmkiy1jdMoWqroYDKC8NRa6u5VeurKHXcpxMrY)
+
+![NFTs](https://ve-framework.com/ipfs/QmdVy8ZozfEicFd4v8NKiUAeX1vn8QmLYCFYAuB9u7PUCJ)
 
 ## Použití
+
+**Všechny balíčky jsou dostupné pro .NET verze 6 a 7 ** a jsou k dispozici v [NuGet Gallery](https://www.nuget.org/profiles/fyziktom).
 
 - [`VEDriversLite`](https://fyziktom.github.io/VirtualEconomyFramework/api/VEDriversLite.html) - Aktuální a doporučená verze (Neblio a NFT drivers)
 
 ```shell
 dotnet add package VEFramework.VEDriversLite --version 0.3.42
 ```
+
+
+- [`VEDriversLite.NeblioAPI`](./VirtualEconomyFramework/VEDriversLite.NeblioAPI) pro zjednodušení práce s Neblio Blockchain API.
+- VEDriversLite obsahují tuto knihovnu. Pokud potřebujete jen přístup k API a nepotřebujete podepisovat transakce lze načíst jen knihovnu pro NeblioAPI a tím snížit počet závislostí v projektu.
+
+```shell
+dotnet add package VEFramework.VEDriversLite.NeblioAPI --version 0.3.42
+```
+
 - [`VEBlazor`](https://github.com/fyziktom/VirtualEconomyFramework/tree/main/VirtualEconomyFramework/VEBlazor) - Blazor knihovna komponent a dApp vzor
 
 ```shell
@@ -34,9 +51,9 @@ Zkuste si náš [hello world příklad](#hello-world).
 Více informací najdete na
 
 - [Wiki](https://github.com/fyziktom/VirtualEconomyFramework/wiki)
-- [Swagger API dokumentaci](./VEconomy-swagger.json)
-- [Readme VEconomy](https://github.com/fyziktom/VirtualEconomyFramework/tree/main/VirtualEconomyFramework/VEconomy#veconomy-application)
+- [Dokumentaci tříd a funkcí](https://fyziktom.github.io/VirtualEconomyFramework/)
 - [Readme VBlazor](https://github.com/fyziktom/VirtualEconomyFramework/tree/main/VirtualEconomyFramework/VEBlazor)
+- [Readme VEconomy](https://github.com/fyziktom/VirtualEconomyFramework/tree/main/VirtualEconomyFramework/VEconomy#veconomy-application)
 
 ### Docker
 
@@ -62,7 +79,7 @@ Vyzkoušejte testovací verzi VENFT postavenou na VEBlazor, vytvořte si nový �
 
 ### VEDriversLite
 
-1. [Install the .NET Core 6 SDK.](https://dotnet.microsoft.com/en-us/download/dotnet/6.0)
+1. [Install the .NET Core 6 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/6.0) nebo [.NET 7 SDK.](https://dotnet.microsoft.com/en-us/download/dotnet/7.0)
 2. Vytvořte nový `dotnet` projekt
 
 ```shell
@@ -137,13 +154,14 @@ dotnet run
 - UI s integrovaným web3 prostředím
 - Drivery a pomocné funkce pro mintování, prodej a obchodování s NFT
 - NFT jako obrázky, příspěvky, hudba, profily, platby, atd.
-- ChatGPT, Whisper a DALL-E jako asistenti pro tvorbu obsahu NFT jako je: 
+- OpenAI - ChatGPT, Whisper a DALL-E jako asistenti pro tvorbu obsahu NFT jako je: 
   - převod textu z audia, 
   - text ze základní story, 
   - název, 
   - tagy, 
   - zkrácený popis, 
   - obrázky
+  - Více informací najdete ve [článcích na wiki](https://github.com/fyziktom/VirtualEconomyFramework/wiki/#OpenAI)
 - [IPFS](https://ipfs.io/) driver,
 - Ověření vlastnictví NFT (tvorba QR kódů)
 - NFT systém pro události a vstupenky
