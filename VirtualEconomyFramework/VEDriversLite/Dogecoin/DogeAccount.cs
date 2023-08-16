@@ -6,6 +6,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VEDriversLite.Common;
 using VEDriversLite.DogeAPI;
 using VEDriversLite.Events;
 using VEDriversLite.NFT;

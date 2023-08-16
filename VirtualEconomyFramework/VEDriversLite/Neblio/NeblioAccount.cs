@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using VEDriversLite.Bookmarks;
+using VEDriversLite.Common;
 using VEDriversLite.Dto;
 using VEDriversLite.Events;
 using VEDriversLite.Messaging;

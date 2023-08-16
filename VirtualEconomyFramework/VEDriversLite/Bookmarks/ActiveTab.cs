@@ -128,24 +128,8 @@ namespace VEDriversLite.Bookmarks
             {
                 var txinfotasks = new ConcurrentQueue<Task>();
                 foreach (var utxo in utxos_segment)
-                {
                     txinfotasks.Enqueue(NeblioAPIHelpers.GetTransactionInfo(utxo.Txid));
-                    var tok = utxo.Tokens?.FirstOrDefault();
-                    var tokid = tok?.TokenId;
-                    var tokamount = tok?.Amount;
-
-                    if (!string.IsNullOrEmpty(tokid) &&
-                        tokamount != null &&
-                        tokamount == 1 &&
-                        NFTHelpers.AllowedTokens.Contains(tokid))
-                    {
-                        if (!VEDLDataContext.NFTCache.ContainsKey(utxo.Txid))
-                        {
-                            txinfotasks.Enqueue(NeblioAPIHelpers.GetTokenMetadataOfUtxoCache(tokid, utxo.Txid));
-                        }
-                    }
-                }
-
+                
                 var tasks = new ConcurrentQueue<Task>();
                 var added = 0;
                 var paralelism = 5;
@@ -163,15 +147,6 @@ namespace VEDriversLite.Bookmarks
                         added = 0;
                     }
                 }
-                /*
-                Parallel.ForEach(new ArraySegment<Utxos>(utxos, 0, utxos.Length > MaxLoadedNFTItems ? MaxLoadedNFTItems : utxos.Length), new ParallelOptions { MaxDegreeOfParallelism = 10 }, utxo =>
-                {
-                    NeblioTransactionHelpers.GetTransactionInfo(utxo.Txid).Wait();//this cause the trouble
-                    var tokid = utxo.Tokens?.FirstOrDefault()?.TokenId;
-                    if (!string.IsNullOrEmpty(tokid) && !VEDLDataContext.NFTCache.ContainsKey(utxo.Txid))
-                        NeblioTransactionHelpers.GetTokenMetadataOfUtxoCache(tokid, utxo.Txid).Wait(); //this cause the trouble
-                    System.Threading.Thread.Sleep(20);
-                });*/
             }
             Console.WriteLine("Cash of the TxInfo preload end...");
         }

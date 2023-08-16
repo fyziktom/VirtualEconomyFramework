@@ -94,6 +94,8 @@
         {
             foreach (var v in values)
             {
+                if (v.Contains(" "))
+                    continue;
                 if (!VEDriversLite.NFT.NFTDataContext.Tags.ContainsKey(v))
                     VEDriversLite.NFT.NFTDataContext.Tags.TryAdd(v, new VEDriversLite.NFT.Tags.Tag() { Name = v, Count = 1 });
             }

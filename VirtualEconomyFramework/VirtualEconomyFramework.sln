@@ -95,6 +95,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VEBlazor.Demo.AI.LanguageIm
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VEBlazor.Demo.MAUI.VENFTApp", "VEBlazor.Demo.MAUI.VENFTApp\VEBlazor.Demo.MAUI.VENFTApp.csproj", "{AF826263-E503-49C8-BA56-A19F7023E7E8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VEFramework.BlockchainIndexerServer", "VEFramework.BlockchainIndexerServer\VEFramework.BlockchainIndexerServer.csproj", "{2AD48F7C-94A8-410E-A73A-4D895F991E0B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -615,6 +617,18 @@ Global
 		{AF826263-E503-49C8-BA56-A19F7023E7E8}.Release|x86.ActiveCfg = Release|Any CPU
 		{AF826263-E503-49C8-BA56-A19F7023E7E8}.Release|x86.Build.0 = Release|Any CPU
 		{AF826263-E503-49C8-BA56-A19F7023E7E8}.Release|x86.Deploy.0 = Release|Any CPU
+		{2AD48F7C-94A8-410E-A73A-4D895F991E0B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2AD48F7C-94A8-410E-A73A-4D895F991E0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2AD48F7C-94A8-410E-A73A-4D895F991E0B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{2AD48F7C-94A8-410E-A73A-4D895F991E0B}.Debug|x64.Build.0 = Debug|Any CPU
+		{2AD48F7C-94A8-410E-A73A-4D895F991E0B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{2AD48F7C-94A8-410E-A73A-4D895F991E0B}.Debug|x86.Build.0 = Debug|Any CPU
+		{2AD48F7C-94A8-410E-A73A-4D895F991E0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2AD48F7C-94A8-410E-A73A-4D895F991E0B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2AD48F7C-94A8-410E-A73A-4D895F991E0B}.Release|x64.ActiveCfg = Release|Any CPU
+		{2AD48F7C-94A8-410E-A73A-4D895F991E0B}.Release|x64.Build.0 = Release|Any CPU
+		{2AD48F7C-94A8-410E-A73A-4D895F991E0B}.Release|x86.ActiveCfg = Release|Any CPU
+		{2AD48F7C-94A8-410E-A73A-4D895F991E0B}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

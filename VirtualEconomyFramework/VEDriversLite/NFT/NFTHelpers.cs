@@ -1,7 +1,8 @@
-﻿using Ipfs;
+using Ipfs;
 using Ipfs.Http;
 using NBitcoin;
 using Newtonsoft.Json;
+using Org.BouncyCastle.Asn1.Tsp;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -14,6 +15,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using VEDriversLite.Bookmarks;
+using VEDriversLite.Common;
 using VEDriversLite.Events;
 using VEDriversLite.NeblioAPI;
 using VEDriversLite.NFT.DevicesNFTs;
@@ -198,18 +200,25 @@ namespace VEDriversLite.NFT
         /// <param name="utxo"></param>
         /// <param name="checkIfUsed">if you are checking the NFT ticket you should set this flag</param>
         /// <returns></returns>
-        public static async Task<LoadNFTOriginDataDto> LoadNFTOriginData(string utxo, bool checkIfUsed = false)
+        public static async Task<LoadNFTOriginDataDto> LoadNFTOriginData(string utxo, bool checkIfUsed = false, GetTransactionInfoResponse txinfo = null)
         {
             var result = new LoadNFTOriginDataDto();
             var txid = utxo;
+            var firstRun = true;
+
             while (true)
             {
                 try
                 {
-                    var check = await CheckIfMintTx(txid);
+                    if (firstRun && txinfo != null)
+                        firstRun = false;
+                    else
+                        txinfo = await NeblioAPIHelpers.GetTransactionInfo(txid);
+                    
+                    var check = await CheckIfMintTx(txid, txinfo);
                     if (check.Item1)
                     {
-                        var meta = await CheckIfContainsNFTData(txid);
+                        var meta = await CheckIfContainsNFTData(txid, txinfo);
                         if (meta != null)
                         {
                             result.NFTMetadata = meta;
@@ -230,7 +239,7 @@ namespace VEDriversLite.NFT
                     {
                         if (checkIfUsed && !result.Used)
                         {
-                            var meta = await CheckIfContainsNFTData(txid);
+                            var meta = await CheckIfContainsNFTData(txid, txinfo);
                             if (meta != null && meta.TryGetValue("Used", out var u))
                                 if (u == "true")
                                     result.Used = true;
@@ -284,14 +293,28 @@ namespace VEDriversLite.NFT
         /// </summary>
         /// <param name="utxo"></param>
         /// <returns></returns>
-        public static async Task<Dictionary<string, string>> CheckIfContainsNFTData(string utxo)
+        public static async Task<Dictionary<string, string>> CheckIfContainsNFTData(string utxo, GetTransactionInfoResponse info = null)
         {
-            var meta = await NeblioAPIHelpers.GetTransactionMetadata(TokenId, utxo);
+            if (info == null)
+                info = await NeblioAPIHelpers.GetTransactionInfo(utxo);
 
-            if (meta.TryGetValue("NFT", out var value))
-                if (!string.IsNullOrEmpty(value) && value == "true")
-                    return meta;
+            //var meta = await NeblioAPIHelpers.GetTransactionMetadata(TokenId, utxo);
+            try
+            {
+                var metadata = string.Empty;
+                if (info.Vout.Where(o => o.ScriptPubKey.Type == "nulldata").Any())
+                    metadata = info.Vout.Where(o => o.ScriptPubKey.Type == "nulldata").FirstOrDefault()?.ScriptPubKey.Asm ?? string.Empty;
 
+                var meta = NeblioTransactionHelpers.ParseCustomMetadata(metadata);
+
+                if (meta.TryGetValue("NFT", out var value))
+                    if (!string.IsNullOrEmpty(value) && value == "true")
+                        return meta;
+            }
+            catch(Exception ex)
+            {
+                await Console.Out.WriteLineAsync("Cannot discover if tx contains NFT data. " + ex.Message);
+            }
             return null;
         }
 
@@ -301,9 +324,10 @@ namespace VEDriversLite.NFT
         /// </summary>
         /// <param name="utxo"></param>
         /// <returns></returns>
-        public static async Task<(bool, string)> CheckIfMintTx(string utxo)
+        public static async Task<(bool, string)> CheckIfMintTx(string utxo, GetTransactionInfoResponse info = null)
         {
-            var info = await NeblioAPIHelpers.GetTransactionInfo(utxo);
+            if (info == null)
+                info = await NeblioAPIHelpers.GetTransactionInfo(utxo);
 
             if (info != null && info.Vin != null && info.Vin.Count > 0)
             {
@@ -427,13 +451,13 @@ namespace VEDriversLite.NFT
         /// <param name="justPayments">Load just Payments</param>
         /// <returns></returns>
         public static async Task<List<INFT>> LoadAddressNFTs(string address,
-                                                             ICollection<Utxos> inutxos = null,
-                                                             ICollection<INFT> innfts = null,
-                                                             bool fireProfileEvent = false,
-                                                             int maxLoadedItems = 0,
-                                                             bool withoutMessages = false,
-                                                             bool justMessages = false, 
-                                                             bool justPayments = false)
+                                                     ICollection<Utxos> inutxos = null,
+                                                     ICollection<INFT> innfts = null,
+                                                     bool fireProfileEvent = false,
+                                                     int maxLoadedItems = 0,
+                                                     bool withoutMessages = false,
+                                                     bool justMessages = false,
+                                                     bool justPayments = false)
         {
             var fireProfileEventTmp = fireProfileEvent;
             List<INFT> nfts = new List<INFT>();
@@ -442,90 +466,70 @@ namespace VEDriversLite.NFT
                 uts = await NeblioAPIHelpers.GetAddressNFTsUtxos(address, AllowedTokens);
             else
                 uts = await NeblioAPIHelpers.GetAddressNFTsUtxos(address, AllowedTokens, new GetAddressInfoResponse() { Utxos = inutxos });
-            var utxos = uts.OrderBy(u => u.Blocktime).Reverse().ToList();
-
-            var ns = new List<INFT>();
-            if (innfts != null)// && utxos.Count <= innfts.Count)
-            {
-                innfts.ToList().ForEach(n =>
-                {
-                    if (utxos.Any(u => (u.Txid == n.Utxo && u.Index == n.UtxoIndex)))
-                        ns.Add(n);
-                });
-                innfts.Clear();
-                innfts = ns.ToList();
-            }
-
-            var lastNFTTime = DateTime.MinValue;
-            if (innfts != null && innfts.Count > 0)
-                lastNFTTime = innfts.FirstOrDefault().Time;
+            var utxos = uts;//.OrderBy(u => u.Blocktime).Reverse().ToList();
 
             NFTLoadingStateChanged?.Invoke(address, "Loading of the NFTs Started.");
 
             foreach (var u in utxos)
             {
-                if (maxLoadedItems > 0 && nfts.Count > maxLoadedItems) break;
+                if (maxLoadedItems > 0 && nfts.Count > maxLoadedItems)
+                    break;
 
-                if (TimeHelpers.UnixTimestampToDateTime((double)u.Blocktime) > lastNFTTime)
+                var inn = innfts.FirstOrDefault(n => n.Utxo == u.Txid && n.UtxoIndex == u.Index);
+                if (inn != null)
                 {
-                    if (u.Tokens != null && u.Tokens.Count > 0)
+                    nfts.Add(inn);
+                    continue;
+                }
+
+                var t = u.Tokens.FirstOrDefault();
+
+                if (t != null && t.Amount == 1)
+                {
+                    try
                     {
-                        foreach (var t in u.Tokens)
+                        var metadata = string.Empty;
+                        if (u.Blockheight == -1 && t.AdditionalProperties != null && t.AdditionalProperties.Count > 0)
                         {
-                            if (t.Amount == 1)
+                            if (t.AdditionalProperties.TryGetValue("metadata", out var meta))
+                                metadata = meta.ToString();
+                        }
+
+                        INFT nft = null;
+                        if (!withoutMessages)
+                        {
+                            if (!justMessages && !justPayments)
+                                nft = await NFTFactory.GetNFT(t.TokenId, u.Txid, (int)u.Index, (double)u.Blocktime, wait: true, address: address, metadataString:metadata);
+                            else if (justMessages && !justPayments)
+                                nft = await NFTFactory.GetNFT(t.TokenId, u.Txid, (int)u.Index, (double)u.Blocktime, wait: true, loadJustType: true, justType: NFTTypes.Message, address: address, metadataString: metadata);
+                            else if (!justMessages && justPayments)
+                                nft = await NFTFactory.GetNFT(t.TokenId, u.Txid, (int)u.Index, (double)u.Blocktime, wait: true, loadJustType: true, justType: NFTTypes.Payment, address: address, metadataString: metadata);
+                        }
+                        else
+                        {
+                            nft = await NFTFactory.GetNFT(t.TokenId, u.Txid, (int)u.Index, (double)u.Blocktime, wait: true, skipTheType: true, skipType: NFTTypes.Message, address: address, metadataString: metadata);
+                        }
+                        if (nft != null)
+                        {
+                            if (fireProfileEventTmp && nft.Type == NFTTypes.Profile)
                             {
-                                try
-                                {
-                                    INFT nft = null;
-                                    if (!withoutMessages)
-                                    {
-                                        if (!justMessages && !justPayments)
-                                            nft = await NFTFactory.GetNFT(t.TokenId, u.Txid, (int)u.Index, (double)u.Blocktime, wait: true, address:address);
-                                        else if (justMessages && !justPayments)
-                                            nft = await NFTFactory.GetNFT(t.TokenId, u.Txid, (int)u.Index, (double)u.Blocktime, wait:true, loadJustType:true, justType:NFTTypes.Message, address: address);
-                                        else if (!justMessages && justPayments)
-                                            nft = await NFTFactory.GetNFT(t.TokenId, u.Txid, (int)u.Index, (double)u.Blocktime, wait: true, loadJustType:true, justType:NFTTypes.Payment, address: address);
-                                    }
-                                    else
-                                    {
-                                        nft = await NFTFactory.GetNFT(t.TokenId, u.Txid, (int)u.Index, (double)u.Blocktime, wait: true, skipTheType: true, skipType: NFTTypes.Message, address: address);
-                                    }
-                                    if (nft != null)
-                                    {
-                                        if (fireProfileEventTmp && nft.Type == NFTTypes.Profile)
-                                        {
-                                            ProfileNFTFound.Invoke(address, nft);
-                                            fireProfileEventTmp = false;
-                                        }
-                                        nft.UtxoIndex = (int)u.Index;
-                                        //if (!(nfts.Any(n => n.Utxo == nft.Utxo))) // todo TEST in cases with first minting on address
-                                        nfts.Add(nft);
-                                        NFTLoadingStateChanged?.Invoke(address, $"Loaded {nfts.Count} NFT of {utxos.Count}.");
-                                    }
-                                }
-                                catch(Exception ex)
-                                {
-                                    Console.WriteLine("Some trouble with loading NFT." + ex.Message);
-                                }
+                                ProfileNFTFound.Invoke(address, nft);
+                                fireProfileEventTmp = false;
                             }
+                            nft.UtxoIndex = (int)u.Index;
+                            //if (!(nfts.Any(n => n.Utxo == nft.Utxo))) // todo TEST in cases with first minting on address
+                            nfts.Add(nft);
+                            NFTLoadingStateChanged?.Invoke(address, $"Loaded {nfts.Count} NFT of {utxos.Count}.");
                         }
                     }
-                }
-                else
-                {
-                    break;
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Some trouble with loading NFT." + ex.Message);
+                    }
                 }
             }
 
-            if (innfts == null)
-                return nfts;
-            else
-                nfts.ForEach(n => {
-                    if (!innfts.Any(i => i.Utxo == n.Utxo && i.UtxoIndex == n.UtxoIndex))
-                        innfts.Add(n);
-                });
-            //NFTLoadingStateChanged?.Invoke(address, "All NFTs Loaded.");
-            return innfts.OrderByDescending(n => n.Time).ToList();
+            return nfts;
         }
 
         /// <summary>
@@ -720,7 +724,7 @@ namespace VEDriversLite.NFT
                     };                                       
 
                     // send tx
-                   transaction  = await NeblioTransactionHelpers.MintNFTTokenAsync(dto, ekey, nutxos, tutxos);                    
+                   transaction  = await NeblioTransactionHelpers.MintNFTTokenAsync(dto, nutxos, tutxos);                    
                 }
                 else
                 {
@@ -779,7 +783,7 @@ namespace VEDriversLite.NFT
                         SenderAddress = address,
                         ReceiverAddress = receiver
                     };
-                    transaction = await NeblioTransactionHelpers.MintNFTTokenAsync(dto, ekey, nutxos, tutxos);
+                    transaction = await NeblioTransactionHelpers.MintNFTTokenAsync(dto, nutxos, tutxos);
                 }
                 else
                 {
@@ -1125,6 +1129,76 @@ namespace VEDriversLite.NFT
                 sendUtxo = new List<string>() { $"{NFT.Utxo}:{NFT.UtxoIndex}" },
                 SenderAddress = address,
                 ReceiverAddress = address
+            };
+
+            return dto;
+        }
+
+        /// <summary>
+        /// This function will create Dto for issue Token tx transaction
+        /// </summary>
+        /// <param name="address">sender address</param>
+        /// <returns></returns>
+        public static async Task<IssueTokenTxData> GetTokenIssueTxData(string issuingAddress, string receiver, ulong amount, string tokenSymbol, string issuerNick, string description, string imageLink, string imageFileName, string imageType, IDictionary<string,string> metadata = null )
+        {
+            if (string.IsNullOrEmpty(issuingAddress))
+                throw new Exception("Cannot create without address");
+            if (string.IsNullOrEmpty(tokenSymbol) && tokenSymbol?.Length > 5)
+                throw new Exception("Cannot create without token symbol. Or symbol is longer than 5 characters.");
+            if (amount <= 0)
+                throw new Exception("Amout must be bigger than 0.");
+
+            if (string.IsNullOrEmpty(imageType))
+            {
+                var filename = imageFileName;
+                if (string.IsNullOrEmpty(filename))
+                    filename = imageLink;
+                var ext = FileHelpers.GetMimeTypeFromImageFile(filename);
+                if (!string.IsNullOrEmpty(ext))
+                    imageType = ext;
+                else
+                    imageType = "image/png";
+            }
+
+            var urls = new tokenUrlCarrier()
+            {
+                url = imageLink,
+                mimeType = imageType,
+                name = "icon",
+            };
+
+            var metaurls = new List<tokenUrlCarrier>() { urls };
+
+            MetadataOfIssuance meta = new MetadataOfIssuance()
+            {
+                Data = new Data2()
+                {
+                    Description = description,
+                    Issuer = issuerNick,
+                    TokenName = tokenSymbol,
+                    Urls = metaurls,
+                     UserData = new UserData4()
+                     {
+                          Meta = metadata.Select(data => new Meta3()
+                          {
+                              Key = data.Key,
+                              Value = data.Value,
+                              AdditionalProperties = new Dictionary<string, object>() { { "type", "String" } }
+                          }).ToList()
+                     }
+                }
+            };
+
+            if (string.IsNullOrEmpty(receiver))
+                receiver = issuingAddress;
+
+            // fill input data for issue token tx
+            var dto = new IssueTokenTxData()
+            {
+                Amount = amount,
+                IssuanceMetadata = meta,
+                SenderAddress = issuingAddress,
+                ReceiverAddress = receiver
             };
 
             return dto;

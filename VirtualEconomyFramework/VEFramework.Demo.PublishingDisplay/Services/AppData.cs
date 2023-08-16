@@ -24,7 +24,7 @@ namespace VEFramework.Demo.PublishingDisplay.Services
         public static string Address { get; } = "NfzBf8eeqJ71zHf29npwYwEPkiWYZZtabJ"; // main coruzat publishing address
         public static string FoundingFellowsAddress { get; } = "NXRX9YA8sgfhaqASPd9Dv7eG9CEk4RqtZj"; // fellows nfts coruzat publishing address
         public static string AppShareNFTUrl { get; set; } = "https://publishing.ve-nft.com/";       //"https://localhost:7055/"; 
-        public static int MaxLoaded { get; set; } = 20;
+        public static int MaxLoaded { get; set; } = 25;
         public static bool Loading { get; set; } = false;
         public static bool LoadingFellows { get; set; } = false;
         public static bool LoadedBase { get; set; } = false;

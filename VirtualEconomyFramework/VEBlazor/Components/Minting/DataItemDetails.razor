@@ -1,0 +1,172 @@
+﻿@using VEDriversLite.NFT.Dto
+
+@if (DisplayButton)
+{
+    <Button Color="Color.Primary" Clicked="@ShowModal" Block>@ButtonText</Button>
+}
+@if (Item != null)
+{
+    <Modal @ref="dataItemModal">
+        <ModalContent Centered Size="ModalSize.Large">
+        <ModalHeader>
+            <ModalTitle>Data Item</ModalTitle>
+                <CloseButton />
+            </ModalHeader>
+            <ModalBody>
+                <Row Margin="Margin.Is2.FromTop">
+                    <Column>
+                        <Field>
+                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">Item Type:</FieldLabel>
+                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                            <Select Display="Display.None.OnDesktop.InlineBlock.OnTablet" SelectedValue="@Item.Type" SelectedValueChanged="@onTypeChanged" TValue="DataItemType">
+                                @foreach (var gtype in Enum.GetValues<DataItemType>())
+                                    {
+                                        <SelectItem TValue="DataItemType" @key="@gtype" Value="@gtype">@(Enum.GetName(typeof(DataItemType), gtype))</SelectItem>
+                                    }
+                                </Select>
+                                <RadioGroup Display="Display.None.OnMobile.None.OnTablet.InlineBlock.OnDesktop" CheckedValue="@Item.Type" CheckedValueChanged="@onTypeChanged" TValue="DataItemType" Name="graphtype" Orientation="Orientation.Horizontal" Buttons Color="Color.Light">
+                                    @foreach (var gtype in Enum.GetValues<DataItemType>())
+                                    {
+                                        <Radio TValue="DataItemType" @key="@gtype" Value="@gtype">@(Enum.GetName(typeof(DataItemType), gtype))</Radio>
+                                    }
+                                </RadioGroup>
+                            </FieldBody>
+                        </Field>
+                    </Column>
+                </Row>
+                <Row Margin="Margin.Is2.FromTop">
+                    <Column>
+                        <Field>
+                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">Storage Type:</FieldLabel>
+                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                            <Select Display="Display.None.OnDesktop.InlineBlock.OnTablet" SelectedValue="@Item.Storage" SelectedValueChanged="@onStorageTypeChanged" TValue="DataItemStorageType">
+                                @foreach (var gtype in Enum.GetValues<DataItemStorageType>())
+                                    {
+                                        <SelectItem TValue="DataItemStorageType" @key="@gtype" Value="@gtype">@(Enum.GetName(typeof(DataItemStorageType), gtype))</SelectItem>
+                                    }
+                                </Select>
+                                <RadioGroup Display="Display.None.OnMobile.None.OnTablet.InlineBlock.OnDesktop" CheckedValue="@Item.Storage" CheckedValueChanged="@onStorageTypeChanged" TValue="DataItemStorageType" Name="graphtype" Orientation="Orientation.Horizontal" Buttons Color="Color.Light">
+                                    @foreach (var gtype in Enum.GetValues<DataItemStorageType>())
+                                    {
+                                        <Radio TValue="DataItemStorageType" @key="@gtype" Value="@gtype">@(Enum.GetName(typeof(DataItemStorageType), gtype))</Radio>
+                                    }
+                                </RadioGroup>
+                            </FieldBody>
+                        </Field>
+                    </Column>
+                </Row>
+                <Row Margin="Margin.Is2.FromTop">
+                    <Column>
+                        <Field>
+                            @if (Item.Storage == DataItemStorageType.IPFS)
+                            {
+                                <FieldLabel>Please enter the Item hash</FieldLabel>
+                                <TextEdit Placeholder="Item hash" Text="@Item.Hash" TextChanged="@onHashChanged" />
+                            }
+                            else if (Item.Storage == DataItemStorageType.Url)
+                            {
+                                <FieldLabel>Please enter the Item link</FieldLabel>
+                                <TextEdit Placeholder="Item link" Text="@Item.Hash" TextChanged="@onHashChanged" />
+                            }
+                            else if (Item.Storage == DataItemStorageType.Local)
+                            {
+                                <FieldLabel>Please enter the Item path</FieldLabel>
+                                <TextEdit Placeholder="Item path" Text="@Item.Hash" TextChanged="@onHashChanged" />
+                            }
+                            else if (Item.Storage == DataItemStorageType.NeblioNTP1)
+                            {
+                                <FieldLabel>Please enter the Item Neblio NTP1 transaction hash</FieldLabel>
+                                <TextEdit Placeholder="Item txId" Text="@Item.Hash" TextChanged="@onHashChanged" />
+                            }
+                        </Field>
+                    </Column>
+                 </Row>
+                <Row Margin="Margin.Is2.FromTop">
+                    <Column Flex="Flex.JustifyContent.Center">
+                        @if (DisplayButton)
+                        {
+                            <Button Color="Color.Primary" Clicked="@AddItem" Block>Add</Button>
+                        }
+                    </Column>
+                </Row>
+                
+             </ModalBody>
+    </ModalContent>
+</Modal>
+}
+
+@code {
+    [Inject] INotificationService? NotificationService { get; set; }
+
+    [Parameter] public bool DisplayButton { get; set; } = true;
+    [Parameter] public string ButtonText { get; set; } = "Add DataItem";
+    [Parameter] public VEDriversLite.NFT.Dto.NFTDataItem Item { get; set; } = new VEDriversLite.NFT.Dto.NFTDataItem();
+    [Parameter] public EventCallback<VEDriversLite.NFT.Dto.NFTDataItem> ItemChanged { get; set; }
+    [Parameter] public EventCallback<VEDriversLite.NFT.Dto.NFTDataItem> ItemAdded { get; set; }
+
+    Modal? dataItemModal;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            Item = new VEDriversLite.NFT.Dto.NFTDataItem()
+            {
+                Storage = DataItemStorageType.IPFS,
+                Type = DataItemType.Image
+            };
+        }
+        base.OnAfterRender(firstRender);
+    }
+
+    private async Task onIsMainChanged(bool main)
+    {
+        Item.IsMain = main;
+        await ItemChanged.InvokeAsync(Item);
+    }
+
+    private async Task onTypeChanged(DataItemType type)
+    {
+        Item.Type = type;
+        await ItemChanged.InvokeAsync(Item);
+    }
+
+    private async Task onStorageTypeChanged(DataItemStorageType type)
+    {
+        Item.Storage = type;
+        await ItemChanged.InvokeAsync(Item);
+    }
+    private async Task onHashChanged(string hash)
+    {
+        var cleanHash = VEDriversLite.StorageDriver.Helpers.IPFSHelpers.GetHashFromIPFSLink(hash);
+        if (cleanHash.Contains("/"))
+        {
+            if (cleanHash[cleanHash.Length - 1] == '/')
+                cleanHash = cleanHash.TrimEnd('/');
+
+            var split = cleanHash.Split('/');
+            if (split.Length > 0)
+                cleanHash = split[split.Length - 1];
+        }
+
+        Item.Hash = cleanHash;
+
+        await ItemChanged.InvokeAsync(Item);
+    }
+
+    public void ShowModal()
+    {
+        dataItemModal?.Show();
+    }
+    public void HideModal()
+    {
+        dataItemModal?.Hide();
+    }
+
+    private async Task AddItem()
+    {
+        await ItemAdded.InvokeAsync(Item);
+        await Task.Delay(500);
+        HideModal();
+    }
+}

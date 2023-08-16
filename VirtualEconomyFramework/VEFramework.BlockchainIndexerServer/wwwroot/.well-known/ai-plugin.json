@@ -1,0 +1,20 @@
+{
+    "schema_version": "v1",
+    "name_for_human": "VEFramework API",
+    "name_for_model": "veframeworkapi",
+    "description_for_human": "Plugin for access to indexed blockchain and NFT data.",
+    "description_for_model": "Plugin for access to indexed blockchain and NFT data.",
+    "auth": {
+      "type": "none"
+    },
+    "api": {
+      "type": "openapi",
+      "url": "https://ve-framework.com/openapi.yaml",
+      "is_user_authenticated": false
+    },
+    "logo_url": "https://ve-framework.com/logo.png",
+    "contact_email": "tomas.svoboda@technicinsider.com",
+    "legal_info_url": "https://veframework.com/"
+  }
+  
+  

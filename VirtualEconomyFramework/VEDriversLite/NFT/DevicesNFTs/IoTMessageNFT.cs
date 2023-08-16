@@ -73,10 +73,10 @@ namespace VEDriversLite.NFT.DevicesNFTs
         /// </summary>
         /// <param name="lastmetadata"></param>
         /// <returns></returns>
-        public override async Task ParseOriginData(IDictionary<string, string> lastmetadata)
+        public override async Task ParseOriginData(IDictionary<string, string> lastmetadata, GetTransactionInfoResponse txinfo = null)
         {
             await GetPartner();
-            var nftData = await NFTHelpers.LoadNFTOriginData(Utxo);
+            var nftData = await NFTHelpers.LoadNFTOriginData(Utxo, false, txinfo);
             if (nftData != null)
             {
                 ParseCommon(nftData.NFTMetadata);

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VEDriversLite.NeblioAPI;
 
 namespace VEDriversLite
 {
@@ -51,6 +52,11 @@ namespace VEDriversLite
         /// Initial Utxo for sending transaction from if you want to specify them
         /// </summary>
         public ICollection<string> sendUtxo { get; set; } = new List<string>();
+        /// <summary>
+        /// Fill when you have multiple receivers
+        /// Works now just for multimint of NFTs example in VEBlazor.Demo.TicketsAndEvents for minting tickets
+        /// </summary>
+        public List<To> MultipleReceivers { get; set; } = new List<To>();
 
         /// <summary>
         /// If you wish to add specific neblio utxo as source for the fee
