@@ -5,7 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 	  <PackageId>VEFramework.VEDriversLite.StorageDriver</PackageId>
-	  <Version>0.3.42</Version>
+	  <Version>0.4.01</Version>
 	  <Authors>fyziktom</Authors>
 	  <Company>VEFramework</Company>
 	  <Description>.NET drivers for IPFS, FileSystem, API files and other file storages.</Description>
