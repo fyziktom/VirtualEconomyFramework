@@ -1,13 +1,12 @@
-﻿using OpenAI.GPT3.Managers;
-using OpenAI.GPT3.ObjectModels.RequestModels;
-using OpenAI.GPT3.ObjectModels;
-using OpenAI.GPT3;
-using System.Text;
+﻿using System.Text;
 using VEDriversLite.AI.OpenAI.Dto;
 using Newtonsoft.Json;
 using VEDriversLite.Common.Enums;
-using OpenAI.GPT3.Interfaces;
 using System.Security.Cryptography;
+using OpenAI.Managers;
+using OpenAI.ObjectModels.RequestModels;
+using OpenAI.ObjectModels;
+using OpenAI;
 
 namespace VEDriversLite.AI.OpenAI
 {

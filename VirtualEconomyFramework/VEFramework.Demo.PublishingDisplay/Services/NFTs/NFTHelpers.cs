@@ -607,7 +607,7 @@ namespace VEFramework.Demo.PublishingDisplay.Services.NFTs
         /// <param name="address"></param>
         /// <param name="utxos">leave null if you need to obtain new utxos nft list</param>
         /// <returns></returns>
-        public static async Task<INFT> FindProfileOfAddress(string address, ICollection<Utxos> utxos = null)
+        public static async Task<INFT> FindProfileOfAddress(string address, ICollection<Utxos>? utxos = null)
         {
             if (utxos == null)
                 utxos = await NeblioAPIHelpers.GetAddressNFTsUtxos(address, AllowedTokens);
@@ -634,7 +634,7 @@ namespace VEFramework.Demo.PublishingDisplay.Services.NFTs
         /// <param name="nftOriginTxId"></param>
         /// <param name="utxos">leave null if you need to obtain new utxos nft list</param>
         /// <returns></returns>
-        public static async Task<INFT> FindEventOnTheAddress(string address, string nftOriginTxId, ICollection<Utxos> utxos = null)
+        public static async Task<INFT> FindEventOnTheAddress(string address, string nftOriginTxId, ICollection<Utxos>? utxos = null)
         {
             if (utxos == null)
                 utxos = await NeblioAPIHelpers.GetAddressNFTsUtxos(address, AllowedTokens);
@@ -704,8 +704,8 @@ namespace VEFramework.Demo.PublishingDisplay.Services.NFTs
         /// <param name="justPayments">Load just Payments</param>
         /// <returns></returns>
         public static async Task<List<INFT>> LoadAddressNFTs(string address,
-                                                             ICollection<Utxos> inutxos = null,
-                                                             ICollection<INFT> innfts = null,
+                                                             ICollection<Utxos>? inutxos = null,
+                                                             ICollection<INFT>? innfts = null,
                                                              bool fireProfileEvent = false,
                                                              int maxLoadedItems = 0,
                                                              bool withoutMessages = false,
@@ -886,7 +886,7 @@ namespace VEFramework.Demo.PublishingDisplay.Services.NFTs
         /// <param name="innfts"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public static async Task<List<INFT>> LoadAddressNFTMessages(string aliceAddress, string bobAddress, ICollection<INFT> innfts = null)
+        public static async Task<List<INFT>> LoadAddressNFTMessages(string aliceAddress, string bobAddress, ICollection<INFT>? innfts = null)
         {
             if (innfts == null)
                 throw new Exception("Input NFT array cannot be null"); // todo load nfts when list is null or empty

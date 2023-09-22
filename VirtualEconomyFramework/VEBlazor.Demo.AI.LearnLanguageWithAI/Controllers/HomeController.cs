@@ -294,7 +294,7 @@ namespace VEBlazor.Demo.AI.LearnLanguageWithAI.Controllers
                     throw new HttpResponseException((HttpStatusCode)501, $"Assistant is out of the service. Try later please.");
 
                 (bool, string) res = (false, string.Empty);
-                res = await MainDataContext.Assistant.SendSimpleQuestion(data.basetext, 1000);
+                res = await MainDataContext.Assistant.SendSimpleQuestion(data.basetext, 1200);
 
                 return res.Item2;
             }

@@ -194,7 +194,7 @@
                 await NotificationService.Info("Vytvářím text...", "AI pracuje");
         }
 
-        var baset = "Vytvoř Česko-Španělskou lekci pro výuku španělštiny na téma " + BaseText.Replace("\"", "\\\"") + ". Prosím o vzorová slovíčka i věty v obou jazycích. Přidej i cvičení s doplňováním slov. Výstup bude Markdown."; ;
+        var baset = "Vytvoř Česko-Španělskou lekci pro výuku španělštiny na téma " + BaseText.Replace("\"", "\\\"") + ". Prosím o vzorová slovíčka i věty v obou jazycích. Alespoň 10 slovíček (maximum 20) a 5 vzorových vět (maximum 10). Přidej i cvičení s doplňováním slov ve španělštině. Výstup bude Markdown.";
 
         if (Language == Languages.en2es)
             baset = "Create English to Spanish lesson for learning spanish language on topic " + BaseText.Replace("\"", "\\\"") + ". Please add example vocabularies and sentenses in both languages. Add excercise with missing words what students can fill up. Output will be Markdown.";
