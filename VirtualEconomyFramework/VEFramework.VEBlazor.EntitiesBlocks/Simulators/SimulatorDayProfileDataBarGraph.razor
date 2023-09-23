@@ -1,0 +1,54 @@
+﻿<svg width="500" height="120">
+    @for (int i = 0; i < 24; i++)
+    {
+        var index = i;
+        var barHeight = GetBarHeight(Data[index]);
+        var yOffset = 100 - barHeight;
+        var xPos = index * 19.58 + 6;
+        <rect x="@((int)xPos)" y="@((int)yOffset)" width="12" height="@barHeight" fill="@GetBarColor(index)" />
+        @GetBarText(index, yOffset, Data[index])
+        @GetHourText(index)
+    }
+</svg>
+
+@code {
+    [Parameter]
+    public double[] Data { get; set; } = new double[24];
+
+    private string[] colors = new string[]
+    {
+        "#E57373", "#81C784", "#64B5F6", "#BA68C8",
+        "#FFD54F", "#4DB6AC", "#9575CD", "#FF8A65",
+        "#AED581", "#4FC3F7", "#F06292", "#FFD740"
+    };
+
+    private MarkupString GetBarText(int index, double yOffset, double value)
+    {
+        double xPos = index * 19.58 + 10;
+        string textValue = GetBarValue(value);
+        string svgText = $"<text x='{(int)xPos}' y='{(int)(yOffset - 5)}' font-size='9' fill='black' text-anchor='middle'>{textValue}</text>";
+        return new MarkupString(svgText);
+    }
+
+    private MarkupString GetHourText(int index)
+    {
+        double xPos = index * 19.58 + 9;
+        string svgText = $"<text x='{(int)xPos}' y='105' font-size='10' fill='black' text-anchor='middle'>{index:00}</text>";
+        return new MarkupString(svgText);
+    }
+
+    private string GetBarColor(int hour)
+    {
+        return colors[hour % 12];
+    }
+
+    private double GetBarHeight(double value)
+    {
+        return value * 90; // Výpočet výšky sloupce vzhledem k maximální výšce 90px
+    }
+
+    private string GetBarValue(double value)
+    {
+        return $"{Math.Round(value * 100, 1)}%";
+    }
+}

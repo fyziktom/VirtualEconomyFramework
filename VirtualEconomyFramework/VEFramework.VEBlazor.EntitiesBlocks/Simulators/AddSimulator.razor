@@ -180,8 +180,12 @@
             if (AddModal != null)
                 await AddModal.Hide();
 
+            simulator.Id = Guid.NewGuid().ToString();
+
             await Added.InvokeAsync(Item.Id);
             await ItemChanged.InvokeAsync(Item);
+
+            
         }
     }
 }

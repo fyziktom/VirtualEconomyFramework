@@ -23,67 +23,49 @@
         </Row>
     </CardHeader>
     <CardBody Overflow="Overflow.Auto" Padding="Padding.Is0">
-    @if (Simulators != null)
-    {
-                <Table>
-                    <TableHeader>
-                        <TableHeaderCell>Název</TableHeaderCell>
-                        <TableHeaderCell>Id</TableHeaderCell>
-                        <TableHeaderCell>Energie</TableHeaderCell>
-                        <TableHeaderCell>DayProfile</TableHeaderCell>
-                        <TableHeaderCell>Akce</TableHeaderCell>
-                    </TableHeader>
-                    <TableBody>
-                        @foreach (var simulator in Simulators)
-                        {
-                            @if (simulator.Type == SimulatorTypes.Device)
-                            {
-                                var simId = simulator.Id;
-                                <TableRow>
-                                    <TableRowCell>@simulator.Name</TableRowCell>
-                                    <TableRowCell>@simulator.Id</TableRowCell>
-                                    <TableRowCell>@(Math.Round((simulator as DeviceSimulator).DevicePowerConsumption, 2))</TableRowCell>
-                                    <TableRowCell>
-                                        <Table>
-                                            <TableHeader>
-                                                <TableHeaderCell>Hour</TableHeaderCell>
-                                                <TableHeaderCell>Power Ratio</TableHeaderCell>
-                                            </TableHeader>
-                                            <TableBody>
-                                                    @for (int i = 0; i < (simulator as DeviceSimulator).DayProfileData.Length; i++)
-                                                    {
-                                                        var index = i;
-                                                        <TableRow>
-                                                            <TableRowCell>@(index):00</TableRowCell>
-                                                            <TableRowCell>@(Math.Round((simulator as DeviceSimulator).DayProfileData[index],2))</TableRowCell>
-                                                        </TableRow>
-                                                    }
-                                            </TableBody>
-                                        </Table>
+        @if (Simulators != null)
+        {
+            <Table>
+                <TableHeader>
+                    <TableHeaderCell>Název</TableHeaderCell>
+                    <TableHeaderCell>Id</TableHeaderCell>
+                    <TableHeaderCell>Energie</TableHeaderCell>
+                    <TableHeaderCell>DayProfile</TableHeaderCell>
+                    <TableHeaderCell>Akce</TableHeaderCell>
+                </TableHeader>
+                <TableBody>
+                    @for (var i = 0; i < Simulators.Count; i++)
+                    {
+                        var index = Simulators.IndexOf(Simulators[i]);
+                        <TableRow>
+                            <TableRowCell>@GetSimulatorName(index)</TableRowCell>
+                            <TableRowCell>@GetSimulatorId(index)</TableRowCell>
+                            <TableRowCell>@GetSimulatorPowerConsumption(index)</TableRowCell>
+                            <TableRowCell>
+                                    <SimulatorDayProfileDataBarGraph Data="@GetSimulatorDayProfileData(index)" />
+                            </TableRowCell>
 
-                                    </TableRowCell>
-                                    
-                                    <TableRowCell>
-                                        <RemoveSimulator EntityId="@EntityId"
-                                                            SimulatorId="@simId"
-                                                            Removed="@onRemoved" 
-                                                            WithButton="true"
-                                                            WithButtonText="false" 
-                                                            WithButtonIcon="true" 
-                                                            FloatButton="Float.End"/>
-                                    </TableRowCell>
-                                </TableRow>
-                            }
-                        }
-                    </TableBody>
-                </Table>
-    }
+                            <TableRowCell>
+                                <RemoveSimulator EntityId="@EntityId"
+                                                        SimulatorId="@GetSimulatorId(index)"
+                                                    Removed="@onRemoved" 
+                                                    WithButton="true"
+                                                    WithButtonText="false" 
+                                                    WithButtonIcon="true" 
+                                                    FloatButton="Float.End"/>
+                            </TableRowCell>
+                        </TableRow>
+                    }
+                    }
+                </TableBody>
+            </Table>
+        }
     </CardBody>
 </Card>
 
 @code {
     [Parameter]
-    public IEnumerable<ISimulator> Simulators { get; set; } = new List<ISimulator>();
+    public List<ISimulator> Simulators { get; set; } = new List<ISimulator>();
     [Parameter]
     public string Name { get; set; } = string.Empty;
     [Parameter]
@@ -93,10 +75,38 @@
 
     AddSimulator? addSimulatorModal;
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    public string GetSimulatorId(int index)
     {
-        if (firstRender)
-            await LoadData(EntityId);
+        if (index < Simulators.Count)
+            return Simulators[index].Id;
+        return string.Empty;
+    }
+
+    public string GetSimulatorName(int index)
+    {
+        if (index < Simulators.Count)
+            return Simulators[index].Name;
+        return string.Empty;
+    }
+
+    public string GetSimulatorPowerConsumption(int index)
+    {
+        if (index < Simulators.Count)
+        {
+            if (Simulators[index].Type == SimulatorTypes.Device)
+                return Math.Round((Simulators[index] as DeviceSimulator).DevicePowerConsumption,2).ToString();
+        }
+        return string.Empty;
+    }
+
+    public double[] GetSimulatorDayProfileData(int index)
+    {
+        if (index < Simulators.Count)
+        {
+            if (Simulators[index].Type == SimulatorTypes.Device)
+                return (Simulators[index] as DeviceSimulator).DayProfileData;
+        }
+        return new double[24];
     }
 
     private void getEntity()
