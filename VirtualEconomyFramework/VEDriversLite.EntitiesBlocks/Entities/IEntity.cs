@@ -132,6 +132,20 @@ namespace VEDriversLite.EntitiesBlocks.Entities
                                          DateTime end);
 
         /// <summary>
+        /// Get simulator by its Id
+        /// </summary>
+        /// <param name="id">Simulator Id</param>
+        /// <returns></returns>
+        ISimulator? GetSimulator(string id);
+
+        /// <summary>
+        /// Get simulator by its name
+        /// </summary>
+        /// <param name="name">Simulator name</param>
+        /// <returns></returns>
+        ISimulator? GetSimulatorByName(string name);
+
+        /// <summary>
         /// Get blocks filtered based on Directions or Types. This function use Blocks list in entity
         /// </summary>
         /// <param name="justThisDirections">List of all allowed Direction of blocks</param>

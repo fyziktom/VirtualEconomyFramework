@@ -19,6 +19,10 @@ namespace VEDriversLite.EntitiesBlocks.Entities
         /// </summary>
         public string ParentId { get; set; } = string.Empty;
         /// <summary>
+        /// Simulator name
+        /// </summary>
+        public string Name { get; set; } = string.Empty;
+        /// <summary>
         /// Loaded config for simulator
         /// </summary>
         public string LoadedConfig { get; set; } = string.Empty;

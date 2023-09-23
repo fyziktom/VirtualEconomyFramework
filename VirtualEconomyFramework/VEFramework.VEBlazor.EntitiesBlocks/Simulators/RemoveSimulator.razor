@@ -1,0 +1,135 @@
+﻿@inject AppData AppData
+
+<Modal @ref="RemoveModal">
+    <ModalContent Centered Size="ModalSize.ExtraLarge">
+        <ModalHeader>
+            <ModalTitle>Remove Simulator</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            @if (simulator != null)
+            {
+                <Row Margin="Margin.Is2.FromTop">
+                    <Column>
+                        <Span>nme: @simulator.Name</Span>
+                    </Column>
+                </Row>
+                <Row Margin="Margin.Is2.FromTop">
+                    <Column>
+                        <Span>Id: @simulator.Id</Span>
+                    </Column>
+                </Row>
+                <Row Margin="Margin.Is2.FromTop">
+                    <Column>
+                        <Span>EntityId: @EntityId</Span>
+                    </Column>
+                </Row>
+                <Row Margin="Margin.Is2.FromTop">
+                    <Column>
+                        <Span>Do you realy want to remove this simulator?</Span>
+                    </Column>
+                </Row>
+                <Row Margin="Margin.Is2.FromTop">
+                    <Column>
+                        <Button Color="Color.Primary" Outline Clicked="@remove">Remove Simulator</Button>
+                    </Column>
+                </Row>
+            }
+            else
+            {
+                <Row>
+                    <Column>
+                        <Span>Please select the Entity to remove simulator. Click to entity in the Tree.</Span>
+                    </Column>
+                </Row>
+            }
+        </ModalBody>
+    </ModalContent>
+</Modal>
+
+@if (WithButton)
+{
+    <Button Color="Color.Primary" Block="@BlockButton" Outline Float="@FloatButton" Clicked="@openRemoveModal">
+        <Row>
+            @if (WithButtonIcon)
+            {
+                <Column>
+                    <Icon Name="IconName.Remove" />
+                </Column>
+            }
+            @if (WithButtonText)
+            {
+                <Column Margin="Margin.Is2.FromStart">
+                    @ButtonText
+                </Column>
+            }
+        </Row>
+    </Button>
+}
+
+@code {
+
+    [Parameter]
+    public bool WithButton { get; set; } = false;
+    [Parameter]
+    public bool BlockButton { get; set; } = false;
+    [Parameter]
+    public Float FloatButton { get; set; } = Float.Default;
+    [Parameter]
+    public bool WithButtonIcon { get; set; } = false;
+    [Parameter]
+    public bool WithButtonText { get; set; } = false;
+    [Parameter]
+    public string ButtonText { get; set; } = "Remove Simulator";
+    [Parameter]
+    public string EntityId { get; set; } = string.Empty;
+    [Parameter]
+    public string SimulatorId { get; set; } = string.Empty;
+    [Parameter]
+    public EventCallback<string> Removed { get; set; }
+
+    ISimulator simulator = new DeviceSimulator();
+
+    Modal? RemoveModal;
+
+    [Inject] INotificationService NotificationService { get; set; }
+
+    public async Task Load(string _entityId, string _simulatorId, bool showModal = false)
+    {
+        if (!string.IsNullOrEmpty(_entityId))
+            EntityId = _entityId;
+        if (!string.IsNullOrEmpty(_simulatorId))
+            SimulatorId = _simulatorId;
+
+        var res = AppData.EntitiesHandler.GetEntitySimulator(EntityId, SimulatorId);
+        if (res.Item1 && res.Item2 != null)
+            simulator = res.Item2;
+
+        if (showModal && RemoveModal != null)
+            await RemoveModal.Show();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task openRemoveModal()
+    {
+        if (RemoveModal != null)
+            await RemoveModal.Show();
+    }
+
+    private async Task remove()
+    {
+        if (simulator != null && !string.IsNullOrEmpty(SimulatorId) && !string.IsNullOrEmpty(EntityId))
+        {
+            var result = AppData.EntitiesHandler.RemoveSimulatorsFromEntity(EntityId, new List<string> { simulator.Id });
+            if(result.Item1)
+                await NotificationService.Success($"Simulator {simulator.Name} has been removed.", "Remove Simulator");
+            else
+                await NotificationService.Error($"Cannot remove Simulator {simulator.Name} from entity.", "Remove Simulator");
+
+            if (RemoveModal != null)
+                await RemoveModal.Hide();
+            await Removed.InvokeAsync(simulator.Id);
+        }
+    }
+
+}

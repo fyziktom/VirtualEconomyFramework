@@ -1,0 +1,187 @@
+﻿@inherits EntitiesBlocksComponentBase
+@inject AppData AppData
+
+<Modal @ref="AddModal">
+    <ModalContent Centered Size="ModalSize.ExtraLarge">
+        <ModalHeader>
+            <ModalTitle>@(!simulatorChange ? "Add" : "Change") Simulator</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            @if (Item != null && Item.Id != null && simulator != null)
+            {
+                <Row>
+                    <Column>
+                        <Field>
+                            <FieldLabel>Name</FieldLabel>
+                            <TextEdit Placeholder="Entity Name" @bind-Text="@simulator.Name" />
+                        </Field>
+                    </Column>
+                    
+                </Row>
+                <Row Margin="Margin.Is2.FromTop">
+                    <Column>
+                        <Field Margin="Margin.Is2.FromTop">
+                            <FieldLabel>Maximum Power Consumption </FieldLabel>
+                            <NumericPicker TValue="double" Min="0" Max="@double.MaxValue" @bind-Value="@((simulator as DeviceSimulator).DevicePowerConsumption)" Decimals="4" DecimalSeparator="." AlternativeDecimalSeparator="," />
+                            <FieldHelp>Please fill device maximum consumption in kW</FieldHelp>
+                        </Field>
+                    </Column>
+                </Row>
+                <Row Margin="Margin.Is2.FromTop">
+                    <Column>
+                        <Span>Morning</Span>
+                    </Column>
+                </Row>
+                <Row Margin="Margin.Is1.FromTop">
+                    <Column>
+                        <Row>
+                            @for(int i = 0; i < 12; i++)
+                            {
+                                var index = i;
+                                <Column>
+                                    <Field Margin="Margin.Is2.FromTop">
+                                        <FieldLabel>@(index):00</FieldLabel>
+                                        <NumericPicker TValue="double" Min="0" Max="1" @bind-Value="@((simulator as DeviceSimulator).DayProfileData[index])" Decimals="2" DecimalSeparator="." AlternativeDecimalSeparator="," />
+                                    </Field>
+                                </Column>
+                            }
+                        </Row>
+                    </Column>
+                </Row>
+                <Row Margin="Margin.Is2.FromTop">
+                    <Column>
+                        <Span>Now fill the consumption ration for each hour of day</Span>
+                    </Column>
+                </Row>
+                <Row Margin="Margin.Is2.FromTop">
+                    <Column>
+                        <Span>Afternoon</Span>
+                    </Column>
+                </Row>
+                <Row Margin="Margin.Is1.FromTop">
+                    <Column>
+                        <Row>
+                            @for (int j = 12; j < 24; j++)
+                            {
+                                var index = j;
+                                <Column>
+                                    <Field Margin="Margin.Is2.FromTop">
+                                        <FieldLabel>@(index):00</FieldLabel>
+                                        <NumericPicker TValue="double" Min="0" Max="1" @bind-Value="@((simulator as DeviceSimulator).DayProfileData[index])" Decimals="2" DecimalSeparator="." AlternativeDecimalSeparator="," />
+                                    </Field>
+                                </Column>
+                            }
+                        </Row>
+                    </Column>
+                </Row>
+                <Row Margin="Margin.Is4.FromTop">
+                    <Column>
+                            <Button Color="Color.Primary" Outline Clicked="@addSimulatorHandler">Add Simulator</Button>
+                    </Column>
+                </Row>
+            }
+            else
+            {
+                <Row Margin="Margin.Is4.FromTop">
+                    <Column>
+                        <Span>Please select the Entity to add new simulator. Click to entity in the Tree.</Span>
+                    </Column>
+                </Row>
+            }
+        </ModalBody>
+    </ModalContent>
+</Modal>
+
+@if (WithButton)
+{
+    <Button Color="Color.Primary" Block="@BlockButton" Outline Float="@FloatButton" Clicked="@openAddSimulator">
+        <Row>
+            @if(WithButtonIcon)
+            {
+                <Column>
+                    <Icon Name="IconName.Add" />
+                </Column>
+            }
+            @if(WithButtonText)
+            {
+                <Column Margin="Margin.Is2.FromStart">
+                    @ButtonText
+                </Column>
+            }
+        </Row>
+    </Button>
+}
+
+@code {
+
+    [Parameter]
+    public bool WithButton { get; set; } = false;
+    [Parameter]
+    public bool BlockButton { get; set; } = false;
+    [Parameter]
+    public Float FloatButton { get; set; } = Float.Default;
+    [Parameter]
+    public bool WithButtonIcon { get; set; } = false;
+    [Parameter]
+    public bool WithButtonText { get; set; } = false;
+    [Parameter]
+    public string ButtonText { get; set; } = "Add Simulator";
+    [Parameter]
+    public EventCallback<string> Added { get; set; }
+
+    Modal? AddModal;
+    bool simulatorChange = false;
+    ISimulator simulator = new DeviceSimulator()
+    {
+        Name = "New Device Simulator",
+        DevicePowerConsumption = 1.0,
+        DayProfileData = new double[] { 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.3, 0.3, 0.4, 0.5, 0.5, 0.3, 0.3, 0.2, 0.2, 0.1, 0.1, 0.1, 0.1 }
+    };
+
+    [Inject] INotificationService NotificationService { get; set; }
+
+    public async Task LoadSimulator(ISimulator input)
+    {
+        if (input != null)
+            simulator = input;
+        if (AddModal != null)
+            await AddModal.Show();
+        simulatorChange = true;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task openAddSimulator()
+    {
+        if (AddModal != null)
+        {
+            simulatorChange = false;
+            await AddModal.Show();
+        }
+    }
+
+    private async Task addSimulatorHandler()
+    {
+        if (Item != null && Item.Id != null)
+        {
+            if (simulator == null)
+            {
+                await NotificationService.Error("Simulator cannot be null.", "Cannot Add Simulator");
+                return;
+            }
+            if (string.IsNullOrEmpty(simulator.Name))
+            {
+                await NotificationService.Error("Please fill the name of the simulator", "Cannot Add simulator");
+                return;
+            }
+
+            AppData.EntitiesHandler.AddSimulatorToEntity(Item.Id, simulator);
+
+            if (AddModal != null)
+                await AddModal.Hide();
+
+            await Added.InvokeAsync(Item.Id);
+            await ItemChanged.InvokeAsync(Item);
+        }
+    }
+}

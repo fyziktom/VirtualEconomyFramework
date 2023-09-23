@@ -340,6 +340,45 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
         }
 
         /// <summary>
+        /// Get Entity simulator by its Id
+        /// </summary>
+        /// <param name="id">Entity Id</param>
+        /// <param name="simulatorId">Simulator ID</param>
+        /// <returns></returns>
+        public virtual (bool, ISimulator?) GetEntitySimulator(string id, string simulatorId)
+        {
+            if (string.IsNullOrEmpty(id) || string.IsNullOrEmpty(simulatorId))
+                return (false, null);
+
+            if (Entities.TryGetValue(id, out var entity))
+            {
+                var sim = entity.GetSimulator(simulatorId);
+                if (sim != null)
+                    return (true, sim);
+            }
+            return (false, null);
+        }
+        /// <summary>
+        /// Get Entity simulator by its name
+        /// </summary>
+        /// <param name="id">Entity Id</param>
+        /// <param name="simulatorName">Simulator name</param>
+        /// <returns></returns>
+        public virtual (bool, ISimulator?) GetEntitySimulatorByName(string id, string simulatorName)
+        {
+            if (string.IsNullOrEmpty(id) || string.IsNullOrEmpty(simulatorName))
+                return (false, null);
+
+            if (Entities.TryGetValue(id, out var entity))
+            {
+                var sim = entity.GetSimulatorByName(simulatorName);
+                if (sim != null)
+                    return (true, sim);
+            }
+            return (false, null);
+        }
+
+        /// <summary>
         /// Add block to the entity. 
         /// </summary>
         /// <param name="id">Id of the entity</param>

@@ -84,14 +84,14 @@
                             <Column>
                                 <Field Margin="Margin.Is2.FromTop">
                                     <FieldLabel>Latitude</FieldLabel>
-                                    <NumericPicker TValue="double" Min="0" Max="@double.MaxValue" @bind-Value="@Panel.Latitude" Decimals="6" DecimalSeparator="." AlternativeDecimalSeparator="," />
+                                    <NumericPicker TValue="double" Min="-180" Max="@double.MaxValue" @bind-Value="@Panel.Latitude" Decimals="6" DecimalSeparator="." AlternativeDecimalSeparator="," />
                                     <FieldHelp>Please fill the panel center latitude</FieldHelp>
                                 </Field>
                             </Column>
                             <Column>
                                 <Field Margin="Margin.Is2.FromTop">
                                     <FieldLabel>Longitude</FieldLabel>
-                                    <NumericPicker TValue="double" Min="0" Max="@double.MaxValue" @bind-Value="@Panel.Longitude" Decimals="6" DecimalSeparator="." AlternativeDecimalSeparator="," />
+                                    <NumericPicker TValue="double" Min="-180" Max="@double.MaxValue" @bind-Value="@Panel.Longitude" Decimals="6" DecimalSeparator="." AlternativeDecimalSeparator="," />
                                     <FieldHelp>Please fill the panel center longitude</FieldHelp>
                                 </Field>
                             </Column>
