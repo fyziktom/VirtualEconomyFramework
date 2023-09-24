@@ -83,6 +83,8 @@
                 await InvokeAsync(StateHasChanged);
 
                 await ItemChanged.InvokeAsync(Item);
+                if (treeView != null)
+                    await treeView.Reload();
 
                 return Item;
             }
@@ -114,6 +116,9 @@
 
                 await ItemChanged.InvokeAsync(Item);
 
+                if (treeView != null)
+                    await treeView.Reload();
+
                 return Item;
             }
         }
@@ -125,5 +130,7 @@
         Item = item;
         AppData.SelectedItem = item;
         await ItemChanged.InvokeAsync(Item);
+        if (treeView != null)
+            await treeView.Reload();
     }
 }
