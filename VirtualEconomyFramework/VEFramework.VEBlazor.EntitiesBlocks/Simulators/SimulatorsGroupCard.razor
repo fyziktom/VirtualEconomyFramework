@@ -1,4 +1,5 @@
-﻿@inherits EntitiesBlocksComponentBase
+﻿@using Newtonsoft.Json
+@inherits EntitiesBlocksComponentBase
 @inject AppData AppData
 
 <Card Margin="Margin.Is4.FromBottom" Style="min-width:300px;">
@@ -36,7 +37,7 @@
                 <TableBody>
                     @for (var i = 0; i < Simulators.Count; i++)
                     {
-                        var index = Simulators.IndexOf(Simulators[i]);
+                        var index = (int)i;
                         <TableRow>
                             <TableRowCell>@GetSimulatorName(index)</TableRowCell>
                             <TableRowCell>@GetSimulatorId(index)</TableRowCell>
@@ -47,7 +48,7 @@
 
                             <TableRowCell>
                                 <RemoveSimulator EntityId="@EntityId"
-                                                        SimulatorId="@GetSimulatorId(index)"
+                                                    SimulatorId="@GetSimulatorId(index)"
                                                     Removed="@onRemoved" 
                                                     WithButton="true"
                                                     WithButtonText="false" 
@@ -137,7 +138,7 @@
                 addSimulatorModal.Item = Item;
 
             if (entity.Simulators != null)
-                Simulators = entity.Simulators.Values.ToList();
+                Simulators = entity.Simulators.Values.Where(s => !string.IsNullOrEmpty(s.Name)).Select(s => s).ToList();
 
             await InvokeAsync(StateHasChanged);
         }

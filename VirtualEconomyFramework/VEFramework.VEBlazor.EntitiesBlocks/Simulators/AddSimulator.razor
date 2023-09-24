@@ -180,12 +180,15 @@
             if (AddModal != null)
                 await AddModal.Hide();
 
-            simulator.Id = Guid.NewGuid().ToString();
-
             await Added.InvokeAsync(Item.Id);
             await ItemChanged.InvokeAsync(Item);
 
-            
+            simulator = new DeviceSimulator()
+                {
+                    Name = "New Device Simulator",
+                    DevicePowerConsumption = 1.0,
+                    DayProfileData = new double[] { 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.3, 0.3, 0.4, 0.5, 0.5, 0.3, 0.3, 0.2, 0.2, 0.1, 0.1, 0.1, 0.1 }
+                };
         }
     }
 }
