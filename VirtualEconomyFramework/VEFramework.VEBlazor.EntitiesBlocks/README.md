@@ -29,8 +29,6 @@ Install-Package VEFramework.VEBlazor.EntitiesBlocks
 
 Pokud chcete používat všechny komponenty, je potřeba přidat následující dependenci do souboru `_Imports.razor`:
 ```csharp
-@using VEBlazor.EntitiesBlocks.Demo.Energy
-@using VEBlazor.EntitiesBlocks.Demo.Energy.Shared
 @using VEFramework.VEBlazor.EntitiesBlocks
 @using VEFramework.VEBlazor.EntitiesBlocks.Blocks
 @using VEFramework.VEBlazor.EntitiesBlocks.Graphs
@@ -64,7 +62,6 @@ using Blazorise.Bootstrap;
 using Blazorise.Icons.FontAwesome;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using VEBlazor.EntitiesBlocks.Demo.Energy;
 using VEFramework.VEBlazor.EntitiesBlocks.Analytics;
 using VEFramework.VEBlazor.EntitiesBlocks.Services;
 
