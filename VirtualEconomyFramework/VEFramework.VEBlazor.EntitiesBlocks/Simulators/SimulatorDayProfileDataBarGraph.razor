@@ -1,19 +1,36 @@
-﻿<svg width="500" height="120">
+﻿<svg width="500" height="150">
     @for (int i = 0; i < 24; i++)
     {
         var index = i;
         var barHeight = GetBarHeight(Data[index]);
-        var yOffset = 100 - barHeight;
+        var yOffset = 115 - barHeight;
         var xPos = index * 19.58 + 6;
+        double plusYPos = 16;
+        double minusYPos = 128;
+
+        string plusPoints = $"{(int)xPos},{(int)plusYPos} {(int)xPos + 12},{(int)plusYPos} {(int)xPos + 6},{(int)plusYPos - 10}";
+        string minusPoints = $"{(int)xPos},{(int)minusYPos} {(int)xPos + 12},{(int)minusYPos} {(int)xPos + 6},{(int)minusYPos + 10}";
+
+        <rect x="@((int)xPos)" y="0" width="12" height="5" fill="green" @onclick="() => SetMaxValue(index)" />
+        <rect x="@((int)xPos)" y="140" width="12" height="5" fill="red" @onclick="() => SetMinValue(index)" />
+
         <rect x="@((int)xPos)" y="@((int)yOffset)" width="12" height="@barHeight" fill="@GetBarColor(index)" />
         @GetBarText(index, yOffset, Data[index])
+        <polygon points="@plusPoints" fill="black" @onclick="() => IncreaseValue(index)" @onmousedown="() => StartIncreasing(index)" @onmouseup="StopChange" />
+        <polygon points="@minusPoints" fill="black" @onclick="() => DecreaseValue(index)" @onmousedown="() => StartDecreasing(index)" @onmouseup="StopChange" />
         @GetHourText(index)
     }
 </svg>
 
 @code {
-    [Parameter]
-    public double[] Data { get; set; } = new double[24];
+    [Parameter] public double[] Data { get; set; } = new double[24];
+    [Parameter] public EventCallback<double[]> DataChanged { get; set; }
+
+    int maxHeight = 85;
+
+    private bool isButtonPressed = false;
+    private int currentIndex = -1;
+    private bool isIncreasing = false;
 
     private string[] colors = new string[]
     {
@@ -32,8 +49,8 @@
 
     private MarkupString GetHourText(int index)
     {
-        double xPos = index * 19.58 + 9;
-        string svgText = $"<text x='{(int)xPos}' y='105' font-size='10' fill='black' text-anchor='middle'>{index:00}</text>";
+        double xPos = index * 19.58 + 10;
+        string svgText = $"<text x='{(int)xPos}' y='125' font-size='10' fill='black' text-anchor='middle'>{index:00}</text>";
         return new MarkupString(svgText);
     }
 
@@ -42,13 +59,81 @@
         return colors[hour % 12];
     }
 
-    private double GetBarHeight(double value)
+    private int GetBarHeight(double value)
     {
-        return value * 90; // Výpočet výšky sloupce vzhledem k maximální výšce 90px
+        return (int)(value * maxHeight);
     }
 
     private string GetBarValue(double value)
     {
         return $"{Math.Round(value * 100, 1)}%";
     }
+
+    private async Task IncreaseValue(int index)
+    {
+        if (Data[index] < 1)
+        {
+            Data[index] += 0.01;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private async Task DecreaseValue(int index)
+    {
+        if (Data[index] > 0) 
+        {
+            Data[index] -= 0.01;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private async Task StartIncreasing(int index)
+    {
+        isButtonPressed = true;
+        currentIndex = index;
+        isIncreasing = true;
+
+        while (isButtonPressed && Data[currentIndex] < 1)
+        {
+            Data[currentIndex] += 0.01;
+            if (Data[currentIndex] > 1)
+                Data[currentIndex] = 1;
+            await InvokeAsync(StateHasChanged);
+            await Task.Delay(100); 
+        }
+    }
+
+    private async Task StartDecreasing(int index)
+    {
+        isButtonPressed = true;
+        currentIndex = index;
+        isIncreasing = false;
+
+        while (isButtonPressed && Data[currentIndex] > 0)
+        {
+            Data[currentIndex] -= 0.01;
+            if (Data[currentIndex] < 0)
+                Data[currentIndex] = 0;
+            await InvokeAsync(StateHasChanged);
+            await Task.Delay(100);
+        }
+    }
+
+    private void StopChange()
+    {
+        isButtonPressed = false;
+    }
+
+    private void SetMaxValue(int index)
+    {
+        Data[index] = 1;
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void SetMinValue(int index)
+    {
+        Data[index] = 0;
+        InvokeAsync(StateHasChanged);
+    }
+
 }

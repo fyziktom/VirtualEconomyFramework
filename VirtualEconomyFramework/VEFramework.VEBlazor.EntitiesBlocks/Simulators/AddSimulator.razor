@@ -33,22 +33,6 @@
                         <Span>Morning</Span>
                     </Column>
                 </Row>
-                <Row Margin="Margin.Is1.FromTop">
-                    <Column>
-                        <Row>
-                            @for(int i = 0; i < 12; i++)
-                            {
-                                var index = i;
-                                <Column>
-                                    <Field Margin="Margin.Is2.FromTop">
-                                        <FieldLabel>@(index):00</FieldLabel>
-                                        <NumericPicker TValue="double" Min="0" Max="1" @bind-Value="@((simulator as DeviceSimulator).DayProfileData[index])" Decimals="2" DecimalSeparator="." AlternativeDecimalSeparator="," />
-                                    </Field>
-                                </Column>
-                            }
-                        </Row>
-                    </Column>
-                </Row>
                 <Row Margin="Margin.Is2.FromTop">
                     <Column>
                         <Span>Now fill the consumption ration for each hour of day</Span>
@@ -59,26 +43,9 @@
                         <Span>Afternoon</Span>
                     </Column>
                 </Row>
-                <Row Margin="Margin.Is1.FromTop">
-                    <Column>
-                        <Row>
-                            @for (int j = 12; j < 24; j++)
-                            {
-                                var index = j;
-                                <Column>
-                                    <Field Margin="Margin.Is2.FromTop">
-                                        <FieldLabel>@(index):00</FieldLabel>
-                                        <NumericPicker TValue="double" Min="0" Max="1" @bind-Value="@((simulator as DeviceSimulator).DayProfileData[index])" Decimals="2" DecimalSeparator="." AlternativeDecimalSeparator="," />
-                                    </Field>
-                                </Column>
-                            }
-                        </Row>
-                    </Column>
-                </Row>
-                
                 <Row Margin="Margin.Is3.FromTop">
                     <Column>
-                        <SimulatorDayProfileDataBarGraph Data="@((simulator as DeviceSimulator).DayProfileData)" />
+                        <SimulatorDayProfileDataBarGraph @bind-Data="@((simulator as DeviceSimulator).DayProfileData)" />
                     </Column>
                 </Row>
                 <Row Margin="Margin.Is4.FromTop">
