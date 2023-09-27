@@ -105,6 +105,10 @@
     <div class="level0"><span class="xref">System.Object</span></div>
     <div class="level1"><span class="xref">QTWalletRPCClient</span></div>
   </div>
+  <div class="implements">
+    <h5>Implements</h5>
+    <div><a class="xref" href="VEDriversLite.Common.IQTWalletRPCClient.html">IQTWalletRPCClient</a></div>
+  </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
@@ -133,25 +137,25 @@
   <h6><strong>Assembly</strong>: VEDriversLite.dll</h6>
   <h5 id="VEDriversLite_Common_QTWalletRPCClient_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class QTWalletRPCClient</code></pre>
+    <pre><code class="lang-csharp hljs">public class QTWalletRPCClient : IQTWalletRPCClient</code></pre>
   </div>
   <h3 id="constructors">Constructors
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/fyziktom/VirtualEconomyFramework/new/main/apiSpec/new?filename=VEDriversLite_Common_QTWalletRPCClient__ctor_System_String_System_Int32_.md&amp;value=---%0Auid%3A%20VEDriversLite.Common.QTWalletRPCClient.%23ctor(System.String%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/fyziktom/VirtualEconomyFramework/new/6c52049df26db3dae9eca5599b15780540fded4e/apiSpec/new?filename=VEDriversLite_Common_QTWalletRPCClient__ctor_System_String_System_Int32_System_Boolean_.md&amp;value=---%0Auid%3A%20VEDriversLite.Common.QTWalletRPCClient.%23ctor(System.String%2CSystem.Int32%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEDriversLite/RPC/QTWalletRPCClient.cs/#L37">View Source</a>
+    <a href="https://github.com/fyziktom/VirtualEconomyFramework/blob/6c52049df26db3dae9eca5599b15780540fded4e/VirtualEconomyFramework/VEDriversLite/RPC/QTWalletRPCClient.cs/#L37">View Source</a>
   </span>
   <a id="VEDriversLite_Common_QTWalletRPCClient__ctor_" data-uid="VEDriversLite.Common.QTWalletRPCClient.#ctor*"></a>
-  <h4 id="VEDriversLite_Common_QTWalletRPCClient__ctor_System_String_System_Int32_" data-uid="VEDriversLite.Common.QTWalletRPCClient.#ctor(System.String,System.Int32)">QTWalletRPCClient(String, Int32)</h4>
+  <h4 id="VEDriversLite_Common_QTWalletRPCClient__ctor_System_String_System_Int32_System_Boolean_" data-uid="VEDriversLite.Common.QTWalletRPCClient.#ctor(System.String,System.Int32,System.Boolean)">QTWalletRPCClient(String, Int32, Boolean)</h4>
   <div class="markdown level1 summary"><p>Constructor</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public QTWalletRPCClient(string baseurl = &quot;127.0.0.1&quot;, int port = 6326)</code></pre>
+    <pre><code class="lang-csharp hljs">public QTWalletRPCClient(string baseurl = &quot;127.0.0.1&quot;, int port = 6326, bool usessl = false)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -175,14 +179,19 @@
         <td><p>connection port of QT wallet RPC server</p>
 </td>
       </tr>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td><span class="parametername">usessl</span></td>
+        <td></td>
+      </tr>
     </tbody>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/fyziktom/VirtualEconomyFramework/new/main/apiSpec/new?filename=VEDriversLite_Common_QTWalletRPCClient__ctor_VEDriversLite_Common_QTRPCConfig_.md&amp;value=---%0Auid%3A%20VEDriversLite.Common.QTWalletRPCClient.%23ctor(VEDriversLite.Common.QTRPCConfig)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/fyziktom/VirtualEconomyFramework/new/6c52049df26db3dae9eca5599b15780540fded4e/apiSpec/new?filename=VEDriversLite_Common_QTWalletRPCClient__ctor_VEDriversLite_Common_QTRPCConfig_.md&amp;value=---%0Auid%3A%20VEDriversLite.Common.QTWalletRPCClient.%23ctor(VEDriversLite.Common.QTRPCConfig)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEDriversLite/RPC/QTWalletRPCClient.cs/#L48">View Source</a>
+    <a href="https://github.com/fyziktom/VirtualEconomyFramework/blob/6c52049df26db3dae9eca5599b15780540fded4e/VirtualEconomyFramework/VEDriversLite/RPC/QTWalletRPCClient.cs/#L48">View Source</a>
   </span>
   <a id="VEDriversLite_Common_QTWalletRPCClient__ctor_" data-uid="VEDriversLite.Common.QTWalletRPCClient.#ctor*"></a>
   <h4 id="VEDriversLite_Common_QTWalletRPCClient__ctor_VEDriversLite_Common_QTRPCConfig_" data-uid="VEDriversLite.Common.QTWalletRPCClient.#ctor(VEDriversLite.Common.QTRPCConfig)">QTWalletRPCClient(QTRPCConfig)</h4>
@@ -214,10 +223,10 @@
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/fyziktom/VirtualEconomyFramework/new/main/apiSpec/new?filename=VEDriversLite_Common_QTWalletRPCClient_ClientInitialized.md&amp;value=---%0Auid%3A%20VEDriversLite.Common.QTWalletRPCClient.ClientInitialized%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/fyziktom/VirtualEconomyFramework/new/6c52049df26db3dae9eca5599b15780540fded4e/apiSpec/new?filename=VEDriversLite_Common_QTWalletRPCClient_ClientInitialized.md&amp;value=---%0Auid%3A%20VEDriversLite.Common.QTWalletRPCClient.ClientInitialized%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEDriversLite/RPC/QTWalletRPCClient.cs/#L138">View Source</a>
+    <a href="https://github.com/fyziktom/VirtualEconomyFramework/blob/6c52049df26db3dae9eca5599b15780540fded4e/VirtualEconomyFramework/VEDriversLite/RPC/QTWalletRPCClient.cs/#L147">View Source</a>
   </span>
   <a id="VEDriversLite_Common_QTWalletRPCClient_ClientInitialized_" data-uid="VEDriversLite.Common.QTWalletRPCClient.ClientInitialized*"></a>
   <h4 id="VEDriversLite_Common_QTWalletRPCClient_ClientInitialized" data-uid="VEDriversLite.Common.QTWalletRPCClient.ClientInitialized">ClientInitialized</h4>
@@ -245,10 +254,10 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/fyziktom/VirtualEconomyFramework/new/main/apiSpec/new?filename=VEDriversLite_Common_QTWalletRPCClient_ConnectionAddress.md&amp;value=---%0Auid%3A%20VEDriversLite.Common.QTWalletRPCClient.ConnectionAddress%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/fyziktom/VirtualEconomyFramework/new/6c52049df26db3dae9eca5599b15780540fded4e/apiSpec/new?filename=VEDriversLite_Common_QTWalletRPCClient_ConnectionAddress.md&amp;value=---%0Auid%3A%20VEDriversLite.Common.QTWalletRPCClient.ConnectionAddress%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEDriversLite/RPC/QTWalletRPCClient.cs/#L70">View Source</a>
+    <a href="https://github.com/fyziktom/VirtualEconomyFramework/blob/6c52049df26db3dae9eca5599b15780540fded4e/VirtualEconomyFramework/VEDriversLite/RPC/QTWalletRPCClient.cs/#L70">View Source</a>
   </span>
   <a id="VEDriversLite_Common_QTWalletRPCClient_ConnectionAddress_" data-uid="VEDriversLite.Common.QTWalletRPCClient.ConnectionAddress*"></a>
   <h4 id="VEDriversLite_Common_QTWalletRPCClient_ConnectionAddress" data-uid="VEDriversLite.Common.QTWalletRPCClient.ConnectionAddress">ConnectionAddress</h4>
@@ -276,10 +285,10 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/fyziktom/VirtualEconomyFramework/new/main/apiSpec/new?filename=VEDriversLite_Common_QTWalletRPCClient_ConnectionPort.md&amp;value=---%0Auid%3A%20VEDriversLite.Common.QTWalletRPCClient.ConnectionPort%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/fyziktom/VirtualEconomyFramework/new/6c52049df26db3dae9eca5599b15780540fded4e/apiSpec/new?filename=VEDriversLite_Common_QTWalletRPCClient_ConnectionPort.md&amp;value=---%0Auid%3A%20VEDriversLite.Common.QTWalletRPCClient.ConnectionPort%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEDriversLite/RPC/QTWalletRPCClient.cs/#L64">View Source</a>
+    <a href="https://github.com/fyziktom/VirtualEconomyFramework/blob/6c52049df26db3dae9eca5599b15780540fded4e/VirtualEconomyFramework/VEDriversLite/RPC/QTWalletRPCClient.cs/#L64">View Source</a>
   </span>
   <a id="VEDriversLite_Common_QTWalletRPCClient_ConnectionPort_" data-uid="VEDriversLite.Common.QTWalletRPCClient.ConnectionPort*"></a>
   <h4 id="VEDriversLite_Common_QTWalletRPCClient_ConnectionPort" data-uid="VEDriversLite.Common.QTWalletRPCClient.ConnectionPort">ConnectionPort</h4>
@@ -307,10 +316,10 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/fyziktom/VirtualEconomyFramework/new/main/apiSpec/new?filename=VEDriversLite_Common_QTWalletRPCClient_ConnectionUrlBaseAddress.md&amp;value=---%0Auid%3A%20VEDriversLite.Common.QTWalletRPCClient.ConnectionUrlBaseAddress%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/fyziktom/VirtualEconomyFramework/new/6c52049df26db3dae9eca5599b15780540fded4e/apiSpec/new?filename=VEDriversLite_Common_QTWalletRPCClient_ConnectionUrlBaseAddress.md&amp;value=---%0Auid%3A%20VEDriversLite.Common.QTWalletRPCClient.ConnectionUrlBaseAddress%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEDriversLite/RPC/QTWalletRPCClient.cs/#L60">View Source</a>
+    <a href="https://github.com/fyziktom/VirtualEconomyFramework/blob/6c52049df26db3dae9eca5599b15780540fded4e/VirtualEconomyFramework/VEDriversLite/RPC/QTWalletRPCClient.cs/#L60">View Source</a>
   </span>
   <a id="VEDriversLite_Common_QTWalletRPCClient_ConnectionUrlBaseAddress_" data-uid="VEDriversLite.Common.QTWalletRPCClient.ConnectionUrlBaseAddress*"></a>
   <h4 id="VEDriversLite_Common_QTWalletRPCClient_ConnectionUrlBaseAddress" data-uid="VEDriversLite.Common.QTWalletRPCClient.ConnectionUrlBaseAddress">ConnectionUrlBaseAddress</h4>
@@ -338,10 +347,10 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/fyziktom/VirtualEconomyFramework/new/main/apiSpec/new?filename=VEDriversLite_Common_QTWalletRPCClient_IsConnected.md&amp;value=---%0Auid%3A%20VEDriversLite.Common.QTWalletRPCClient.IsConnected%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/fyziktom/VirtualEconomyFramework/new/6c52049df26db3dae9eca5599b15780540fded4e/apiSpec/new?filename=VEDriversLite_Common_QTWalletRPCClient_IsConnected.md&amp;value=---%0Auid%3A%20VEDriversLite.Common.QTWalletRPCClient.IsConnected%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEDriversLite/RPC/QTWalletRPCClient.cs/#L83">View Source</a>
+    <a href="https://github.com/fyziktom/VirtualEconomyFramework/blob/6c52049df26db3dae9eca5599b15780540fded4e/VirtualEconomyFramework/VEDriversLite/RPC/QTWalletRPCClient.cs/#L92">View Source</a>
   </span>
   <a id="VEDriversLite_Common_QTWalletRPCClient_IsConnected_" data-uid="VEDriversLite.Common.QTWalletRPCClient.IsConnected*"></a>
   <h4 id="VEDriversLite_Common_QTWalletRPCClient_IsConnected" data-uid="VEDriversLite.Common.QTWalletRPCClient.IsConnected">IsConnected</h4>
@@ -369,10 +378,10 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/fyziktom/VirtualEconomyFramework/new/main/apiSpec/new?filename=VEDriversLite_Common_QTWalletRPCClient_Pass.md&amp;value=---%0Auid%3A%20VEDriversLite.Common.QTWalletRPCClient.Pass%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/fyziktom/VirtualEconomyFramework/new/6c52049df26db3dae9eca5599b15780540fded4e/apiSpec/new?filename=VEDriversLite_Common_QTWalletRPCClient_Pass.md&amp;value=---%0Auid%3A%20VEDriversLite.Common.QTWalletRPCClient.Pass%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEDriversLite/RPC/QTWalletRPCClient.cs/#L117">View Source</a>
+    <a href="https://github.com/fyziktom/VirtualEconomyFramework/blob/6c52049df26db3dae9eca5599b15780540fded4e/VirtualEconomyFramework/VEDriversLite/RPC/QTWalletRPCClient.cs/#L126">View Source</a>
   </span>
   <a id="VEDriversLite_Common_QTWalletRPCClient_Pass_" data-uid="VEDriversLite.Common.QTWalletRPCClient.Pass*"></a>
   <h4 id="VEDriversLite_Common_QTWalletRPCClient_Pass" data-uid="VEDriversLite.Common.QTWalletRPCClient.Pass">Pass</h4>
@@ -400,10 +409,40 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/fyziktom/VirtualEconomyFramework/new/main/apiSpec/new?filename=VEDriversLite_Common_QTWalletRPCClient_User.md&amp;value=---%0Auid%3A%20VEDriversLite.Common.QTWalletRPCClient.User%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/fyziktom/VirtualEconomyFramework/new/6c52049df26db3dae9eca5599b15780540fded4e/apiSpec/new?filename=VEDriversLite_Common_QTWalletRPCClient_SSL.md&amp;value=---%0Auid%3A%20VEDriversLite.Common.QTWalletRPCClient.SSL%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEDriversLite/RPC/QTWalletRPCClient.cs/#L96">View Source</a>
+    <a href="https://github.com/fyziktom/VirtualEconomyFramework/blob/6c52049df26db3dae9eca5599b15780540fded4e/VirtualEconomyFramework/VEDriversLite/RPC/QTWalletRPCClient.cs/#L86">View Source</a>
+  </span>
+  <a id="VEDriversLite_Common_QTWalletRPCClient_SSL_" data-uid="VEDriversLite.Common.QTWalletRPCClient.SSL*"></a>
+  <h4 id="VEDriversLite_Common_QTWalletRPCClient_SSL" data-uid="VEDriversLite.Common.QTWalletRPCClient.SSL">SSL</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool SSL { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/fyziktom/VirtualEconomyFramework/new/6c52049df26db3dae9eca5599b15780540fded4e/apiSpec/new?filename=VEDriversLite_Common_QTWalletRPCClient_User.md&amp;value=---%0Auid%3A%20VEDriversLite.Common.QTWalletRPCClient.User%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/fyziktom/VirtualEconomyFramework/blob/6c52049df26db3dae9eca5599b15780540fded4e/VirtualEconomyFramework/VEDriversLite/RPC/QTWalletRPCClient.cs/#L105">View Source</a>
   </span>
   <a id="VEDriversLite_Common_QTWalletRPCClient_User_" data-uid="VEDriversLite.Common.QTWalletRPCClient.User*"></a>
   <h4 id="VEDriversLite_Common_QTWalletRPCClient_User" data-uid="VEDriversLite.Common.QTWalletRPCClient.User">User</h4>
@@ -433,10 +472,10 @@
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/fyziktom/VirtualEconomyFramework/new/main/apiSpec/new?filename=VEDriversLite_Common_QTWalletRPCClient_InitClients.md&amp;value=---%0Auid%3A%20VEDriversLite.Common.QTWalletRPCClient.InitClients%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/fyziktom/VirtualEconomyFramework/new/6c52049df26db3dae9eca5599b15780540fded4e/apiSpec/new?filename=VEDriversLite_Common_QTWalletRPCClient_InitClients.md&amp;value=---%0Auid%3A%20VEDriversLite.Common.QTWalletRPCClient.InitClients%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEDriversLite/RPC/QTWalletRPCClient.cs/#L146">View Source</a>
+    <a href="https://github.com/fyziktom/VirtualEconomyFramework/blob/6c52049df26db3dae9eca5599b15780540fded4e/VirtualEconomyFramework/VEDriversLite/RPC/QTWalletRPCClient.cs/#L155">View Source</a>
   </span>
   <a id="VEDriversLite_Common_QTWalletRPCClient_InitClients_" data-uid="VEDriversLite.Common.QTWalletRPCClient.InitClients*"></a>
   <h4 id="VEDriversLite_Common_QTWalletRPCClient_InitClients" data-uid="VEDriversLite.Common.QTWalletRPCClient.InitClients">InitClients()</h4>
@@ -445,14 +484,14 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void InitClients()</code></pre>
+    <pre><code class="lang-csharp hljs">public virtual void InitClients()</code></pre>
   </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/fyziktom/VirtualEconomyFramework/new/main/apiSpec/new?filename=VEDriversLite_Common_QTWalletRPCClient_RPCLocalCommandAsync_System_String_System_Object_.md&amp;value=---%0Auid%3A%20VEDriversLite.Common.QTWalletRPCClient.RPCLocalCommandAsync(System.String%2CSystem.Object)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/fyziktom/VirtualEconomyFramework/new/6c52049df26db3dae9eca5599b15780540fded4e/apiSpec/new?filename=VEDriversLite_Common_QTWalletRPCClient_RPCLocalCommandAsync_System_String_System_Object_.md&amp;value=---%0Auid%3A%20VEDriversLite.Common.QTWalletRPCClient.RPCLocalCommandAsync(System.String%2CSystem.Object)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEDriversLite/RPC/QTWalletRPCClient.cs/#L177">View Source</a>
+    <a href="https://github.com/fyziktom/VirtualEconomyFramework/blob/6c52049df26db3dae9eca5599b15780540fded4e/VirtualEconomyFramework/VEDriversLite/RPC/QTWalletRPCClient.cs/#L186">View Source</a>
   </span>
   <a id="VEDriversLite_Common_QTWalletRPCClient_RPCLocalCommandAsync_" data-uid="VEDriversLite.Common.QTWalletRPCClient.RPCLocalCommandAsync*"></a>
   <h4 id="VEDriversLite_Common_QTWalletRPCClient_RPCLocalCommandAsync_System_String_System_Object_" data-uid="VEDriversLite.Common.QTWalletRPCClient.RPCLocalCommandAsync(System.String,System.Object)">RPCLocalCommandAsync(String, Object)</h4>
@@ -462,7 +501,7 @@ First is command, then goes the parameters. If parameters must cointain ',' plea
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public async Task&lt;string&gt; RPCLocalCommandAsync(string param, object obj)</code></pre>
+    <pre><code class="lang-csharp hljs">public virtual async Task&lt;string&gt; RPCLocalCommandAsync(string param, object obj)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -504,10 +543,10 @@ First is command, then goes the parameters. If parameters must cointain ',' plea
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/fyziktom/VirtualEconomyFramework/new/main/apiSpec/new?filename=VEDriversLite_Common_QTWalletRPCClient_RPCLocalCommandSplitedAsync_System_String_System_String___.md&amp;value=---%0Auid%3A%20VEDriversLite.Common.QTWalletRPCClient.RPCLocalCommandSplitedAsync(System.String%2CSystem.String%5B%5D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/fyziktom/VirtualEconomyFramework/new/6c52049df26db3dae9eca5599b15780540fded4e/apiSpec/new?filename=VEDriversLite_Common_QTWalletRPCClient_RPCLocalCommandSplitedAsync_System_String_System_String___.md&amp;value=---%0Auid%3A%20VEDriversLite.Common.QTWalletRPCClient.RPCLocalCommandSplitedAsync(System.String%2CSystem.String%5B%5D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/fyziktom/VirtualEconomyFramework/blob/main/VirtualEconomyFramework/VEDriversLite/RPC/QTWalletRPCClient.cs/#L212">View Source</a>
+    <a href="https://github.com/fyziktom/VirtualEconomyFramework/blob/6c52049df26db3dae9eca5599b15780540fded4e/VirtualEconomyFramework/VEDriversLite/RPC/QTWalletRPCClient.cs/#L221">View Source</a>
   </span>
   <a id="VEDriversLite_Common_QTWalletRPCClient_RPCLocalCommandSplitedAsync_" data-uid="VEDriversLite.Common.QTWalletRPCClient.RPCLocalCommandSplitedAsync*"></a>
   <h4 id="VEDriversLite_Common_QTWalletRPCClient_RPCLocalCommandSplitedAsync_System_String_System_String___" data-uid="VEDriversLite.Common.QTWalletRPCClient.RPCLocalCommandSplitedAsync(System.String,System.String[])">RPCLocalCommandSplitedAsync(String, String[])</h4>
@@ -517,7 +556,7 @@ This is for the case that some of the parameters must contain ',' which is used 
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public async Task&lt;string&gt; RPCLocalCommandSplitedAsync(string command, string[] parameters)</code></pre>
+    <pre><code class="lang-csharp hljs">public virtual async Task&lt;string&gt; RPCLocalCommandSplitedAsync(string command, string[] parameters)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -558,6 +597,10 @@ This is for the case that some of the parameters must contain ',' which is used 
       </tr>
     </tbody>
   </table>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <a class="xref" href="VEDriversLite.Common.IQTWalletRPCClient.html">IQTWalletRPCClient</a>
+  </div>
 </article>
               
                 </div>
