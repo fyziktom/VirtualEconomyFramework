@@ -120,7 +120,7 @@
     {
         if (simulator != null && !string.IsNullOrEmpty(SimulatorId) && !string.IsNullOrEmpty(EntityId))
         {
-            var result = AppData.EntitiesHandler.RemoveSimulatorsFromEntity(EntityId, new List<string> { simulator.Id });
+            var result = AppData.EntitiesHandler.RemoveSimulatorsFromEntity(EntityId, new List<string> { SimulatorId });
             if(result.Item1)
                 await NotificationService.Success($"Simulator {simulator.Name} has been removed.", "Remove Simulator");
             else

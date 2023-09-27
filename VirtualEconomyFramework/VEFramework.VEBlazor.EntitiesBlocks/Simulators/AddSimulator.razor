@@ -30,14 +30,25 @@
                 </Row>
                 <Row Margin="Margin.Is2.FromTop">
                     <Column>
-                        <Span>Now fill the consumption ration for each hour of day</Span>
+                        <Span>Now fill the consumption ration for each hour of day. You can select from the templates.</Span>
                     </Column>
+                </Row>
+
+                <Row Margin="Margin.Is3.FromTop">
+                    <Column>
+                        <Button Margin="Margin.Is1.FromStart.Is1.FromTop" Color="Color.Primary" Outline Clicked="@(() => onTemplateClickedHandler("ac"))">Aircondition</Button>
+                         <Button Margin="Margin.Is1.FromStart.Is1.FromTop" Color="Color.Primary" Outline Clicked="@(() => onTemplateClickedHandler("refrigerator"))">Refrigerator</Button>
+                        <Button Margin="Margin.Is1.FromStart.Is1.FromTop" Color="Color.Primary" Outline Clicked="@(() => onTemplateClickedHandler("lights"))">Lights</Button>
+                        <Button Margin="Margin.Is1.FromStart.Is1.FromTop" Color="Color.Primary" Outline Clicked="@(() => onTemplateClickedHandler("cooktop"))">Cooktop</Button>
+                        <Button Margin="Margin.Is1.FromStart.Is1.FromTop" Color="Color.Primary" Outline Clicked="@(() => onTemplateClickedHandler("poolpump"))">Pool pump</Button>
+                     </Column>
                 </Row>
 
                 <Row Margin="Margin.Is3.FromTop">
                     <Column>
                         <SimulatorDayProfileDataBarGraph @bind-Data="@((simulator as DeviceSimulator).DayProfileData)" />
                     </Column>
+                   
                 </Row>
                 <Row Margin="Margin.Is4.FromTop">
                     <Column>
@@ -154,5 +165,41 @@
                     DayProfileData = new double[] { 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.3, 0.3, 0.4, 0.5, 0.5, 0.3, 0.3, 0.2, 0.2, 0.1, 0.1, 0.1, 0.1 }
                 };
         }
+    }
+
+    private async Task onTemplateClickedHandler(string type)
+    {
+        if (string.IsNullOrEmpty(type))
+            return;
+
+        switch (type)
+        {
+            case "ac": simulator.Name = "Airconditioner";
+                (simulator as DeviceSimulator).DevicePowerConsumption = 2;
+                (simulator as DeviceSimulator).DayProfileData = new double[] { 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.3, 0.4, 0.5, 0.6, 0.6, 0.7, 0.5, 0.5, 0.4, 0.3, 0.2, 0.1, 0.1, 0.1, 0.1 };
+                break;
+            case "refrigerator": simulator.Name = "Refrigerator";
+                (simulator as DeviceSimulator).DevicePowerConsumption = 0.12;
+                (simulator as DeviceSimulator).DayProfileData = new double[] { 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.3, 0.4, 0.7, 0.7, 0.7, 0.7, 0.7, 0.8, 0.5, 0.3, 0.2, 0.2, 0.2, 0.2, 0.2 };
+                break;
+            case "lights": simulator.Name = "Lights";
+                (simulator as DeviceSimulator).DevicePowerConsumption = 0.1;
+                (simulator as DeviceSimulator).DayProfileData = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.2, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.8, 0.8, 0.7, 0.1, 0.0, 0.0 };
+                break;
+            case "cooktop":
+                simulator.Name = "Cooktop";
+                (simulator as DeviceSimulator).DevicePowerConsumption = 3;
+                (simulator as DeviceSimulator).DayProfileData = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.2, 0.0, 0.0, 0.0, 0.1, 0.2, 0.0, 0.0, 0.0, 0.0, 0.0, 0.2, 0.0, 0.0, 0.0, 0.0, 0.0 };
+                break;
+            case "poolpump":
+                simulator.Name = "Pool pump";
+                (simulator as DeviceSimulator).DevicePowerConsumption = 1.1;
+                (simulator as DeviceSimulator).DayProfileData = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
+                break;
+            default:
+                break;
+        }
+
+        await InvokeAsync(StateHasChanged);
     }
 }
