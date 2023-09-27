@@ -19,6 +19,8 @@ namespace VEDriversLite.EntitiesBlocks.Consumers.Dto
         public string? Description { get; set; }
         public string? ParentId { get; set; }
 
+        public Dictionary<string, SimulatorConfigDto>? Simulators { get; set; }
+
         public List<string>? Childs { get; set; }
 
         public ConcurrentDictionary<string, BaseBlockConfigDto>? Blocks { get; set; }
@@ -50,6 +52,17 @@ namespace VEDriversLite.EntitiesBlocks.Consumers.Dto
                     Blocks.TryAdd(blk.Id, blk);
                 }
             }
+
+            if (consumer.Simulators != null)
+            {
+                Simulators = new Dictionary<string, SimulatorConfigDto>();
+                foreach(var sim in consumer.Simulators)
+                {
+                    var simcfg = new SimulatorConfigDto();
+                    simcfg.Load(sim.Value);
+                    Simulators.TryAdd(sim.Key, simcfg);
+                }
+            }
         }
 
         public IConsumer Fill()
@@ -69,6 +82,15 @@ namespace VEDriversLite.EntitiesBlocks.Consumers.Dto
                     var blk = block.GetBlockFromDto();
                     if (blk != null)
                         result.AddBlock(blk);
+                }
+            }
+
+            if (Simulators != null)
+            { 
+                foreach (var simcfg in Simulators)
+                {
+                    var sim = simcfg.Value.Fill();
+                    result.AddSimulator(sim);
                 }
             }
 
