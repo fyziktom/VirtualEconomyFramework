@@ -77,9 +77,24 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
         /// <summary>
         /// Remove simulators from entity. You can add multiple Ids in one command
         /// </summary>
-        /// <param name="simulatorIds"></param>
+        /// <param name="id">Entity ID</param>
+        /// <param name="simulatorIds">list of the simulators ids to remove</param>
         /// <returns></returns>
         (bool, string) RemoveSimulatorsFromEntity(string id, List<string> simulatorIds);
+        /// <summary>
+        /// Get Entity simulator by its Id
+        /// </summary>
+        /// <param name="id">Entity Id</param>
+        /// <param name="simulatorId">Simulator ID</param>
+        /// <returns></returns>
+        (bool, ISimulator?) GetEntitySimulator(string id, string simulatorId);
+        /// <summary>
+        /// Get Entity simulator by its name
+        /// </summary>
+        /// <param name="id">Entity Id</param>
+        /// <param name="simulatorName">Simulator name</param>
+        /// <returns></returns>
+        (bool, ISimulator?) GetEntitySimulatorByName(string id, string simulatorName);
         /// <summary>
         /// Change block parameters to the consumer. 
         /// </summary>

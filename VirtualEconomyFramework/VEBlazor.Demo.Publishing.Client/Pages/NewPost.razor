@@ -32,6 +32,16 @@
                 </Field>
             </Column>
         </Row>
+            <Row>
+                <Column>
+                    <Field Horizontal>
+                     <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">Author Name</FieldLabel>
+                     <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                         <TextEdit Placeholder="Enter Author Nickname" @bind-Text="@((AppData.GetMintingNFTTab(formName).NFT as CoruzantArticleNFT).Author)" />
+                     </FieldBody>
+                 </Field>
+             </Column>
+         </Row>
         <Row>
             <Column>    
                 <Field Horizontal>

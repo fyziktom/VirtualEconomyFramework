@@ -95,7 +95,7 @@ namespace VEFramework.Demo.PublishingDisplay.Services.NFTs
                                               string address = "",
                                               bool allowCache = false,
                                               int maxCachedItems = 100,
-                                              VEDriversLite.NeblioAPI.GetTransactionInfoResponse txinfo = null)
+                                              VEDriversLite.NeblioAPI.GetTransactionInfoResponse? txinfo = null)
         {
             NFTTypes type = NFTTypes.Image;
             INFT nft = null;
@@ -286,7 +286,7 @@ namespace VEFramework.Demo.PublishingDisplay.Services.NFTs
         /// <param name="asType">Force the output type</param>
         /// <param name="type">Specify the output type - you must set asType flag</param>
         /// <returns>INFT compatible object</returns>
-        public static async Task<INFT> GetNFTFromCacheMetadata(IDictionary<string,string> metadata, string utxo, int utxoindex, VEDriversLite.NeblioAPI.GetTransactionInfoResponse txinfo = null, bool asType = false, NFTTypes type = NFTTypes.Image)
+        public static async Task<INFT> GetNFTFromCacheMetadata(IDictionary<string,string> metadata, string utxo, int utxoindex, VEDriversLite.NeblioAPI.GetTransactionInfoResponse? txinfo = null, bool asType = false, NFTTypes type = NFTTypes.Image)
         {
             if (!asType)
             {

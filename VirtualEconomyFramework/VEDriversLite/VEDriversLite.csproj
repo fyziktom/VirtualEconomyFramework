@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
     <PackageId>VEFramework.VEDriversLite</PackageId>
-    <Version>0.4.0</Version>
+    <Version>0.4.3</Version>
     <Authors>fyziktom</Authors>
     <Company>VEFramework</Company>
     <Description>.NET drivers for Web3 and Industry40. Simple way how to start with blockchain in C#. Now supports Neblio and Doge blockchains.</Description>
@@ -13,12 +13,7 @@
     <PackageTags>VEFramework, Cryptocurrencies, Crypto, NFT, NFTs, NFTTech, NFTIoT, Bitcoin, ReddCoin, Neblio, Nebl, Doge, Dogecoin, Blockchain, eCommerce, dApps, WooCommerce, WordPress</PackageTags>
     <Copyright>fyziktom</Copyright>
     <PackageReleaseNotes>
-		- Optimization
-		- Added NTP1 interpret
-		- Added issuing of the tokens without external api
-		- Added Blockchain indexer
-		- Parsing of the NFTs data directly from the tx data without external API 
-		- Added example own Blockchain Indexing server app
+		- Update of VEDriversLite.Common
 	</PackageReleaseNotes>
   </PropertyGroup>
 

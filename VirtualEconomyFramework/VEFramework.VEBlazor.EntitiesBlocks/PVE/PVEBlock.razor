@@ -2,15 +2,28 @@
 
 @if (AppData.PVEGrid != null)
 {
+    <CardDeck>
     @foreach(var group in AppData.PVEGrid.PVPanelsGroups.Values)
     {
-        <PVPanelsGroupCard GroupId="@group.Id" Name="@group.Name" Panels="@group.PVPanels.Values" />
+        <PVPanelsGroupCard GroupId="@group.Id" 
+                           Name="@group.Name" 
+                           Panels="@group.PVPanels.Values"
+                           GroupChanged="@onGroupChangedHandler"/>
     }
+    </CardDeck>
 }
 
 @code {
+    [Parameter]
+    public EventCallback<string> PVEChanged { get; set; }
+
     public async Task Reload()
     {
         await InvokeAsync(StateHasChanged);
+    }
+
+    public async Task onGroupChangedHandler(string groupId)
+    {
+        await PVEChanged.InvokeAsync(groupId);
     }
 }

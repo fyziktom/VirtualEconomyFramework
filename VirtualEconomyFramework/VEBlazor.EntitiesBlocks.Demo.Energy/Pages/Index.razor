@@ -33,6 +33,7 @@
                                           WithButtonIcon="true" 
                                           ButtonText="Entita" />
                         </Column>
+                        
                     </Row>
                     <Row>
                         <Column>
@@ -53,6 +54,7 @@
                     <Items>
                         <Tab Name="blockstimegraph">Časový diagram bloků</Tab>
                         <Tab Name="balancetimegraph">Bilanční časový graf</Tab>
+                        <Tab Name="simulatorslist">Simulatory</Tab>
                         <Tab Name="blockslist">Seznam bloků</Tab>
                     </Items>
                     <Content>
@@ -67,6 +69,13 @@
                             <Row>
                                 <Column>
                                     <BlocksList @ref=blocksList ItemChanged="@OnBlockListItemChanged" />
+                                </Column>
+                            </Row>
+                        </TabPanel>
+                        <TabPanel Name="simulatorslist">
+                            <Row>
+                                <Column>
+                                    <SimulatorsGroupCard @ref=simulators />
                                 </Column>
                             </Row>
                         </TabPanel>
@@ -90,6 +99,7 @@
     ConsumptionGraph? graph;
     BlocksList? blocksList;
     BlocksTimeGraph? blockTimeGraph;
+    SimulatorsGroupCard? simulators;
     EntitiesTree? entitiesTree;
     bool firstLoad = false;
     string selectedTab = "blockstimegraph";
@@ -114,7 +124,7 @@
                     if (item != null && item.Id != null)
                         Item = item;
                     await InvokeAsync(StateHasChanged);
-                    
+
                     await LoadDetailsAndGraphs(Item);
                     firstLoad = true;
                 }
@@ -156,21 +166,24 @@
 
     private async Task RefreshDetailsAndGraphs()
     {
-        if (blocksList != null && blockTimeGraph != null && graph != null)
+        if (blocksList != null && blockTimeGraph != null && graph != null && simulators != null)
         {
             await blocksList.Refresh();
             await blockTimeGraph.Refresh();
             await graph.Refresh();
+            if (!string.IsNullOrEmpty(Item.Id))
+                await simulators.LoadData(Item.Id);
         }
     }
 
     private async Task LoadDetailsAndGraphs(TreeItem item)
     {
-        if (item != null && item.Id != null && blocksList != null && blockTimeGraph != null && graph != null)
+        if (item != null && item.Id != null && blocksList != null && blockTimeGraph != null && graph != null && simulators != null)
         {
             await blocksList.Load(item);
             await blockTimeGraph.Load(item);
             await graph.LoadData(item);
+            await simulators.LoadData(item);
         }
     }
 

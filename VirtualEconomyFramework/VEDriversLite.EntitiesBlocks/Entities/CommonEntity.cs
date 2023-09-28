@@ -153,6 +153,35 @@ namespace VEDriversLite.EntitiesBlocks.Entities
         }
 
         /// <summary>
+        /// Get simulator by its Id
+        /// </summary>
+        /// <param name="id">Simulator Id</param>
+        /// <returns></returns>
+        public virtual ISimulator? GetSimulator(string id)
+        {
+            if (string.IsNullOrEmpty(id)) 
+                return null;
+
+            if (Simulators.ContainsKey(id))
+                return Simulators[id];
+
+            return null;
+        }
+
+        /// <summary>
+        /// Get simulator by its name
+        /// </summary>
+        /// <param name="name">Simulator name</param>
+        /// <returns></returns>
+        public virtual ISimulator? GetSimulatorByName(string name)
+        {
+            if (string.IsNullOrEmpty(name))
+                return null;
+
+            return Simulators.Values.Where(s => s.Name == name).FirstOrDefault();
+        }
+
+        /// <summary>
         /// Try to add the block to the Blocks dictionary. Block must have unique hashs
         /// </summary>
         /// <param name="block"></param>

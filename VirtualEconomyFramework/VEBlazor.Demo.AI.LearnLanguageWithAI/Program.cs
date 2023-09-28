@@ -50,7 +50,7 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(baseadd)
 builder.Services.AddScoped<AppData>();
 builder.Services.AddScoped<AppDataService>();
 builder.Services.AddSingleton<TransactionsService>();
-builder.Services.AddSingleton<IIndexedDbFactory, IndexedDbFactory>();
+builder.Services.AddScoped<IIndexedDbFactory, IndexedDbFactory>();
 builder.Services.AddHostedService<VEDriversLiteCore>();
 
 builder.Services.AddBlazoredLocalStorage();

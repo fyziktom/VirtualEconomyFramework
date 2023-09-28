@@ -5,7 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 	  <PackageId>VEFramework.VEDriversLite.NeblioAPI</PackageId>
-	  <Version>0.4.0</Version>
+	  <Version>0.4.02</Version>
 	  <Authors>fyziktom</Authors>
 	  <Company>VEFramework</Company>
 	  <Description>.NET drivers for communication with Neblio API</Description>
@@ -15,7 +15,7 @@
 	  <PackageTags>VEFramework, Cryptocurrencies, Crypto, NFT, NFTs, Bitcoin, ReddCoin, Neblio, Nebl, Doge, Dogecoin, Blockchain, eCommerce, dApps, WooCommerce, WordPress</PackageTags>
 	  <Copyright>fyziktom</Copyright>
 	  <PackageReleaseNotes>
-		  - Switched to own Blockchain Indexing API Server
+		  - Update of nuget package
 	  </PackageReleaseNotes>
 	  <PackageReadmeFile>README.md</PackageReadmeFile>
 	  <PackageLicenseExpression>MIT</PackageLicenseExpression>

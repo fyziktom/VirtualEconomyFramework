@@ -3,35 +3,35 @@
 <Modal @ref="RemoveModal">
     <ModalContent Centered Size="ModalSize.ExtraLarge">
         <ModalHeader>
-            <ModalTitle>Remove PV Panel</ModalTitle>
+            <ModalTitle>Remove Simulator</ModalTitle>
             <CloseButton />
         </ModalHeader>
         <ModalBody>
-            @if (Panel != null)
+            @if (simulator != null)
             {
                 <Row Margin="Margin.Is2.FromTop">
                     <Column>
-                        <Span>nme: @Panel.Name</Span>
+                        <Span>nme: @simulator.Name</Span>
                     </Column>
                 </Row>
                 <Row Margin="Margin.Is2.FromTop">
                     <Column>
-                        <Span>Id: @Panel.Id</Span>
+                        <Span>Id: @simulator.Id</Span>
                     </Column>
                 </Row>
                 <Row Margin="Margin.Is2.FromTop">
                     <Column>
-                        <Span>GroupId: @Panel.GroupId</Span>
+                        <Span>EntityId: @EntityId</Span>
                     </Column>
                 </Row>
                 <Row Margin="Margin.Is2.FromTop">
                     <Column>
-                        <Span>Do you realy want to remove this panel?</Span>
+                        <Span>Do you realy want to remove this simulator?</Span>
                     </Column>
                 </Row>
                 <Row Margin="Margin.Is2.FromTop">
                     <Column>
-                        <Button Color="Color.Primary" Outline Clicked="@removePanel">Remove Panel</Button>
+                        <Button Color="Color.Primary" Outline Clicked="@remove">Remove Simulator</Button>
                     </Column>
                 </Row>
             }
@@ -39,7 +39,7 @@
             {
                 <Row>
                     <Column>
-                        <Span>Please select the Entity to remove block. Click to entity in the Tree.</Span>
+                        <Span>Please select the Entity to remove simulator. Click to entity in the Tree.</Span>
                     </Column>
                 </Row>
             }
@@ -49,7 +49,7 @@
 
 @if (WithButton)
 {
-    <Button Color="Color.Primary" Block="@BlockButton" Outline Float="@FloatButton" Clicked="@openRemoveBlock" Style="max-height:30px;"> 
+    <Button Color="Color.Primary" Block="@BlockButton" Outline Float="@FloatButton" Clicked="@openRemoveModal">
         <Row>
             @if (WithButtonIcon)
             {
@@ -80,43 +80,55 @@
     [Parameter]
     public bool WithButtonText { get; set; } = false;
     [Parameter]
-    public string ButtonText { get; set; } = "Remove Panel";
+    public string ButtonText { get; set; } = "Remove Simulator";
+    [Parameter]
+    public string EntityId { get; set; } = string.Empty;
+    [Parameter]
+    public string SimulatorId { get; set; } = string.Empty;
     [Parameter]
     public EventCallback<string> Removed { get; set; }
-    [Parameter]
-    public PVPanel Panel { get; set; } = new PVPanel();
+
+    ISimulator simulator = new DeviceSimulator();
 
     Modal? RemoveModal;
 
     [Inject] INotificationService NotificationService { get; set; }
 
-    public async Task Load(PVPanel input, bool showModal = false)
+    public async Task Load(string _entityId, string _simulatorId, bool showModal = false)
     {
-        if (input != null)
-            Panel = input;
+        if (!string.IsNullOrEmpty(_entityId))
+            EntityId = _entityId;
+        if (!string.IsNullOrEmpty(_simulatorId))
+            SimulatorId = _simulatorId;
+
+        var res = AppData.EntitiesHandler.GetEntitySimulator(EntityId, SimulatorId);
+        if (res.Item1 && res.Item2 != null)
+            simulator = res.Item2;
+
         if (showModal && RemoveModal != null)
             await RemoveModal.Show();
         await InvokeAsync(StateHasChanged);
     }
 
-    private async Task openRemoveBlock()
+    private async Task openRemoveModal()
     {
         if (RemoveModal != null)
             await RemoveModal.Show();
     }
 
-    private async Task removePanel()
+    private async Task remove()
     {
-        if (Panel != null && Panel.GroupId != null && Panel.Id != null)
+        if (simulator != null && !string.IsNullOrEmpty(SimulatorId) && !string.IsNullOrEmpty(EntityId))
         {
-            if(AppData.PVEGrid.RemovePanelFromGroup(Panel.GroupId, Panel.Id))
-            {
-                await NotificationService.Success($"Panel {Panel.Name} was removed.", "Remove Panel");
-            }
+            var result = AppData.EntitiesHandler.RemoveSimulatorsFromEntity(EntityId, new List<string> { SimulatorId });
+            if(result.Item1)
+                await NotificationService.Success($"Simulator {simulator.Name} has been removed.", "Remove Simulator");
+            else
+                await NotificationService.Error($"Cannot remove Simulator {simulator.Name} from entity.", "Remove Simulator");
 
             if (RemoveModal != null)
                 await RemoveModal.Hide();
-            await Removed.InvokeAsync(Panel.Id);
+            await Removed.InvokeAsync(simulator.Id);
         }
     }
 

@@ -9,6 +9,7 @@ Many thanks for this class to VPKSoft :) I have added just function: GetSunBeamA
 */
 #endregion
 
+using GeoTimeZone;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -175,6 +176,19 @@ namespace VEDriversLite.Common.Calendar
             return new MoonRaDecDist { ra = RightAscension(l, b), dec = Declination(l, b), dist = dt };
         }
 
+        public static TimeSpan TimeOffsetByCoodinates(double lat, double lng)
+        {
+            var tz = TimeZoneLookup.GetTimeZone(lat, lng);
+            TimeSpan offset = new TimeSpan(0, 0, 0);
+            if (tz != null && !string.IsNullOrEmpty(tz.Result))
+            {
+                TimeZoneInfo tzi = TimeZoneInfo.FindSystemTimeZoneById(tz.Result);
+                offset = tzi.BaseUtcOffset;
+            }
+
+            return offset;
+        }
+
         public class SunCalc
         {
             private const double J0 = 0.0009;
@@ -189,7 +203,8 @@ namespace VEDriversLite.Common.Calendar
             {
                 double lw = rad * -lng;
                 double phi = rad * lat;
-                double d = JulianDays(dt);
+
+                double d = JulianDays(dt - TimeOffsetByCoodinates(lat, lng));
                 RaDec c = SunCoords(d);
                 double H = SiderealTime(d, lw) - c.ra;
                 return new AzAlt { Azimuth = Azimuth(H, phi, c.dec), Altitude = Altitude(H, phi, c.dec) };
@@ -293,7 +308,7 @@ namespace VEDriversLite.Common.Calendar
             {
                 double lw = rad * -lng;
                 double phi = rad * lat;
-                double d = JulianDays(dt);
+                double d = JulianDays(dt - TimeOffsetByCoodinates(lat, lng));
 
                 MoonRaDecDist c = MoonCoords(d);
                 double H = SiderealTime(d, lw) - c.ra;

@@ -1,29 +1,58 @@
-<Project Sdk="Microsoft.NET.Sdk.Razor">
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+	  <PackageId>VEFramework.VEBlazor.EntitiesBlocks</PackageId>
+	  <Version>0.4.3</Version>
+	  <Authors>fyziktom</Authors>
+	  <Company>VEFramework</Company>
+	  <Description>Blazor Component library for .NET drivers for calculation of the entities and its time based blocks with specfic amount.</Description>
+	  <PackageProjectUrl>https://veframework.com/</PackageProjectUrl>
+	  <RepositoryUrl>https://github.com/fyziktom/VirtualEconomyFramework</RepositoryUrl>
+	  <RepositoryType>Git</RepositoryType>
+	  <PackageTags>VEFramework, Blocks, Entities, Energy, Data, Air, Finance, TimePlans, Model, API, NFT, NFTs, Blockchain, eCommerce, dApps</PackageTags>
+	  <Copyright>fyziktom</Copyright>
+	  <PackageReleaseNotes>
+		  - SunMoon calc now returns time based on timezone known from lat/lon
+		  - Improvement of Simulator Day Profile component
+		  - Added simple PVEViewer
+	  </PackageReleaseNotes>
+	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
-
 
   <ItemGroup>
     <SupportedPlatform Include="browser" />
   </ItemGroup>
 
+  <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
+	<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.21" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net7.0'">
+	<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.11" />
+  </ItemGroup>
+	
   <ItemGroup>
-    <PackageReference Include="Blazorise" Version="1.1.2" />
-    <PackageReference Include="Blazorise.Bootstrap" Version="1.1.2" />
-    <PackageReference Include="Blazorise.Charts" Version="1.1.2" />
-    <PackageReference Include="Blazorise.Components" Version="1.1.2" />
-    <PackageReference Include="Blazorise.Icons.FontAwesome" Version="1.1.2" />
-    <PackageReference Include="Blazorise.TreeView" Version="1.1.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.15" />
+    <PackageReference Include="Blazorise" Version="1.3.1" />
+    <PackageReference Include="Blazorise.Bootstrap" Version="1.3.1" />
+    <PackageReference Include="Blazorise.Charts" Version="1.3.1" />
+    <PackageReference Include="Blazorise.Components" Version="1.3.1" />
+    <PackageReference Include="Blazorise.Icons.FontAwesome" Version="1.3.1" />
+    <PackageReference Include="Blazorise.TreeView" Version="1.3.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\VEDriversLite.EntitiesBlocks\VEDriversLite.EntitiesBlocks.csproj" />
     <ProjectReference Include="..\VEFramework.VEBlazor.Editable\VEFramework.VEBlazor.Editable.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>

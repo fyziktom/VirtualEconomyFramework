@@ -38,8 +38,7 @@ namespace VEDriversLite.EntitiesBlocks.Consumers
 
         public double DevicePowerConsumption { get; set; } = 1.0;
         public double[] DayProfileData { get; set; } = new double[24];
-
-        public string Name { get; set; } = string.Empty;
+        
         public Week ScheduledDays { get; set; } = Week.WholeWeek;
 
         public override (bool, string) ExportConfig()

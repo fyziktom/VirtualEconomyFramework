@@ -1,12 +1,12 @@
 ﻿@inject AppData AppData
 
-<Card Margin="Margin.Is4.FromBottom" Style="min-width:300px;">
+<Card Margin="Margin.Is4.FromBottom" Style="min-width:300px; max-width:450px;">
     <CardHeader>
         <Row Flex="Flex.AlignItems.Center">
             <Column ColumnSize="ColumnSize.Is9" Flex="Flex.AlignItems.Center">
                 <CardTitle Flex="Flex.AlignItems.Center" Class="entity-group-title">
                     <Span Margin="Margin.Is1.FromEnd">
-                        Skupina panelů -
+                        PVPanels Group -
                     </Span>
                     <Editable Item="@getGroup()" ParameterName="@(nameof(panelsGroup.Name))" TItem="PVPanelsGroup" ItemChanged="@OnPanelsGroupNameChanged" />
                 </CardTitle>
@@ -28,24 +28,22 @@
     {
                 <Table>
                     <TableHeader>
-                        <TableHeaderCell>Název</TableHeaderCell>
-                    <TableHeaderCell>Energie</TableHeaderCell>
-                        <TableHeaderCell>Azimut</TableHeaderCell>
-                        <TableHeaderCell>Latitude</TableHeaderCell>
-                        <TableHeaderCell>Longitude</TableHeaderCell>
-                        <TableHeaderCell>Akce</TableHeaderCell>
+                    <TableHeaderCell><Small>Name</Small></TableHeaderCell>
+                    <TableHeaderCell><Small>Energy</Small></TableHeaderCell>
+                    <TableHeaderCell><Small>Azimut</Small></TableHeaderCell>
+                    <TableHeaderCell><Small>Position</Small></TableHeaderCell>
+                    <TableHeaderCell><Small>Action</Small></TableHeaderCell>
                     </TableHeader>
                     <TableBody>
                         @foreach (var panel in Panels)
                         {
                             <TableRow>
-                                <TableRowCell>@panel.Name</TableRowCell>
-                                <TableRowCell>@panel.PeakPower</TableRowCell>
-                                <TableRowCell>@(
+                                <TableRowCell><Small>@panel.Name</Small></TableRowCell>
+                            <TableRowCell><Small>@panel.PeakPower</Small></TableRowCell>
+                                <TableRowCell><Small>@(
                             Math.Round(panel.AzimutInDegrees, 2)
-                            ) </TableRowCell>
-                                <TableRowCell>@panel.Latitude</TableRowCell>
-                                <TableRowCell>@panel.Longitude</TableRowCell>
+                            )</Small> </TableRowCell>
+                            <TableRowCell><Small>@panel.Latitude, @panel.Longitude</Small></TableRowCell>
                                 <TableRowCell>
                                     <RemovePanel Panel="@panel"
                                                  Removed="@onRemovedPanel" 
@@ -69,6 +67,8 @@
     public string Name { get; set; } = string.Empty;
     [Parameter]
     public string GroupId { get; set; } = string.Empty;
+    [Parameter]
+    public EventCallback<string> GroupChanged { get; set; }
 
     PVPanelsGroup? panelsGroup = new PVPanelsGroup();
 
@@ -150,9 +150,11 @@
     private async void onPanelAdded(List<string> e)
     {
         await LoadData(GroupId);
+        await GroupChanged.InvokeAsync(GroupId);
     }
     private async void onRemovedPanel(string e)
     {
         await LoadData(GroupId);
+        await GroupChanged.InvokeAsync(GroupId);
     }
 }

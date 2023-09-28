@@ -1,0 +1,155 @@
+﻿@using Newtonsoft.Json
+@inherits EntitiesBlocksComponentBase
+@inject AppData AppData
+
+<Card Margin="Margin.Is4.FromBottom" Style="min-width:300px;">
+    <CardHeader>
+        <Row Flex="Flex.AlignItems.Center">
+            <Column ColumnSize="ColumnSize.Is9" Flex="Flex.AlignItems.Center">
+                <CardTitle Flex="Flex.AlignItems.Center" Class="entity-group-title">
+                    <Span Margin="Margin.Is1.FromEnd">
+                        Simulators
+                    </Span>
+                </CardTitle>
+            </Column>
+            <Column>
+                <AddSimulator @ref=addSimulatorModal 
+                            WithButton="true" 
+                            BlockButton="false"
+                            FloatButton="Float.End" 
+                            WithButtonIcon="true" 
+                            WithButtonText="false"
+                            Added="@onAddedHandler"/>
+            </Column>
+        </Row>
+    </CardHeader>
+    <CardBody Overflow="Overflow.Auto" Padding="Padding.Is0">
+        @if (Simulators != null)
+        {
+            <Table>
+                <TableHeader>
+                    <TableHeaderCell>Název</TableHeaderCell>
+                    <TableHeaderCell>Id</TableHeaderCell>
+                    <TableHeaderCell>Energie</TableHeaderCell>
+                    <TableHeaderCell>DayProfile</TableHeaderCell>
+                    <TableHeaderCell>Akce</TableHeaderCell>
+                </TableHeader>
+                <TableBody>
+                    @for (var i = 0; i < Simulators.Count; i++)
+                    {
+                        var index = (int)i;
+                        <TableRow>
+                            <TableRowCell>@GetSimulatorName(index)</TableRowCell>
+                            <TableRowCell>@GetSimulatorId(index)</TableRowCell>
+                            <TableRowCell>@GetSimulatorPowerConsumption(index)</TableRowCell>
+                            <TableRowCell>
+                                    <SimulatorDayProfileDataBarGraph Data="@GetSimulatorDayProfileData(index)" />
+                            </TableRowCell>
+
+                            <TableRowCell>
+                                <RemoveSimulator EntityId="@EntityId"
+                                                    SimulatorId="@GetSimulatorId(index)"
+                                                    Removed="@onRemoved" 
+                                                    WithButton="true"
+                                                    WithButtonText="false" 
+                                                    WithButtonIcon="true" 
+                                                    FloatButton="Float.End"/>
+                            </TableRowCell>
+                        </TableRow>
+                    }
+                </TableBody>
+            </Table>
+        }
+    </CardBody>
+</Card>
+
+@code {
+    [Parameter]
+    public List<ISimulator> Simulators { get; set; } = new List<ISimulator>();
+    [Parameter]
+    public string Name { get; set; } = string.Empty;
+    [Parameter]
+    public string EntityId { get; set; } = string.Empty;
+
+    IEntity? entity = new BaseEntity();
+
+    AddSimulator? addSimulatorModal;
+
+    public string GetSimulatorId(int index)
+    {
+        if (index < Simulators.Count)
+            return Simulators[index].Id;
+        return string.Empty;
+    }
+
+    public string GetSimulatorName(int index)
+    {
+        if (index < Simulators.Count)
+            return Simulators[index].Name;
+        return string.Empty;
+    }
+
+    public string GetSimulatorPowerConsumption(int index)
+    {
+        if (index < Simulators.Count)
+        {
+            if (Simulators[index].Type == SimulatorTypes.Device)
+                return Math.Round((Simulators[index] as DeviceSimulator).DevicePowerConsumption,2).ToString();
+        }
+        return string.Empty;
+    }
+
+    public double[] GetSimulatorDayProfileData(int index)
+    {
+        if (index < Simulators.Count)
+        {
+            if (Simulators[index].Type == SimulatorTypes.Device)
+                return (Simulators[index] as DeviceSimulator).DayProfileData;
+        }
+        return new double[24];
+    }
+
+    private void getEntity()
+    {
+        var r = AppData.EntitiesHandler.GetEntity(EntityId, EntityType.Both);
+        if (r != null)
+            entity = r;
+    }
+
+
+    public async Task LoadData(string entityId)
+    {
+        await LoadData(new TreeItem() { Id = entityId });
+    }
+    public async Task LoadData(TreeItem item)
+    {
+        if (item != null)
+        {
+            Item = item;
+            if (!string.IsNullOrEmpty(item.Id))
+                EntityId = item.Id;
+            getEntity();
+        }
+
+        if (entity != null)
+        {
+            if (addSimulatorModal != null)
+                addSimulatorModal.Item = Item;
+
+            if (entity.Simulators != null)
+                Simulators = entity.Simulators.Values.Where(s => !string.IsNullOrEmpty(s.Name)).Select(s => s).ToList();
+
+            await InvokeAsync(StateHasChanged);
+        }
+
+    }
+
+    private async void onAddedHandler(string e)
+    {
+        await LoadData(EntityId);
+    }
+    private async void onRemoved(string e)
+    {
+        await LoadData(EntityId);
+    }
+}
