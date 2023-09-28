@@ -5,17 +5,17 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 	  <PackageId>VEFramework.VEDriversLite.Common</PackageId>
-	  <Version>0.4.02</Version>
+	  <Version>0.4.3</Version>
 	  <Authors>fyziktom</Authors>
 	  <Company>VEFramework</Company>
 	  <Description>Common dtos and tools for VEDriversLite packages</Description>
 	  <PackageProjectUrl>https://veframework.com/</PackageProjectUrl>
 	  <RepositoryUrl>https://github.com/fyziktom/VirtualEconomyFramework</RepositoryUrl>
 	  <RepositoryType>Git</RepositoryType>
-	  <PackageTags>VEFramework, Cryptocurrencies, Crypto, NFT, NFTs, Bitcoin, ReddCoin, Neblio, Nebl, Doge, Dogecoin, Flux, Blockchain, eCommerce, dApps, WooCommerce, WordPress</PackageTags>
+	  <PackageTags>VEFramework, Cryptocurrencies, Crypto, NFT, NFTs, Bitcoin, Neblio, Dogecoin, Blockchain, eCommerce, dApps, Sun, Moon</PackageTags>
 	  <Copyright>fyziktom</Copyright>
 	  <PackageReleaseNotes>
-		  - Update of nuget package
+		  - SunMoon calc now returns time based on timezone known from lat/lon
 	  </PackageReleaseNotes>
 	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
 	  <Title>VEDriversLite Common Dto and Tools</Title>

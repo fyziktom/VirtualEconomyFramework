@@ -1,0 +1,103 @@
+﻿@using System.Text;
+@inject AppData AppData
+
+
+<svg width="@Width" height="@Height" xmlns="http://www.w3.org/2000/svg">
+    <!-- Background -->
+    <rect width="100%" height="100%" fill="white" />
+
+    <!-- Circle -->
+    <circle cx="@HalfWidth" cy="@HalfHeight" r="@circle" stroke="black" fill="none" />
+
+    <!-- Axis X and Y -->
+    <line x1="@spacingFromBorderForLines" y1="@HalfHeight" x2="@((int)(Width - spacingFromBorderForLines))" y2="@HalfHeight" stroke="black" />
+    <line x1="@HalfWidth" y1="@spacingFromBorderForLines" x2="@HalfWidth" y2="@((int)(Height - spacingFromBorderForLines))" stroke="black" />
+
+    <!-- Angle labels -->
+    <text x="@HalfWidth" y="@((int)(Height - spacingFromBorder))" text-anchor="middle" font-family="Arial" font-size="12">S</text>
+    <text x="@HalfWidth" y="@spacingFromBorder" text-anchor="middle" font-family="Arial" font-size="12">N</text>
+    <text x="@((int)(Width - spacingFromBorder))" y="@HalfHeight" text-anchor="middle" font-family="Arial" font-size="12">E</text>
+    <text x="@spacingFromBorder" y="@HalfHeight" text-anchor="middle" font-family="Arial" font-size="12">W</text>
+
+    <!-- Panels -->
+    @foreach (var kvp in PanelsByAzimuth)
+    {
+        @((MarkupString)GeneratePanelsForAzimuth(kvp.Key, kvp.Value))
+    }
+</svg>
+
+@code {
+    [Parameter] public int Width { get; set; } = 750;
+    [Parameter] public int Height { get; set; } = 750;
+    [Parameter] public int PanelsPerRow { get; set; } = 3;
+
+    public int HalfWidth
+    {
+        get => (int)(Width / 2.0);
+    }
+    public int HalfHeight
+    {
+        get => (int)(Height / 2.0);
+    }
+
+    private Dictionary<int, List<object>> PanelsByAzimuth = new Dictionary<int, List<object>>();
+
+    private double PanelWidth = 20;
+    private double PanelHeight = 10;
+    private const double circle = 160;
+    private double Radius = circle + 30; 
+    private double spacingBetweenRows = 5;
+    private double spacingFromBorder = circle + 95;
+    private double spacingFromBorderForLines = circle + 120; 
+
+    public async Task LoadPanels()
+    {
+        PanelsByAzimuth.Clear();
+        foreach (var group in AppData.PVEGrid.PVPanelsGroups.Values)
+        {
+            foreach (var panel in group.PVPanels.Values)
+                await AddPanel((int)-panel.AzimutInDegrees);
+        }
+    }
+
+    public async Task AddPanel(int azimuth)
+    {
+        azimuth = (int)Math.Round(azimuth / 10.0) * 10;
+        if (!PanelsByAzimuth.ContainsKey(azimuth))
+        {
+            PanelsByAzimuth[azimuth] = new List<object>();
+        }
+        PanelsByAzimuth[azimuth].Add(new object());
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private string GeneratePanelsForAzimuth(int azimuth, List<object> panels)
+    {
+        StringBuilder sb = new StringBuilder();
+
+        int totalRows = (int)Math.Ceiling((double)panels.Count / PanelsPerRow); // Celkový počet řad
+
+        for (int row = 0; row < totalRows; row++)
+        {
+            int panelsInThisRow = Math.Min(panels.Count - row * PanelsPerRow, PanelsPerRow); // Počet panelů v aktuální řadě
+
+            // Upravený poloměr podle aktuální řady
+            double currentRadius = Radius + row * (PanelHeight + spacingBetweenRows);
+
+            int centerX = HalfWidth - (int)(currentRadius * Math.Cos((90.0 + azimuth) * (Math.PI / 180.0)));
+            int centerY = HalfHeight + (int)(currentRadius * Math.Sin((90.0 + azimuth) * (Math.PI / 180.0)));
+
+            int startX = (int)(centerX - (double)((panelsInThisRow * PanelWidth + (panelsInThisRow - 1.0) * 2.0)) / 2.0);
+            int startY = (int)(centerY - ((double)PanelHeight / 2.0));
+
+            for (int i = 0; i < panelsInThisRow; i++)
+            {
+                sb.AppendLine($"<rect x=\"{startX}\" y=\"{startY}\" width=\"{PanelWidth}\" height=\"{PanelHeight}\" fill=\"darkblue\" transform=\"rotate({-azimuth}, {centerX}, {centerY})\" />");
+                startX += (int)PanelWidth + 2;
+            }
+        }
+
+        return sb.ToString();
+    }
+
+}

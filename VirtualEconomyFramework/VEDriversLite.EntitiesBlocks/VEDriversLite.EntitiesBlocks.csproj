@@ -5,7 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 	  <PackageId>VEFramework.VEDriversLite.EntitiesBlocks</PackageId>
-	  <Version>0.4.2</Version>
+	  <Version>0.4.3</Version>
 	  <Authors>fyziktom</Authors>
 	  <Company>VEFramework</Company>
 	  <Description>.NET drivers for calculation of the entities and its time based blocks with specfic amount.</Description>
@@ -15,7 +15,8 @@
 	  <PackageTags>VEFramework, Blocks, Entities, Energy, Data, Air, Finance, TimePlans, Model, API, NFT, NFTs, Blockchain, eCommerce, dApps</PackageTags>
 	  <Copyright>fyziktom</Copyright>
 	  <PackageReleaseNotes>
-		  - Added commands for get simulators of entity
+		  - SunMoon calc now returns time based on timezone known from lat/lon
+		  - Added loading of simulators from config
 	  </PackageReleaseNotes>
 	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
