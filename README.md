@@ -1,14 +1,19 @@
 [![VEDriversLite](https://img.shields.io/nuget/v/VEFramework.VEDriversLite?label=VEDriversLite)](https://www.nuget.org/packages/VEFramework.VEDriversLite/)
-[![VEBlazor](https://img.shields.io/nuget/v/VEFramework.VEBlazor?label=VEBlazor)](https://www.nuget.org/packages/VEFramework.VEBlazor/)
+[![VEBlazor](https://img.shields.io/nuget/v/VEFramework.VEBlazor?label=VEFramework.VEBlazor)](https://www.nuget.org/packages/VEFramework.VEBlazor/)
+[![VEBlazor](https://img.shields.io/nuget/v/VEFramework.VEDriversLite.EntitiesBlocks?label=VEFramework.VEDriversLite.EntitiesBlocks)](https://www.nuget.org/packages/VEFramework.VEDriversLite.EntitiesBlocks)
+[![VEBlazor](https://img.shields.io/nuget/v/VEFramework.VEBlazor.EntitiesBlocks?label=VEFramework.VEBlazor.EntitiesBlocks)](https://www.nuget.org/packages/VEFramework.VEBlazor.EntitiesBlocks)
 [![VEDriversLite.AI.OpenAI](https://img.shields.io/nuget/v/VEDriversLite.AI.OpenAI?label=VEDriversLite.AI.OpenAI)](https://www.nuget.org/packages/VEDriversLite.AI.OpenAI)
 [![VEBlazor.Editable](https://img.shields.io/nuget/v/VEFramework.VEBlazor.Editable?label=VEBlazor.Editable)](https://www.nuget.org/packages/VEFramework.VEBlazor.Editable/)
 [![VEDriversLite.NeblioAPI](https://img.shields.io/nuget/v/VEFramework.VEDriversLite.NeblioAPI?label=VEDriversLite.NeblioAPI)](https://www.nuget.org/packages/VEFramework.VEDriversLite.NeblioAPI/)
+
 
 # VEFramework
 
 Virtual Economy framework zjednodušuje tvorbu Web3, blockchain, IoT a NFT aplikací.
 
 VEFramework je L2 vrstva nad prakticky kterýmkoliv blockchainem. Aktuálně na ukázku podporuje Neblio a Dogecoin.
+
+VEFramework obsahuje také knihovnu [EntitiesBlocks](https://github.com/fyziktom/VirtualEconomyFramework/tree/main/VirtualEconomyFramework/VEDriversLite.EntitiesBlocks), kterou lze jednoduše použít pro výpočty energetických modelů. Knihovna má k dispozici i knihovnu UI komponent pro Blazor aplikace tu najdete [zde](https://github.com/fyziktom/VirtualEconomyFramework/tree/main/VirtualEconomyFramework/VEFramework.VEBlazor.EntitiesBlocks).
 
 ![Development with VEFramework](https://ve-framework.com/ipfs/QmVoMw53Vo2ZsbMYLwXjEuh2wkmVvWKkM1mrac7qdKosWs)
 
