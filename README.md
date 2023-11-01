@@ -28,7 +28,7 @@ VEFramework obsahuje také knihovnu [EntitiesBlocks](https://github.com/fyziktom
 - [`VEDriversLite`](https://fyziktom.github.io/VirtualEconomyFramework/api/VEDriversLite.html) - Aktuální a doporučená verze (Neblio a NFT drivers)
 
 ```shell
-dotnet add package VEFramework.VEDriversLite --version 0.3.42
+dotnet add package VEFramework.VEDriversLite
 ```
 
 
@@ -36,19 +36,19 @@ dotnet add package VEFramework.VEDriversLite --version 0.3.42
 - VEDriversLite obsahují tuto knihovnu. Pokud potřebujete jen přístup k API a nepotřebujete podepisovat transakce lze načíst jen knihovnu pro NeblioAPI a tím snížit počet závislostí v projektu.
 
 ```shell
-dotnet add package VEFramework.VEDriversLite.NeblioAPI --version 0.3.42
+dotnet add package VEFramework.VEDriversLite.NeblioAPI
 ```
 
 - [`VEBlazor`](https://github.com/fyziktom/VirtualEconomyFramework/tree/main/VirtualEconomyFramework/VEBlazor) - Blazor knihovna komponent a dApp vzor
 
 ```shell
-dotnet add package VEFramework.VEBlazor --version 0.3.42
+dotnet add package VEFramework.VEBlazor
 ```
 
 - Dodatečná knihovna [`VEBlazor.Editable`](./VirtualEconomyFramework/VEFramework.VEBlazor.Editable) pro zobrazení a editaci parametrů tříd v UI
 
 ```shell
-dotnet add package VEFramework.VEBlazor.Editable --version 0.3.3
+dotnet add package VEFramework.VEBlazor.Editable
 ```
 
 Zkuste si náš [hello world příklad](#hello-world).
