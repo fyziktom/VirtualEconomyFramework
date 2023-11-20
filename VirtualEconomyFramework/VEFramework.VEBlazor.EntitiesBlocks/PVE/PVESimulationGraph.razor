@@ -2,23 +2,37 @@
 
 <Card Margin="Margin.Is4.FromBottom">
     <CardHeader>
-        <CardTitle>FVE Simulace - @AppData.PVEGrid.Name</CardTitle>
+        <CardTitle>FVE Simulation - @AppData.PVEGrid.Name</CardTitle>
     </CardHeader>
     <CardBody>
         <Row Margin="Margin.Is1.FromTop">
             <Column>
-                <Button Color="Color.Primary" Outline Clicked="@(async () => await Refresh())">Spustit simulace</Button>
+                <Button Color="Color.Primary" Outline Clicked="@(async () => await Refresh())">Run Simulation</Button>
             </Column>
         </Row>
         <Row Margin="Margin.Is2.FromTop">
             <Column>
-                <Span>Zvolené datum: @(Start.ToString("dd.MM.yyyy")) </Span>
+                <Span>Date: @(Start.ToString("dd.MM.yyyy")) </Span>
             </Column>
         </Row>
         <Row Margin="Margin.Is2.FromTop">
             <Column>
                 <Slider @ref=slider TValue="int" Step="1" Value="sliderValue" Max="365" ValueChanged="@OnsliderValueChanged" />
-                <Small>Posunte slider pro výběr pro výběr dalšího dne</Small>
+                <Small>Slide to choose another day of year</Small>
+            </Column>
+        </Row>
+        <Row Margin="Margin.Is2.FromTop">
+            <Column>
+                <Row>
+                    <Column>
+                        <Span>Total Day Production: @(Math.Round(TotalProductionDataProfile.DataSum,3)) kWh</Span>
+                    </Column>
+                </Row>
+                <Row>
+                    <Column>
+                        <Span>Total Day Consumption: @(Math.Round(ConsumptionDataProfile.DataSum,3)) kWh</Span>
+                    </Column>
+                </Row>
             </Column>
         </Row>
         <Row Margin="Margin.Is4.FromTop">
@@ -40,11 +54,20 @@
 
     private LineChart<double>? lineChart;
 
-    private DataProfile totalProductionDataProfile = new DataProfile();
-    private DataProfile storageChargingDataProfile = new DataProfile();
-    private DataProfile storageDischargingDataProfile = new DataProfile();
-    private DataProfile consumptionDataProfile = new DataProfile();
-    private DataProfile storageBilanceDataProfile = new DataProfile();
+    [Parameter] public DataProfile TotalProductionDataProfile { get; set; } = new DataProfile();
+    [Parameter] public EventCallback<DataProfile> TotalProductionDataProfileChanged { get; set; }
+
+    [Parameter] public DataProfile StorageChargingDataProfile { get; set; } = new DataProfile();
+    [Parameter] public EventCallback<DataProfile> StorageChargingDataProfileChanged { get; set; }
+
+    [Parameter] public DataProfile StorageDischargingDataProfile { get; set; } = new DataProfile();
+    [Parameter] public EventCallback<DataProfile> StorageDischargingDataProfileChanged { get; set; }
+
+    [Parameter] public DataProfile ConsumptionDataProfile { get; set; } = new DataProfile();
+    [Parameter] public EventCallback<DataProfile> ConsumptionDataProfileChanged { get; set; }
+
+    [Parameter] public DataProfile StorageBilanceDataProfile { get; set; } = new DataProfile();
+    [Parameter] public EventCallback<DataProfile> StorageBilanceDataProfileChanged { get; set; }
 
     Slider<int>? slider;
     int sliderValue = 0;
@@ -159,20 +182,22 @@
 
     LineChartDataset<double> GetLineChartDatasetForTotal(DateTime start)
     {
-        totalProductionDataProfile = new DataProfile();
+        TotalProductionDataProfile = new DataProfile();
         var tmp = start;
         var end = start.AddDays(1);
 
         while (tmp < end)
         {
-            totalProductionDataProfile.ProfileData.Add(tmp, AppData.PVEGrid.GetTotalPowerInDateTime(tmp, Coords, 1));
+            TotalProductionDataProfile.ProfileData.Add(tmp, AppData.PVEGrid.GetTotalPowerInDateTime(tmp, Coords, 1));
             tmp = tmp.AddHours(1);
         }
+
+        TotalProductionDataProfileChanged.InvokeAsync(TotalProductionDataProfile);
 
         return new LineChartDataset<double>
             {
                 Label = "Total",
-                Data = totalProductionDataProfile.ProfileData.Values.Where(p => p < double.MaxValue).ToList(),
+                Data = TotalProductionDataProfile.ProfileData.Values.Where(p => p < double.MaxValue).ToList(),
                 BackgroundColor = backgroundColors,
                 BorderColor = borderColors,
                 Fill = true,
@@ -183,18 +208,20 @@
 
     LineChartDataset<double> GetLineChartDatasetForStorageCharging(DateTime start, bool emptyStorageInStart)
     {
-        storageChargingDataProfile = new DataProfile();
+        StorageChargingDataProfile = new DataProfile();
 
         if (emptyStorageInStart)
             AppData.BatteryStorage.DischargeAllBatteryBlocks();
 
-        foreach (var data in AppData.BatteryStorage.GetChargingProfileData(totalProductionDataProfile, false, true))
-            storageChargingDataProfile.ProfileData.TryAdd(data.Item1, data.Item2 / 10000);
+        foreach (var data in AppData.BatteryStorage.GetChargingProfileData(TotalProductionDataProfile, false, true))
+            StorageChargingDataProfile.ProfileData.TryAdd(data.Item1, data.Item2 / 10000);
+
+        StorageChargingDataProfileChanged.InvokeAsync(StorageChargingDataProfile);
 
         return new LineChartDataset<double>
             {
                 Label = "Charging in kWh/10",
-                Data = storageChargingDataProfile.ProfileData.Values.Where(p => p < double.MaxValue).ToList(),
+                Data = StorageChargingDataProfile.ProfileData.Values.Where(p => p < double.MaxValue).ToList(),
                 BackgroundColor = backgroundColors,
                 BorderColor = borderColors,
                 Fill = true,
@@ -214,12 +241,14 @@
                                                                                false,
                                                                                new List<BlockDirection>() { BlockDirection.Consumed });
 
-        consumptionDataProfile = DataProfileHelpers.ConvertBlocksToDataProfile(dayblocks);
+        ConsumptionDataProfile = DataProfileHelpers.ConvertBlocksToDataProfile(dayblocks);
+
+        ConsumptionDataProfileChanged.InvokeAsync(ConsumptionDataProfile);
 
         return new LineChartDataset<double>
             {
                 Label = "Day consumption in kWh",
-                Data = consumptionDataProfile.ProfileData.Values.Where(p => p < double.MaxValue).ToList(),
+                Data = ConsumptionDataProfile.ProfileData.Values.Where(p => p < double.MaxValue).ToList(),
                 BackgroundColor = backgroundColors,
                 BorderColor = borderColors,
                 Fill = true,
@@ -230,7 +259,7 @@
 
     LineChartDataset<double> GetLineChartDatasetForStorageDischarging(DateTime start)
     {
-        storageDischargingDataProfile = new DataProfile();
+        StorageDischargingDataProfile = new DataProfile();
 
         var dayblocks = AppData.EntitiesHandler.GetConsumptionOfEntity(AppData.SelectedItem.Id,
                                                                        BlockTimeframe.Hour,
@@ -242,26 +271,30 @@
 
         var consumptionProfile = DataProfileHelpers.ConvertBlocksToDataProfile(dayblocks);
 
-        var profiles = AppData.BatteryStorage.GetChargingAndDischargingProfiles(totalProductionDataProfile, consumptionProfile, true);
+        var profiles = AppData.BatteryStorage.GetChargingAndDischargingProfiles(TotalProductionDataProfile, consumptionProfile, true);
 
         if (profiles != null && profiles.TryGetValue("discharge", out var disch))
         {
             foreach (var v in disch.ProfileData.Keys)
             {
                 if (disch.ProfileData.TryGetValue(v, out var d))
-                    storageDischargingDataProfile.ProfileData.TryAdd(v, d / 10000);
+                    StorageDischargingDataProfile.ProfileData.TryAdd(v, d / 10000);
             }
-            storageDischargingDataProfile.Name = disch.Name;
-            storageDischargingDataProfile.Type = disch.Type;
+            StorageDischargingDataProfile.Name = disch.Name;
+            StorageDischargingDataProfile.Type = disch.Type;
         }
 
+        StorageDischargingDataProfileChanged.InvokeAsync(StorageDischargingDataProfile);
+
         if (profiles != null && profiles.TryGetValue("bilance", out var bil))
-            storageBilanceDataProfile = bil;
+            StorageBilanceDataProfile = bil;
+
+        StorageBilanceDataProfileChanged.InvokeAsync(StorageBilanceDataProfile);
 
         return new LineChartDataset<double>
             {
                 Label = "Discharging in kWh/10",
-                Data = storageDischargingDataProfile.ProfileData.Values.Where(p => p < double.MaxValue).ToList(),
+                Data = StorageDischargingDataProfile.ProfileData.Values.Where(p => p < double.MaxValue).ToList(),
                 BackgroundColor = backgroundColors,
                 BorderColor = borderColors,
                 Fill = true,
