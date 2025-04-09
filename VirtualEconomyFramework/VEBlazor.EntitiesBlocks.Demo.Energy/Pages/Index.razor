@@ -112,6 +112,8 @@
             AppData.RootItemId = "7b27c442-ad40-4679-b6d5-8873d9763996";
             AppData.RootItemName = "network";
             var storeddata = await Http.GetStringAsync("sampledata.json");
+            Console.WriteLine("Data loaded...");
+            Console.WriteLine($"{storeddata}");
             if (storeddata != null)
                 AppData.StoredConfig = storeddata;
 

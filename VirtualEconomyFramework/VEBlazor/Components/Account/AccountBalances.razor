@@ -52,7 +52,7 @@
                 {
                     <Row>
                         <Column>
-                            Tokens: @(Math.Round(AppData.Account.TokensSupplies[AppData.AppTokenId].Amount, 0)) @AppData.Account.TokensSupplies[AppData.AppTokenId].TokenSymbol
+                            Tokens: @(AppData.Account.TokensSupplies[AppData.AppTokenId].Amount) @AppData.Account.TokensSupplies[AppData.AppTokenId].TokenSymbol
                             <Figure Size="FigureSize.Is16x16"><FigureImage Source="@AppData.Account.TokensSupplies[AppData.AppTokenId].ImageUrl" /></Figure>
                         </Column>
                     </Row>

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-	<TargetFrameworks>net6.0;net7.0</TargetFrameworks>
+	<TargetFrameworks>net8.0;</TargetFrameworks>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
 	  <PackageId>VEFramework.VEBlazor</PackageId>
@@ -34,19 +34,20 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Blazored.LocalStorage" Version="4.2.0" />
-    <PackageReference Include="Blazorise" Version="1.2.2" />
-    <PackageReference Include="Blazorise.Bootstrap" Version="1.2.2" />
-    <PackageReference Include="Blazorise.Components" Version="1.2.2" />
-    <PackageReference Include="Blazorise.DataGrid" Version="1.2.2" />
-    <PackageReference Include="Blazorise.Icons.FontAwesome" Version="1.2.2" />
-    <PackageReference Include="Blazorise.LoadingIndicator" Version="1.2.2" />
-    <PackageReference Include="Blazorise.Markdown" Version="1.2.2" />
-    <PackageReference Include="Blazorise.QRCode" Version="1.2.2" />
-    <PackageReference Include="Blazorise.Video" Version="1.2.2" />
+    <PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
+    <PackageReference Include="Blazorise" Version="1.6.0" />
+    <PackageReference Include="Blazorise.Bootstrap" Version="1.6.0" />
+    <PackageReference Include="Blazorise.Bootstrap5" Version="1.6.0" />
+    <PackageReference Include="Blazorise.Components" Version="1.6.0" />
+    <PackageReference Include="Blazorise.DataGrid" Version="1.6.0" />
+    <PackageReference Include="Blazorise.Icons.FontAwesome" Version="1.6.0" />
+    <PackageReference Include="Blazorise.LoadingIndicator" Version="1.6.0" />
+    <PackageReference Include="Blazorise.Markdown" Version="1.6.0" />
+    <PackageReference Include="Blazorise.QRCode" Version="1.6.0" />
+    <PackageReference Include="Blazorise.Video" Version="1.6.0" />
     <PackageReference Include="BlazorPanzoom" Version="0.2.1" />
     <PackageReference Include="IndexedDB.Blazor" Version="1.1.1" />
-    <PackageReference Include="Markdig" Version="0.30.4" />
+    <PackageReference Include="Markdig" Version="0.37.0" />
     <PackageReference Include="Texnomic.Blazor.JsonViewer" Version="0.1.0" />
   </ItemGroup>
 

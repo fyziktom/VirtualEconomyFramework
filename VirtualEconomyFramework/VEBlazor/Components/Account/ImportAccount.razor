@@ -342,7 +342,7 @@
             if (await AppData.Account.CreateNewAccount(password))
             {
                 address = AppData.Account.Address;
-                key = AppData.Account.AccountKey.GetEncryptedKey(returnEncrypted:true);
+                key = await AppData.Account.AccountKey.GetEncryptedKey(returnEncrypted:true);
                 var keyToStore = SymetricProvider.JoinIVToString(key, AppData.Account.AccountKey.IV);
                 await AppData.SaveAccountInfoToDb(address, key);
 
@@ -358,18 +358,26 @@
             {
                 try
                 {
+                    SymetricProvider.jsRuntime = JS;
                     var civ = SymetricProvider.ContainsIV(importAccountKey);
                     if (civ)
                     {
                         var ivkey = SymetricProvider.ParseIVFromString(importAccountKey);
                         if (!string.IsNullOrEmpty(ivkey.etext))
                         {
+                            /*
                             var AccountKey = new EncryptionKey(ivkey.Item2, fromDb: true);
                             AccountKey.IV = ivkey.Item1;
                             if (!string.IsNullOrEmpty(password))
+                            
                                 AccountKey.LoadPassword(password);
-
+                            
                             var impkey = AccountKey.GetEncryptedKey();
+                            */
+                            
+                            var loadedPassHash = SecurityUtils.ComputeSha256Hash(password);
+                            var impkey = await SymetricProvider.DecryptStringAsync(loadedPassHash, ivkey.etext, ivkey.iv);
+                            
                             if (!string.IsNullOrEmpty(key))
                             {
                                 res = NeblioTransactionHelpers.IsPrivateKeyValid(impkey);
@@ -383,7 +391,7 @@
                     }
                     else
                     {
-                        key = SymetricProvider.DecryptString(importAccountPass, importAccountKey);
+                        key = await SymetricProvider.DecryptStringAsync(importAccountPass, importAccountKey);
                         res = NeblioTransactionHelpers.IsPrivateKeyValid(key);
                         if (res == null)
                             throw new Exception();
@@ -415,7 +423,7 @@
                     AppData.Account.FirsLoadingStatus -= FirstLoadingStatusHandler;
                     AppData.Account.FirsLoadingStatus += FirstLoadingStatusHandler;
                     // load Account and SubAccount and Bookmarks and Tabs
-                    accountLoaded = await AppData.Account.LoadAccountFromVENFTBackup(importAccountPass, fileString);
+                    accountLoaded = await AppData.Account.LoadAccountFromVENFTBackup(importAccountPass, fileString, withdKey:true, dkey:key);
                     AppData.Account.FirsLoadingStatus -= FirstLoadingStatusHandler;
 
                     if (accountLoaded)
@@ -428,8 +436,6 @@
                         // Save SubAccounts
                         await AppData.MigrateSubAccountsToDb(backupData.SubAccounts);
                         
-                        var ivkey = SymetricProvider.EncryptString(password, key, iv);
-                        key = SymetricProvider.JoinIVToString(ivkey, iv);
                     }
                     else
                     {
@@ -440,14 +446,16 @@
                 }
                 else
                 {
-                    var ivkey = SymetricProvider.EncryptString(password, key, iv);
-                    key = SymetricProvider.JoinIVToString(ivkey, iv);
-
-                    accountLoaded = await AppData.Account.LoadAccount(password, key, address); // put here your password
+                    accountLoaded = await AppData.Account.LoadAccount("", key, ""); // put here your password
                 }
                 if (accountLoaded && !string.IsNullOrEmpty(key))
                 {
-                    await AppData.SaveAccountInfoToDb(AppData.Account.Address, key, backupData.OpenAIApiKey);
+                    var loadedPassHash = SecurityUtils.ComputeSha256Hash(password);
+                    var ivv = SymetricProvider.GetIV();
+                    var k = await SymetricProvider.EncryptStringAsync(loadedPassHash, key, ivv);
+                    var keytostore = SymetricProvider.JoinIVToString(k, ivv);
+
+                    await AppData.SaveAccountInfoToDb(AppData.Account.Address, keytostore, backupData.OpenAIApiKey);
                     password = string.Empty;
                     passwordConfirm = string.Empty;
                     importAccountPass = string.Empty;

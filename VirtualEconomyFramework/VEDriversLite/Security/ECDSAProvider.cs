@@ -397,7 +397,7 @@ namespace VEDriversLite.Security
 
             try
             {
-                var emesage = SymetricProvider.EncryptString(key.Item2, message);
+                var emesage = await SymetricProvider.EncryptStringAsync(key.Item2, message);
                 return (true, emesage);
             }
             catch (Exception ex)
@@ -435,7 +435,7 @@ namespace VEDriversLite.Security
 
             try
             {
-                var ebytes = SymetricProvider.EncryptBytes(key.Item2, inputBytes);
+                var ebytes = await SymetricProvider.EncryptBytes(key.Item2, inputBytes);
                 return (true, ebytes);
             }
             catch (Exception ex)
@@ -463,7 +463,7 @@ namespace VEDriversLite.Security
 
             try
             {
-                var emesage = SymetricProvider.EncryptString(key, message);
+                var emesage = await SymetricProvider.EncryptStringAsync(key, message);
                 return (true, emesage);
             }
             catch (Exception ex)
@@ -522,7 +522,7 @@ namespace VEDriversLite.Security
             
             try
             {
-                var mesage = SymetricProvider.DecryptString(key.Item2, emessage);
+                var mesage = await SymetricProvider.DecryptStringAsync(key.Item2, emessage);
                 return (true, mesage);
             }
             catch (Exception ex)
@@ -561,7 +561,7 @@ namespace VEDriversLite.Security
 
             try
             {
-                var bytes = SymetricProvider.DecryptBytes(key.Item2, ebytes);
+                var bytes = await SymetricProvider.DecryptBytes(key.Item2, ebytes);
                 return (true, bytes);
             }
             catch (Exception ex)
@@ -589,7 +589,7 @@ namespace VEDriversLite.Security
 
             try
             {
-                var mesage = SymetricProvider.DecryptString(key, emessage);
+                var mesage = await SymetricProvider.DecryptStringAsync(key, emessage);
                 return (true, mesage);
             }
             catch (Exception ex)
@@ -611,13 +611,13 @@ namespace VEDriversLite.Security
         /// <param name="privateKey"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
-        public static string DecryptStringWithPrivateKey(string encryptedText, Key privateKey)
+        public static async Task<string> DecryptStringWithPrivateKey(string encryptedText, Key privateKey)
         {
             if (encryptedText is null)
                 throw new ArgumentNullException(nameof(encryptedText));
             
             var bytes = Encoders.Base64.DecodeData(encryptedText);
-            var decrypted = DecryptBytesWithPrivateKey(bytes, privateKey);
+            var decrypted = await DecryptBytesWithPrivateKey(bytes, privateKey);
             return Encoding.UTF8.GetString(decrypted, 0, decrypted.Length).Trim('\0');
         }
 
@@ -629,7 +629,7 @@ namespace VEDriversLite.Security
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="ArgumentException"></exception>
-        public static byte[] DecryptBytesWithPrivateKey(byte[] encrypted, Key privateKey)
+        public static async Task<byte[]> DecryptBytesWithPrivateKey(byte[] encrypted, Key privateKey)
         {
             if (encrypted is null)
                 throw new ArgumentNullException(nameof(encrypted));
@@ -654,7 +654,7 @@ namespace VEDriversLite.Security
             if (!Utils.ArrayEqual(mac, hashMAC))
                 throw new ArgumentException("Encrypted text is invalid, Invalid mac.");
 
-            var message = SymetricProvider.DecryptBytes(encryptionKey, cipherText, iv);
+            var message = await SymetricProvider.DecryptBytes(encryptionKey, cipherText, iv);
             return message;
         }
         /// <summary>
@@ -664,13 +664,13 @@ namespace VEDriversLite.Security
         /// <param name="key"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
-        public static string EncryptStringWithPublicKey(string message, PubKey key)
+        public static async Task<string> EncryptStringWithPublicKey(string message, PubKey key)
         {
             if (message is null)
                 throw new ArgumentNullException(nameof(message));
 
             var bytes = Encoding.UTF8.GetBytes(message);
-            return Encoders.Base64.EncodeData(EncryptBytesWithPublicKey(bytes, key));
+            return Encoders.Base64.EncodeData(await EncryptBytesWithPublicKey(bytes, key));
         }
         /// <summary>
         /// 
@@ -679,7 +679,7 @@ namespace VEDriversLite.Security
         /// <param name="key"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
-        public static byte[] EncryptBytesWithPublicKey(byte[] message, PubKey key)
+        public static async Task<byte[]> EncryptBytesWithPublicKey(byte[] message, PubKey key)
         {
             if (message is null)
                 throw new ArgumentNullException(nameof(message));
@@ -691,7 +691,7 @@ namespace VEDriversLite.Security
 
             //var aes = new AesBuilder().SetKey(encryptionKey).SetIv(iv).IsUsedForEncryption(true).Build();
             //var cipherText = aes.Process(message, 0, message.Length);
-            var cipherText = SymetricProvider.EncryptBytes(encryptionKey, message, iv);
+            var cipherText = await SymetricProvider.EncryptBytes(encryptionKey, message, iv);
             var ephemeralPubkeyBytes = ephemeral.PubKey.ToBytes();
             var encrypted = Encoders.ASCII.DecodeData("BIE1").Concat(ephemeralPubkeyBytes, cipherText);
             var hashMAC = HMACSHA256(hashingKey, encrypted);

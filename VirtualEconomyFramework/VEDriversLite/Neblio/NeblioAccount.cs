@@ -323,7 +323,7 @@ namespace VEDriversLite
                     var kdto = new KeyDto()
                     {
                         Address = Address,
-                        Key = AccountKey.GetEncryptedKey(returnEncrypted: true)
+                        Key = await AccountKey.GetEncryptedKey(returnEncrypted: true)
                     };
                     FileHelpers.WriteTextToFile(filename, JsonConvert.SerializeObject(kdto));
                 }
@@ -436,7 +436,12 @@ namespace VEDriversLite
         /// Great when you want just do simple payment. 
         /// You can then swithc off WithoutNFTs property and account will load them in next refresh.</param>
         /// <returns></returns>
-        public async Task<bool> LoadAccountFromVENFTBackup(string password, string fromString = "", string filename = "backup.json", bool withoutNFTs = false)
+        public async Task<bool> LoadAccountFromVENFTBackup(string password, 
+                                                           string fromString = "", 
+                                                           string filename = "backup.json", 
+                                                           bool withoutNFTs = false, 
+                                                           bool withdKey = false, 
+                                                           string dkey = "")
         {
             if (FileHelpers.IsFileExists(filename) || !string.IsNullOrEmpty(fromString))
             {
@@ -453,7 +458,14 @@ namespace VEDriversLite
                         bdto = JsonConvert.DeserializeObject<BackupDataDto>(fromString);
                     }
 
-                    await LoadAccountKey(password, bdto.Key);
+                    if (!withdKey)
+                    {
+                        await LoadAccountKey(password, bdto.Key);
+                    }
+                    else
+                    {
+                        await LoadAccountKey("", dkey);
+                    }
 
                     if (Address != bdto.Address)
                         Address = bdto.Address;
@@ -1293,7 +1305,7 @@ namespace VEDriversLite
                 var accskeys = new Dictionary<string, string>();
                 foreach (var sa in SubAccounts.Values)
                 {
-                    var key = sa.AccountKey.GetEncryptedKey();
+                    var key = await sa.AccountKey.GetEncryptedKey();
                     if (!string.IsNullOrEmpty(key))
                         accskeys.Add(sa.Address, key);
                 }

@@ -87,7 +87,7 @@ namespace VEDriversLite.Neblio
                 AccountKey.PublicKey = Address;
 
                 //ESKey = SymetricProvider.EncryptString(SecurityUtils.ComputeSha256Hash(mainSecret.PrivateKey.ToString()), privateKeyFromNetwork.ToString());
-                EKey = ECDSAProvider.EncryptStringWithPublicKey(privateKeyFromNetwork.ToString(), mainSecret.PubKey);// TODO: some preprocessor directive for run just in old version under .NETStandard2.1
+                EKey = await ECDSAProvider.EncryptStringWithPublicKey(privateKeyFromNetwork.ToString(), mainSecret.PubKey);// TODO: some preprocessor directive for run just in old version under .NETStandard2.1
                 //EKey = mainSecret.PubKey.Encrypt(privateKeyFromNetwork.ToString());// TODO: some preprocessor directive for run just in old version under .NETStandard2.1
                 Name = name;
                 return (true, Address);
@@ -116,7 +116,7 @@ namespace VEDriversLite.Neblio
                 var secret = NeblioTransactionHelpers.IsPrivateKeyValid(importPrivateKey);
                 if (secret == null)
                 {
-                    var k = ECDSAProvider.DecryptStringWithPrivateKey(importPrivateKey, mainSecret.PrivateKey);
+                    var k = await ECDSAProvider.DecryptStringWithPrivateKey(importPrivateKey, mainSecret.PrivateKey);
                     if (k == null)
                         return (false, "Wrong Private Key");
                     else
@@ -139,7 +139,7 @@ namespace VEDriversLite.Neblio
                     AccountKey.PublicKey = Address;
 
                     //ESKey = SymetricProvider.EncryptString(SecurityUtils.ComputeSha256Hash(mainSecret.PrivateKey.ToString()), privateKeyFromNetwork.ToString());
-                    EKey = ECDSAProvider.EncryptStringWithPublicKey(secret.ToString(), mainSecret.PubKey);// TODO: some preprocessor directive for run just in old version under .NETStandard2.1
+                    EKey = await ECDSAProvider.EncryptStringWithPublicKey(secret.ToString(), mainSecret.PubKey);// TODO: some preprocessor directive for run just in old version under .NETStandard2.1
                                                                                                                             //EKey = mainSecret.PubKey.Encrypt(privateKeyFromNetwork.ToString());// TODO: some preprocessor directive for run just in old version under .NETStandard2.1
                     Name = name;
                     return (true, Address);
@@ -154,13 +154,13 @@ namespace VEDriversLite.Neblio
             return (false, "Cannot import account.");
         }
 
-        private string DecryptEncryptedKey(BitcoinSecret mainSecret)
+        private async Task<string> DecryptEncryptedKey(BitcoinSecret mainSecret)
         {
             string key = string.Empty;
             if (!string.IsNullOrEmpty(ESKey))
-                key = SymetricProvider.DecryptString(SecurityUtils.ComputeSha256Hash(mainSecret.PrivateKey.ToString()), ESKey);
+                key = await SymetricProvider.DecryptStringAsync(SecurityUtils.ComputeSha256Hash(mainSecret.PrivateKey.ToString()), ESKey);
             else if (!string.IsNullOrEmpty(EKey))
-                key = ECDSAProvider.DecryptStringWithPrivateKey(EKey, mainSecret.PrivateKey); // TODO: some preprocessor directive for run just in old version under .NETStandard2.1
+                key = await ECDSAProvider.DecryptStringWithPrivateKey(EKey, mainSecret.PrivateKey); // TODO: some preprocessor directive for run just in old version under .NETStandard2.1
             return key;
         }
 
@@ -183,7 +183,7 @@ namespace VEDriversLite.Neblio
                 ESKey = dto.ESKey;
                 Name = dto.Name;
 
-                var key = DecryptEncryptedKey(mainSecret);
+                var key = await DecryptEncryptedKey(mainSecret);
 
                 AccountKey = new EncryptionKey(key);
                 AccountKey.PublicKey = Address;
@@ -214,7 +214,7 @@ namespace VEDriversLite.Neblio
                 EKey = dto.EKey;
                 ESKey = dto.ESKey;
                 Name = dto.Name;
-                var key = DecryptEncryptedKey(mainSecret);
+                var key = await DecryptEncryptedKey(mainSecret);
                 AccountKey = new EncryptionKey(key);
                 AccountKey.PublicKey = Address;
                 Secret = new BitcoinSecret(key, NeblioTransactionHelpers.Network);

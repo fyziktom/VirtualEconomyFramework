@@ -3,6 +3,7 @@
 @using VEDriversLite.Security;
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject AppData AppData
+@inject IJSRuntime JSRuntime
 
 <Container Fluid>
     <Row>
@@ -102,16 +103,25 @@
         await InvokeAsync(StateHasChanged);
         await Task.Delay(500);
 
+        SymetricProvider.jsRuntime = JSRuntime;
+
         if (await AppData.Account.CreateNewAccount(password))
         {
-            password = string.Empty;
+            
             Address = AppData.Account.Address;
-            var ekey = AppData.Account.AccountKey.GetEncryptedKey(returnEncrypted:true);
-            var keytostore = SymetricProvider.JoinIVToString(ekey, AppData.Account.AccountKey.IV);
+            var ekey = AppData.Account.Secret.ToString();// AppData.Account.AccountKey.GetEncryptedKey(returnEncrypted: false);
+            var loadedPassHash = SecurityUtils.ComputeSha256Hash(password);
+            var iv = SymetricProvider.GetIV();
+            var key = await SymetricProvider.EncryptStringAsync(loadedPassHash, ekey, iv);
+            var keytostore = SymetricProvider.JoinIVToString(key, iv);
+
+            var sp = SymetricProvider.ParseIVFromString(keytostore);
+            var kk = await SymetricProvider.DecryptStringAsync(loadedPassHash, sp.etext, sp.iv);
 
             if (!string.IsNullOrEmpty(keytostore))
                 await AppData.SaveAccountInfoToDb(Address, keytostore);
             
+            password = string.Empty;
             IsAccountLoaded = true;
             AppData.IsAccountLoaded = true;
             await AccountCreated.InvokeAsync(Address);

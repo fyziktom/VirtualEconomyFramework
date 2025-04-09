@@ -406,7 +406,7 @@ namespace VEDriversLite.Indexer
                             totalTokensSent > 0 &&
                             transaction.Outputs[i].Value.Satoshi == NeblioTransactionHelpers.MinimumAmount)
                         {
-                            ux.TokenAmount = totalTokens - totalTokensSent;
+                            ux.TokenAmount = (ulong)(totalTokens - totalTokensSent);
                             ux.TokenUtxo = true;
                             ux.TokenId = tokenId;
                             ux.TokenSymbol = tokenSymbol;
@@ -723,7 +723,7 @@ namespace VEDriversLite.Indexer
                         {
                             ix.TokenId = tokens.TokenId;
                             ix.TokenUtxo = true;
-                            ix.TokenAmount = tokens.Amount ?? 0.0;
+                            ix.TokenAmount = (ulong)(tokens.Amount ?? 0);
                         }
 
                         Utxos.TryAdd(iname, ix);
@@ -837,7 +837,7 @@ namespace VEDriversLite.Indexer
 
                             ux.TokenId = tokens.TokenId;
                             ux.TokenUtxo = true;
-                            ux.TokenAmount = tokens.Amount ?? 0.0;
+                            ux.TokenAmount = (ulong)(tokens.Amount ?? 0);
                             ux.TokenSymbol = tokeninfo.TokenName;
                         }
                     }

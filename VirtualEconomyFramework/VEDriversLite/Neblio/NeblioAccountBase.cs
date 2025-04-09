@@ -378,7 +378,7 @@ namespace VEDriversLite.Neblio
                 if (!string.IsNullOrEmpty(password))
                     AccountKey.LoadPassword(password);
 
-                Secret = new BitcoinSecret(AccountKey.GetEncryptedKey(), NeblioTransactionHelpers.Network);
+                Secret = new BitcoinSecret(await AccountKey.GetEncryptedKey(), NeblioTransactionHelpers.Network);
 
                 return true;
             }
@@ -926,7 +926,7 @@ namespace VEDriversLite.Neblio
                 await InvokeAccountLockedEvent();
                 return (false, "Account is locked.");
             }
-            var key = AccountKey.GetEncryptedKey();
+            var key = await AccountKey.GetEncryptedKey();
             return await ECDSAProvider.SignMessage(message, key);
         }
 
@@ -1271,7 +1271,7 @@ namespace VEDriversLite.Neblio
             if (lots > NeblioAPIHelpers.MaximumTokensOutpus)
                 return (false, $"Cannot create more than {NeblioAPIHelpers.MaximumTokensOutpus} lots.");
 
-            var totalAmount = amount * lots;
+            var totalAmount = (ulong)amount * (ulong)lots;
             if (!TokensSupplies.TryGetValue(tokenId, out var tsdto))
                 return (false, $"Cannot send transaction. You do not have this kind of tokens. Token Id {tokenId}.");
 
@@ -1292,7 +1292,7 @@ namespace VEDriversLite.Neblio
                 await InvokeErrorDuringSendEvent(res.Item1, "Not enough spendable Neblio inputs");
                 return (false, res.Item1);
             }
-            var tres = await CheckSpendableNeblioTokens(tokenId, totalAmount);
+            var tres = await CheckSpendableNeblioTokens(tokenId, (int)totalAmount);
             if (tres.Item2 == null)
             {
                 await InvokeErrorDuringSendEvent(tres.Item1, "Not enough spendable token inputs");
