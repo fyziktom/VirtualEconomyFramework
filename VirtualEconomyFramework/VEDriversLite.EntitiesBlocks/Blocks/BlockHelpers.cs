@@ -25,7 +25,7 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
             if (lengthinYears > 0)
             {
                 List<IBlock> blocks = new List<IBlock>();
-                DateTime date = new DateTime(startyear, 1, 1);
+                DateTime date = new DateTime(startyear, 1, 1, 0, 0, 0, DateTimeKind.Utc);
                 var lengthInMonths = lengthinYears * 12;
                 for (var i = 1; i <= lengthInMonths; i++)
                 {
@@ -319,7 +319,7 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
             if (ts.TotalHours > 24) //total hours must be lower or equal to 24 hours.
                 return result;
 
-            var end = new DateTime(endrun.Year, endrun.Month, endrun.Day);
+            var end = new DateTime(endrun.Year, endrun.Month, endrun.Day, 0, 0, 0, DateTimeKind.Utc);
 
             // to identify repetitive blocks with first one
             var firstBlockId = string.Empty;
@@ -425,7 +425,7 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
             var counter = 0;
 
             List<IBlock> blocks = new List<IBlock>();
-            DateTime date = new DateTime(startyear, 1, 1);
+            DateTime date = new DateTime(startyear, 1, 1, 0, 0, 0, DateTimeKind.Utc);
             var lengthInMonths = lengthinYears * 12;
             for (var i = 1; i <= lengthInMonths; i++)
             {
@@ -500,13 +500,13 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
             var profile = energyAmountYearProfile != null ? energyAmountYearProfile : PVEBasicYearProfile;
 
             List<IBlock> blocks = new List<IBlock>();
-            DateTime date = new DateTime(startyear, 1, 1).AddHours(startsun.Hour).AddMinutes(startsun.Minute).AddSeconds(startsun.Second);
+            DateTime date = new DateTime(startyear, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddHours(startsun.Hour).AddMinutes(startsun.Minute).AddSeconds(startsun.Second);
 
             // to identify repetitive blocks with first one
             var firstBlockId = string.Empty;
             var counter = 0;
 
-            var end = new DateTime(endyear, 1, 1);
+            var end = new DateTime(endyear, 1, 1, 0, 0, 0, DateTimeKind.Utc);
             while (date < end)
             {
                 var tmpdate = date;

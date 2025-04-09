@@ -236,11 +236,13 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
         /// <param name="id"></param>
         /// <param name="blocks"></param>
         /// <returns></returns>
-        public virtual (bool, (string, string)) AddEntity(IEntity entity, string entityName, string parentId, string id = null, List<IBlock> blocks = null)
+        public virtual (bool, (string, string)) AddEntity(IEntity entity, string entityName, string parentId, string id = null, List<IBlock> blocks = null, bool forceId = false)
         {
-            if (id == null)
+            if ((id == null && !forceId) || (id != null && forceId))
             {
-                id = Guid.NewGuid().ToString();
+                if (!forceId)
+                    id = Guid.NewGuid().ToString();
+                
                 entity.Name = entityName;
                 entity.ParentId = parentId;
                 entity.Id = id;

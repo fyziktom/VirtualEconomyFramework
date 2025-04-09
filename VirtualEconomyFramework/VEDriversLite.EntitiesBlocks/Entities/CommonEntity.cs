@@ -610,9 +610,9 @@ namespace VEDriversLite.EntitiesBlocks.Entities
             }
 
 
-            foreach (var b in repblocksresult.Where(rp => rp.Amount > 0 || rp.Amount < 0))
+            foreach (var b in result.Where(rp => rp.Amount > 0 || rp.Amount < 0))
             {
-                var res = result.First(r => r.StartTime == b.StartTime);
+                var res = repblocksresult.First(r => r.StartTime == b.StartTime);
                 if (res != null)
                     res.Amount += b.Amount;
             }
@@ -711,7 +711,7 @@ namespace VEDriversLite.EntitiesBlocks.Entities
 
                         var start = new DateTime(block.RepetitiveFirstRun.Value.Year,
                                                  block.RepetitiveFirstRun.Value.Month,
-                                                 block.RepetitiveFirstRun.Value.Day, block.StartTime.Hour, block.StartTime.Minute, block.StartTime.Second);
+                                                 block.RepetitiveFirstRun.Value.Day, block.StartTime.Hour, block.StartTime.Minute, block.StartTime.Second, DateTimeKind.Utc);
                         //var end = new DateTime(block.RepetitiveEndRun.Value.Year,
                         //                       block.RepetitiveEndRun.Value.Month,
                         //                       block.RepetitiveEndRun.Value.Day, block.EndTime.Hour, block.EndTime.Minute, block.EndTime.Second); ;

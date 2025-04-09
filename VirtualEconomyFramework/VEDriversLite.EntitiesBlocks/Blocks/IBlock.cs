@@ -31,7 +31,8 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
         Bought,
         Rent,
         NotCovered,
-        Mix
+        Mix,
+        Initial
     }
     public enum BlockDirection
     {

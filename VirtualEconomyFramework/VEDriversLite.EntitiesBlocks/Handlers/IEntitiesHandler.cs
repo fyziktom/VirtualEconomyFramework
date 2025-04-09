@@ -45,7 +45,7 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
         /// <param name="id"></param>
         /// <param name="blocks"></param>
         /// <returns></returns>
-        (bool, (string, string)) AddEntity(IEntity entity, string sourceName, string parentId, string id = null, List<IBlock> blocks = null);
+        (bool, (string, string)) AddEntity(IEntity entity, string sourceName, string parentId, string id = null, List<IBlock> blocks = null, bool forceId = false);
 
         /// <summary>
         /// remove the specific Entity
