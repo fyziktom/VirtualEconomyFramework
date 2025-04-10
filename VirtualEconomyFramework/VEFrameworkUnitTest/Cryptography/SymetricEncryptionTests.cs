@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using VEDriversLite.Security;
 using VEFrameworkUnitTest.Cryptography.Common;
 using Xunit;
@@ -16,9 +17,9 @@ namespace VEFrameworkUnitTest.Cryptography
         /// Encrypt with AES256
         /// </summary>
         [Fact]
-        public void EncryptMessageCorrectTest()
+        public async Task EncryptMessageCorrectTest()
         {
-            var encryptedMessage = SymetricProvider.EncryptString(FakeDataGenerator.DefaultDto.BasicPassword,
+            var encryptedMessage = await SymetricProvider.EncryptStringAsync(FakeDataGenerator.DefaultDto.BasicPassword,
                                                                   FakeDataGenerator.DefaultDto.BasicMessage);
             Assert.Equal(FakeDataGenerator.DefaultDto.BasicEncryptedMessage, encryptedMessage);
         }
@@ -27,9 +28,9 @@ namespace VEFrameworkUnitTest.Cryptography
         /// Decrypt with AES256
         /// </summary>
         [Fact]
-        public void DecryptMessageCorrectTest()
+        public async Task DecryptMessageCorrectTest()
         {
-            var decryptedMessage = SymetricProvider.DecryptString(FakeDataGenerator.DefaultDto.BasicPassword,
+            var decryptedMessage = await SymetricProvider.DecryptStringAsync(FakeDataGenerator.DefaultDto.BasicPassword,
                                                                   FakeDataGenerator.DefaultDto.BasicEncryptedMessage);
             Assert.Equal(FakeDataGenerator.DefaultDto.BasicMessage, decryptedMessage);
         }
@@ -39,12 +40,12 @@ namespace VEFrameworkUnitTest.Cryptography
         /// Empty key fail test
         /// </summary>
         [Fact]
-        public void EmptyKeyFailTest()
+        public async Task EmptyKeyFailTest()
         {
             string message = "key can not be null or empty.";
-            var exception = Assert.Throws<ArgumentException>(() =>
+            var exception = await Assert.ThrowsAsync<ArgumentException>(async () =>
             {
-                var decryptedMessage = SymetricProvider.DecryptString("", FakeDataGenerator.DefaultDto.BasicEncryptedMessage);
+                var decryptedMessage = await SymetricProvider.DecryptStringAsync("", FakeDataGenerator.DefaultDto.BasicEncryptedMessage);
             });
             Assert.Contains(message, exception.Message);
         }
@@ -54,12 +55,12 @@ namespace VEFrameworkUnitTest.Cryptography
         /// Must be Base64 string
         /// </summary>
         [Fact]
-        public void WrongShapeCipherTextFailTest()
+        public async Task WrongShapeCipherTextFailTest()
         {
             string message = "cipherText is not valid. It must be Base64 string";
-            var exception = Assert.Throws<ArgumentException>(() =>
+            var exception = await Assert.ThrowsAsync<ArgumentException>(async () =>
             {
-                var decryptedMessage = SymetricProvider.DecryptString(FakeDataGenerator.DefaultDto.BasicPassword, 
+                var decryptedMessage = await SymetricProvider.DecryptStringAsync(FakeDataGenerator.DefaultDto.BasicPassword, 
                                                                       FakeDataGenerator.DefaultDto.BasicEncryptedMessageWrongShape);
             });
             Assert.Contains(message, exception.Message);
@@ -69,13 +70,13 @@ namespace VEFrameworkUnitTest.Cryptography
         /// Post change of Cipher Text test
         /// </summary>
         [Fact]
-        public void WrongCipherTextFailTest()
+        public async Task WrongCipherTextFailTest()
         {
 
             string message = "pad block corrupted";
-            var exception = Assert.Throws<Org.BouncyCastle.Crypto.InvalidCipherTextException>(() =>
+            var exception = await Assert.ThrowsAsync<Org.BouncyCastle.Crypto.InvalidCipherTextException>(async () =>
             {
-                var decryptedMessage = SymetricProvider.DecryptString(FakeDataGenerator.DefaultDto.BasicPassword,
+                var decryptedMessage = await SymetricProvider.DecryptStringAsync(FakeDataGenerator.DefaultDto.BasicPassword,
                                                                       FakeDataGenerator.DefaultDto.BasicEncryptedMessageChanged);
             });
             Assert.Contains(message, exception.Message);

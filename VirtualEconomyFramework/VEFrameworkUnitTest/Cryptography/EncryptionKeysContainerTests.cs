@@ -21,7 +21,7 @@ namespace VEFrameworkUnitTest.Cryptography
         public async Task LoadPrivateKeyCorrectTest()
         {
             var ekey = new EncryptionKey(FakeDataGenerator.DefaultDto.BasicEncryptedMessage, "", true);
-            var key = ekey.GetEncryptedKey(FakeDataGenerator.DefaultDto.BasicPassword);
+            var key = await ekey.GetEncryptedKey(FakeDataGenerator.DefaultDto.BasicPassword);
             Assert.Equal(FakeDataGenerator.DefaultDto.BasicMessage, key);
         }
 
@@ -33,7 +33,7 @@ namespace VEFrameworkUnitTest.Cryptography
         {
             var ekey = new EncryptionKey("", "", true);
             await ekey.LoadNewKey(FakeDataGenerator.DefaultDto.BasicEncryptedMessage, "", true);
-            var key = ekey.GetEncryptedKey(FakeDataGenerator.DefaultDto.BasicPassword);
+            var key = await ekey.GetEncryptedKey(FakeDataGenerator.DefaultDto.BasicPassword);
             Assert.Equal(FakeDataGenerator.DefaultDto.BasicMessage, key);
         }
 
@@ -45,7 +45,7 @@ namespace VEFrameworkUnitTest.Cryptography
         {
             var ekey = new EncryptionKey(FakeDataGenerator.DefaultDto.BasicEncryptedMessage, "", true);
             ekey.LoadPassword(FakeDataGenerator.DefaultDto.BasicPassword);
-            var key = ekey.GetEncryptedKey(FakeDataGenerator.DefaultDto.BasicPassword);
+            var key = await ekey.GetEncryptedKey(FakeDataGenerator.DefaultDto.BasicPassword);
             Assert.Equal(FakeDataGenerator.DefaultDto.BasicMessage, key);
         }
 
@@ -57,7 +57,7 @@ namespace VEFrameworkUnitTest.Cryptography
         {
             var ekey = new EncryptionKey(FakeDataGenerator.DefaultDto.BasicEncryptedMessage, "", true);
             ekey.LoadPassword(FakeDataGenerator.DefaultDto.BasicPassword);
-            var key = ekey.GetEncryptedKey();
+            var key = await ekey.GetEncryptedKey();
             Assert.Equal(FakeDataGenerator.DefaultDto.BasicMessage, key);
         }
 
@@ -69,7 +69,7 @@ namespace VEFrameworkUnitTest.Cryptography
         {
             var ekey = new EncryptionKey(FakeDataGenerator.DefaultDto.BasicEncryptedMessage, "", true);
             ekey.LoadPassword(FakeDataGenerator.DefaultDto.BasicPassword);
-            var key = ekey.GetEncryptedKey();
+            var key = await ekey.GetEncryptedKey();
             Assert.Equal(FakeDataGenerator.DefaultDto.BasicMessage, key);
             ekey.Lock();
             var nkey = ekey.GetEncryptedKey();
@@ -83,7 +83,7 @@ namespace VEFrameworkUnitTest.Cryptography
         public async Task GetNeblioAddressFromKeyCorrectTest()
         {
             var encryptionKey = new EncryptionKey(FakeDataGenerator.DefaultDto.AliceKeystr);
-            var address = NeblioTransactionHelpers.GetAddressAndKey(encryptionKey, "");
+            var address = await NeblioTransactionHelpers.GetAddressAndKey(encryptionKey, "");
             Assert.NotNull(address.Item1);
             Assert.NotNull(address.Item2);
             Assert.Equal(FakeDataGenerator.DefaultDto.AliceKeystr, address.Item2.ToString());
