@@ -198,5 +198,41 @@ namespace VEFrameworkUnitTest.BlockEntities
             Assert.True(rblock.JustInWeekends);
 
         }
+
+        [Fact]
+        public void GetFilteredBlocksByTimeRanges()
+        {
+            var blocks = new List<IBlock>();
+            var energy = 1;
+
+            var starttime = new DateTime(2024, 6, 1, 0, 0, 0, DateTimeKind.Utc);
+            var endtime = new DateTime(2025, 12, 31, 0, 0, 0, DateTimeKind.Utc);
+
+            blocks = BlockHelpers.CreateEmptyBlocks(BlockTimeframe.Hour, 
+                                                    starttime, 
+                                                    endtime, 
+                                                    "test", 
+                                                    energy, 
+                                                    BlockDirection.Consumed, 
+                                                    BlockType.Simulated);
+
+            var range1start = new DateTime(2024, 12, 1, 0, 0, 0, DateTimeKind.Utc);
+            var range1end = new DateTime(2025, 2, 1, 0, 0, 0, DateTimeKind.Utc);
+            var ranges = new List<(DateTime start, DateTime end)>();
+            ranges.Add((range1start, range1end));
+
+            var filteredBlocks = BlockHelpers.GetFilteredBlocksByTimeRanges(blocks, ranges);
+
+            Assert.NotNull(filteredBlocks);
+            Assert.Equal(62 * 24, filteredBlocks.Count);
+
+            var range2start = new DateTime(2025, 3, 1, 0, 0, 0, DateTimeKind.Utc);
+            var range2end = new DateTime(2025, 4, 1, 0, 0, 0, DateTimeKind.Utc);
+
+            ranges.Add((range2start, range2end));
+            filteredBlocks = BlockHelpers.GetFilteredBlocksByTimeRanges(blocks, ranges);
+            Assert.NotNull(filteredBlocks);
+            Assert.Equal(62 * 24 + 31 * 24, filteredBlocks.Count);
+        }
     }
 }

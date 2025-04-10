@@ -368,6 +368,32 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
             return result;
         }
 
+        public static ICollection<IBlock> GetFilteredBlocksByTimeRanges(ICollection<IBlock> blocks, List<(DateTime start, DateTime end)> ranges)
+        {
+            var resultBlocks = new List<IBlock>();
+            foreach (var block in blocks) 
+            {
+                foreach (var range in ranges)
+                {
+                    if (block.StartTime >= range.start && block.StartTime < range.end)
+                    {
+                        resultBlocks.Add(block);
+                        break;
+                    }
+                    else if (block.StartTime < range.start && block.StartTime + block.Timeframe > range.start)
+                    {
+                        resultBlocks.Add(block);
+                        break;
+                    }
+                    else if (block.StartTime < range.end && block.StartTime + block.Timeframe > range.end)
+                    {
+                        resultBlocks.Add(block);
+                        break;
+                    }
+                }
+            }
+            return resultBlocks;
+        }
 
         #region PVEHelpers
 

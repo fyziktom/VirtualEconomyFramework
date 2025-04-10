@@ -32,7 +32,7 @@ namespace VEFrameworkUnitTest.Cryptography
         public async Task GetNeblioAddressFromKeyCorrectTest()
         {
             var encryptionKey = new EncryptionKey(FakeDataGenerator.DefaultDto.AliceKeystr);
-            var address = NeblioTransactionHelpers.GetAddressAndKey(encryptionKey, "");
+            var address = await NeblioTransactionHelpers.GetAddressAndKey(encryptionKey, "");
             Assert.NotNull(address.Item1);
             Assert.NotNull(address.Item2);
             Assert.Equal(FakeDataGenerator.DefaultDto.AliceKeystr, address.Item2.ToString());
