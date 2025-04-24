@@ -614,7 +614,10 @@ namespace VEDriversLite.EntitiesBlocks.Entities
             {
                 var res = repblocksresult.First(r => r.StartTime == b.StartTime);
                 if (res != null)
-                    res.Amount += b.Amount;
+                {
+                    b.Amount += res.Amount;
+                    //res.Amount += b.Amount;
+                }
             }
 
             return result;

@@ -85,7 +85,7 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
                 LastChange = DateTime.UtcNow;
             }
         }
-        private DateTime _startTime = DateTime.UtcNow;
+        private DateTime _startTime = DateTime.MinValue;
         /// <summary>
         /// Time Frame of the block, it means the time unit related to the amount
         /// </summary>
