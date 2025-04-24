@@ -395,6 +395,31 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
             return resultBlocks;
         }
 
+        /// <summary>
+        /// Draw blocks in console
+        /// </summary>
+        /// <param name="heading"></param>
+        /// <param name="blocks"></param>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        public static void DrawBlocks(string heading, List<IBlock> blocks, DateTime start, DateTime end)
+        {
+            Console.WriteLine($"-------------------{heading}--------------------:");
+            Console.WriteLine("Results:");
+            Console.WriteLine($"StartTime: {start}");
+            Console.WriteLine($"EndTime: {end}");
+            Console.WriteLine($"Calculated Data:");
+            var total = 0.0;
+            foreach (var block in blocks)
+            {
+                Console.WriteLine($"\t{block.StartTime.ToString("yyyy_MM_dd-hh:mm")} - {block.EndTime.ToString("yyyy_MM_dd-hh:mm")}, Amount: {Math.Round(block.Amount, 2)} kWh.");
+                total += block.Amount;
+            }
+            Console.WriteLine($"Total Bilance: {total} kWh");
+            Console.WriteLine("--------------------END------------------:");
+
+        }
+
         #region PVEHelpers
 
         /// <summary>
