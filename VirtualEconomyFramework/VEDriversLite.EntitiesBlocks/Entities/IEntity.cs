@@ -80,6 +80,11 @@ namespace VEDriversLite.EntitiesBlocks.Entities
         /// <returns></returns>
         bool RemoveBlocks(ICollection<string> blocks);
         /// <summary>
+        /// Remove all blocks in entity
+        /// </summary>
+        /// <returns></returns>
+        bool RemoveAllBlocks();
+        /// <summary>
         /// Remove blocks from the dictionary of blocks which are repetitive of some source block.
         /// </summary>
         /// <param name="firstBlockId">Id of first block</param>

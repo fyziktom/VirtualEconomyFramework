@@ -240,6 +240,25 @@ namespace VEDriversLite.EntitiesBlocks.Entities
         }
 
         /// <summary>
+        /// Remove all blocks in entity
+        /// </summary>
+        /// <returns></returns>
+        public virtual bool RemoveAllBlocks()
+        {
+            if (Blocks == null) return false;
+            foreach (var block in Blocks)
+            {
+                if (Blocks.ContainsKey(block.Key))
+                {
+                    if (Blocks.TryRemove(block.Key, out var blk))
+                        blk = null;
+                }
+            }
+            LastChange = DateTime.UtcNow;
+            return true;
+        }
+
+        /// <summary>
         /// Remove blocks from the dictionary of blocks which are repetitive of some source block.
         /// </summary>
         /// <param name="firstBlockId">Id of first block</param>
