@@ -368,7 +368,7 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
             return result;
         }
 
-        public static ICollection<IBlock> GetFilteredBlocksByTimeRanges(ICollection<IBlock> blocks, List<(DateTime start, DateTime end)> ranges)
+        public static IReadOnlyCollection<IBlock> GetFilteredBlocksByTimeRanges(IReadOnlyCollection<IBlock> blocks, List<(DateTime start, DateTime end)> ranges)
         {
             var resultBlocks = new List<IBlock>();
             foreach (var block in blocks) 

@@ -276,12 +276,12 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
             {
                 var consumptionblocks = DataProfileHelpers.ConvertDataProfileToBlocks(res.Item2,
                                                                                       BlockDirection.Consumed,
-                                                                                      BlockType.Simulated,
+                                                                                      BlockType.Calculated,
                                                                                       entity.Id).ToList();
 
                 var productionblocks = DataProfileHelpers.ConvertDataProfileToBlocks(res.Item1,
                                                                                      BlockDirection.Created,
-                                                                                     BlockType.Simulated,
+                                                                                     BlockType.Calculated,
                                                                                      entity.Id).ToList();
 
                 result = (productionblocks, consumptionblocks);
@@ -304,13 +304,13 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
         {
             // get bilance of the consumption and production
             var cons = eGrid.GetConsumptionOfEntity(entity.Id,
-                                                    BlockTimeframe.Hour,
+                                                    BlockTimeframe.QuaterHour,
                                                     dtmp,
                                                     dtmp.AddDays(1),
                                                     true,
                                                     true,
                                                     new List<BlockDirection>() { BlockDirection.Created, BlockDirection.Consumed },
-                                                    new List<BlockType>() { BlockType.Simulated, BlockType.Real });
+                                                    new List<BlockType>() { BlockType.Simulated, BlockType.Real, BlockType.Calculated, BlockType.Bought, BlockType.Forwarded, BlockType.Received, BlockType.Rent });
 
             var consprof = DataProfileHelpers.ConvertBlocksToDataProfile(cons);
             // get production after some part was consumed with sun-day consumption

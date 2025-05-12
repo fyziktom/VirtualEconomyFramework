@@ -163,7 +163,7 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
         /// <param name="starttime">start datetime of the recalculation frame</param>
         /// <param name="endtime">end datetime of the recalculation frame</param>
         /// <returns></returns>
-        List<IBlock> GetConsumptionOfEntity(string entityId,
+        IReadOnlyCollection<IBlock> GetConsumptionOfEntity(string entityId,
                                             BlockTimeframe timeframesteps,
                                             DateTime starttime,
                                             DateTime endtime,

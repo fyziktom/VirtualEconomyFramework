@@ -696,7 +696,7 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
         /// <param name="starttime">start datetime of the recalculation frame</param>
         /// <param name="endtime">end datetime of the recalculation frame</param>
         /// <returns></returns>
-        public virtual List<IBlock> GetConsumptionOfEntity(string entityId, 
+        public virtual IReadOnlyCollection<IBlock> GetConsumptionOfEntity(string entityId, 
                                                                 BlockTimeframe timeframesteps, 
                                                                 DateTime starttime, 
                                                                 DateTime endtime, 
@@ -755,11 +755,18 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
                                     if (r != null)
                                         r.Amount += block.Amount;
                                 }
+
+                                //cleanup
+                                re.Clear();
+                                re = null;
                             }
                         }
                     }
                 }
-                return mainres;
+                if (mainres != null)
+                    return mainres.AsReadOnly();
+                else
+                    return null;
             }
 
             return null;

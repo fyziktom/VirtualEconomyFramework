@@ -140,7 +140,7 @@ namespace VEDriversLite.EntitiesBlocks.Entities
         /// </summary>
         /// <param name="simulators">List of Ids of blocks</param>
         /// <returns></returns>
-        public virtual (bool,string) RemoveSimulator(List<string> simulatorIds)
+        public virtual (bool,string) RemoveSimulator(ICollection<string> simulatorIds)
         {
             if (simulatorIds == null) return (false,string.Empty);
             foreach (var simulator in simulatorIds)
@@ -204,7 +204,7 @@ namespace VEDriversLite.EntitiesBlocks.Entities
         /// </summary>
         /// <param name="blocks"></param>
         /// <returns></returns>
-        public virtual bool AddBlocks(List<IBlock> blocks)
+        public virtual bool AddBlocks(ICollection<IBlock> blocks)
         {
             if (blocks == null) return false;
             foreach (var block in blocks)
@@ -224,13 +224,16 @@ namespace VEDriversLite.EntitiesBlocks.Entities
         /// </summary>
         /// <param name="blocks">List of Ids of blocks</param>
         /// <returns></returns>
-        public virtual bool RemoveBlocks(List<string> blocks)
+        public virtual bool RemoveBlocks(ICollection<string> blocks)
         {
             if (blocks == null) return false;
             foreach (var block in blocks)
             {
                 if (Blocks.ContainsKey(block))
-                    Blocks.TryRemove(block, out var blk);
+                {
+                    if (Blocks.TryRemove(block, out var blk))
+                        blk = null;
+                }
             }
             LastChange = DateTime.UtcNow;
             return true;
@@ -246,7 +249,10 @@ namespace VEDriversLite.EntitiesBlocks.Entities
             if (string.IsNullOrEmpty(firstBlockId)) return false;
 
             if (Blocks.ContainsKey(firstBlockId))
-                Blocks.TryRemove(firstBlockId, out var blk);
+            {
+                if (Blocks.TryRemove(firstBlockId, out var blk))
+                    blk = null;
+            }
 
             var blocksToRemove = Blocks.Values.Where(b => b.RepetitiveSourceBlockId == firstBlockId);
             if (blocksToRemove != null)
@@ -254,7 +260,10 @@ namespace VEDriversLite.EntitiesBlocks.Entities
                 foreach (var block in blocksToRemove)
                 {
                     if (Blocks.ContainsKey(block.Id))
-                        Blocks.TryRemove(block.Id, out var blk);
+                    {
+                        if (Blocks.TryRemove(block.Id, out var blk))
+                            blk = null;
+                    }
                 }
             }
 
@@ -321,7 +330,7 @@ namespace VEDriversLite.EntitiesBlocks.Entities
         /// Change Blocks direction specified blocks in entity
         /// </summary>
         /// <param name="direction"></param>
-        public virtual void ChangeAllBlocksDirection(BlockDirection direction, List<string> ids, BlockDirection originalDirection = BlockDirection.Mix)
+        public virtual void ChangeAllBlocksDirection(BlockDirection direction, ICollection<string> ids, BlockDirection originalDirection = BlockDirection.Mix)
         {
             foreach (var id in ids)
                 if (Blocks.TryGetValue(id, out var block))
@@ -343,7 +352,7 @@ namespace VEDriversLite.EntitiesBlocks.Entities
         /// Change Blocks type specified blocks in entity
         /// </summary>
         /// <param name="type"></param>
-        public virtual void ChangeAllBlocksType(BlockType type, List<string> ids, BlockType originalType = BlockType.Simulated)
+        public virtual void ChangeAllBlocksType(BlockType type, ICollection<string> ids, BlockType originalType = BlockType.Simulated)
         {
             foreach (var id in ids)
                 if (Blocks.TryGetValue(id, out var block))
@@ -358,11 +367,11 @@ namespace VEDriversLite.EntitiesBlocks.Entities
         /// <param name="start"></param>
         /// <param name="end"></param>
         /// <returns></returns>
-        public List<IBlock> GetSimulatorsBlocks(BlockTimeframe timeframe, 
+        public IEnumerable<IBlock> GetSimulatorsBlocks(BlockTimeframe timeframe, 
                                                 DateTime start,
                                                 DateTime end)
         {
-            var res = new List<IBlock>();
+            //var res = new List<IBlock>();
 
             foreach (var simulator in Simulators.Values)
             {                
@@ -374,10 +383,11 @@ namespace VEDriversLite.EntitiesBlocks.Entities
 
                 if (blocks != null)
                     foreach (var b in blocks)
-                        res.Add(b);
+                        yield return b;
+                            //res.Add(b);
             }
 
-            return res;
+            //return res;
         }
 
         /// <summary>
@@ -394,17 +404,17 @@ namespace VEDriversLite.EntitiesBlocks.Entities
                                              DateTime end, 
                                              bool takeConsumptionAsInvert, 
                                              bool addSimulators,
-                                             List<BlockDirection> justThisDirections = null,
-                                             List<BlockType> justThisType = null)
+                                             ICollection<BlockDirection> justThisDirections = null,
+                                             ICollection<BlockType> justThisType = null)
         {
             var result = BlockHelpers.GetResultBlocks(timeframe, start, end, ParentId);
 
             if (addSimulators)
             {
                 var tmpsim = GetSimulatorsBlocks(timeframe, start, end);
-                var simulated = GetBlocks(tmpsim, justThisDirections, justThisType).ToList();
+                var simulated = GetBlocks(tmpsim, justThisDirections, justThisType);
 
-                if (simulated != null && simulated.Count > 0)
+                if (simulated != null && simulated.Count() > 0)
                 {
                     foreach (var block in simulated)
                     {
@@ -438,8 +448,8 @@ namespace VEDriversLite.EntitiesBlocks.Entities
         /// <param name="justThisDirections">List of all allowed Direction of blocks</param>
         /// <param name="justThisType">List of all Types of blocks</param>
         /// <returns></returns>
-        public virtual IEnumerable<IBlock> GetBlocks(List<BlockDirection> justThisDirections = null,
-                                              List<BlockType> justThisType = null)
+        public virtual IEnumerable<IBlock> GetBlocks(ICollection<BlockDirection> justThisDirections = null,
+                                              ICollection<BlockType> justThisType = null)
         {
             if (justThisDirections != null && justThisDirections.Count > 0 && (justThisType == null || justThisType != null && justThisType.Count == 0))
                 return Blocks.Values.Where(b => justThisDirections.Contains(b.Direction)).OrderBy(b => b.StartTime);
@@ -458,8 +468,28 @@ namespace VEDriversLite.EntitiesBlocks.Entities
         /// <param name="justThisDirections">List of all allowed Direction of blocks</param>
         /// <param name="justThisType">List of all Types of blocks</param>
         /// <returns></returns>
-        public IEnumerable<IBlock> GetBlocks(List<IBlock> blocks, List<BlockDirection> justThisDirections = null,
-                                             List<BlockType> justThisType = null)
+        public IEnumerable<IBlock> GetBlocks(ICollection<IBlock> blocks, ICollection<BlockDirection> justThisDirections = null,
+                                             ICollection<BlockType> justThisType = null)
+        {
+            if (justThisDirections != null && justThisDirections.Count > 0 && (justThisType == null || justThisType != null && justThisType.Count == 0))
+                return blocks.Where(b => justThisDirections.Contains(b.Direction)).OrderBy(b => b.StartTime);
+            else if (justThisType != null && justThisType.Count > 0 && (justThisDirections == null || justThisDirections != null && justThisDirections.Count == 0))
+                return blocks.Where(b => justThisType.Contains(b.Type)).OrderBy(b => b.StartTime);
+            else if (justThisType != null && justThisType.Count > 0 && justThisDirections != null && justThisDirections.Count > 0)
+                return blocks.Where(b => justThisType.Contains(b.Type) && justThisDirections.Contains(b.Direction)).OrderBy(b => b.StartTime);
+
+            return blocks.OrderBy(b => b.StartTime);
+        }
+
+        /// <summary>
+        /// Get blocks filtered based on Directions or Types. This function needs input blocks list
+        /// </summary>
+        /// <param name="blocks">Input blocks</param>
+        /// <param name="justThisDirections">List of all allowed Direction of blocks</param>
+        /// <param name="justThisType">List of all Types of blocks</param>
+        /// <returns></returns>
+        public IEnumerable<IBlock> GetBlocks(IEnumerable<IBlock> blocks, ICollection<BlockDirection> justThisDirections = null,
+                                             ICollection<BlockType> justThisType = null)
         {
             if (justThisDirections != null && justThisDirections.Count > 0 && (justThisType == null || justThisType != null && justThisType.Count == 0))
                 return blocks.Where(b => justThisDirections.Contains(b.Direction)).OrderBy(b => b.StartTime);
@@ -472,21 +502,21 @@ namespace VEDriversLite.EntitiesBlocks.Entities
         }
 
 
-    /// <summary>
-    /// Get list of the blocks based on setup timespan and step and specific timegrame
-    /// Timeframe will cause recalculation of the blocks of entity to timeframe like "hours", "days", "months" etc.
-    /// </summary>
-    /// <param name="timeframesteps">timeframe step (for example "month")</param>
-    /// <param name="starttime">start datetime (1.1.2022)</param>
-    /// <param name="endtime">end date</param>
-    /// <param name="takeConsumptionAsInvert">if this is set it will multiply "consumed" blocks with -1. Means consumption is negative in calculation</param>
-    /// <returns></returns>
-    public virtual List<IBlock> GetSummedValues(BlockTimeframe timeframesteps,
+        /// <summary>
+        /// Get list of the blocks based on setup timespan and step and specific timegrame
+        /// Timeframe will cause recalculation of the blocks of entity to timeframe like "hours", "days", "months" etc.
+        /// </summary>
+        /// <param name="timeframesteps">timeframe step (for example "month")</param>
+        /// <param name="starttime">start datetime (1.1.2022)</param>
+        /// <param name="endtime">end date</param>
+        /// <param name="takeConsumptionAsInvert">if this is set it will multiply "consumed" blocks with -1. Means consumption is negative in calculation</param>
+        /// <returns></returns>
+        public virtual List<IBlock> GetSummedValues(BlockTimeframe timeframesteps,
                                                         DateTime starttime,
                                                         DateTime endtime,
                                                         bool takeConsumptionAsInvert = false,
-                                                        List<BlockDirection> justThisDirections = null,
-                                                        List<BlockType> justThisType = null,
+                                                        ICollection<BlockDirection> justThisDirections = null,
+                                                        ICollection<BlockType> justThisType = null,
                                                         bool addSimulators = true)
         {
             var result = GetResultBlocks(timeframesteps,
@@ -498,9 +528,9 @@ namespace VEDriversLite.EntitiesBlocks.Entities
                                          justThisType);
             
             var invert = 1;
-            
+
             var blocks = GetBlocks(justThisDirections, justThisType).Where(b => b.StartTime < endtime)
-                                                                    .OrderBy(b => b.StartTime).ToList();
+                                                                    .OrderBy(b => b.StartTime);//.ToList();
 
             var counter = 0;
             foreach (var block in blocks)
@@ -536,6 +566,7 @@ namespace VEDriversLite.EntitiesBlocks.Entities
                         res.Amount += invert * (block.AvgConsumptionPerSecond * (res.Timeframe.TotalSeconds - (block.StartTime - res.StartTime).TotalSeconds));
                 }
             }
+
             return result;
         }
 
@@ -553,8 +584,8 @@ namespace VEDriversLite.EntitiesBlocks.Entities
                                                                  DateTime starttime,
                                                                  DateTime endtime,
                                                                  bool takeConsumptionAsInvert = false,
-                                                                 List<BlockDirection> justThisDirections = null,
-                                                                 List<BlockType> justThisType = null,
+                                                                 ICollection<BlockDirection> justThisDirections = null,
+                                                                 ICollection<BlockType> justThisType = null,
                                                                  bool addSimulators = true)
         {
             var result = GetResultBlocks(timeframesteps, 
@@ -566,16 +597,17 @@ namespace VEDriversLite.EntitiesBlocks.Entities
                                          justThisType);
             
             var invert = 1;
-            var blocks = GetBlocks(justThisDirections, justThisType).Where(b => !b.IsRepetitiveSource && 
-                                                                                !b.IsRepetitiveChild && 
-                                                                                !b.IsOffPeriodRepetitive && 
+            var blocks = GetBlocks(justThisDirections, justThisType).Where(b => !b.IsRepetitiveSource &&
+                                                                                !b.IsRepetitiveChild &&
+                                                                                !b.IsOffPeriodRepetitive &&
                                                                                 b.StartTime < endtime)
-                                                                    .OrderBy(b => b.StartTime).ToList();
+                                                                    .OrderBy(b => b.StartTime);//.ToList();
                         
             var repblocksresult = GetSummedValuesOfRepetitiveBlocks(timeframesteps, starttime, endtime, takeConsumptionAsInvert, justThisDirections, justThisType, false);
+            var cblocks = blocks.Concat(repblocksresult);
 
             var counter = 0;
-            foreach (var block in blocks)
+            foreach (var block in cblocks)
             {
                 if (takeConsumptionAsInvert && block.Direction == BlockDirection.Consumed)
                     invert = -1;
@@ -606,17 +638,6 @@ namespace VEDriversLite.EntitiesBlocks.Entities
                     //                   -----------------------> t
                     else if (block.StartTime > res.StartTime && block.StartTime <= res.EndTime && block.EndTime > res.StartTime && block.EndTime > res.EndTime)
                         res.Amount += invert * (block.AvgConsumptionPerSecond * (res.Timeframe.TotalSeconds - (block.StartTime - res.StartTime).TotalSeconds));
-                }
-            }
-
-
-            foreach (var b in result.Where(rp => rp.Amount > 0 || rp.Amount < 0))
-            {
-                var res = repblocksresult.First(r => r.StartTime == b.StartTime);
-                if (res != null)
-                {
-                    b.Amount += res.Amount;
-                    //res.Amount += b.Amount;
                 }
             }
 
@@ -636,8 +657,8 @@ namespace VEDriversLite.EntitiesBlocks.Entities
                                                                           DateTime starttime,
                                                                           DateTime endtime,
                                                                           bool takeConsumptionAsInvert = false,
-                                                                          List<BlockDirection> justThisDirections = null,
-                                                                          List<BlockType> justThisType = null,
+                                                                          ICollection<BlockDirection> justThisDirections = null,
+                                                                          ICollection<BlockType> justThisType = null,
                                                                           bool addSimulators = true)
         {
             var result = GetResultBlocks(timeframesteps, 
@@ -781,8 +802,8 @@ namespace VEDriversLite.EntitiesBlocks.Entities
                                                                       DateTime blockwindowendtime,
                                                                       bool invertWindow = false,
                                                                       bool takeConsumptionAsInvert = false,
-                                                                      List<BlockDirection> justThisDirections = null,
-                                                                      List<BlockType> justThisType = null,
+                                                                      ICollection<BlockDirection> justThisDirections = null,
+                                                                      ICollection<BlockType> justThisType = null,
                                                                       bool addSimulators = true)
         {
             var result = GetResultBlocks(timeframesteps, 
