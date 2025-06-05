@@ -39,6 +39,7 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
         Created,
         Stored,
         Consumed,
+        Delivered,
         Mix
     }
     public interface IBlock
