@@ -16,7 +16,8 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
         Month,
         Year,
         QuaterHour,
-        QuaterYear
+        QuaterYear,
+        FiveMinutes
     }
     public enum BlockType
     {
