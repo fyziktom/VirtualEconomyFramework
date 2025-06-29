@@ -175,6 +175,11 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
         /// Average Amount per hour, for example energy power consumption per hour = kWh
         /// </summary>
         public double AvgConsumptionPerHour { get => Amount / (EndTime - StartTime).TotalHours; }
+        /// <summary>
+        /// Tarrif applied during the block
+        /// For example LowTarrif, HighTarrif, etc.
+        /// </summary>
+        public int Tarrif { get; set; } = 0;
 
         /// <summary>
         /// Get Empty block with predefined parameters such as type or direction
