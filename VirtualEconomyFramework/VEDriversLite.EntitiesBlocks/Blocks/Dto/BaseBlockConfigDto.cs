@@ -108,6 +108,28 @@ namespace VEDriversLite.EntitiesBlocks.Blocks.Dto
         /// <param name="block"></param>
         public void Fill(IBlock block)
         {
+            if (block is IRepetitiveBlock br)
+            {
+                foreach (var param in typeof(IRepetitiveBlock).GetProperties())
+                {
+                    try
+                    {
+                        if (param.CanWrite)
+                        {
+                            var value = param.GetValue(br);
+                            var paramname = param.Name;
+                            var pr = typeof(BaseBlockConfigDto).GetProperties().FirstOrDefault(p => p.Name == paramname);
+                            if (pr != null)
+                                pr.SetValue(this, value);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Cannot load parameter." + ex.Message);
+                    }
+                }
+            }
+
             foreach (var param in typeof(IBlock).GetProperties())
             {
                 try
@@ -121,7 +143,7 @@ namespace VEDriversLite.EntitiesBlocks.Blocks.Dto
                             pr.SetValue(this, value);
                     }
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     Console.WriteLine("Cannot load parameter." + ex.Message);
                 }
@@ -147,6 +169,41 @@ namespace VEDriversLite.EntitiesBlocks.Blocks.Dto
                             var pr = typeof(IBlock).GetProperties().FirstOrDefault(p => p.Name == paramname);
                             if (pr != null)
                                 pr.SetValue(res, value);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Cannot load parameter. " + ex.Message);
+                    }
+                }
+                return res;
+            }
+            return null;
+        }
+
+        public IRepetitiveBlock GetRepetitiveBlockFromDto()
+        {
+            if (Type == BlockType.Calculated || Type == BlockType.Simulated || Type == BlockType.Real)
+            {
+                var res = new BaseRepetitiveBlock();
+                foreach (var param in typeof(BaseBlockConfigDto).GetProperties())
+                {
+                    try
+                    {
+                        if (param.CanWrite)
+                        {
+                            var value = param.GetValue(this);
+                            var paramname = param.Name;
+                            var pr = typeof(IRepetitiveBlock).GetProperties().FirstOrDefault(p => p.Name == paramname);
+                            if (pr != null)
+                                pr.SetValue(res, value);
+                            else
+                            {
+                                pr = typeof(IBlock).GetProperties().FirstOrDefault(p => p.Name == paramname);
+                                if (pr != null)
+                                    pr.SetValue(res, value);
+                            }
+
                         }
                     }
                     catch (Exception ex)

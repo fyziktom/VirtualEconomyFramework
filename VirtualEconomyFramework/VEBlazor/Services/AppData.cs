@@ -16,6 +16,8 @@ using VEFramework.VEBlazor.Models;
 using IndexedDB.Blazor;
 using VEDriversLite.Dto;
 using Newtonsoft.Json;
+using Microsoft.JSInterop;
+using System.ComponentModel.DataAnnotations;
 
 public enum TabType
 {
@@ -67,11 +69,13 @@ public class AppData
 {
     protected readonly ILocalStorageService localStorage;
     protected readonly IIndexedDbFactory DbFactory;
+    protected readonly IJSRuntime jsRuntime;
 
-    public AppData(ILocalStorageService LocalStorage, IIndexedDbFactory dbFactory)
+    public AppData(ILocalStorageService LocalStorage, IIndexedDbFactory dbFactory, IJSRuntime _jSRuntime)
     {
         localStorage = LocalStorage;
         DbFactory = dbFactory;
+        jsRuntime = _jSRuntime;
     }
 
     public const string NeblioImageLink = "https://ve-framework.com/ipfs/QmPUvBN4qKvGyKKhADBJKSmNC7JGnr3Rwf5ndENGMfpX54";
@@ -192,8 +196,23 @@ public class AppData
         Account.RunningAsVENFTBlazorApp = true; // block the start of the IoT NFTs, etc.
         VEDLDataContext.AllowCache = true; //turn on/off NFT cache
 
+        SymetricProvider.jsRuntime = jsRuntime;
+
+        var iv = SymetricProvider.ParseIVFromString(ekey);
+        var loadedPassHash = SecurityUtils.ComputeSha256Hash(password);
+        //var key = await DecryptString(loadedPassHash, iv.etext, iv.iv);
+        //var key = await SymetricProvider.EncryptStringAsync(loadedPassHash, ekey, iv.iv);
+        //var kkk = await SymetricProvider.EncryptStringAsync(loadedPassHash, "ahoj", iv.iv);
+        //var sp = SymetricProvider.JoinIVToString(kkk, iv.iv);
+        //var spp = SymetricProvider.ParseIVFromString(sp);
+        //var key = await SymetricProvider.DecryptStringAsync(loadedPassHash, spp.etext, spp.iv);
+        
+        var key = await SymetricProvider.DecryptStringAsync(loadedPassHash, iv.etext, iv.iv);
+        //await Console.Out.WriteLineAsync("Key decrypted: " + key);
+        
         await LoadChache();
-        if (await Account.LoadAccount(password, ekey, "", withoutNFTs))
+        //if (await Account.LoadAccount(loadedPassHash, ekey, "", withoutNFTs))
+        if (await Account.LoadAccount("", key, "", withoutNFTs))
         {
             address = Account.Address;
                         
@@ -255,6 +274,62 @@ public class AppData
         return (IsAccountLoaded,address);
     }
 
+    private byte[] GetKeyBytes(string key)
+    {
+        var keybytes = Encoding.UTF8.GetBytes(key);
+
+        var keySize = 256 / 8;
+        Array.Resize(ref keybytes, keySize);
+        return keybytes;
+    }
+    public static string ToHexString(byte[] bytes)
+    {
+        return BitConverter.ToString(bytes).Replace("-", "").ToLower();
+    }
+    public async Task<string> DecryptString(string key, string cipherText, byte[] iv = null)
+    {
+        if (string.IsNullOrEmpty(key))
+            throw new ArgumentException("key can not be null or empty.");
+
+        var keybytes = GetKeyBytes(key);
+        if (!SecurityUtils.IsBase64String(cipherText))
+            throw new ArgumentException("cipherText is not valid. It must be Base64 string");
+
+        var secret = Convert.FromBase64String(cipherText);
+
+        var keyHex = ToHexString(keybytes);
+        var secretHex = ToHexString(secret);
+        var ivHex = iv != null ? ToHexString(iv) : null;
+
+        Console.WriteLine($"Key Length: {keybytes.Length}");
+        Console.WriteLine($"IV Length: {iv?.Length}");
+        Console.WriteLine($"Secret Length: {secret.Length}");
+
+        var result = await DecryptBytesAsync(keyHex, secretHex, ivHex);
+
+        var resultBytes = FromHexString(result);
+
+        Console.WriteLine($"Decrypted Result Length: {resultBytes.Length}");
+        return Encoding.UTF8.GetString(resultBytes).Trim('\0');
+    }
+    public async Task<string> DecryptBytesAsync(string keyHex, string secretHex, string ivHex)
+    {
+        if (jsRuntime == null)
+            throw new InvalidOperationException("JSRuntime is not set. Please initialize it in your Blazor app.");
+
+        return await jsRuntime.InvokeAsync<string>("decryptAes", keyHex, secretHex, ivHex);
+    }
+
+    public static byte[] FromHexString(string hex)
+    {
+        int length = hex.Length;
+        byte[] bytes = new byte[length / 2];
+        for (int i = 0; i < length; i += 2)
+        {
+            bytes[i / 2] = Convert.ToByte(hex.Substring(i, 2), 16);
+        }
+        return bytes;
+    }
     /// <summary>
     /// Returns Account Address and Encrypted Key if exists in the Db
     /// </summary>
@@ -265,7 +340,7 @@ public class AppData
         {
             using (var db = await this.DbFactory.Create<VEFDb>())
             {
-                var account = db.Accounts.Single(x => x.Id == 1);
+                var account = db.Accounts.Single(x => x.Id > 0);
                 if (account != null)
                     return (true, (account.Address, account.Key));
             }
@@ -555,14 +630,14 @@ public class AppData
             ackey.LoadPassword(password);
 
             var ekeyIV = SymetricProvider.GetIV();
-            var ekey = SymetricProvider.EncryptString(ackey.PasswordHashString, key, ekeyIV);
+            var ekey = await SymetricProvider.EncryptStringAsync(ackey.PasswordHashString, key, ekeyIV);
             var keyToStore = SymetricProvider.JoinIVToString(ekey, ekeyIV);
 
             string? eoaiToStore = null;
             if (!string.IsNullOrEmpty(openAPIKey))
             {
                 var oaiIV = SymetricProvider.GetIV();
-                var eoai = SymetricProvider.EncryptString(ackey.PasswordHashString, openAPIKey, oaiIV);
+                var eoai = await SymetricProvider.EncryptStringAsync(ackey.PasswordHashString, openAPIKey, oaiIV);
                 eoaiToStore = SymetricProvider.JoinIVToString(eoai, oaiIV);
             }
 
@@ -674,7 +749,7 @@ public class AppData
                 try
                 {
                     var parse = SymetricProvider.ParseIVFromString(OAIapikey);
-                    var res = SymetricProvider.DecryptString(Account.AccountKey.PasswordHashString, parse.etext, parse.iv);
+                    var res = await SymetricProvider.DecryptStringAsync(Account.AccountKey.PasswordHashString, parse.etext, parse.iv);
                     if (!string.IsNullOrEmpty(res))
                     {
                         done = true;
@@ -693,7 +768,7 @@ public class AppData
                 {
                     if (OAIapikey != string.Empty)
                     {
-                        var res = SymetricProvider.DecryptString(Account.Secret.ToString(), OAIapikey);
+                        var res = await SymetricProvider.DecryptStringAsync(Account.Secret.ToString(), OAIapikey);
                         if (!string.IsNullOrEmpty(res))
                             return res;
                     }
@@ -713,7 +788,7 @@ public class AppData
         if (!string.IsNullOrEmpty(apikey))
         {
             var iv = SymetricProvider.GetIV();
-            var res = SymetricProvider.EncryptString(Account.AccountKey.PasswordHashString, apikey, iv);
+            var res = await SymetricProvider.EncryptStringAsync(Account.AccountKey.PasswordHashString, apikey, iv);
             var store = SymetricProvider.JoinIVToString(res, iv);
             if (!string.IsNullOrEmpty(store))
                 return await SaveOpenAIApiKey(store);

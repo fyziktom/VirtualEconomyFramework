@@ -45,7 +45,7 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
         /// <param name="id"></param>
         /// <param name="blocks"></param>
         /// <returns></returns>
-        (bool, (string, string)) AddEntity(IEntity entity, string sourceName, string parentId, string id = null, List<IBlock> blocks = null);
+        (bool, (string, string)) AddEntity(IEntity entity, string sourceName, string parentId, string id = null, List<IBlock> blocks = null, bool forceId = false);
 
         /// <summary>
         /// remove the specific Entity
@@ -163,7 +163,7 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
         /// <param name="starttime">start datetime of the recalculation frame</param>
         /// <param name="endtime">end datetime of the recalculation frame</param>
         /// <returns></returns>
-        List<IBlock> GetConsumptionOfEntity(string entityId,
+        IReadOnlyCollection<IBlock> GetConsumptionOfEntity(string entityId,
                                             BlockTimeframe timeframesteps,
                                             DateTime starttime,
                                             DateTime endtime,

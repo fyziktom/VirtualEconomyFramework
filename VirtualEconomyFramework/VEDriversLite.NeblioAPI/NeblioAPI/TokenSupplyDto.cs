@@ -20,7 +20,7 @@ namespace VEDriversLite.NeblioAPI
         /// <summary>
         /// Amount of tokens available
         /// </summary>
-        public double Amount { get; set; } = 0.0;
+        public ulong Amount { get; set; } = 0;
         /// <summary>
         /// Token icon image url
         /// </summary>

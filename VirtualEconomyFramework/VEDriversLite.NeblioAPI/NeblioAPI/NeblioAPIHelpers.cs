@@ -77,7 +77,8 @@ namespace VEDriversLite.NeblioAPI
         /// <summary>
         /// Address of VEFramework.BlockchainIndexerServer API
         /// </summary>
-        public static string NewAPIAddress { get; set; } = "https://ve-framework.com/"; //:5000 or :7267 when local BIS for dev
+        //public static string NewAPIAddress { get; set; } = "https://ve-framework.com/"; //:5000 or :7267 when local BIS for dev
+        public static string NewAPIAddress { get; set; } = "http://localhost:5000/"; //:5000 or :7267 when local BIS for dev
         /// <summary>
         /// Check if the number of the confirmation is enough for doing transactions.
         /// It mainly usefull for UI stuff or console.
@@ -1240,13 +1241,13 @@ namespace VEDriversLite.NeblioAPI
                                 t.ImageUrl = VENFTImageLink;
 
                             t.TokenId = toks.TokenId;
-                            t.Amount += (double)toks.Amount;
+                            t.Amount += (ulong)toks.Amount;
 
                             resp.TryAdd(t.TokenId, t);
                         }
                         else
                         {
-                            tk.Amount += (double)toks.Amount;
+                            tk.Amount += (ulong)toks.Amount;
                         }
                     }
                 }

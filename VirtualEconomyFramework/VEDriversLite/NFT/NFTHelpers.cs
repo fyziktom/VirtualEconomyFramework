@@ -669,7 +669,7 @@ namespace VEDriversLite.NFT
         /// <returns>New Tx Id Hash</returns>
         public static async Task<MintNFTData> GetMintNFTData(string address, EncryptionKey ekey, INFT NFT, string receiver = "")
         {
-            var metadata = await NFT.GetMetadata(address, ekey.GetEncryptedKey(), receiver);
+            var metadata = await NFT.GetMetadata(address, await ekey.GetEncryptedKey(), receiver);
             // fill input data for sending tx
             var dto = new MintNFTData() // please check SendTokenTxData for another properties such as specify source UTXOs
             {
@@ -699,14 +699,14 @@ namespace VEDriversLite.NFT
                 throw new Exception("This is not Message NFT.");
 
             // thanks to filled params it will return encrypted metadata with shared secret
-            var metadata = await NFT.GetMetadata(address, ekey.GetEncryptedKey(), receiver);
+            var metadata = await NFT.GetMetadata(address, await ekey.GetEncryptedKey(), receiver);
             if (!string.IsNullOrEmpty(rewriteAuthor))
                 if (metadata.ContainsKey("Author"))
                     metadata["Author"] = rewriteAuthor;
 
             try
             {
-                var k = NeblioTransactionHelpers.GetAddressAndKey(ekey);
+                var k = await NeblioTransactionHelpers.GetAddressAndKey(ekey);
                 var key = k.Item2;
                 var addressForTx = k.Item1;
                 Transaction transaction;
@@ -764,11 +764,11 @@ namespace VEDriversLite.NFT
                 throw new Exception("This is not Message NFT.");
 
             // thanks to filled params it will return encrypted metadata with shared secret
-            var metadata = await NFT.GetMetadata(address, ekey.GetEncryptedKey(), receiver);
+            var metadata = await NFT.GetMetadata(address, await ekey.GetEncryptedKey(), receiver);
 
             try
             {
-                var k = NeblioTransactionHelpers.GetAddressAndKey(ekey);
+                var k = await NeblioTransactionHelpers.GetAddressAndKey(ekey);
                 var key = k.Item2;
                 var addressForTx = k.Item1;
                 Transaction transaction;

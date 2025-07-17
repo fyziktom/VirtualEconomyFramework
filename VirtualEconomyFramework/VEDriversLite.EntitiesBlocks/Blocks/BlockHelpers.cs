@@ -25,7 +25,7 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
             if (lengthinYears > 0)
             {
                 List<IBlock> blocks = new List<IBlock>();
-                DateTime date = new DateTime(startyear, 1, 1);
+                DateTime date = new DateTime(startyear, 1, 1, 0, 0, 0, DateTimeKind.Utc);
                 var lengthInMonths = lengthinYears * 12;
                 for (var i = 1; i <= lengthInMonths; i++)
                 {
@@ -143,6 +143,9 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
                 case BlockTimeframe.QuaterYear:
                     ts = tmpdate.AddMonths(3) - starttime;
                     break;
+                case BlockTimeframe.FiveMinutes:
+                    ts = tmpdate.AddMinutes(5) - starttime;
+                    break;
                 default:
                     ts = tmpdate.AddDays(1) - starttime;
                     break;
@@ -255,7 +258,7 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
                 if (!string.IsNullOrEmpty(starthash))
                     firstBlockId = starthash;
 
-                result.Add(new BaseBlock()
+                result.Add(new BaseRepetitiveBlock()
                 {
                     Id = counter == 0 && !string.IsNullOrEmpty(starthash) ? starthash : hash,
                     Name = name != null ? name : string.Empty,
@@ -319,7 +322,7 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
             if (ts.TotalHours > 24) //total hours must be lower or equal to 24 hours.
                 return result;
 
-            var end = new DateTime(endrun.Year, endrun.Month, endrun.Day);
+            var end = new DateTime(endrun.Year, endrun.Month, endrun.Day, 0, 0, 0, DateTimeKind.Utc);
 
             // to identify repetitive blocks with first one
             var firstBlockId = string.Empty;
@@ -338,7 +341,7 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
                     if (!string.IsNullOrEmpty(starthash))
                         firstBlockId = starthash;
 
-                    result.Add(new BaseBlock()
+                    result.Add(new BaseRepetitiveBlock()
                     {
                         Id = counter == 0 && !string.IsNullOrEmpty(starthash) ? starthash : hash,
                         Name = name != null ? name : string.Empty,
@@ -368,6 +371,57 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
             return result;
         }
 
+        public static IReadOnlyCollection<IBlock> GetFilteredBlocksByTimeRanges(IReadOnlyCollection<IBlock> blocks, List<(DateTime start, DateTime end)> ranges)
+        {
+            var resultBlocks = new List<IBlock>();
+            foreach (var block in blocks) 
+            {
+                foreach (var range in ranges)
+                {
+                    if (block.StartTime >= range.start && block.StartTime < range.end)
+                    {
+                        resultBlocks.Add(block);
+                        break;
+                    }
+                    else if (block.StartTime < range.start && block.StartTime + block.Timeframe > range.start)
+                    {
+                        resultBlocks.Add(block);
+                        break;
+                    }
+                    else if (block.StartTime < range.end && block.StartTime + block.Timeframe > range.end)
+                    {
+                        resultBlocks.Add(block);
+                        break;
+                    }
+                }
+            }
+            return resultBlocks;
+        }
+
+        /// <summary>
+        /// Draw blocks in console
+        /// </summary>
+        /// <param name="heading"></param>
+        /// <param name="blocks"></param>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        public static void DrawBlocks(string heading, List<IBlock> blocks, DateTime start, DateTime end)
+        {
+            Console.WriteLine($"-------------------{heading}--------------------:");
+            Console.WriteLine("Results:");
+            Console.WriteLine($"StartTime: {start}");
+            Console.WriteLine($"EndTime: {end}");
+            Console.WriteLine($"Calculated Data:");
+            var total = 0.0;
+            foreach (var block in blocks)
+            {
+                Console.WriteLine($"\t{block.StartTime.ToString("yyyy_MM_dd-hh:mm")} - {block.EndTime.ToString("yyyy_MM_dd-hh:mm")}, Amount: {Math.Round(block.Amount, 2)} kWh.");
+                total += block.Amount;
+            }
+            Console.WriteLine($"Total Bilance: {total} kWh");
+            Console.WriteLine("--------------------END------------------:");
+
+        }
 
         #region PVEHelpers
 
@@ -425,7 +479,7 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
             var counter = 0;
 
             List<IBlock> blocks = new List<IBlock>();
-            DateTime date = new DateTime(startyear, 1, 1);
+            DateTime date = new DateTime(startyear, 1, 1, 0, 0, 0, DateTimeKind.Utc);
             var lengthInMonths = lengthinYears * 12;
             for (var i = 1; i <= lengthInMonths; i++)
             {
@@ -445,7 +499,7 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
                     Amount = PVEBasicYearProfile[date.Month - 1] * PVEPeakPower,
                     //IsRepetitiveSource = counter == 0 ? true : false,
                     //IsRepetitiveChild = counter > 0 ? true : false,
-                    RepetitiveSourceBlockId = counter > 0 ? firstBlockId : string.Empty,
+                    //??? RepetitiveSourceBlockId = counter > 0 ? firstBlockId : string.Empty,
                     //IsOffPeriodRepetitive = true,
                     //RepetitiveFirstRun = counter == 0 ? date : null,
                     //RepetitiveEndRun = counter == 0 ? date.AddYears(lengthinYears) : null,
@@ -500,13 +554,13 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
             var profile = energyAmountYearProfile != null ? energyAmountYearProfile : PVEBasicYearProfile;
 
             List<IBlock> blocks = new List<IBlock>();
-            DateTime date = new DateTime(startyear, 1, 1).AddHours(startsun.Hour).AddMinutes(startsun.Minute).AddSeconds(startsun.Second);
+            DateTime date = new DateTime(startyear, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddHours(startsun.Hour).AddMinutes(startsun.Minute).AddSeconds(startsun.Second);
 
             // to identify repetitive blocks with first one
             var firstBlockId = string.Empty;
             var counter = 0;
 
-            var end = new DateTime(endyear, 1, 1);
+            var end = new DateTime(endyear, 1, 1, 0, 0, 0, DateTimeKind.Utc);
             while (date < end)
             {
                 var tmpdate = date;
@@ -525,7 +579,7 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
                     Amount = profile[date.Month - 1] * PVEPeakPower / DateTime.DaysInMonth(date.Year, date.Month),
                     //IsRepetitiveSource = counter == 0 ? true : false,
                     //IsRepetitiveChild = counter > 0 ? true : false,
-                    RepetitiveSourceBlockId = counter > 0 ? firstBlockId : string.Empty,
+                    //??? RepetitiveSourceBlockId = counter > 0 ? firstBlockId : string.Empty,
                     //IsOffPeriodRepetitive = false,
                     //IsInDayOnly = true,
                     //RepetitiveFirstRun = counter == 0 ? date : null,

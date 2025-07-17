@@ -48,7 +48,8 @@
             totalConsumed = 0;
             foreach (var b in bl)
                 totalConsumed += b.Amount;
-            bl.Clear();
+            //bl.Clear();
+
             bl = AppData.EntitiesHandler.GetConsumptionOfEntity(Item.Id,
                                                                 BlockTimeframe.Month,
                                                                 StartTime,

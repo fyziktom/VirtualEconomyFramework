@@ -449,11 +449,21 @@ namespace VEDriversLite.EntitiesBlocks.PVECalculations
                                                     null,
                                                     groupId);
 
-                        rblock.IsInDayOnly = true;
+                        /*
+                if (rblock is IRepetitiveBlock rbl)
+                {
+                    rbl.IsInDayOnly = true;
+                    if (string.IsNullOrEmpty(firstBlockId))
+                        firstBlockId = rbl.Id;
+                    else
+                        rbl.RepetitiveSourceBlockId = firstBlockId;
+
+                    yield return rbl;
+                }
+                */
                         if (string.IsNullOrEmpty(firstBlockId))
                             firstBlockId = rblock.Id;
-                        else
-                            rblock.RepetitiveSourceBlockId = firstBlockId;
+
                         yield return rblock;
                         tmp = tmp.AddDays(1);
                     }
@@ -506,11 +516,20 @@ namespace VEDriversLite.EntitiesBlocks.PVECalculations
                                             null,
                                             Id);
 
-                rblock.IsInDayOnly = true;
+                /*
+                if (rblock is IRepetitiveBlock rbl)
+                {
+                    rbl.IsInDayOnly = true;
+                    if (string.IsNullOrEmpty(firstBlockId))
+                        firstBlockId = rbl.Id;
+                    else
+                        rbl.RepetitiveSourceBlockId = firstBlockId;
+
+                    yield return rbl;
+                }
+                */
                 if (string.IsNullOrEmpty(firstBlockId))
                     firstBlockId = rblock.Id;
-                else
-                    rblock.RepetitiveSourceBlockId = firstBlockId;
 
                 yield return rblock;
                 tmp = tmp.AddDays(1);
@@ -568,11 +587,20 @@ namespace VEDriversLite.EntitiesBlocks.PVECalculations
                                                 null,
                                                 groupId);
 
-                    rblock.IsInDayOnly = true;
+                    /*
+                if (rblock is IRepetitiveBlock rbl)
+                {
+                    rbl.IsInDayOnly = true;
+                    if (string.IsNullOrEmpty(firstBlockId))
+                        firstBlockId = rbl.Id;
+                    else
+                        rbl.RepetitiveSourceBlockId = firstBlockId;
+
+                    yield return rbl;
+                }
+                */
                     if (string.IsNullOrEmpty(firstBlockId))
                         firstBlockId = rblock.Id;
-                    else
-                        rblock.RepetitiveSourceBlockId = firstBlockId;
 
                     yield return rblock;
                     tmp = tmp.AddDays(1);
@@ -643,13 +671,23 @@ namespace VEDriversLite.EntitiesBlocks.PVECalculations
                                             null,
                                             parentId);
 
-                rblock.IsInDayOnly = true;
+                /*
+                if (rblock is IRepetitiveBlock rbl)
+                {
+                    rbl.IsInDayOnly = true;
+                    if (string.IsNullOrEmpty(firstBlockId))
+                        firstBlockId = rbl.Id;
+                    else
+                        rbl.RepetitiveSourceBlockId = firstBlockId;
+
+                    yield return rbl;
+                }
+                */
                 if (string.IsNullOrEmpty(firstBlockId))
                     firstBlockId = rblock.Id;
-                else
-                    rblock.RepetitiveSourceBlockId = firstBlockId;
-
+                
                 yield return rblock;
+
                 tmp = tmp.AddDays(1);
             }
         }
@@ -709,11 +747,20 @@ namespace VEDriversLite.EntitiesBlocks.PVECalculations
                                             null,
                                             parentId);
 
-                rblock.IsInDayOnly = true;
+                /*
+                if (rblock is IRepetitiveBlock rbl)
+                {
+                    rbl.IsInDayOnly = true;
+                    if (string.IsNullOrEmpty(firstBlockId))
+                        firstBlockId = rbl.Id;
+                    else
+                        rbl.RepetitiveSourceBlockId = firstBlockId;
+
+                    yield return rbl;
+                }
+                */
                 if (string.IsNullOrEmpty(firstBlockId))
                     firstBlockId = rblock.Id;
-                else
-                    rblock.RepetitiveSourceBlockId = firstBlockId;
 
                 yield return rblock;
 
@@ -810,11 +857,20 @@ namespace VEDriversLite.EntitiesBlocks.PVECalculations
                                             null,
                                             parentId);
 
-                rblock.IsInDayOnly = true;
+                /*
+                if (rblock is IRepetitiveBlock rbl)
+                {
+                    rbl.IsInDayOnly = true;
+                    if (string.IsNullOrEmpty(firstBlockId))
+                        firstBlockId = rbl.Id;
+                    else
+                        rbl.RepetitiveSourceBlockId = firstBlockId;
+
+                    yield return rbl;
+                }
+                */
                 if (string.IsNullOrEmpty(firstBlockId))
                     firstBlockId = rblock.Id;
-                else
-                    rblock.RepetitiveSourceBlockId = firstBlockId;
 
                 yield return rblock;
 

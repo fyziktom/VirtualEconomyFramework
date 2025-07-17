@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VEDriversLite.DogeAPI;
 
 namespace VEDriversLite.Security
 {
@@ -115,7 +116,8 @@ namespace VEDriversLite.Security
         /// <param name="password">fill if the pass is not loaded and you need decrypted key</param>
         /// <param name="returnEncrypted">set true for return enrcypted form of key</param>
         /// <returns></returns>
-        public string GetEncryptedKey(string password = "", bool returnEncrypted = false)
+
+        public async Task<string> GetEncryptedKey(string password = "", bool returnEncrypted = false)
         {
             if (returnEncrypted)
             {
@@ -136,12 +138,14 @@ namespace VEDriversLite.Security
                 var done = false;
                 try
                 {
-                    return SymetricProvider.DecryptString(loadedPassHash, _key, IV);
+                    return await SymetricProvider.DecryptStringAsync(loadedPassHash, _key, IV);
                 }
-                catch { }
+                catch (Exception e) {
+                    ; 
+                }
                 if (!done)
                 {
-                    return SymetricProvider.DecryptString(password, _key, IV);
+                    return await SymetricProvider.DecryptStringAsync(password, _key, IV);
                 }
             }
             else
@@ -160,6 +164,7 @@ namespace VEDriversLite.Security
         /// <param name="password"></param>
         /// <param name="fromDb"></param>
         /// <returns></returns>
+
         public async Task<bool> LoadNewKey(string key, string password = "", bool fromDb = false)
         {
             if (string.IsNullOrEmpty(key))
@@ -176,7 +181,8 @@ namespace VEDriversLite.Security
                 loadedPassword = password;
                 loadedPassHash = SecurityUtils.ComputeSha256Hash(loadedPassword);   
                 passwordLoaded = true;
-                _key = SymetricProvider.EncryptString(loadedPassHash, key, IV);
+
+                _key = await SymetricProvider.EncryptStringAsync(loadedPassHash, key, IV);
                 IsEncrypted = true;
                 return true;
             }

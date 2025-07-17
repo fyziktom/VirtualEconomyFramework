@@ -6,6 +6,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using VEDriversLite.EntitiesBlocks.Blocks.Dto;
+using VEDriversLite.EntitiesBlocks.Entities;
+using VEDriversLite.EntitiesBlocks.Handlers;
 using static System.Reflection.Metadata.BlobBuilder;
 
 namespace VEDriversLite.EntitiesBlocks.Blocks
@@ -223,22 +225,49 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
                     if (!isChild)
                         repetitiveParentId = id;
 
-                    var b = new BaseBlock()
+                    var ts = k1 - k;
+
+                    if (ts.Value.Hours < 0 || ts.Value.Minutes < 0 || ts.Value.Seconds < 0 || ts.Value.Days < 0)
+                        ts = ts.Value.Negate();
+
+                    IBlock? b = null;
+                    
+                    if (!string.IsNullOrEmpty(repetitiveSourceDataProfileId) || !string.IsNullOrEmpty(repetitiveParentId))
                     {
-                        Name = name,
-                        Description = description,
-                        RepetitiveSourceDataProfileId = repetitiveSourceDataProfileId,
-                        Amount = v,
-                        Direction = direction,
-                        ParentId = !string.IsNullOrEmpty(parentId) ? parentId : string.Empty,
-                        StartTime = k,
-                        Timeframe = (TimeSpan)(k1 - k),
-                        Used = false,
-                        SourceId = sourceId,
-                        RepetitiveSourceBlockId = isChild ? repetitiveParentId : string.Empty,
-                        Type = type,
-                        Id = id
-                    };
+                        b = new BaseRepetitiveBlock()
+                        {
+                            Name = name,
+                            Description = description,
+                            RepetitiveSourceDataProfileId = repetitiveSourceDataProfileId,
+                            Amount = v,
+                            Direction = direction,
+                            ParentId = !string.IsNullOrEmpty(parentId) ? parentId : string.Empty,
+                            StartTime = k,
+                            Timeframe = (TimeSpan)(ts),
+                            Used = false,
+                            SourceId = sourceId,
+                            RepetitiveSourceBlockId = isChild ? repetitiveParentId : string.Empty,
+                            Type = type,
+                            Id = id
+                        };
+                    }
+                    else
+                    {
+                        b = new BaseBlock()
+                        {
+                            Name = name,
+                            Description = description,
+                            Amount = v,
+                            Direction = direction,
+                            ParentId = !string.IsNullOrEmpty(parentId) ? parentId : string.Empty,
+                            StartTime = k,
+                            Timeframe = (TimeSpan)(ts),
+                            Used = false,
+                            SourceId = sourceId,
+                            Type = type,
+                            Id = id
+                        };
+                    }
 
                     if (!isChild)
                         isChild = true;
@@ -248,6 +277,90 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
                     yield return b;
                 }
             }
+        }
+
+        /// <summary>
+        /// It will get the consumption and production of the entity and split it into two profiles in the form of blocks
+        /// It returns two profiles in form of blocks
+        /// Production profile what is over the consumption if some
+        /// Consumption profile of what left to cover with some other source     
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="eGrid"></param>
+        /// <param name="dtmp"></param>
+        /// <returns></returns>
+        public static (List<IBlock>, List<IBlock>) GetEntityBalanceBlocksAfterAlocationOfProductionBlocks(IEntity entity, IEntitiesHandler eGrid, DateTime dtmp)
+        {
+
+            var res = GetEntityBalanceAfterAlocationOfProductionBlocks(entity, eGrid, dtmp);
+            var result = (new List<IBlock>(), new List<IBlock>());
+            if (res.Item1 != null && res.Item2 != null)
+            {
+                var consumptionblocks = DataProfileHelpers.ConvertDataProfileToBlocks(res.Item2,
+                                                                                      BlockDirection.Consumed,
+                                                                                      BlockType.Calculated,
+                                                                                      entity.Id).ToList();
+
+                var productionblocks = DataProfileHelpers.ConvertDataProfileToBlocks(res.Item1,
+                                                                                     BlockDirection.Created,
+                                                                                     BlockType.Calculated,
+                                                                                     entity.Id).ToList();
+
+                result = (productionblocks, consumptionblocks);
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// Get the consumption of entity that has consumption and production blocks already inside.
+        /// Then it will split the result into two profiles in form of DataProfile
+        /// Production profile what is over the consumption if some
+        /// Consumption profile of what left to cover with some other source
+        /// 
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="eGrid"></param>
+        /// <param name="dtmp"></param>
+        /// <returns></returns>
+        public static (DataProfile, DataProfile) GetEntityBalanceAfterAlocationOfProductionBlocks(IEntity entity, IEntitiesHandler eGrid, DateTime dtmp)
+        {
+            // get bilance of the consumption and production
+            var cons = eGrid.GetConsumptionOfEntity(entity.Id,
+                                                    BlockTimeframe.QuaterHour,
+                                                    dtmp,
+                                                    dtmp.AddDays(1),
+                                                    true,
+                                                    true,
+                                                    new List<BlockDirection>() { BlockDirection.Created, BlockDirection.Consumed },
+                                                    new List<BlockType>() { BlockType.Simulated, BlockType.Real, BlockType.Calculated, BlockType.Bought, BlockType.Forwarded, BlockType.Received, BlockType.Rent });
+
+            var consprof = DataProfileHelpers.ConvertBlocksToDataProfile(cons);
+            // get production after some part was consumed with sun-day consumption
+            var productionafterconsumed = new DataProfile();
+            foreach (var k in consprof.ProfileData.Keys)
+            {
+                if (consprof.ProfileData.TryGetValue(k, out var v))
+                {
+                    if (v < 0)
+                        productionafterconsumed.ProfileData.TryAdd(k, 0);
+                    else
+                        productionafterconsumed.ProfileData.TryAdd(k, v);
+                }
+            }
+            // get rest of the consumption which needs to be covered from storage or network
+            var consumptionafterpve = new DataProfile();
+            foreach (var k in consprof.ProfileData.Keys)
+            {
+                if (consprof.ProfileData.TryGetValue(k, out var v))
+                {
+                    if (v < 0)
+                        consumptionafterpve.ProfileData.TryAdd(k, Math.Abs(v));
+                    else
+                        consumptionafterpve.ProfileData.TryAdd(k, 0);
+                }
+            }
+
+            return (productionafterconsumed, consumptionafterpve);
         }
     }
 }

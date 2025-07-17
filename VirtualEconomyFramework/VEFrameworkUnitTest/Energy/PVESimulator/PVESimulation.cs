@@ -35,7 +35,7 @@ namespace VEFrameworkUnitTest.Energy.PVESimulator
         [Fact]
         public void SunBeamAngleTest()
         {
-            var start = new DateTime(2022, 1, 1, 0, 0, 0);
+            var start = new DateTime(2022, 1, 1, 1, 0, 0);
             var coord = new Coordinates(49.194103, 16.608998);
 
             var pos = SunMoonCalcs.SunCalc.GetPosition(start, coord.Latitude, coord.Longitude);
@@ -46,7 +46,7 @@ namespace VEFrameworkUnitTest.Energy.PVESimulator
 
             Assert.Equal(-78, result);
 
-            start = new DateTime(2022, 1, 1, 12, 0, 0);
+            start = new DateTime(2022, 1, 1, 13, 0, 0);
             pos = SunMoonCalcs.SunCalc.GetPosition(start, coord.Latitude, coord.Longitude);
 
             result = SunMoonCalcs.SunCalc.GetSunBeamAngle(pos,
@@ -55,7 +55,7 @@ namespace VEFrameworkUnitTest.Energy.PVESimulator
 
             Assert.Equal(36, result);
 
-            start = new DateTime(2022, 1, 1, 20, 0, 0);
+            start = new DateTime(2022, 1, 1, 21, 0, 0);
             pos = SunMoonCalcs.SunCalc.GetPosition(start, coord.Latitude, coord.Longitude);
 
             result = SunMoonCalcs.SunCalc.GetSunBeamAngle(pos,

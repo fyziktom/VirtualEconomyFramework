@@ -21,7 +21,6 @@
   <ItemGroup>
     <ProjectReference Include="..\NeblioRestApi\NeblioRestApi.csproj" />
     <ProjectReference Include="..\VEDriversLite\VEDriversLite.csproj" />
-    <ProjectReference Include="..\VEDrivers\VEDrivers.csproj" />
   </ItemGroup>
 
   <ItemGroup>

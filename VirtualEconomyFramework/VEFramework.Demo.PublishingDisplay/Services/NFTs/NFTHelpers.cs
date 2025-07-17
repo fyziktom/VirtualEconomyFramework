@@ -106,11 +106,11 @@ namespace VEFramework.Demo.PublishingDisplay.Services.NFTs
         /// <summary>
         /// Infura Url for the access to the IPFS API
         /// </summary>
-        public static string InfuraAPIURL = "https://venftappserver.azurewebsites.net/api/uploadtoipfs";//"https://ipfs.infura.io:5001";
+        public static string InfuraAPIURL = "https://ve-framework.com/";//"https://ipfs.infura.io:5001";
         /// <summary>
         /// IPFS Gateway address
         /// </summary>
-        public static string GatewayURL = "https://ipfs.io/ipfs/";//"https://bdp.infura-ipfs.io/ipfs/";
+        public static string GatewayURL = "https://ve-framework.com/ipfs/";//"https://bdp.infura-ipfs.io/ipfs/";
         /// <summary>
         /// Main default tokens in VEFramework - CORZT
         /// </summary>
@@ -185,111 +185,7 @@ namespace VEFramework.Demo.PublishingDisplay.Services.NFTs
             else
                 return !string.IsNullOrEmpty(hash) ? string.Concat(GatewayURL, hash) : string.Empty;
         }
-        /// <summary>
-        /// Obsolete function - just example how to redirect upload through different server
-        /// </summary>
-        /// <param name="stream"></param>
-        /// <param name="fileName"></param>
-        /// <param name="fileContentType"></param>
-        /// <returns></returns>
-        public static async Task<string> UploadImage(Stream stream, string fileName, string fileContentType = "multipart/form-data")
-        {
-            var link = string.Empty;
-            try
-            {
-                var url = $"https://nftticketverifierapp.azurewebsites.net/api/upload";
-                
-                using var client = new HttpClient();
-                using (var content = new MultipartFormDataContent())
-                {
-                    content.Add(new StreamContent(stream)
-                    {
-                        Headers =
-                            {
-                                ContentLength = stream.Length,
-                                ContentType = new MediaTypeHeaderValue(fileContentType)
-                            }
-                    }, "file", fileName);
-                    
-                    var response = await client.PostAsync(url, content);
-                    link = await response.Content.ReadAsStringAsync();
-                    
-                    var loaded = false;
-                    var attempts = 20;
-                    while (attempts > 0 && !loaded)
-                    {
-                        try
-                        {
-                            var respb = await IPFSDownloadFromInfuraAsync(GetHashFromIPFSLink(link));
-                            if (respb != null)
-                            {
-                                var resp = new MemoryStream(respb);
-                                if (resp != null && resp.Length >= (stream.Length * 0.8))
-                                    loaded = true;
-                                else
-                                    await Task.Delay(1000);
-                            }
-                            /*
-                            var resp = await ipfs.FileSystem.GetAsync(link.Replace("https://gateway.ipfs.io/ipfs/",string.Empty));
-                            if (resp != null && resp.Length >= (stream.Length*0.8))
-                                loaded = true;
-                            else
-                                await Task.Delay(1000);
-                            */
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine("File still not available: " + ex.Message);
-                            await Task.Delay(1000);
-                        }
-                        attempts--;
-                    }
-                    
-                }
-            }
-            catch(Exception ex)
-            {
-                Console.WriteLine("Cannot upload the image. " + ex.Message);
-            }
-            return link;
-        }
 
-        /// <summary>
-        /// Load connection info to the internal variables of this class
-        /// </summary>
-        /// <param name="ipfsKey"></param>
-        /// <param name="ipfsSecret"></param>
-        /// <param name="apiurl"></param>
-        public static void LoadConnectionInfo(string ipfsKey = "", string ipfsSecret = "", string apiurl = "")
-        {
-            var refresh = false;
-            if (!string.IsNullOrEmpty(apiurl) && apiurl != InfuraAPIURL)
-            {
-                InfuraAPIURL = apiurl;
-                refresh = true;
-            }
-            if (!string.IsNullOrEmpty(ipfsKey) && ipfsKey != InfuraKey)
-            {
-                InfuraKey = ipfsKey;
-                refresh = true;
-            }
-            if (!string.IsNullOrEmpty(ipfsSecret) && ipfsSecret != InfuraSecret)
-            {
-                InfuraSecret = ipfsSecret;
-                refresh = true;
-            }
-            try
-            {
-                if (refresh || ipfsInfura == null)
-                    ipfsInfura = CreateIpfsClient(InfuraAPIURL, InfuraKey, InfuraSecret);
-                ipfsInfura.UserAgent = "VEFramework";
-            }
-            catch(Exception ex)
-            {
-                Console.WriteLine("Cannot load ipfs client after apiurl, key and secret change. " + ex.Message);
-            }
-
-        }
         /// <summary>
         /// Create IPFS client with authentication
         /// </summary>
@@ -320,69 +216,6 @@ namespace VEFramework.Demo.PublishingDisplay.Services.NFTs
         }
 
         /// <summary>
-        /// Upload file to the Infura IPFS
-        /// </summary>
-        /// <param name="stream"></param>
-        /// <param name="fileName"></param>
-        /// <param name="fileContentType"></param>
-        /// <returns></returns>
-        public static async Task<string> UploadInfura(Stream stream, string fileName, string fileContentType = "multipart/form-data")
-        {
-            if (stream == null)
-                return "Error. Provided null file.";
-            try
-            {
-                if (stream.Length <= 0)
-                    return string.Empty;
-                var link = string.Empty;
-
-                if (ipfsInfura == null)
-                    ipfsInfura = CreateIpfsClient(InfuraAPIURL, InfuraKey, InfuraSecret);
-                ipfsInfura.UserAgent = "VEFramework";
-                var reslink = await ipfsInfura.FileSystem.AddAsync(stream, fileName);
-                //var reslink = await ipfs.FileSystem.AddAsync(stream, fileName);
-                
-                if (reslink != null)
-                {
-                    var hash = reslink.ToLink().Id.ToString();
-                    link = "https://ipfs.infura.io/ipfs/" + hash;
-
-                    var loaded = false;
-                    var attempts = 50;
-                    while (attempts > 0 && !loaded)
-                    {
-                        try
-                        {
-                            //var resp = await ipfsClient.FileSystem.GetAsync(hash);
-                            //var respb = await IPFSDownloadFromPublicAsync(hash);
-                            var respb = await IPFSDownloadFromInfuraAsync(hash);
-                            if (respb != null)
-                            {
-                                var resp = new MemoryStream(respb);
-                                if (resp != null && resp.Length >= (stream.Length * 0.8))
-                                    loaded = true;
-                                else
-                                    await Task.Delay(1000);
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine("File still not available: " + ex.Message);                            
-                            await Task.Delay(1000);
-                        }
-                        attempts--;
-                    }
-                }
-                return link;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Error during uploading the image to the IPFS." + ex.Message);
-            }
-            return string.Empty;
-        }
-
-        /// <summary>
         /// Download file from IPFS Infura with use of credentials
         /// </summary>
         /// <param name="hash"></param>
@@ -406,54 +239,6 @@ namespace VEFramework.Demo.PublishingDisplay.Services.NFTs
             catch(Exception ex)
             {
                 Console.WriteLine("Cannot read the file from IPFS from Infura. " + ex.Message);
-            }
-            return null;
-        }
-
-        /// <summary>
-        /// Pin file to IPFS Infura with use of credentials
-        /// </summary>
-        /// <param name="hash"></param>
-        /// <returns></returns>
-        public static async Task<bool> PinToInfuraAsync(string hash)
-        {
-            var ipfsClient = CreateIpfsClient(InfuraAPIURL, InfuraKey, InfuraSecret);
-            ipfsClient.UserAgent = "VEFramework";
-            try
-            {
-                var cancelSource = new System.Threading.CancellationTokenSource();
-                var token = cancelSource.Token;
-                //using (var stream = await ipfsClient.FileSystem.ReadFileAsync(hash))
-                var _ = await ipfsClient.Pin.AddAsync(hash);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Cannot read the file from IPFS from Infura. " + ex.Message);
-            }
-            return false;
-        }
-
-        /// <summary>
-        /// Download file from IPFS public
-        /// </summary>
-        /// <param name="hash"></param>
-        /// <returns></returns>
-        public static async Task<byte[]> IPFSDownloadFromPublicAsync(string hash)
-        {
-            ipfs.UserAgent = "VEFramework";
-            try 
-            { 
-                using (var stream = await ipfs.FileSystem.ReadFileAsync(hash))
-                    using (var ms = new MemoryStream())
-                    {
-                        stream.CopyTo(ms);
-                        return ms.ToArray();
-                    }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Cannot read the file from IPFS from public gateway. " + ex.Message);
             }
             return null;
         }

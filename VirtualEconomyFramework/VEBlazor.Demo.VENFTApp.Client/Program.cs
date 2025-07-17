@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using VEBlazor.Demo.VENFTApp.Client;
 using Blazorise;
-using Blazorise.Bootstrap;
+using Blazorise.Bootstrap5;
 using Blazorise.Icons.FontAwesome;
 using Blazored.LocalStorage;
 using BlazorPanzoom;
@@ -23,7 +23,7 @@ builder.Services
     {
         options.Immediate = true;
     })
-    .AddBootstrapProviders()
+    .AddBootstrap5Providers()
     .AddFontAwesomeIcons();
 
 builder.Services.AddScoped<AppData>();

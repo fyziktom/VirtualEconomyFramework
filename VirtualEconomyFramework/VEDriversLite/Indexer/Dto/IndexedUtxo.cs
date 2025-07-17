@@ -20,7 +20,7 @@ namespace VEDriversLite.Indexer.Dto
         public DateTime Time { get; set; } = DateTime.MinValue;
         public string UsedInTxHash { get; set; } = string.Empty;
         public string TokenId { get; set; } = string.Empty;
-        public double TokenAmount { get; set; } = 0.0;
+        public ulong TokenAmount { get; set; } = 0;
         public string TokenSymbol { get; set; } = string.Empty;
         public string Metadata { get; set; } = string.Empty;
     }

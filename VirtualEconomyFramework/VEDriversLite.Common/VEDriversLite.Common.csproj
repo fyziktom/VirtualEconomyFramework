@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-	<TargetFrameworks>net6.0;net7.0</TargetFrameworks>
+	<TargetFrameworks>net6.0;net7.0;net8.0</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 	  <PackageId>VEFramework.VEDriversLite.Common</PackageId>
-	  <Version>0.4.3</Version>
+	  <Version>0.4.4</Version>
 	  <Authors>fyziktom</Authors>
 	  <Company>VEFramework</Company>
 	  <Description>Common dtos and tools for VEDriversLite packages</Description>
@@ -15,7 +15,7 @@
 	  <PackageTags>VEFramework, Cryptocurrencies, Crypto, NFT, NFTs, Bitcoin, Neblio, Dogecoin, Blockchain, eCommerce, dApps, Sun, Moon</PackageTags>
 	  <Copyright>fyziktom</Copyright>
 	  <PackageReleaseNotes>
-		  - SunMoon calc now returns time based on timezone known from lat/lon
+		  - 
 	  </PackageReleaseNotes>
 	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
 	  <Title>VEDriversLite Common Dto and Tools</Title>

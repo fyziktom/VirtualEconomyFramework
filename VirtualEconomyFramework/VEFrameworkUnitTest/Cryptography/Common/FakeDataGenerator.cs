@@ -47,6 +47,11 @@ namespace VEFrameworkUnitTest.Cryptography.Common
         public string BasicPassword { get; set; } = "1-password!";
 
         /// <summary>
+        /// Static IV
+        /// </summary>
+        public byte[] IV { get; set; } = new byte[16] { 121, 210, 110, 20, 201, 11, 10, 52, 54, 154, 116, 18, 28, 168, 121, 55 };
+
+        /// <summary>
         /// Basic encrypted message with use of AES256 Symetric Encryption.
         /// Now without salt, etc.
         /// var se = SymetricProvider.EncryptString(BasicPassword, BasicMessage);
@@ -54,12 +59,14 @@ namespace VEFrameworkUnitTest.Cryptography.Common
         /// </summary>
         public string BasicEncryptedMessage { get; set; } = "qKw35jPyvKFuWZlOg3pYTg==";
 
+        public string BasicEncryptedMessage1 { get; set; } = "xvuNfEZBs0Q1mZs8T5wUnw==";
+
         /// <summary>
         /// Basic encrypted message with use of AES256 Symetric Encryption.
         /// Now without salt, etc.
         /// Removed == at the end
         /// </summary>
-        public string BasicEncryptedMessageWrongShape { get; set; } = "qKw35jPyvKFuWZlOg3pYTg";
+        public string BasicEncryptedMessageWrongShape { get; set; } = "xvuNfEZBs0Q1mZs8T5wUnw";
 
         /// <summary>
         /// Basic encrypted message with use of AES256 Symetric Encryption.

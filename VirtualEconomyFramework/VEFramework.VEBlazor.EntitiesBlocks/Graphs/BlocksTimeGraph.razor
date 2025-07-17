@@ -234,7 +234,7 @@
                                      BlockUnitHeight="@blockUnitHeight"
                                      RemoveBlockRequest="@onRemoveBlockRequest"
                                      TextFontSize="@textFontSize"
-                                     Block="@(block as BaseBlock)"
+                                     Block="@(block as BaseRepetitiveBlock)"
                                      XPos="@xpos"
                                      YPos="@((int)ypos)"
                                      BlockDoubleClick="@editItem" />
@@ -316,7 +316,7 @@
         await base.OnAfterRenderAsync(firstRender);
     }
 
-    private async Task onRemoveBlockRequest(IBlock e)
+    private async Task onRemoveBlockRequest(IRepetitiveBlock e)
     {
         if (Item != null && removeBlockModal != null)
         {
@@ -363,7 +363,11 @@
     {
         if (Item != null && Item.Id != null)
         {
-            Blocks = AppData.EntitiesHandler.GetBlocksOfEntityWithChildernBlocks(Item.Id).ToList();
+            var blcks = AppData.EntitiesHandler.GetBlocksOfEntityWithChildernBlocks(Item.Id).ToList();
+
+            var repetitiveBlocks = blcks.Where(b => b is IRepetitiveBlock br).Cast<IRepetitiveBlock>().ToList<IRepetitiveBlock>();
+            Blocks = repetitiveBlocks;
+
             if (Blocks != null)
             {
                 SetTotalXstesps();

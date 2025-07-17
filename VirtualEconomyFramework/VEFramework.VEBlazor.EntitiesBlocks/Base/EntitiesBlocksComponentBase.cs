@@ -60,19 +60,19 @@ namespace VEFramework.VEBlazor.EntitiesBlocks.Base
     public abstract class BlockComponentBase : TimeRangeComponentBase
     {
         [Parameter]
-        public IBlock Block { get; set; } = new BaseBlock();
+        public IRepetitiveBlock Block { get; set; } = new BaseRepetitiveBlock();
 
         [Parameter]
-        public EventCallback<IBlock> BlockChanged { get; set; }
+        public EventCallback<IRepetitiveBlock> BlockChanged { get; set; }
 
         [Parameter]
-        public EventCallback<IBlock> BlockDoubleClick { get; set; }
+        public EventCallback<IRepetitiveBlock> BlockDoubleClick { get; set; }
         [Parameter]
-        public EventCallback<IBlock> BlockOneClick { get; set; }
+        public EventCallback<IRepetitiveBlock> BlockOneClick { get; set; }
         [Parameter]
-        public EventCallback<IBlock> ChangeBlockRequest { get; set; }
+        public EventCallback<IRepetitiveBlock> ChangeBlockRequest { get; set; }
         [Parameter]
-        public EventCallback<IBlock> RemoveBlockRequest { get; set; }
+        public EventCallback<IRepetitiveBlock> RemoveBlockRequest { get; set; }
     }
 
     public abstract class EntitiesActionButtonComponentBase : OneButtonComponentBase
@@ -94,7 +94,7 @@ namespace VEFramework.VEBlazor.EntitiesBlocks.Base
     }
     public abstract class EntitiesBlocksComponentBase : EntitiesComponentBase
     {
-        public List<IBlock> Blocks { get; set; } = new List<IBlock>();
+        public List<IRepetitiveBlock> Blocks { get; set; } = new List<IRepetitiveBlock>();
     }
 
 }

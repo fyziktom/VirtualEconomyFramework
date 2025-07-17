@@ -49,7 +49,7 @@
         <BarEnd>
             <BarItem>
                 <BarDropdown>
-                    <BarDropdownToggle Display="Blazorise.Display.InlineBlock.None.OnMobile">
+                    <BarDropdownToggle >
                         @if ( AppData.IsAccountLoaded )
                         {
                             @if (!string.IsNullOrEmpty(AppData.Account.Profile.ImageLink))
@@ -73,7 +73,7 @@
                         }
                         else
                         {
-                            @if (doesAccountExist)
+                            @if (true)//doesAccountExist)
                             {
                                 <BarDropdownItem Clicked="@Unlock">
                                     <Icon Name="   IconName.Unlock" TextColor="  TextColor.Success" />

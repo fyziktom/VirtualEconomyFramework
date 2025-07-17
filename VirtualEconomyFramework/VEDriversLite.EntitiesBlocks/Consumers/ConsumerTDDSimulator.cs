@@ -70,7 +70,7 @@ namespace VEDriversLite.EntitiesBlocks.Consumers
             if (end < start)
                 throw new Exception($"Wrong input of the start and end in simulator Id: {Id}. End cannot be earlier than start.");
 
-            var block = new BaseBlock();
+            var block = new BaseRepetitiveBlock();
 
             var sourceId = Id;
             if (options.TryGetValue("sourceId", out var sid))
@@ -142,14 +142,16 @@ namespace VEDriversLite.EntitiesBlocks.Consumers
                                             null,
                                             parentId);
 
-                rblock.IsInDayOnly = true;
-                if (string.IsNullOrEmpty(firstBlockId))
-                    firstBlockId = rblock.Id;
-                else
-                    rblock.RepetitiveSourceBlockId = firstBlockId;
+                if (rblock is IRepetitiveBlock rbl)
+                {
+                    rbl.IsInDayOnly = true;
+                    if (string.IsNullOrEmpty(firstBlockId))
+                        firstBlockId = rbl.Id;
+                    else
+                        rbl.RepetitiveSourceBlockId = firstBlockId;
 
-                yield return rblock;
-
+                    yield return rblock;
+                }
                 tmp = tmp.Add(ts);
                 ts = BlockHelpers.GetTimeSpanBasedOntimeframe(timeframe, tmp);
             }

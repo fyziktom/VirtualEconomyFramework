@@ -113,7 +113,7 @@ namespace VEDriversLite
             return fee;
         }
 
-        private static (BitcoinAddress, BitcoinSecret) GetAddressAndKeyInternal(EncryptionKey ekey, string password)
+        private static async Task<(BitcoinAddress, BitcoinSecret)> GetAddressAndKeyInternal(EncryptionKey ekey, string password)
         {
             var key = string.Empty;
             const string message = "Cannot send token transaction. Password is not filled and key is encrypted or unlock account!";
@@ -129,17 +129,17 @@ namespace VEDriversLite
                     }
                     else if (!ekey.IsEncrypted)
                     {
-                        key = ekey.GetEncryptedKey();
+                        key = await ekey.GetEncryptedKey();
                     }
                     else if (ekey.IsEncrypted && (!string.IsNullOrEmpty(password) || ekey.IsPassLoaded))
                     {
                         if (ekey.IsPassLoaded)
                         {
-                            key = ekey.GetEncryptedKey(string.Empty);
+                            key = await ekey.GetEncryptedKey(string.Empty);
                         }
                         else
                         {
-                            key = ekey.GetEncryptedKey(password);
+                            key = await ekey.GetEncryptedKey(password);
                         }
                     }
 
@@ -178,9 +178,9 @@ namespace VEDriversLite
         /// <param name="ekey"></param>
         /// <param name="password"></param>
         /// <returns></returns>
-        public static (BitcoinAddress, BitcoinSecret) GetAddressAndKey(EncryptionKey ekey, string password)
+        public static async Task<(BitcoinAddress, BitcoinSecret)> GetAddressAndKey(EncryptionKey ekey, string password)
         {
-            return GetAddressAndKeyInternal(ekey, password);
+            return await GetAddressAndKeyInternal(ekey, password);
         }
 
         /// <summary>
@@ -189,9 +189,9 @@ namespace VEDriversLite
         /// </summary>
         /// <param name="ekey"></param>
         /// <returns></returns>
-        public static (BitcoinAddress, BitcoinSecret) GetAddressAndKey(EncryptionKey ekey)
+        public static async Task<(BitcoinAddress, BitcoinSecret)> GetAddressAndKey(EncryptionKey ekey)
         {
-            return GetAddressAndKeyInternal(ekey, "");
+            return await GetAddressAndKeyInternal(ekey, "");
         }
         /// <summary>
         /// This function will crate empty Transaction object based on Neblio network standard
