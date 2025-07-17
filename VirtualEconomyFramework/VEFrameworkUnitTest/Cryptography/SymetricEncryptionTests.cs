@@ -20,7 +20,7 @@ namespace VEFrameworkUnitTest.Cryptography
         public async Task EncryptMessageCorrectTest()
         {
             var encryptedMessage = await SymetricProvider.EncryptStringAsync(FakeDataGenerator.DefaultDto.BasicPassword,
-                                                                  FakeDataGenerator.DefaultDto.BasicMessage);
+                                                                  FakeDataGenerator.DefaultDto.BasicMessage, FakeDataGenerator.DefaultDto.IV);
             Assert.Equal(FakeDataGenerator.DefaultDto.BasicEncryptedMessage, encryptedMessage);
         }
 
@@ -57,11 +57,11 @@ namespace VEFrameworkUnitTest.Cryptography
         [Fact]
         public async Task WrongShapeCipherTextFailTest()
         {
-            string message = "cipherText is not valid. It must be Base64 string";
-            var exception = await Assert.ThrowsAsync<ArgumentException>(async () =>
+            string message = "The input is not a valid Base-64 string as it contains a non-base 64 character, more than two padding characters, or an illegal character among the padding characters.";
+            var exception = await Assert.ThrowsAsync<FormatException>(async () =>
             {
-                var decryptedMessage = await SymetricProvider.DecryptStringAsync(FakeDataGenerator.DefaultDto.BasicPassword, 
-                                                                      FakeDataGenerator.DefaultDto.BasicEncryptedMessageWrongShape);
+                    var decryptedMessage = await SymetricProvider.DecryptStringAsync(FakeDataGenerator.DefaultDto.BasicPassword,
+                                                                          FakeDataGenerator.DefaultDto.BasicEncryptedMessageWrongShape);           
             });
             Assert.Contains(message, exception.Message);
         }

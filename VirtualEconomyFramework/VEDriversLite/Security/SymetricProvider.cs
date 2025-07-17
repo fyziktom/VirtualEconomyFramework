@@ -263,6 +263,7 @@ namespace VEDriversLite.Security
                 iv = new byte[IVSize];
                 new SecureRandom().NextBytes(iv);
             }
+
             // Convert key to Base64 just for internal use in BouncyCastle
             string keyStringBase64 = Convert.ToBase64String(key);
 
