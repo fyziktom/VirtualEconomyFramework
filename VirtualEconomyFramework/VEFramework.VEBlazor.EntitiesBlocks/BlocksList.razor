@@ -41,7 +41,7 @@
                                     var block = Blocks[i];
                                     <TableRow>
                                         <TableRowCell>@block.Name</TableRowCell>
-                                        <TableRowCell>@(block.IsRepetitiveChild || block.IsRepetitiveSource ? "Yes": "No")</TableRowCell>
+                                        <TableRowCell>@(block is IRepetitiveBlock bb && (bb.IsRepetitiveChild || bb.IsRepetitiveSource) ? "Yes": "No")</TableRowCell>
                                         <TableRowCell>@(Math.Round(block.Amount, 2))</TableRowCell>
                                         <TableRowCell>@block.StartTime</TableRowCell>
                                         <TableRowCell>@block.EndTime</TableRowCell>
@@ -77,7 +77,10 @@
         if (item != null && item.Id != null)
         {
             Item = item;
-            Blocks = AppData.EntitiesHandler.GetBlocksOfEntityWithChildernBlocks(Item.Id).ToList();
+            var blcks = AppData.EntitiesHandler.GetBlocksOfEntityWithChildernBlocks(Item.Id).ToList();
+            var repetitiveBlocks = blcks.Where(b => b is IRepetitiveBlock br).Cast<IRepetitiveBlock>().ToList<IRepetitiveBlock>();
+            Blocks = repetitiveBlocks;
+
             if (Blocks != null)
             {
                 if (Blocks.Count > 10)
@@ -96,7 +99,11 @@
     {
         if (Item != null && Item.Id != null)
         {
-            Blocks = AppData.EntitiesHandler.GetBlocksOfEntityWithChildernBlocks(Item.Id).ToList();
+            var blcks = AppData.EntitiesHandler.GetBlocksOfEntityWithChildernBlocks(Item.Id).ToList();
+
+            var repetitiveBlocks = blcks.Where(b => b is IRepetitiveBlock br).Cast<IRepetitiveBlock>().ToList<IRepetitiveBlock>();
+            Blocks = repetitiveBlocks;
+
             if (Blocks != null)
             {
                 if (items >= Blocks.Count && Blocks.Count != 0)
