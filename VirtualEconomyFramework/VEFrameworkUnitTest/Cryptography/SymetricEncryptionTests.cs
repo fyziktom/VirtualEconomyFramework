@@ -21,7 +21,7 @@ namespace VEFrameworkUnitTest.Cryptography
         {
             var encryptedMessage = await SymetricProvider.EncryptStringAsync(FakeDataGenerator.DefaultDto.BasicPassword,
                                                                   FakeDataGenerator.DefaultDto.BasicMessage, FakeDataGenerator.DefaultDto.IV);
-            Assert.Equal(FakeDataGenerator.DefaultDto.BasicEncryptedMessage, encryptedMessage);
+            Assert.Equal(FakeDataGenerator.DefaultDto.BasicEncryptedMessage1, encryptedMessage);
         }
 
         /// <summary>
@@ -31,7 +31,7 @@ namespace VEFrameworkUnitTest.Cryptography
         public async Task DecryptMessageCorrectTest()
         {
             var decryptedMessage = await SymetricProvider.DecryptStringAsync(FakeDataGenerator.DefaultDto.BasicPassword,
-                                                                  FakeDataGenerator.DefaultDto.BasicEncryptedMessage);
+                                                                  FakeDataGenerator.DefaultDto.BasicEncryptedMessage1, FakeDataGenerator.DefaultDto.IV);
             Assert.Equal(FakeDataGenerator.DefaultDto.BasicMessage, decryptedMessage);
         }
 

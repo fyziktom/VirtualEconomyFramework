@@ -57,7 +57,9 @@ namespace VEFrameworkUnitTest.Cryptography.Common
         /// var se = SymetricProvider.EncryptString(BasicPassword, BasicMessage);
         /// https://github.com/fyziktom/VirtualEconomyFramework/blob/fe2a83455b73f56f997b95d041a338d17390a90a/VirtualEconomyFramework/VEDriversLite/Security/SymetricProvider.cs#L33
         /// </summary>
-        public string BasicEncryptedMessage { get; set; } = "xvuNfEZBs0Q1mZs8T5wUnw==";
+        public string BasicEncryptedMessage { get; set; } = "qKw35jPyvKFuWZlOg3pYTg==";
+
+        public string BasicEncryptedMessage1 { get; set; } = "xvuNfEZBs0Q1mZs8T5wUnw==";
 
         /// <summary>
         /// Basic encrypted message with use of AES256 Symetric Encryption.
