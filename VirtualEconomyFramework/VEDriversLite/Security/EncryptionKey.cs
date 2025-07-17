@@ -138,22 +138,14 @@ namespace VEDriversLite.Security
                 var done = false;
                 try
                 {
-#if !WASM
-                    return SymetricProvider.DecryptString(loadedPassHash, _key, IV);
-#else
                     return await SymetricProvider.DecryptStringAsync(loadedPassHash, _key, IV);
-#endif
                 }
                 catch (Exception e) {
                     ; 
                 }
                 if (!done)
                 {
-#if !WASM
-                    return SymetricProvider.DecryptString(password, _key, IV);
-#else
                     return await SymetricProvider.DecryptStringAsync(password, _key, IV);
-#endif
                 }
             }
             else
@@ -189,11 +181,8 @@ namespace VEDriversLite.Security
                 loadedPassword = password;
                 loadedPassHash = SecurityUtils.ComputeSha256Hash(loadedPassword);   
                 passwordLoaded = true;
-#if !WASM
-                _key = SymetricProvider.EncryptString(loadedPassHash, key, IV);
-#else
+
                 _key = await SymetricProvider.EncryptStringAsync(loadedPassHash, key, IV);
-#endif
                 IsEncrypted = true;
                 return true;
             }

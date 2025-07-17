@@ -103,6 +103,7 @@
         await InvokeAsync(StateHasChanged);
         await Task.Delay(500);
 
+
         SymetricProvider.jsRuntime = JSRuntime;
 
         if (await AppData.Account.CreateNewAccount(password))

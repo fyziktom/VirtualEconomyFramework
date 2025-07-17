@@ -33,6 +33,10 @@
 	<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.5" />
   </ItemGroup>
 
+  <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.18" />
+  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
     <PackageReference Include="Blazorise" Version="1.6.0" />

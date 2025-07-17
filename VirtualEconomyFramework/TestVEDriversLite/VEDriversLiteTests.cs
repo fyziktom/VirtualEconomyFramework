@@ -1806,7 +1806,7 @@ namespace TestVEDriversLite
             if (account.IsLocked())
                 throw new Exception("Account is locked.");
 
-            var res = await ECDSAProvider.DecryptMessage(param, account.AccountKey.GetEncryptedKey());
+            var res = await ECDSAProvider.DecryptMessage(param, await account.AccountKey.GetEncryptedKey());
             Console.WriteLine("Decrypted message is: ");
             Console.WriteLine(res);
         }
@@ -1875,7 +1875,7 @@ namespace TestVEDriversLite
             if (split.Length < 2)
                 throw new Exception("Please input message,password.");
 
-            var res = SymetricProvider.EncryptString(split[1], split[0]);
+            var res = await SymetricProvider.DecryptStringAsync(split[1], split[0]);
             Console.WriteLine("Encrypted message is: ");
             Console.WriteLine(res);
         }
@@ -1885,17 +1885,17 @@ namespace TestVEDriversLite
         /// </summary>
         /// <param name="param"></param>
         [TestEntry]
-        public static void AESDecryptMessage(string param)
+        public static async Task AESDecryptMessage(string param)
         {
-            AESDecryptMessageAsync(param);
+            await AESDecryptMessageAsync(param);
         }
-        public static void AESDecryptMessageAsync(string param)
+        public static async Task AESDecryptMessageAsync(string param)
         {
             var split = param.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
             if (split.Length < 2)
                 throw new Exception("Please input message,password.");
 
-            var res = SymetricProvider.DecryptString(split[1], split[0]);
+            var res = await SymetricProvider.DecryptStringAsync(split[1], split[0]);
             Console.WriteLine("Decrypted message is: ");
             Console.WriteLine(res);
         }

@@ -29,6 +29,8 @@ namespace VEDriversLite.Security
 
 #if WASM
         public static IJSRuntime jsRuntime { get; set; }
+#else
+        public static object? jsRuntime { get; set; }
 #endif
 
         public static string JoinIVToString(string etext, byte[] iv)
@@ -239,7 +241,7 @@ namespace VEDriversLite.Security
         /// Decrypts a Base64 string with AES-CBC (BouncyCastle).
         /// Returns the decrypted plaintext.
         /// </summary>
-        public static async Task<string> DecryptString(string key, string cipherText, byte[] iv = null)
+        public static async Task<string> DecryptStringAsync(string key, string cipherText, byte[] iv = null)
         {
             if (string.IsNullOrEmpty(key))
                 throw new ArgumentException("key can not be null or empty.");
