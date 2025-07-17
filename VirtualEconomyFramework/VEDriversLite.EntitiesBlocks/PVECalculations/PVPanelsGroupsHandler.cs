@@ -418,7 +418,7 @@ namespace VEDriversLite.EntitiesBlocks.PVECalculations
             {
                 var start = new DateTime(year, 1, 1);
                 var end = start.AddYears(1);
-                var block = new BaseRepetitiveBlock();
+                var block = new BaseBlock();
                 var firstBlockId = string.Empty;
 
                 if (PVPanelsGroups.TryGetValue(groupId, out var group))
@@ -449,15 +449,22 @@ namespace VEDriversLite.EntitiesBlocks.PVECalculations
                                                     null,
                                                     groupId);
 
-                        if (rblock is IRepetitiveBlock rbl)
-                        {
-                            rbl.IsInDayOnly = true;
-                            if (string.IsNullOrEmpty(firstBlockId))
-                                firstBlockId = rbl.Id;
-                            else
-                                rbl.RepetitiveSourceBlockId = firstBlockId;
-                            yield return rbl;
-                        }
+                        /*
+                if (rblock is IRepetitiveBlock rbl)
+                {
+                    rbl.IsInDayOnly = true;
+                    if (string.IsNullOrEmpty(firstBlockId))
+                        firstBlockId = rbl.Id;
+                    else
+                        rbl.RepetitiveSourceBlockId = firstBlockId;
+
+                    yield return rbl;
+                }
+                */
+                        if (string.IsNullOrEmpty(firstBlockId))
+                            firstBlockId = rblock.Id;
+
+                        yield return rblock;
                         tmp = tmp.AddDays(1);
                     }
                 }
@@ -476,7 +483,7 @@ namespace VEDriversLite.EntitiesBlocks.PVECalculations
         {
             var start = new DateTime(year, 1, 1);
             var end = start.AddYears(1);
-            var block = new BaseRepetitiveBlock();
+            var block = new BaseBlock();
             var tmp = start;
             var firstBlockId = string.Empty;
 
@@ -509,6 +516,7 @@ namespace VEDriversLite.EntitiesBlocks.PVECalculations
                                             null,
                                             Id);
 
+                /*
                 if (rblock is IRepetitiveBlock rbl)
                 {
                     rbl.IsInDayOnly = true;
@@ -519,6 +527,11 @@ namespace VEDriversLite.EntitiesBlocks.PVECalculations
 
                     yield return rbl;
                 }
+                */
+                if (string.IsNullOrEmpty(firstBlockId))
+                    firstBlockId = rblock.Id;
+
+                yield return rblock;
                 tmp = tmp.AddDays(1);
             }
         }
@@ -543,7 +556,7 @@ namespace VEDriversLite.EntitiesBlocks.PVECalculations
             start = start.AddHours(-start.Hour).AddMinutes(-start.Minute).AddSeconds(-start.Second);
             end = end.AddHours(-end.Hour).AddMinutes(-end.Minute).AddSeconds(-end.Second);
 
-            var block = new BaseRepetitiveBlock();
+            var block = new BaseBlock();
             var firstBlockId = string.Empty;
 
             if (PVPanelsGroups.TryGetValue(groupId, out var group))
@@ -574,16 +587,22 @@ namespace VEDriversLite.EntitiesBlocks.PVECalculations
                                                 null,
                                                 groupId);
 
-                    if (rblock is IRepetitiveBlock rbl)
-                    {
-                        rbl.IsInDayOnly = true;
-                        if (string.IsNullOrEmpty(firstBlockId))
-                            firstBlockId = rbl.Id;
-                        else
-                            rbl.RepetitiveSourceBlockId = firstBlockId;
+                    /*
+                if (rblock is IRepetitiveBlock rbl)
+                {
+                    rbl.IsInDayOnly = true;
+                    if (string.IsNullOrEmpty(firstBlockId))
+                        firstBlockId = rbl.Id;
+                    else
+                        rbl.RepetitiveSourceBlockId = firstBlockId;
 
-                        yield return rbl;
-                    }
+                    yield return rbl;
+                }
+                */
+                    if (string.IsNullOrEmpty(firstBlockId))
+                        firstBlockId = rblock.Id;
+
+                    yield return rblock;
                     tmp = tmp.AddDays(1);
                 }
             }
@@ -609,7 +628,7 @@ namespace VEDriversLite.EntitiesBlocks.PVECalculations
             if (end < start)
                 throw new Exception("Wrong input of the start and end. End cannot be earlier than start.");
 
-            var block = new BaseRepetitiveBlock();
+            var block = new BaseBlock();
 
             start = start.AddHours(-start.Hour).AddMinutes(-start.Minute).AddSeconds(-start.Second);
             end = end.AddHours(-end.Hour).AddMinutes(-end.Minute).AddSeconds(-end.Second);
@@ -652,6 +671,7 @@ namespace VEDriversLite.EntitiesBlocks.PVECalculations
                                             null,
                                             parentId);
 
+                /*
                 if (rblock is IRepetitiveBlock rbl)
                 {
                     rbl.IsInDayOnly = true;
@@ -662,6 +682,12 @@ namespace VEDriversLite.EntitiesBlocks.PVECalculations
 
                     yield return rbl;
                 }
+                */
+                if (string.IsNullOrEmpty(firstBlockId))
+                    firstBlockId = rblock.Id;
+                
+                yield return rblock;
+
                 tmp = tmp.AddDays(1);
             }
         }
@@ -686,7 +712,7 @@ namespace VEDriversLite.EntitiesBlocks.PVECalculations
             if (end < start)
                 throw new Exception("Wrong input of the start and end. End cannot be earlier than start.");
 
-            var block = new BaseRepetitiveBlock();
+            var block = new BaseBlock();
 
             start = start.AddHours(-start.Hour).AddMinutes(-start.Minute).AddSeconds(-start.Second);
             end = end.AddHours(-end.Hour).AddMinutes(-end.Minute).AddSeconds(-end.Second);
@@ -721,6 +747,7 @@ namespace VEDriversLite.EntitiesBlocks.PVECalculations
                                             null,
                                             parentId);
 
+                /*
                 if (rblock is IRepetitiveBlock rbl)
                 {
                     rbl.IsInDayOnly = true;
@@ -731,6 +758,11 @@ namespace VEDriversLite.EntitiesBlocks.PVECalculations
 
                     yield return rbl;
                 }
+                */
+                if (string.IsNullOrEmpty(firstBlockId))
+                    firstBlockId = rblock.Id;
+
+                yield return rblock;
 
                 tmp = tmp.Add(ts);
                 ts = BlockHelpers.GetTimeSpanBasedOntimeframe(timeframe, tmp);
@@ -763,7 +795,7 @@ namespace VEDriversLite.EntitiesBlocks.PVECalculations
             if (end < start)
                 throw new Exception("Wrong input of the start and end. End cannot be earlier than start.");
 
-            var block = new BaseRepetitiveBlock();
+            var block = new BaseBlock();
 
             var sourceId = Id;
             if (options.TryGetValue("sourceId", out var sid))
@@ -825,16 +857,22 @@ namespace VEDriversLite.EntitiesBlocks.PVECalculations
                                             null,
                                             parentId);
 
+                /*
                 if (rblock is IRepetitiveBlock rbl)
                 {
                     rbl.IsInDayOnly = true;
                     if (string.IsNullOrEmpty(firstBlockId))
-                        firstBlockId = rblock.Id;
+                        firstBlockId = rbl.Id;
                     else
                         rbl.RepetitiveSourceBlockId = firstBlockId;
 
                     yield return rbl;
                 }
+                */
+                if (string.IsNullOrEmpty(firstBlockId))
+                    firstBlockId = rblock.Id;
+
+                yield return rblock;
 
                 tmp = tmp.Add(ts);
                 ts = BlockHelpers.GetTimeSpanBasedOntimeframe(timeframe, tmp);
