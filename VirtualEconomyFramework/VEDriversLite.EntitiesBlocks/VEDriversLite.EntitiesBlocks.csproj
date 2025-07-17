@@ -5,7 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 	  <PackageId>VEFramework.VEDriversLite.EntitiesBlocks</PackageId>
-	  <Version>0.4.5</Version>
+	  <Version>0.4.6</Version>
 	  <Authors>fyziktom</Authors>
 	  <Company>VEFramework</Company>
 	  <Description>.NET drivers for calculation of the entities and its time based blocks with specfic amount.</Description>
@@ -15,8 +15,7 @@
 	  <PackageTags>VEFramework, Blocks, Entities, Energy, Data, Air, Finance, TimePlans, Model, API, NFT, NFTs, Blockchain, eCommerce, dApps</PackageTags>
 	  <Copyright>fyziktom</Copyright>
 	  <PackageReleaseNotes>
-		  - Create IRepetitiveBlock and simplified IBlock
-      - Can be breaking changes if you use Repetitive block functions
+		  - Added JSON properties names for IBlock
 	  </PackageReleaseNotes>
 	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace VEDriversLite.EntitiesBlocks.Blocks
@@ -11,38 +12,47 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
         /// <summary>
         /// Unique identifier of the block
         /// </summary>
+        [JsonPropertyName("id")]
         public string Id { get; set; } = string.Empty;
         /// <summary>
         /// Name of the block
         /// </summary>
+        [JsonPropertyName("name")]
         public string Name { get; set; } = string.Empty;
         /// <summary>
         /// Descrioption of the block
         /// </summary>
+        [JsonPropertyName("desc")]
         public string Description { get; set; } = string.Empty;
         /// <summary>
         /// Id of the source which created this block
         /// </summary>
+        [JsonPropertyName("srcId")]
         public string SourceId { get; set; } = string.Empty;
         /// <summary>
         /// Parent Id of the block
         /// </summary>
+        [JsonPropertyName("parId")]
         public string ParentId { get; set; } = string.Empty;
         /// <summary>
         /// Alocation Scheme Id
         /// </summary>
+        [JsonPropertyName("allocId")]
         public string AllocationSchemeId { get; set; } = string.Empty;
         /// <summary>
         /// Block type - real block, simulation
         /// </summary>
+        [JsonPropertyName("type")]
         public BlockType Type { get; set; } = BlockType.Simulated;
         /// <summary>
         /// Define if the block has been created or consumed
         /// </summary>
+        [JsonPropertyName("dir")]
         public BlockDirection Direction { get; set; } = BlockDirection.Created;
         /// <summary>
         /// Start time of this block
         /// </summary>
+        [JsonPropertyName("start")]
         public DateTime StartTime
         {
             get => _startTime;
@@ -56,6 +66,7 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
         /// <summary>
         /// Time Frame of the block, it means the time unit related to the amount
         /// </summary>
+        [JsonPropertyName("frame")]
         public TimeSpan Timeframe
         {
             get => _timeFrame;
@@ -69,11 +80,13 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
         /// <summary>
         /// End time of this block, calculated from Starttime and timeframe
         /// </summary>
+        [JsonPropertyName("end")]
         public DateTime EndTime { get => StartTime + Timeframe; }
 
         /// <summary>
         /// Amount, for example energy in kWh consumed over whole timeframe
         /// </summary>
+        [JsonPropertyName("amt")]
         public double Amount
         {
             get => _amount;
@@ -87,25 +100,30 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
         /// <summary>
         /// Flag for the block which has been already used
         /// </summary>
+        [JsonPropertyName("used")]
         public bool Used { get; set; } = false;
 
         /// <summary>
         /// Last change of the parameters of the block
         /// </summary>
+        [JsonPropertyName("changed")]
         public DateTime LastChange { get; set; } = DateTime.UtcNow;
 
         /// <summary>
         /// Average Amount per second, for example energy power consumption per second = kWs
         /// </summary>
-        public double AvgConsumptionPerSecond { get => Amount / (EndTime - StartTime).TotalSeconds; }
+        [JsonPropertyName("avgPerS")]
+        public double AvgConsumptionPerSecond { get => (EndTime - StartTime).TotalSeconds != 0 ? Amount / (EndTime - StartTime).TotalSeconds : 0; }
         /// <summary>
         /// Average Amount per hour, for example energy power consumption per hour = kWh
         /// </summary>
-        public double AvgConsumptionPerHour { get => Amount / (EndTime - StartTime).TotalHours; }
+        [JsonPropertyName("avgPerH")]
+        public double AvgConsumptionPerHour { get => (EndTime - StartTime).TotalHours != 0 ? Amount / (EndTime - StartTime).TotalHours : 0; }
         /// <summary>
         /// Tarrif applied during the block
         /// For example LowTarrif, HighTarrif, etc.
         /// </summary>
+        [JsonPropertyName("tar")]
         public int Tarrif { get; set; } = 0;
 
         /// <summary>

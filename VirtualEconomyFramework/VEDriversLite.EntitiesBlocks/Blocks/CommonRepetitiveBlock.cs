@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace VEDriversLite.EntitiesBlocks.Blocks
@@ -11,71 +12,88 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
         /// <summary>
         /// Unique identifier of the block
         /// </summary>
+        [JsonPropertyName("id")]
         public string Id { get; set; } = string.Empty;
         /// <summary>
         /// Name of the block
         /// </summary>
+        [JsonPropertyName("name")]
         public string Name { get; set; } = string.Empty;
         /// <summary>
         /// Descrioption of the block
         /// </summary>
+        [JsonPropertyName("desc")]
         public string Description { get; set; } = string.Empty;
         /// <summary>
         /// Id of the source which created this block
         /// </summary>
+        [JsonPropertyName("srcId")]
         public string SourceId { get; set; } = string.Empty;
         /// <summary>
         /// Parent Id of the block
         /// </summary>
+        [JsonPropertyName("parId")]
         public string ParentId { get; set; } = string.Empty;
         /// <summary>
         /// Alocation Scheme Id
         /// </summary>
+        [JsonPropertyName("allocId")]
         public string AllocationSchemeId { get; set; } = string.Empty;
         /// <summary>
         /// Set when this block is parent of some repetitive blocks group.
         /// It means based on this block other was created and refers to its Id
         /// </summary>
+        [JsonPropertyName("isRepSrc")]
         public bool IsRepetitiveSource { get; set; } = false;
         /// <summary>
         /// First Block of repetitive blocks Id
         /// </summary>
+        [JsonPropertyName("repSrcBId")]
         public string RepetitiveSourceBlockId { get; set; } = string.Empty;
         /// <summary>
         /// DataProfile Id for creating repetitive line
         /// </summary>
+        [JsonPropertyName("repSrcDatProfId")]
         public string RepetitiveSourceDataProfileId { get; set; } = string.Empty;
         /// <summary>
         /// Indicate if this block is related to some repetitive block
         /// </summary>
+        [JsonPropertyName("isRepCh")]
         public bool IsRepetitiveChild { get; set; } //=> !string.IsNullOrEmpty(RepetitiveSourceBlockId); }
         /// <summary>
         /// Indicate if the block fits in one day period (24h and between 0:00 - 24:00)
         /// </summary>
+        [JsonPropertyName("isInDayOnly")]
         public bool IsInDayOnly { get; set; } = false;
         /// <summary>
         /// Indicate if the block is repetitive with the specified off time between blocks
         /// </summary>
+        [JsonPropertyName("isOffPeriodRep")]
         public bool IsOffPeriodRepetitive { get; set; } = false;
         /// <summary>
         /// Indicate if repetitive block is only in week days
         /// </summary>
+        [JsonPropertyName("justInWeek")]
         public bool JustInWeek { get; set; } = false;
         /// <summary>
         /// Indicate if repetitive block is only in weekend days
         /// </summary>
+        [JsonPropertyName("justInWeekends")]
         public bool JustInWeekends { get; set; } = false;
         /// <summary>
         /// Block type - real block, simulation
         /// </summary>
+        [JsonPropertyName("type")]
         public BlockType Type { get; set; } = BlockType.Simulated;
         /// <summary>
         /// Define if the block has been created or consumed
         /// </summary>
+        [JsonPropertyName("dir")]
         public BlockDirection Direction { get; set; } = BlockDirection.Created;
         /// <summary>
         /// Start time of this block
         /// </summary>
+        [JsonPropertyName("start")]
         public DateTime StartTime
         {
             get => _startTime;
@@ -89,6 +107,7 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
         /// <summary>
         /// Time Frame of the block, it means the time unit related to the amount
         /// </summary>
+        [JsonPropertyName("frame")]
         public TimeSpan Timeframe
         {
             get => _timeFrame;
@@ -102,11 +121,13 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
         /// <summary>
         /// End time of this block, calculated from Starttime and timeframe
         /// </summary>
+        [JsonPropertyName("end")]
         public DateTime EndTime { get => StartTime + Timeframe; }
 
         /// <summary>
         /// First time of run of the repetitive block
         /// </summary>
+        [JsonPropertyName("repFirst")]
         public DateTime? RepetitiveFirstRun
         {
             get => _repetitiveFirstRun;
@@ -120,6 +141,7 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
         /// <summary>
         /// Last time of run of repetitive block
         /// </summary>
+        [JsonPropertyName("repEnd")]
         public DateTime? RepetitiveEndRun
         {
             get => _repetitiveEndRun;
@@ -133,6 +155,7 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
         /// <summary>
         /// Off period between the blocks
         /// </summary>
+        [JsonPropertyName("offPeriod")]
         public TimeSpan? OffPeriod
         {
             get => _offPeriod;
@@ -147,6 +170,7 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
         /// <summary>
         /// Amount, for example energy in kWh consumed over whole timeframe
         /// </summary>
+        [JsonPropertyName("amt")]
         public double Amount
         {
             get => _amount;
@@ -160,25 +184,30 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
         /// <summary>
         /// Flag for the block which has been already used
         /// </summary>
+        [JsonPropertyName("used")]
         public bool Used { get; set; } = false;
 
         /// <summary>
         /// Last change of the parameters of the block
         /// </summary>
+        [JsonPropertyName("changed")]
         public DateTime LastChange { get; set; } = DateTime.UtcNow;
 
         /// <summary>
         /// Average Amount per second, for example energy power consumption per second = kWs
         /// </summary>
+        [JsonPropertyName("avgPerS")]
         public double AvgConsumptionPerSecond { get => Amount / (EndTime - StartTime).TotalSeconds; }
         /// <summary>
         /// Average Amount per hour, for example energy power consumption per hour = kWh
         /// </summary>
+        [JsonPropertyName("avgPerH")]
         public double AvgConsumptionPerHour { get => Amount / (EndTime - StartTime).TotalHours; }
         /// <summary>
         /// Tarrif applied during the block
         /// For example LowTarrif, HighTarrif, etc.
         /// </summary>
+        [JsonPropertyName("tar")]
         public int Tarrif { get; set; } = 0;
 
         /// <summary>
