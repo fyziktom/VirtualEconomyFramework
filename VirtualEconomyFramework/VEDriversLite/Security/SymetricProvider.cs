@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-#if NET8_0_OR_GREATER
+#if NET9_0_OR_GREATER
 using Microsoft.JSInterop;
 #endif
 
