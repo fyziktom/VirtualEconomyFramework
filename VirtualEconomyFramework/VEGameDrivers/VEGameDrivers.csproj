@@ -16,10 +16,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\VEDrivers\VEDrivers.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Include="..\..\License\license.txt">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
