@@ -32,8 +32,8 @@
   </ItemGroup>
   
   <PropertyGroup>
-    <DefineConstants>$(DefineConstants);WASM</DefineConstants>
-</PropertyGroup>
+    <DefineConstants>$(DefineConstants);WASM_NO</DefineConstants>
+  </PropertyGroup>
     
   <PropertyGroup>
     <DocumentationFile></DocumentationFile>

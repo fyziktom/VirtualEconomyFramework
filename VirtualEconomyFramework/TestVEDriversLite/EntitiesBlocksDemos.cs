@@ -441,17 +441,17 @@ namespace TestVEDriversLite
             FileHelpers.AppendLineToTextFile(header, filename);
             for (var i = 0; i < bilance.Count; i++)
             {
-                var line = $"{bilance[i].StartTime.ToString("yyyy:MM:dd")}\t" +
-                           $"{bilance[i].StartTime.ToString("hh:mm:ss")}\t" +
-                           $"{bilance[i].EndTime.ToString("hh:mm:ss")}\t" +
-                           $"{Math.Round(bilance[i].Amount,2)}\t" +
-                           $"{Math.Round(consumption[i].Amount,2)}\t" +
-                           $"{Math.Round(production[i].Amount,2)}\t" +
-                           $"{Math.Round(consumptionOfRooms[i].Amount,2)}\t" +
-                           $"{Math.Round(consumptionOfOffices[i].Amount,2)}\t" +
-                           $"{Math.Round(consumptionOfShared[i].Amount,2)}\t" +
-                           $"{Math.Round(consumptionOfLaundry[i].Amount,2)}\t" +
-                           $"{Math.Round(consumptionOfMosquitoTraps[i].Amount,2)}";
+                var line = $"{bilance.ElementAt(i).StartTime.ToString("yyyy:MM:dd")}\t" +
+                           $"{bilance.ElementAt(i).StartTime.ToString("hh:mm:ss")}\t" +
+                           $"{bilance.ElementAt(i).EndTime.ToString("hh:mm:ss")}\t" +
+                           $"{Math.Round(bilance.ElementAt(i).Amount,2)}\t" +
+                           $"{Math.Round(consumption.ElementAt(i).Amount,2)}\t" +
+                           $"{Math.Round(production.ElementAt(i).Amount,2)}\t" +
+                           $"{Math.Round(consumptionOfRooms.ElementAt(i).Amount,2)}\t" +
+                           $"{Math.Round(consumptionOfOffices.ElementAt(i).Amount,2)}\t" +
+                           $"{Math.Round(consumptionOfShared.ElementAt(i).Amount,2)}\t" +
+                           $"{Math.Round(consumptionOfLaundry.ElementAt(i).Amount,2)}\t" +
+                           $"{Math.Round(consumptionOfMosquitoTraps.ElementAt(i).Amount,2)}";
 
                 FileHelpers.AppendLineToTextFile(line, filename);
             }
@@ -467,7 +467,7 @@ namespace TestVEDriversLite
             /////////////////////////////////////////////////////
         }
 
-        private static async Task DrawBlocks(string heading, List<IBlock> blocks, DateTime start, DateTime end)
+        private static async Task DrawBlocks(string heading, IReadOnlyCollection<IBlock> blocks, DateTime start, DateTime end)
         {
             await Console.Out.WriteLineAsync($"-------------------{heading}--------------------:");
             await Console.Out.WriteLineAsync("Results:");

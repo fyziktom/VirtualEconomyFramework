@@ -72,7 +72,7 @@ namespace VEFrameworkUnitTest.Cryptography
             var key = await ekey.GetEncryptedKey();
             Assert.Equal(FakeDataGenerator.DefaultDto.BasicMessage, key);
             ekey.Lock();
-            var nkey = ekey.GetEncryptedKey();
+            var nkey = await ekey.GetEncryptedKey();
             Assert.Null(nkey);
         }
 

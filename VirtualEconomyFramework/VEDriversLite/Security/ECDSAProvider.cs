@@ -435,7 +435,7 @@ namespace VEDriversLite.Security
 
             try
             {
-                var ebytes = await SymetricProvider.EncryptBytes(key.Item2, inputBytes);
+                var ebytes = await SymetricProvider.EncryptBytes(Encoding.UTF8.GetBytes(key.Item2), inputBytes);
                 return (true, ebytes);
             }
             catch (Exception ex)
@@ -561,7 +561,7 @@ namespace VEDriversLite.Security
 
             try
             {
-                var bytes = await SymetricProvider.DecryptBytes(key.Item2, ebytes);
+                var bytes = await SymetricProvider.DecryptBytes(Encoding.UTF8.GetBytes(key.Item2), ebytes);
                 return (true, bytes);
             }
             catch (Exception ex)

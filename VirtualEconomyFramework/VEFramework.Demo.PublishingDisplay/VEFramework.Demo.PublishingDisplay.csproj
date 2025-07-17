@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
 	<BlazorCacheBootResources>false</BlazorCacheBootResources>
@@ -9,13 +9,13 @@
 
   <ItemGroup>
     <PackageReference Include="AsyncEnumerator" Version="4.0.2" />
-    <PackageReference Include="Blazorise" Version="1.1.1" />
-    <PackageReference Include="Blazorise.Bootstrap" Version="1.1.1" />
-    <PackageReference Include="Blazorise.Icons.FontAwesome" Version="1.1.1" />
+    <PackageReference Include="Blazorise" Version="1.6.0" />
+    <PackageReference Include="Blazorise.Bootstrap" Version="1.6.0" />
+    <PackageReference Include="Blazorise.Icons.FontAwesome" Version="1.6.0" />
     <PackageReference Include="Ipfs.Http.Client" Version="0.33.0" />
     <PackageReference Include="Markdig" Version="0.30.4" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="7.0.5" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="7.0.5" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.18" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.18" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>
