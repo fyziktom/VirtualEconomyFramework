@@ -66,42 +66,45 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
                         {
                             var ent = item.Fill();
 
-                            foreach (var rblock in ent.Blocks.Values.Where(b => b.IsRepetitiveSource))
+                            foreach (var rb in ent.Blocks.Values.Where(b => b is IRepetitiveBlock br && br.IsRepetitiveSource))
                             {
-                                if (rblock.IsOffPeriodRepetitive)
+                                if (rb is IRepetitiveBlock rblock)
                                 {
-                                    var ents = BlockHelpers.CreateRepetitiveBlock(rblock.RepetitiveFirstRun.Value,
-                                                                                  rblock.RepetitiveEndRun.Value,
-                                                                                  rblock.StartTime,
-                                                                                  rblock.EndTime,
-                                                                                  rblock.OffPeriod.Value,
-                                                                                  rblock.Amount,
-                                                                                  rblock.SourceId,
-                                                                                  rblock.ParentId,
-                                                                                  rblock.Direction,
-                                                                                  rblock.Type,
-                                                                                  rblock.Name,
-                                                                                  rblock.Id);
-                                    ents.RemoveAt(0);
-                                    ent.AddBlocks(ents);
-                                }
-                                else if (rblock.IsInDayOnly)
-                                {
-                                    var ents = BlockHelpers.CreateRepetitiveDayBlock(rblock.RepetitiveFirstRun.Value,
-                                                                                     rblock.RepetitiveEndRun.Value,
-                                                                                     rblock.StartTime,
-                                                                                     rblock.EndTime,
-                                                                                     rblock.Amount,
-                                                                                     rblock.SourceId,
-                                                                                     rblock.ParentId,
-                                                                                     rblock.Direction,
-                                                                                     rblock.Type,
-                                                                                     rblock.JustInWeek,
-                                                                                     rblock.JustInWeekends,
-                                                                                     rblock.Name,
-                                                                                     rblock.Id);
-                                    ents.RemoveAt(0);
-                                    ent.AddBlocks(ents);
+                                    if (rblock.IsOffPeriodRepetitive)
+                                    {
+                                        var ents = BlockHelpers.CreateRepetitiveBlock(rblock.RepetitiveFirstRun.Value,
+                                                                                      rblock.RepetitiveEndRun.Value,
+                                                                                      rblock.StartTime,
+                                                                                      rblock.EndTime,
+                                                                                      rblock.OffPeriod.Value,
+                                                                                      rblock.Amount,
+                                                                                      rblock.SourceId,
+                                                                                      rblock.ParentId,
+                                                                                      rblock.Direction,
+                                                                                      rblock.Type,
+                                                                                      rblock.Name,
+                                                                                      rblock.Id);
+                                        ents.RemoveAt(0);
+                                        ent.AddBlocks(ents);
+                                    }
+                                    else if (rblock.IsInDayOnly)
+                                    {
+                                        var ents = BlockHelpers.CreateRepetitiveDayBlock(rblock.RepetitiveFirstRun.Value,
+                                                                                         rblock.RepetitiveEndRun.Value,
+                                                                                         rblock.StartTime,
+                                                                                         rblock.EndTime,
+                                                                                         rblock.Amount,
+                                                                                         rblock.SourceId,
+                                                                                         rblock.ParentId,
+                                                                                         rblock.Direction,
+                                                                                         rblock.Type,
+                                                                                         rblock.JustInWeek,
+                                                                                         rblock.JustInWeekends,
+                                                                                         rblock.Name,
+                                                                                         rblock.Id);
+                                        ents.RemoveAt(0);
+                                        ent.AddBlocks(ents);
+                                    }
                                 }
                             }
 
@@ -115,42 +118,45 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
                         {
                             var ent = item.Fill();
 
-                            foreach (var rblock in ent.Blocks.Values.Where(b => b.IsRepetitiveSource))
+                            foreach (var rb in ent.Blocks.Values.Where(b => b is IRepetitiveBlock br && br.IsRepetitiveSource))
                             {
-                                if (rblock.IsOffPeriodRepetitive)
+                                if (rb is IRepetitiveBlock rblock)
                                 {
-                                    var ents = BlockHelpers.CreateRepetitiveBlock(rblock.RepetitiveFirstRun.Value,
-                                                                                  rblock.RepetitiveEndRun.Value,
-                                                                                  rblock.StartTime,
-                                                                                  rblock.EndTime,
-                                                                                  rblock.OffPeriod.Value,
-                                                                                  rblock.Amount,
-                                                                                  rblock.SourceId,
-                                                                                  rblock.ParentId,
-                                                                                  rblock.Direction,
-                                                                                  rblock.Type,
-                                                                                  rblock.Name,
-                                                                                  rblock.Id);
-                                    ents.RemoveAt(0);
-                                    ent.AddBlocks(ents);
-                                }
-                                else if (rblock.IsInDayOnly)
-                                {
-                                    var ents = BlockHelpers.CreateRepetitiveDayBlock(rblock.RepetitiveFirstRun.Value,
-                                                                                     rblock.RepetitiveEndRun.Value,
-                                                                                     rblock.StartTime,
-                                                                                     rblock.EndTime,
-                                                                                     rblock.Amount,
-                                                                                     rblock.SourceId,
-                                                                                     rblock.ParentId,
-                                                                                     rblock.Direction,
-                                                                                     rblock.Type,
-                                                                                     rblock.JustInWeek,
-                                                                                     rblock.JustInWeekends,
-                                                                                     rblock.Name,
-                                                                                     rblock.Id);
-                                    ents.RemoveAt(0);
-                                    ent.AddBlocks(ents);
+                                    if (rblock.IsOffPeriodRepetitive)
+                                    {
+                                        var ents = BlockHelpers.CreateRepetitiveBlock(rblock.RepetitiveFirstRun.Value,
+                                                                                      rblock.RepetitiveEndRun.Value,
+                                                                                      rblock.StartTime,
+                                                                                      rblock.EndTime,
+                                                                                      rblock.OffPeriod.Value,
+                                                                                      rblock.Amount,
+                                                                                      rblock.SourceId,
+                                                                                      rblock.ParentId,
+                                                                                      rblock.Direction,
+                                                                                      rblock.Type,
+                                                                                      rblock.Name,
+                                                                                      rblock.Id);
+                                        ents.RemoveAt(0);
+                                        ent.AddBlocks(ents);
+                                    }
+                                    else if (rblock.IsInDayOnly)
+                                    {
+                                        var ents = BlockHelpers.CreateRepetitiveDayBlock(rblock.RepetitiveFirstRun.Value,
+                                                                                         rblock.RepetitiveEndRun.Value,
+                                                                                         rblock.StartTime,
+                                                                                         rblock.EndTime,
+                                                                                         rblock.Amount,
+                                                                                         rblock.SourceId,
+                                                                                         rblock.ParentId,
+                                                                                         rblock.Direction,
+                                                                                         rblock.Type,
+                                                                                         rblock.JustInWeek,
+                                                                                         rblock.JustInWeekends,
+                                                                                         rblock.Name,
+                                                                                         rblock.Id);
+                                        ents.RemoveAt(0);
+                                        ent.AddBlocks(ents);
+                                    }
                                 }
                             }
 
@@ -190,7 +196,7 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
                     if (sc == null) continue;
                     s.Load(sc);
 
-                    var repetitiveToRemove = src.Blocks.Values.Where(b => b.IsRepetitiveChild).Select(b => b.Id).ToList();
+                    var repetitiveToRemove = src.Blocks.Values.Where(b => b is IRepetitiveBlock br && br.IsRepetitiveChild).Select(b => b.Id).ToList();
                     foreach (var block in repetitiveToRemove)
                     {
                         if (s.Blocks.ContainsKey(block))
@@ -206,7 +212,7 @@ namespace VEDriversLite.EntitiesBlocks.Handlers
                     var cs = cns as IConsumer;
                     if (cs == null) continue;
                     c.Load(cs);
-                    var repetitiveToRemove = cns.Blocks.Values.Where(b => b.IsRepetitiveChild).Select(b => b.Id).ToList();
+                    var repetitiveToRemove = cns.Blocks.Values.Where(b => b is IRepetitiveBlock br && br.IsRepetitiveChild).Select(b => b.Id).ToList();
                     foreach (var block in repetitiveToRemove)
                     {
                         if (c.Blocks.ContainsKey(block))

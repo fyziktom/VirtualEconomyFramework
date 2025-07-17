@@ -135,7 +135,7 @@ namespace VEFrameworkUnitTest.BlockEntities
         [Fact]
         public void GetBlockConfigDto()
         {
-            var block = new BaseBlock();
+            var block = new BaseRepetitiveBlock();
             var Id = "1";
             var parentId = "123";
             var sourceId = "1234";
@@ -181,7 +181,7 @@ namespace VEFrameworkUnitTest.BlockEntities
             Assert.True(dto.JustInWeek);
             Assert.True(dto.JustInWeekends);
 
-            var rblock = dto.GetBlockFromDto();
+            var rblock = dto.GetRepetitiveBlockFromDto();
 
             Assert.Equal(Id, rblock.Id);
             Assert.Equal(parentId, rblock.ParentId);

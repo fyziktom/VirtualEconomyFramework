@@ -258,7 +258,7 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
                 if (!string.IsNullOrEmpty(starthash))
                     firstBlockId = starthash;
 
-                result.Add(new BaseBlock()
+                result.Add(new BaseRepetitiveBlock()
                 {
                     Id = counter == 0 && !string.IsNullOrEmpty(starthash) ? starthash : hash,
                     Name = name != null ? name : string.Empty,
@@ -341,7 +341,7 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
                     if (!string.IsNullOrEmpty(starthash))
                         firstBlockId = starthash;
 
-                    result.Add(new BaseBlock()
+                    result.Add(new BaseRepetitiveBlock()
                     {
                         Id = counter == 0 && !string.IsNullOrEmpty(starthash) ? starthash : hash,
                         Name = name != null ? name : string.Empty,
@@ -499,7 +499,7 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
                     Amount = PVEBasicYearProfile[date.Month - 1] * PVEPeakPower,
                     //IsRepetitiveSource = counter == 0 ? true : false,
                     //IsRepetitiveChild = counter > 0 ? true : false,
-                    RepetitiveSourceBlockId = counter > 0 ? firstBlockId : string.Empty,
+                    //??? RepetitiveSourceBlockId = counter > 0 ? firstBlockId : string.Empty,
                     //IsOffPeriodRepetitive = true,
                     //RepetitiveFirstRun = counter == 0 ? date : null,
                     //RepetitiveEndRun = counter == 0 ? date.AddYears(lengthinYears) : null,
@@ -579,7 +579,7 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
                     Amount = profile[date.Month - 1] * PVEPeakPower / DateTime.DaysInMonth(date.Year, date.Month),
                     //IsRepetitiveSource = counter == 0 ? true : false,
                     //IsRepetitiveChild = counter > 0 ? true : false,
-                    RepetitiveSourceBlockId = counter > 0 ? firstBlockId : string.Empty,
+                    //??? RepetitiveSourceBlockId = counter > 0 ? firstBlockId : string.Empty,
                     //IsOffPeriodRepetitive = false,
                     //IsInDayOnly = true,
                     //RepetitiveFirstRun = counter == 0 ? date : null,

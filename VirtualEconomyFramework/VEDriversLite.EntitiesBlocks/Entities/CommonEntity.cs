@@ -273,7 +273,7 @@ namespace VEDriversLite.EntitiesBlocks.Entities
                     blk = null;
             }
 
-            var blocksToRemove = Blocks.Values.Where(b => b.RepetitiveSourceBlockId == firstBlockId);
+            var blocksToRemove = Blocks.Values.Where(b => b is IRepetitiveBlock br && br.RepetitiveSourceBlockId == firstBlockId);
             if (blocksToRemove != null)
             {
                 foreach (var block in blocksToRemove)
@@ -480,6 +480,21 @@ namespace VEDriversLite.EntitiesBlocks.Entities
             return Blocks.Values.OrderBy(b => b.StartTime);
         }
 
+        public virtual IEnumerable<IRepetitiveBlock> GetRepetitiveBlocks(ICollection<BlockDirection> justThisDirections = null,
+                                              ICollection<BlockType> justThisType = null)
+        {
+            var blocks = Blocks.Values.Where(b => b is IRepetitiveBlock).Select(b => (IRepetitiveBlock)b);
+
+            if (justThisDirections != null && justThisDirections.Count > 0 && (justThisType == null || justThisType != null && justThisType.Count == 0))
+                return blocks.Where(b => justThisDirections.Contains(b.Direction)).OrderBy(b => b.StartTime);
+            else if (justThisType != null && justThisType.Count > 0 && (justThisDirections == null || justThisDirections != null && justThisDirections.Count == 0))
+                return blocks.Where(b => justThisType.Contains(b.Type)).OrderBy(b => b.StartTime);
+            else if (justThisType != null && justThisType.Count > 0 && justThisDirections != null && justThisDirections.Count > 0)
+                return blocks.Where(b => justThisType.Contains(b.Type) && justThisDirections.Contains(b.Direction)).OrderBy(b => b.StartTime);
+
+            return blocks.OrderBy(b => b.StartTime);
+        }
+
         /// <summary>
         /// Get blocks filtered based on Directions or Types. This function needs input blocks list
         /// </summary>
@@ -605,7 +620,8 @@ namespace VEDriversLite.EntitiesBlocks.Entities
                                                                  bool takeConsumptionAsInvert = false,
                                                                  ICollection<BlockDirection> justThisDirections = null,
                                                                  ICollection<BlockType> justThisType = null,
-                                                                 bool addSimulators = true)
+                                                                 bool addSimulators = true,
+                                                                 bool withRepetitive = false)
         {
             var result = GetResultBlocks(timeframesteps, 
                                          starttime, 
@@ -616,14 +632,19 @@ namespace VEDriversLite.EntitiesBlocks.Entities
                                          justThisType);
             
             var invert = 1;
-            var blocks = GetBlocks(justThisDirections, justThisType).Where(b => !b.IsRepetitiveSource &&
-                                                                                !b.IsRepetitiveChild &&
-                                                                                !b.IsOffPeriodRepetitive &&
-                                                                                b.StartTime < endtime)
-                                                                    .OrderBy(b => b.StartTime);//.ToList();
-                        
-            var repblocksresult = GetSummedValuesOfRepetitiveBlocks(timeframesteps, starttime, endtime, takeConsumptionAsInvert, justThisDirections, justThisType, false);
-            var cblocks = blocks.Concat(repblocksresult);
+
+
+            var blocks = GetBlocks(justThisDirections, justThisType).Where(b => b.StartTime < endtime)
+                                                                    .OrderBy(b => b.StartTime);
+
+            IEnumerable<IBlock> cblocks = blocks;
+
+            if (withRepetitive)
+            {
+                var repblocksresult = GetSummedValuesOfRepetitiveBlocks(timeframesteps, starttime, endtime, takeConsumptionAsInvert, justThisDirections, justThisType, false);
+
+                cblocks = blocks.Concat(repblocksresult);
+            }
 
             var counter = 0;
             foreach (var block in cblocks)
@@ -672,25 +693,34 @@ namespace VEDriversLite.EntitiesBlocks.Entities
         /// <param name="endtime">end date</param>
         /// <param name="takeConsumptionAsInvert">if this is set it will multiply "consumed" blocks with -1. Means consumption is negative in calculation</param>
         /// <returns></returns>
-        public virtual List<IBlock> GetSummedValuesOfRepetitiveBlocks(BlockTimeframe timeframesteps,
-                                                                          DateTime starttime,
-                                                                          DateTime endtime,
-                                                                          bool takeConsumptionAsInvert = false,
-                                                                          ICollection<BlockDirection> justThisDirections = null,
-                                                                          ICollection<BlockType> justThisType = null,
-                                                                          bool addSimulators = true)
+        public virtual List<IRepetitiveBlock> GetSummedValuesOfRepetitiveBlocks(BlockTimeframe timeframesteps,
+                                                                                DateTime starttime,
+                                                                                DateTime endtime,
+                                                                                bool takeConsumptionAsInvert = false,
+                                                                                ICollection<BlockDirection> justThisDirections = null,
+                                                                                ICollection<BlockType> justThisType = null,
+                                                                                bool addSimulators = true)
         {
-            var result = GetResultBlocks(timeframesteps, 
+            var resultb = GetResultBlocks(timeframesteps, 
                                          starttime, 
                                          endtime, 
                                          takeConsumptionAsInvert, 
                                          addSimulators,
                                          justThisDirections,
                                          justThisType);
-            
+
+            var result = new List<IRepetitiveBlock>();
+
+            foreach (var b in resultb)
+            {
+                var repblock = new BaseRepetitiveBlock();
+                repblock.Fill(b);
+                result.Add(repblock);
+            }
+
             var invert = 1;
 
-            var repetitiveBlocksSources = GetBlocks(justThisDirections, justThisType).Where(b => !b.IsRepetitiveChild && 
+            var repetitiveBlocksSources = GetRepetitiveBlocks(justThisDirections, justThisType).Where(b => !b.IsRepetitiveChild && 
                                                                                                   b.IsRepetitiveSource && 
                                                                                                   b.StartTime < endtime)
                                                                                      .OrderBy(b => b.StartTime).ToList();

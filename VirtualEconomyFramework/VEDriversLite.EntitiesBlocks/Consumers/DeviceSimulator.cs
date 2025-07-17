@@ -140,11 +140,11 @@ namespace VEDriversLite.EntitiesBlocks.Consumers
                                             null,
                                             parentId);
 
-                rblock.IsInDayOnly = true;
+                //rblock.IsInDayOnly = true;
                 if (string.IsNullOrEmpty(firstBlockId))
                     firstBlockId = rblock.Id;
-                else
-                    rblock.RepetitiveSourceBlockId = firstBlockId;
+                //else
+                    //rblock.RepetitiveSourceBlockId = firstBlockId;
 
                 yield return rblock;
 

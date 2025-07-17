@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace VEDriversLite.EntitiesBlocks.Blocks
 {
-    public abstract class CommonBlock : IBlock
+    public abstract class CommonRepetitiveBlock : IRepetitiveBlock
     {
         /// <summary>
         /// Unique identifier of the block
@@ -32,6 +32,39 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
         /// Alocation Scheme Id
         /// </summary>
         public string AllocationSchemeId { get; set; } = string.Empty;
+        /// <summary>
+        /// Set when this block is parent of some repetitive blocks group.
+        /// It means based on this block other was created and refers to its Id
+        /// </summary>
+        public bool IsRepetitiveSource { get; set; } = false;
+        /// <summary>
+        /// First Block of repetitive blocks Id
+        /// </summary>
+        public string RepetitiveSourceBlockId { get; set; } = string.Empty;
+        /// <summary>
+        /// DataProfile Id for creating repetitive line
+        /// </summary>
+        public string RepetitiveSourceDataProfileId { get; set; } = string.Empty;
+        /// <summary>
+        /// Indicate if this block is related to some repetitive block
+        /// </summary>
+        public bool IsRepetitiveChild { get; set; } //=> !string.IsNullOrEmpty(RepetitiveSourceBlockId); }
+        /// <summary>
+        /// Indicate if the block fits in one day period (24h and between 0:00 - 24:00)
+        /// </summary>
+        public bool IsInDayOnly { get; set; } = false;
+        /// <summary>
+        /// Indicate if the block is repetitive with the specified off time between blocks
+        /// </summary>
+        public bool IsOffPeriodRepetitive { get; set; } = false;
+        /// <summary>
+        /// Indicate if repetitive block is only in week days
+        /// </summary>
+        public bool JustInWeek { get; set; } = false;
+        /// <summary>
+        /// Indicate if repetitive block is only in weekend days
+        /// </summary>
+        public bool JustInWeekends { get; set; } = false;
         /// <summary>
         /// Block type - real block, simulation
         /// </summary>
@@ -70,6 +103,46 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
         /// End time of this block, calculated from Starttime and timeframe
         /// </summary>
         public DateTime EndTime { get => StartTime + Timeframe; }
+
+        /// <summary>
+        /// First time of run of the repetitive block
+        /// </summary>
+        public DateTime? RepetitiveFirstRun
+        {
+            get => _repetitiveFirstRun;
+            set
+            {
+                _repetitiveFirstRun = value;
+                LastChange = DateTime.UtcNow;
+            }
+        }
+        private DateTime? _repetitiveFirstRun = null;
+        /// <summary>
+        /// Last time of run of repetitive block
+        /// </summary>
+        public DateTime? RepetitiveEndRun
+        {
+            get => _repetitiveEndRun;
+            set
+            {
+                _repetitiveEndRun = value;
+                LastChange = DateTime.UtcNow;
+            }
+        }
+        private DateTime? _repetitiveEndRun = null;
+        /// <summary>
+        /// Off period between the blocks
+        /// </summary>
+        public TimeSpan? OffPeriod
+        {
+            get => _offPeriod;
+            set
+            {
+                _offPeriod = value;
+                LastChange = DateTime.UtcNow;
+            }
+        }
+        private TimeSpan? _offPeriod = null;
 
         /// <summary>
         /// Amount, for example energy in kWh consumed over whole timeframe
@@ -128,7 +201,7 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
                                string? description = null,
                                string? owner = null)
         {
-            var e = new BaseBlock();
+            var e = new BaseRepetitiveBlock();
             e.Id = Guid.NewGuid().ToString();
             e.Type = type;
             e.Direction = direction;

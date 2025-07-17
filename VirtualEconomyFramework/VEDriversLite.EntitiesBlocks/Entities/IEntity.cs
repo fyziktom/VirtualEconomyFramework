@@ -209,7 +209,8 @@ namespace VEDriversLite.EntitiesBlocks.Entities
                                              bool takeConsumptionAsInvert = false,
                                              ICollection<BlockDirection> justThisDirections = null,
                                              ICollection<BlockType> justThisType = null,
-                                             bool addSimulators = true);
+                                             bool addSimulators = true,
+                                             bool withRepetitive = false);
 
         /// <summary>
         /// Get list of the repetitive blocks based on setup timespan and step and specific timegrame
@@ -220,7 +221,7 @@ namespace VEDriversLite.EntitiesBlocks.Entities
         /// <param name="endtime">end date</param>
         /// <param name="takeConsumptionAsInvert">if this is set it will multiply "consumed" blocks with -1. Means consumption is negative in calculation</param>
         /// <returns></returns>
-        List<IBlock> GetSummedValuesOfRepetitiveBlocks(BlockTimeframe timeframesteps,
+        List<IRepetitiveBlock> GetSummedValuesOfRepetitiveBlocks(BlockTimeframe timeframesteps,
                                                       DateTime starttime,
                                                       DateTime endtime,
                                                       bool takeConsumptionAsInvert = false,

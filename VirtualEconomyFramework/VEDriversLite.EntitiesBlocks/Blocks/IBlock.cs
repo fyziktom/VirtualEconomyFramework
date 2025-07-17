@@ -69,39 +69,7 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
         /// Alocation Scheme Id
         /// </summary>
         string AllocationSchemeId { get; set; }
-        /// <summary>
-        /// Set when this block is parent of some repetitive blocks group.
-        /// It means based on this block other was created and refers to its Id
-        /// </summary>
-        bool IsRepetitiveSource { get; set; }
-        /// <summary>
-        /// First Block of repetitive blocks Id
-        /// </summary>
-        string RepetitiveSourceBlockId { get; set; }
-        /// <summary>
-        /// DataProfile Id for creating repetitive line
-        /// </summary>
-        string RepetitiveSourceDataProfileId { get; set; }
-        /// <summary>
-        /// Indicate if this block is related to some repetitive block
-        /// </summary>
-        bool IsRepetitiveChild { get; set; }
-        /// <summary>
-        /// Indicate if the block fits in one day period (24h and between 0:00 - 24:00)
-        /// </summary>
-        bool IsInDayOnly { get; set; }
-        /// <summary>
-        /// Indicate if the block is repetitive with the specified off time between blocks
-        /// </summary>
-        bool IsOffPeriodRepetitive { get; set; }
-        /// <summary>
-        /// Indicate if repetitive block is only in week days
-        /// </summary>
-        bool JustInWeek { get; set; }
-        /// <summary>
-        /// Indicate if repetitive block is only in weekend days
-        /// </summary>
-        bool JustInWeekends { get; set; }
+
         /// <summary>
         /// Block type - real block, simulation
         /// </summary>
@@ -122,18 +90,6 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
         /// End time of this block, calculated from Starttime and timeframe
         /// </summary>
         DateTime EndTime { get; }
-
-        /// <summary>
-        /// First time of run of the repetitive block
-        DateTime? RepetitiveFirstRun { get; set; }
-        /// <summary>
-        /// Last time of run of repetitive block
-        /// </summary>
-        DateTime? RepetitiveEndRun { get; set; }
-        /// <summary>
-        /// Off period between the blocks
-        /// </summary>
-        TimeSpan? OffPeriod { get; set; }
 
         /// <summary>
         /// Amount, for example of the energy in kWh consumed over whole timeframe

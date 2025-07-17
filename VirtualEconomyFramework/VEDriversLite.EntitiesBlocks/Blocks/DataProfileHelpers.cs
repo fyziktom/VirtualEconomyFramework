@@ -230,22 +230,44 @@ namespace VEDriversLite.EntitiesBlocks.Blocks
                     if (ts.Value.Hours < 0 || ts.Value.Minutes < 0 || ts.Value.Seconds < 0 || ts.Value.Days < 0)
                         ts = ts.Value.Negate();
 
-                    var b = new BaseBlock()
+                    IBlock? b = null;
+                    
+                    if (!string.IsNullOrEmpty(repetitiveSourceDataProfileId) || !string.IsNullOrEmpty(repetitiveParentId))
                     {
-                        Name = name,
-                        Description = description,
-                        RepetitiveSourceDataProfileId = repetitiveSourceDataProfileId,
-                        Amount = v,
-                        Direction = direction,
-                        ParentId = !string.IsNullOrEmpty(parentId) ? parentId : string.Empty,
-                        StartTime = k,
-                        Timeframe = (TimeSpan)(ts),
-                        Used = false,
-                        SourceId = sourceId,
-                        RepetitiveSourceBlockId = isChild ? repetitiveParentId : string.Empty,
-                        Type = type,
-                        Id = id
-                    };
+                        b = new BaseRepetitiveBlock()
+                        {
+                            Name = name,
+                            Description = description,
+                            RepetitiveSourceDataProfileId = repetitiveSourceDataProfileId,
+                            Amount = v,
+                            Direction = direction,
+                            ParentId = !string.IsNullOrEmpty(parentId) ? parentId : string.Empty,
+                            StartTime = k,
+                            Timeframe = (TimeSpan)(ts),
+                            Used = false,
+                            SourceId = sourceId,
+                            RepetitiveSourceBlockId = isChild ? repetitiveParentId : string.Empty,
+                            Type = type,
+                            Id = id
+                        };
+                    }
+                    else
+                    {
+                        b = new BaseBlock()
+                        {
+                            Name = name,
+                            Description = description,
+                            Amount = v,
+                            Direction = direction,
+                            ParentId = !string.IsNullOrEmpty(parentId) ? parentId : string.Empty,
+                            StartTime = k,
+                            Timeframe = (TimeSpan)(ts),
+                            Used = false,
+                            SourceId = sourceId,
+                            Type = type,
+                            Id = id
+                        };
+                    }
 
                     if (!isChild)
                         isChild = true;
