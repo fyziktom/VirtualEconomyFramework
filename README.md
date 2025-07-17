@@ -1,8 +1,11 @@
 [![VEDriversLite](https://img.shields.io/nuget/v/VEFramework.VEDriversLite?label=VEDriversLite)](https://www.nuget.org/packages/VEFramework.VEDriversLite/)
-[![VEBlazor](https://img.shields.io/nuget/v/VEFramework.VEBlazor?label=VEBlazor)](https://www.nuget.org/packages/VEFramework.VEBlazor/)
+[![VEBlazor](https://img.shields.io/nuget/v/VEFramework.VEBlazor?label=VEFramework.VEBlazor)](https://www.nuget.org/packages/VEFramework.VEBlazor/)
+[![VEBlazor](https://img.shields.io/nuget/v/VEFramework.VEDriversLite.EntitiesBlocks?label=VEFramework.VEDriversLite.EntitiesBlocks)](https://www.nuget.org/packages/VEFramework.VEDriversLite.EntitiesBlocks)
+[![VEBlazor](https://img.shields.io/nuget/v/VEFramework.VEBlazor.EntitiesBlocks?label=VEFramework.VEBlazor.EntitiesBlocks)](https://www.nuget.org/packages/VEFramework.VEBlazor.EntitiesBlocks)
 [![VEDriversLite.AI.OpenAI](https://img.shields.io/nuget/v/VEDriversLite.AI.OpenAI?label=VEDriversLite.AI.OpenAI)](https://www.nuget.org/packages/VEDriversLite.AI.OpenAI)
 [![VEBlazor.Editable](https://img.shields.io/nuget/v/VEFramework.VEBlazor.Editable?label=VEBlazor.Editable)](https://www.nuget.org/packages/VEFramework.VEBlazor.Editable/)
 [![VEDriversLite.NeblioAPI](https://img.shields.io/nuget/v/VEFramework.VEDriversLite.NeblioAPI?label=VEDriversLite.NeblioAPI)](https://www.nuget.org/packages/VEFramework.VEDriversLite.NeblioAPI/)
+
 
 # VEFramework
 
@@ -10,11 +13,17 @@ Virtual Economy framework zjednodušuje tvorbu Web3, blockchain, IoT a NFT aplik
 
 VEFramework je L2 vrstva nad prakticky kterýmkoliv blockchainem. Aktuálně na ukázku podporuje Neblio a Dogecoin.
 
-![Development with VEFramework](https://ve-framework.com/ipfs/QmVoMw53Vo2ZsbMYLwXjEuh2wkmVvWKkM1mrac7qdKosWs)
+VEFramework obsahuje také knihovnu [EntitiesBlocks](https://github.com/fyziktom/VirtualEconomyFramework/tree/main/VirtualEconomyFramework/VEDriversLite.EntitiesBlocks), kterou lze jednoduše použít pro výpočty energetických modelů. Knihovna má k dispozici i knihovnu UI komponent pro Blazor aplikace tu najdete [zde](https://github.com/fyziktom/VirtualEconomyFramework/tree/main/VirtualEconomyFramework/VEFramework.VEBlazor.EntitiesBlocks).
 
-![Account](https://ve-framework.com/ipfs/QmdKkks4xmkiy1jdMoWqroYDKC8NRa6u5VeurKHXcpxMrY)
 
-![NFTs](https://ve-framework.com/ipfs/QmdVy8ZozfEicFd4v8NKiUAeX1vn8QmLYCFYAuB9u7PUCJ)
+![VEFramework-struktura-knihoven](https://github.com/fyziktom/VirtualEconomyFramework/assets/78320021/2dd06892-8587-4c2f-86f0-9272dc12af34)
+
+![VEFramework-struktura-account](https://github.com/fyziktom/VirtualEconomyFramework/assets/78320021/2a60c1fc-7770-4b64-8e86-790dd77fc85d)
+
+![VEFramework-struktura-nfts](https://github.com/fyziktom/VirtualEconomyFramework/assets/78320021/38ebf6ad-35c0-4ac8-8e99-2d670c72a970)
+
+## Důležité upozornění!!!
+Od 1.12.2023 jsem musel vypnout/pozastavit podpůrný API server, který jsem provozoval na doméně ve-framework.com (IPFS node a API server). Nemůžu si nyní dovolit dál platit ze svých vlastních úspor provoz tohoto serveru (projekt jsem hradil z osobních prostředků a ty mně nyní dochází). Pokud seženu nějaký sponzoring, tak není problém server kdykoliv zapnout. Každý kdo chce používat nyní služby vázané na API a IPFS si může podle jednoduchého návodu nastavit vlastní server (na cloudu i na locale). Popis je k dispozici [zde](https://github.com/fyziktom/VirtualEconomyFramework/tree/main/VirtualEconomyFramework/VEFramework.BlockchainIndexerServer). V případě zájmu o sponzoring projektu mě prosím kontaktujte na [email](tomas.svoboda@technicinsider.com).
 
 ## Použití
 
@@ -23,7 +32,7 @@ VEFramework je L2 vrstva nad prakticky kterýmkoliv blockchainem. Aktuálně na 
 - [`VEDriversLite`](https://fyziktom.github.io/VirtualEconomyFramework/api/VEDriversLite.html) - Aktuální a doporučená verze (Neblio a NFT drivers)
 
 ```shell
-dotnet add package VEFramework.VEDriversLite --version 0.3.42
+dotnet add package VEFramework.VEDriversLite
 ```
 
 
@@ -31,19 +40,19 @@ dotnet add package VEFramework.VEDriversLite --version 0.3.42
 - VEDriversLite obsahují tuto knihovnu. Pokud potřebujete jen přístup k API a nepotřebujete podepisovat transakce lze načíst jen knihovnu pro NeblioAPI a tím snížit počet závislostí v projektu.
 
 ```shell
-dotnet add package VEFramework.VEDriversLite.NeblioAPI --version 0.3.42
+dotnet add package VEFramework.VEDriversLite.NeblioAPI
 ```
 
 - [`VEBlazor`](https://github.com/fyziktom/VirtualEconomyFramework/tree/main/VirtualEconomyFramework/VEBlazor) - Blazor knihovna komponent a dApp vzor
 
 ```shell
-dotnet add package VEFramework.VEBlazor --version 0.3.42
+dotnet add package VEFramework.VEBlazor
 ```
 
 - Dodatečná knihovna [`VEBlazor.Editable`](./VirtualEconomyFramework/VEFramework.VEBlazor.Editable) pro zobrazení a editaci parametrů tříd v UI
 
 ```shell
-dotnet add package VEFramework.VEBlazor.Editable --version 0.3.3
+dotnet add package VEFramework.VEBlazor.Editable
 ```
 
 Zkuste si náš [hello world příklad](#hello-world).
@@ -64,13 +73,11 @@ Více informací najdete na
 
 ## VENFT online demo
 
-<p align="center">
-  <img width="200" src="https://ve-framework.com/ipfs/QmT8wYFsDR55wCKKUwRwXYfxu67uGWpbVCKfg4kxiCM7pJ">
-<p>
+Webová peněženka s integrovaným NFT marketplacem a mint mechanismem.
 
-Webová peněženka s integrovaným NFT marketplacem a mint mechanismem
+Vyzkoušejte testovací verzi VENFT postavenou na VEBlazor, vytvořte si nový účet a [prozkoumejte funkce](https://ve-nft.com/).
 
-Vyzkoušejte testovací verzi VENFT postavenou na VEBlazor, vytvořte si nový účet a [prozkoumejte funkce](https://apptest.ve-nft.com/).
+V návaznosti na pozastavený provoz podpůrného serveru nyní nebudou fungovat všechny funkce peněženky. Nicméně řada funkcí pracuje jen v rámci klienta, takže i tak je možné vyzkoušet například vytvoření účtu či funkce spojené s AI, pokud máte vlastní ChatGPT API klíč.
 
 ## Hello World
 
